@@ -239,13 +239,12 @@ impl Cmd {
 			panic("std/os: Cmd.Spawn: command is already started")
 		}
 		mut started := false
-		&_started := &started // For deferred scope, use reference.
 		defer {
 			for (_, mut f) in self.childIOFiles {
 				f.CloseSync() else {}
 			}
 			self.childIOFiles = nil
-			if !*_started {
+			if !started {
 				for (_, mut f) in self.parentIOFiles {
 					f.CloseSync() else {}
 				}
