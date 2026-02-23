@@ -219,7 +219,7 @@ impl scopeCoder {
 			self.oc.write("\n")
 			self.oc.indent()
 		}
-		// The index of the varPrefix, generated for the optimzied output of the KeyB.
+		// The index of the varPrefix, generated for the optimized output of the KeyB.
 		// If the variable did not generated, value is -1.
 		mut optimizedVarPrefixForKeyB := -1
 		defer {
