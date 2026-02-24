@@ -1,0 +1,722 @@
+// Copyright 2026 The Jule Project Contributors. All rights reserved.
+// Use of this source code is governed by a BSD 3-Clause
+// license that can be found in the LICENSE file.
+
+fn deferScope0() {
+	mut x := 0
+	{
+		defer { x++ }
+	}
+	if x != 1 {
+		panic("expected 1")
+	}
+}
+
+fn deferScope1() {
+	mut x := 0
+	defer {
+		if x != 2 {
+			panic("expected 2")
+		}
+	}
+	defer { x++ }
+	{
+		defer { x++ }
+	}
+	if x != 1 {
+		panic("expected 1")
+	}
+}
+
+fn deferScope2() {
+	mut x := 0
+	defer {
+		defer {
+			if x != 4 {
+				panic("expected 4")
+			}
+		}
+		defer {
+			defer { x++ }
+			x++
+		}
+	}
+	defer { x++ }
+	{
+		defer { x++ }
+	}
+	if x != 1 {
+		panic("expected 1")
+	}
+}
+
+fn deferRet0() {
+	mut x := 0
+	defer {
+		if x != 1 {
+			panic("expected 1")
+		}
+	}
+	defer { x++ }
+	ret
+}
+
+fn deferRet1() {
+	mut x := 0
+	defer {
+		if x != 2 {
+			panic("expected 2")
+		}
+	}
+	defer { x++ }
+	{
+		defer { x++ }
+		ret
+	}
+}
+
+fn deferRet2() {
+	r := fn(): (x: int) {
+		defer {
+			if x != 2 {
+				panic("expected 2")
+			}
+		}
+		defer { x++ }
+		{
+			defer { x++ }
+			ret
+		}
+	}()
+	if r != 2 {
+		panic("expected 2")
+	}
+}
+
+fn deferRet3() {
+	r := fn(): (x: int) {
+		defer {
+			if x != 22 {
+				panic("expected 22")
+			}
+		}
+		defer { x++ }
+		{
+			defer { x++ }
+			ret 20
+		}
+	}()
+	if r != 22 {
+		panic("expected 22")
+	}
+}
+
+fn deferRet4() {
+	r1, r2 := fn(): (x: int, z: bool) {
+		defer {
+			if x != 22 {
+				panic("expected 22")
+			}
+			if !z {
+				panic("expected true")
+			}
+		}
+		defer { z = true }
+		defer { x++ }
+		{
+			defer { x++ }
+			ret 20, false
+		}
+	}()
+	if r1 != 22 {
+		panic("expected 22")
+	}
+	if !r2 {
+		panic("expected true")
+	}
+}
+
+fn deferRet5() {
+	r := fn(): int {
+		mut x := 0
+		defer {
+			if x != 2 {
+				panic("expected 2")
+			}
+		}
+		defer { x++ }
+		{
+			defer { x++ }
+			ret x
+		}
+	}()
+	if r != 0 {
+		panic("expected 0")
+	}
+}
+
+fn deferGoto0() {
+	mut x := 0
+	mut jumped := false
+	defer {
+		if x != 1 {
+			panic("expected 1")
+		}
+	}
+top:
+	defer {
+		if jumped {
+			x++
+		}
+	}
+	if !jumped {
+		jumped = true
+		goto top
+	}
+}
+
+fn deferGoto1() {
+	mut x := 0
+	mut jumped := false
+	defer {
+		if x != 1 {
+			panic("expected 1")
+		}
+	}
+	defer {
+		if jumped {
+			x++
+		}
+	}
+	if !jumped {
+		jumped = true
+		goto bottom
+	}
+bottom:
+}
+
+fn deferGoto2() {
+	mut x := 0
+	mut jumped := false
+	defer {
+		if x != 2 {
+			panic("expected 2")
+		}
+	}
+top:
+	defer {
+		if jumped {
+			x++
+		}
+	}
+	if !jumped {
+		defer {
+			if jumped {
+				x++
+			}
+		}
+		jumped = true
+		goto top
+	}
+}
+
+fn deferGoto3() {
+	mut x := 0
+	mut jumped := false
+	defer {
+		if x != 2 {
+			panic("expected 2")
+		}
+	}
+	defer {
+		if jumped {
+			x++
+		}
+	}
+	if !jumped {
+		defer {
+			if jumped {
+				x++
+			}
+		}
+		jumped = true
+		goto bottom
+	}
+bottom:
+}
+
+fn deferIter0() {
+	mut x := 0
+	defer {
+		if x != 1 {
+			panic("expected 1")
+		}
+	}
+	for {
+		defer {
+			x++
+		}
+		break
+	}
+}
+
+fn deferIter1() {
+	mut x := 0
+	defer {
+		if x != 1 {
+			panic("expected 1")
+		}
+	}
+	mut i := 0
+	for i < 1; i++ {
+		defer {
+			x++
+		}
+		continue
+	}
+}
+
+fn deferIter2() {
+	mut x := 0
+	defer {
+		if x != 2 {
+			panic("expected 2")
+		}
+	}
+	for {
+		defer {
+			x++
+		}
+		{
+			defer {
+				x++
+			}
+			break
+		}
+	}
+}
+
+fn deferIter3() {
+	mut x := 0
+	defer {
+		if x != 2 {
+			panic("expected 2")
+		}
+	}
+	mut i := 0
+	for i < 1; i++ {
+		defer {
+			x++
+		}
+		{
+			defer {
+				x++
+			}
+			continue
+		}
+	}
+}
+
+fn deferIter4() {
+	mut x := 0
+	defer {
+		if x != 3 {
+			panic("expected 3")
+		}
+	}
+	mut i := 0
+	defer {
+		x++
+	}
+Iter:
+	for i < 1; i++ {
+		defer {
+			x++
+		}
+		for {
+			defer {
+				x++
+			}
+			break Iter
+		}
+	}
+}
+
+fn deferIter5() {
+	mut x := 0
+	defer {
+		if x != 3 {
+			panic("expected 3")
+		}
+	}
+	defer {
+		x++
+	}
+	mut i := 0
+Iter:
+	for i < 1; i++ {
+		defer {
+			x++
+		}
+		for {
+			defer {
+				x++
+			}
+			continue Iter
+		}
+	}
+}
+
+fn deferMatch0() {
+	mut x := 0
+	defer {
+		if x != 1 {
+			panic("expected 1")
+		}
+	}
+	match {
+	| x == 0:
+		defer { x++ }
+	|:
+		defer { x++ }
+	}
+}
+
+fn deferMatch1() {
+	mut x := 0
+	defer {
+		if x != 2 {
+			panic("expected 2")
+		}
+	}
+	defer { x++ }
+	match {
+	| x == 0:
+		defer { x++ }
+		break
+	|:
+		defer { x++ }
+	}
+}
+
+fn deferMatch2() {
+	mut x := 0
+	defer {
+		if x != 3 {
+			panic("expected 3")
+		}
+	}
+	defer { x++ }
+Match:
+	match {
+	| x == 0:
+		defer { x++ }
+		match {
+		| x == 0:
+			defer { x++ }
+			break Match
+		|:
+			defer { x++ }
+		}
+	|:
+		defer { x++ }
+	}
+}
+
+fn deferMatch3() {
+	mut x := 0
+	defer {
+		if x != 4 {
+			panic("expected 4")
+		}
+	}
+	defer { x++ }
+	match {
+	| x == 0:
+		defer { x++ }
+		match {
+		| x == 0:
+			defer { x++ }
+			fall
+		|:
+			defer { x++ }
+		}
+	|:
+		defer { x++ }
+	}
+}
+
+async fn deferSelect0() {
+	mut x := 0
+	defer {
+		if x != 1 {
+			panic("expected 1")
+		}
+	}
+	ch := make(chan int)
+	select {
+	| <-ch:
+		defer { x++ }
+	| <-ch:
+		defer { x++ }
+	|:
+		defer { x++ }
+	}
+}
+
+async fn deferSelect1() {
+	mut x := 0
+	defer {
+		if x != 2 {
+			panic("expected 2")
+		}
+	}
+	defer { x++ }
+	ch := make(chan int)
+	select {
+	| <-ch:
+		defer { x++ }
+	| <-ch:
+		defer { x++ }
+	|:
+		defer { x++ }
+		break
+	}
+}
+
+async fn deferSelect2() {
+	mut x := 0
+	defer {
+		if x != 3 {
+			panic("expected 3")
+		}
+	}
+	defer { x++ }
+	ch := make(chan int)
+Select:
+	select {
+	| <-ch:
+		defer { x++ }
+	| <-ch:
+		defer { x++ }
+	|:
+		defer { x++ }
+		select {
+		| <-ch:
+			defer { x++ }
+		| <-ch:
+			defer { x++ }
+		|:
+			defer { x++ }
+			break Select
+		}
+	}
+}
+
+fn errorFunc()!: int {
+	error("error")
+}
+
+fn deferError0()! {
+	mut x := 0
+	defer {
+		if x != 1 {
+			panic("expected 1")
+		}
+	}
+	defer { x++ }
+	errorFunc()?
+}
+
+fn deferError1()! {
+	mut x := 0
+	defer {
+		if x != 2 {
+			panic("expected 2")
+		}
+	}
+	defer { x++ }
+	errorFunc() else {
+		defer { x++ }
+		error(error)
+	}
+}
+
+fn deferError2()! {
+	mut x := 0
+	defer {
+		if x != 3 {
+			panic("expected 3")
+		}
+	}
+	defer { x++ }
+	errorFunc() else {
+		defer { x++ }
+		errorFunc() else {
+			defer { x++ }
+			error(error)
+		}
+	}
+}
+
+fn deferError3()! {
+	mut x := 0
+	defer {
+		if x != 2 {
+			panic("expected 2")
+		}
+	}
+	defer { x++ }
+	_ = errorFunc() else {
+		defer { x++ }
+		use 0
+	}
+}
+
+fn deferError4()! {
+	mut x := 0
+	defer {
+		if x != 3 {
+			panic("expected 3")
+		}
+	}
+	defer { x++ }
+	_ = errorFunc() else {
+		defer { x++ }
+		use errorFunc() else {
+			defer { x++ }
+			use 0
+		}
+	}
+}
+
+fn deferError5()! {
+	mut x := 0
+	defer {
+		if x != 3 {
+			panic("expected 3")
+		}
+	}
+	defer { x++ }
+	z := errorFunc() else {
+		defer { x++ }
+		use errorFunc() else {
+			defer { x++ }
+			use 29
+		}
+	}
+	if z != 29 {
+		panic("expected 29")
+	}
+}
+
+fn deferError6()! {
+	mut x := 0
+	defer {
+		if x != 1 {
+			panic("expected 1")
+		}
+	}
+	mut y := 29
+	defer { x++ }
+	z := errorFunc() else {
+		defer { y++ }
+		use errorFunc() else {
+			defer { y++ }
+			use y
+		}
+	}
+	if z != 29 {
+		panic("expected 29")
+	}
+	if y != 31 {
+		println(y)
+		panic("expected 31")
+	}
+}
+
+fn deferError7()! {
+	mut x := 0
+	mut y := 29
+	defer {
+		if x != 1 {
+			panic("expected 1")
+		}
+		if y != 31 {
+			panic("expected 31")
+		}
+	}
+	defer { x++ }
+	z := errorFunc() else {
+		defer { y++ }
+		use errorFunc() else {
+			defer { y++ }
+			ret
+		}
+	}
+	_ = z
+	panic("unreachable")
+}
+
+async fn deferAsync0() {
+	ch := make(chan int, 1)
+	defer {
+		if <-ch != 2202 {
+			panic("expected 2202")
+		}
+	}
+	ch <- 2202
+}
+
+async fn main() {
+	// scopes based
+	deferScope0()
+	deferScope1()
+	deferScope2()
+
+	// ret statements
+	deferRet0()
+	deferRet1()
+	deferRet2()
+	deferRet3()
+	deferRet4()
+	deferRet5()
+
+	// goto statements
+	deferGoto0()
+	deferGoto1()
+	deferGoto2()
+	deferGoto3()
+
+	// iterations
+	deferIter0()
+	deferIter1()
+	deferIter2()
+	deferIter3()
+	deferIter4()
+	deferIter5()
+
+	// match statements
+	deferMatch0()
+	deferMatch1()
+	deferMatch2()
+	deferMatch3()
+
+	// select statements
+	deferSelect0().await
+	deferSelect1().await
+	deferSelect2().await
+
+	// errors
+	deferError0() else {}
+	deferError1() else {}
+	deferError2() else {}
+	deferError3() else {}
+	deferError4() else {}
+	deferError5() else {}
+	deferError6() else {}
+	deferError7() else {}
+
+	// asynctime
+	deferAsync0().await
+}
