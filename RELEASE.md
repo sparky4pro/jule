@@ -77,11 +77,12 @@ Like this: `sh ./.devcontainers/release/build.sh`
 - Create a new release on GitHub.
 - Create a new tag for the corresponding version, for example `jule0.2.0`.
 - Add the release notes and attach the archives you prepared for each platform–architecture combination as release assets.
-- Before publishing the release, publish the manual release for the corresponding version.
+- Before publishing the release, publish the Manual release for the corresponding version.
+- Before publishing the release, publish the IR release for the corresponding version.
 - Publish the release.
 
 ## Post Release
 
 - The `Version` constant in the `std/jule` package must be set to the new planned version with `@master` tag, like `jule0.2.0 @master`.
-- The manual is always updated against the `@master` branch. Therefore, a link to the released version should be added to the list of older versions in the [Foreword](https://manual.jule.dev/foreword) section.
+- The Manual is always updated against the `@master` branch. Therefore, a link to the released version should be added to the list of older versions in the [Foreword](https://manual.jule.dev/foreword) section.
 - Update the `latest` and `current` options to the latest version of [setup-jule](https://github.com/julelang/setup-jule).
