@@ -59,7 +59,7 @@ This stage is about building the compiler and obtaining the executable binary.
 
 On Linux, the automated build process located under `.devcontainers/release` is used.
 This process fetches and builds the latest IR versions compiled for Linux via the [julec-ir](https://github.com/julelang/julec-ir) repository.
-The executable file is added to the directory where you run the script, named according to the platform–architecture combination (for example, `julec-linux-amd64`).
+The release archive will be added to the directory where you run the script, named according to the platform–architecture combination (for example, `julec-linux-amd64.tar.xz`).
 
 It is recommended to run the script from the root directory of the source code.
 
