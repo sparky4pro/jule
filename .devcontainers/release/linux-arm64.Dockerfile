@@ -19,7 +19,7 @@ RUN mv ./jule-master ./jule
 WORKDIR /usr/local/workspace/jule
 
 RUN mkdir ./bin
-RUN curl -o ir.cpp https://raw.githubusercontent.com/julelang/julec-ir/main/src/linux-arm64.cpp
+RUN curl -L -o ir.cpp https://raw.githubusercontent.com/julelang/julec-ir/main/src/linux-arm64.cpp
 RUN clang++ -static -Wno-everything --std=c++20 -fwrapv -ffloat-store -fno-fast-math -fexcess-precision=standard -fno-rounding-math -ffp-contract=fast -O3 -flto=thin -DNDEBUG -fomit-frame-pointer -fno-strict-aliasing -o ./bin/julec ir.cpp
 
 WORKDIR /usr/local/workspace

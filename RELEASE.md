@@ -28,14 +28,20 @@ This stage is about building the compiler and obtaining the executable binary.
 
 ### macOS
 
+On macOS, the automated build process `release-darwin.sh` is used.
+This process fetches and builds the latest IR versions compiled for Windows via the [julec-ir](https://github.com/julelang/julec-ir) repository.
+The release archive will be added to the workspace directory where you run the script, named according to the platform–architecture combination (for example, `jule-darwin-arm64.tar.xz`).
+
+Dependencies:
+- `curl`
+- `7zz` (7-Zip)
+- `clang++` (Apple Clang, for ARM64 and AMD64)
+
 > [!NOTE]
 > For macOS, a native machine or a VM should be used.
 >
-> It is recommended to build on an Apple Silicon (ARM64) system.\
-> Building for Intel (AMD64) using Apple Clang should be straightforward, pass the `-arch x86_64` flag to the compiler.
-
-- Obtain the latest IR code for the target platform and architecture using [julec-ir](https://github.com/julelang/julec-ir).
-- Build the IR within the source code prepared during the preparation stage.
+> It is recommended to build on an ARM64 system.\
+> Use Apple Clang for Clang dependency.
 
 > [!TIP]
 > On macOS, static linking is not required, as all dependencies should be available internally in a standard macOS installation.
@@ -49,8 +55,8 @@ The release archive will be added to the workspace directory where you run the s
 Dependencies:
 - `curl.exe` (modern Windows versions have it by default)
 - `7z.exe` (7-Zip)
-- `clang++.exe` (Clang, for ARM64)
-- `x86_64-w64-mingw32-clang++.exe` (Clang, for AMD64)
+- `clang++.exe` (MinGW-Clang, for ARM64)
+- `x86_64-w64-mingw32-clang++.exe` (MinGW-Clang, for AMD64)
 
 > [!NOTE]
 > For Windows, a native machine or a VM should be used.
