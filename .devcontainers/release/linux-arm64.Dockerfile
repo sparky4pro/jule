@@ -20,7 +20,7 @@ WORKDIR /usr/local/workspace/jule
 
 RUN mkdir ./bin
 RUN curl -L -o ir.cpp https://raw.githubusercontent.com/julelang/julec-ir/main/src/linux-arm64.cpp
-RUN clang++ -static -Wno-everything --std=c++20 -fwrapv -ffloat-store -fno-fast-math -fexcess-precision=standard -fno-rounding-math -ffp-contract=fast -O3 -flto=thin -DNDEBUG -fomit-frame-pointer -fno-strict-aliasing -o ./bin/julec ir.cpp
+RUN curl -fsSL https://raw.githubusercontent.com/julelang/julec-ir/refs/heads/main/meta/linux-arm64.txt | bash
 
 WORKDIR /usr/local/workspace
 RUN 7z a -ttar -xr'!*.DS_Store' -xr'!__MACOSX' jule-linux-arm64.tar jule
