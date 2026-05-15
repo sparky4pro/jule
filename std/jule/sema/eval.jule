@@ -330,7 +330,7 @@ impl eval {
 
 	fn evalLit(mut *self, lit: &ast::LitExpr): &Value {
 		match lit.Token.ID {
-		| token::STR:
+		| token::STRING:
 			ret self.litStr(lit)
 		| token::RUNE:
 			ret self.litRune(lit)

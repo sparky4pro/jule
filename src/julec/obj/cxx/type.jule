@@ -67,6 +67,9 @@ impl typeCoder {
 			self.structureIns(buf, meta::Program.Runtime.Cmplx64)
 			ret
 		}
+		if id == "string" {
+			id = "str"
+		}
 		if id != types::Uintptr {
 			id = types::RealKindOf(id)
 		}

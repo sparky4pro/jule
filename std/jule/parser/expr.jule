@@ -997,7 +997,7 @@ impl exprBuilder {
 					Extern: false,
 				},
 			}
-		| token::STR | token::INT | token::FLOAT | token::IMAG | token::RUNE:
+		| token::STRING | token::INT | token::FLOAT | token::IMAG | token::RUNE:
 			mut lit := self.t
 			self.next()
 			mut expr := &ast::Expr{
@@ -1009,7 +1009,7 @@ impl exprBuilder {
 				},
 			}
 			// If the expression is a raw-string, we have to do extra work.
-			if lit.ID == token::STR && lit.Kind[0] == '`' {
+			if lit.ID == token::STRING && lit.Kind[0] == '`' {
 				// If raw-string contains new-line, we have to adjust the end token.
 				n := strings::Count(lit.Kind, "\n")
 				if n > 0 {

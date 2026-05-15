@@ -21,11 +21,11 @@ const (
 	COMMENT // /*..*/ or //...
 	NAME    // identifier
 
-	FLOAT // floating-point literal
-	INT   // integer literal
-	STR   // string literal
-	RUNE  // rune literal
-	IMAG  // imaginary part literal
+	FLOAT  // floating-point literal
+	INT    // integer literal
+	STRING // string literal
+	RUNE   // rune literal
+	IMAG   // imaginary part literal
 
 	RET      // ret
 	CONST    // const

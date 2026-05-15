@@ -503,7 +503,7 @@ impl Scanner {
 		}
 
 		if valid {
-			token.ID = STR
+			token.ID = STRING
 			token.Kind = unsafe::StrFromBytes(self.buf.Slice2(offs, self.offset))
 		}
 	}
@@ -536,7 +536,7 @@ impl Scanner {
 			if hasCR {
 				lit = stripCR(lit, false)
 			}
-			token.ID = STR
+			token.ID = STRING
 			token.Kind = unsafe::StrFromBytes(lit)
 		}
 	}

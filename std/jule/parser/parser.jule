@@ -972,7 +972,7 @@ impl parser {
 			self.pushErr(tokens[1], "invalid syntax")
 		}
 		mut token := tokens[0]
-		if token.ID != token::STR || token.Kind[0] != '"' {
+		if token.ID != token::STRING || token.Kind[0] != '"' {
 			self.pushErr(token, "invalid expression")
 			self.pushSuggestion(`expected string literal, like "string"`)
 			ret
@@ -988,7 +988,7 @@ impl parser {
 		}
 
 		mut token := tokens[0]
-		if token.ID != token::NAME && token.ID != token::STR && token.Kind[0] != '"' {
+		if token.ID != token::NAME && token.ID != token::STRING && token.Kind[0] != '"' {
 			self.pushErr(token, "invalid syntax")
 			ret
 		}
@@ -1001,7 +1001,7 @@ impl parser {
 				ret
 			}
 			token = tokens[0]
-			if token.ID != token::STR {
+			if token.ID != token::STRING {
 				self.pushErr(token, "invalid syntax")
 				ret
 			}
@@ -1269,7 +1269,7 @@ impl parser {
 		f.Type, _ = self.buildType(tokens, &i, true)
 		if i < len(tokens) {
 			mut token := tokens[i]
-			if token.ID == token::STR {
+			if token.ID == token::STRING {
 				f.Tag = token
 				i++
 				if i < len(tokens) {

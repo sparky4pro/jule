@@ -74,7 +74,7 @@ impl directiveChecker {
 		}
 
 		arg := d.Args[0]
-		if arg.ID != token::STR || arg.Kind[0] != '"' {
+		if arg.ID != token::STRING || arg.Kind[0] != '"' {
 			self.s.pushErr(arg, "invalid syntax")
 			ret
 		}
@@ -148,7 +148,7 @@ impl directiveChecker {
 			ret
 		}
 		arg := d.Args[0]
-		if arg.ID != token::STR || arg.Kind[0] != '"' {
+		if arg.ID != token::STRING || arg.Kind[0] != '"' {
 			self.s.pushErr(arg, "invalid syntax")
 			ret
 		}

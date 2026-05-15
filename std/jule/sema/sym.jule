@@ -691,7 +691,7 @@ impl symBuilder {
 
 		mut args := make([]str, len(d.Args))
 		for i, arg in d.Args {
-			if arg.ID != token::STR || arg.Kind[0] != '"' {
+			if arg.ID != token::STRING || arg.Kind[0] != '"' {
 				self.pushErr(arg, "invalid syntax")
 				ret
 			}
