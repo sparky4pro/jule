@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 fn main() {
-	let mut m: map[i32]str = {
+	let mut m: map[i32]string = {
 		0: "The",
 		1: "Jule",
 		2: "Programming",
@@ -23,14 +23,14 @@ fn main() {
 	delete(m, 3)
 	delete(m)
 	println(len(m))
-	_ = map[int]str{
+	_ = map[int]string{
 		0: "foo",
 		1: "bar",
 	}
-	_ = map[int]str({
+	_ = map[int]string({
 		0: "foo",
 		1: "bar",
 	})
-	_ = make(map[int]str)
-	_ = make(map[int]str, 10)
+	_ = make(map[int]string)
+	_ = make(map[int]string, 10)
 }
