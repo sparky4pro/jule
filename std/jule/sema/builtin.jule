@@ -103,7 +103,6 @@ fn findBuiltinVar(name: string): &Var {
 
 let mut builtinTypeAliases: map[string]&TypeAlias = {
 	"any":      primTypeAlias("any", primAny),
-	"str":      primTypeAlias("str", primStr),
 	"string":   primTypeAlias("string", primStr),
 	"bool":     primTypeAlias("bool", primBool),
 	"uintptr":  primTypeAlias("uintptr", primUintptr),

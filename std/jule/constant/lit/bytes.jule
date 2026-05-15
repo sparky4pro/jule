@@ -93,7 +93,7 @@ fn ToStr(mut lit: string): (string, errors: []Error) {
 
 // Checks the first escape sequence is syntacticaly correct.
 // Assumes the s starts with the escape sequence rune `\`.
-fn checkEsqSeq(s: strine, mut &errors: *[]Error): (ok: bool) {
+fn checkEsqSeq(s: string, mut &errors: *[]Error): (ok: bool) {
 	if len(s) < 2 {
 		*errors = append(*errors, Error{
 			Offset: 0,
