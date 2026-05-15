@@ -21,13 +21,13 @@ enum formatEnum: uint {
 }
 
 struct formatTest {
-	fmt:  str
+	fmt:  string
 	args: []any
-	out:  str
+	out:  string
 }
 
 struct formatStruct {
-	foo: str
+	foo: string
 	bar: int
 	baz: uintptr
 }

@@ -82,8 +82,8 @@ fn formatByDefault(mut &buf: *strings::Builder, arg: any) {
 	| uintptr:
 		buf.WriteStr("0x")!
 		buf.WriteStr(conv::FormatUint(u64(arg.(uintptr)), 16))!
-	| str:
-		buf.WriteStr(arg.(str))!
+	| string:
+		buf.WriteStr(arg.(string))!
 	| bool:
 		if arg.(bool) {
 			buf.WriteStr("true")!
@@ -124,7 +124,7 @@ fn applyFormat(mut &fmt: *[]byte, mut &buf: *strings::Builder, mut &j: *int, arg
 // See the [Sprintf] function for main documentation. This is a low level internal API.
 // For this function, returned []byte is might be string literal actually.
 // Be careful about mutating it.
-fn bprintf(fmt: str, args: ...any): []byte {
+fn bprintf(fmt: string, args: ...any): []byte {
 	mut fmtBytes := unsafe::StrBytes(fmt)
 	if len(args) == 0 {
 		ret fmtBytes
