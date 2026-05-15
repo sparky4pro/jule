@@ -8,13 +8,13 @@ use "std/strings"
 use "std/unsafe"
 
 struct parseAddrError {
-	input: str // the string given to ParseAddr
-	msg:   str // an explanation of the parse failure
-	at:    str // optionally, the unparsed portion of in at which the error occurred.
+	input: string // the string given to ParseAddr
+	msg:   string // an explanation of the parse failure
+	at:    string // optionally, the unparsed portion of in at which the error occurred.
 }
 
 impl parseAddrError {
-	fn Str(*self): str {
+	fn Str(*self): string {
 		if self.at != "" {
 			ret self.msg + " (input " + self.input + ") (at " + self.at + ")"
 		}
@@ -117,7 +117,7 @@ fn appendHex(mut &s: *strings::Builder, x: u16) {
 	s.WriteByte(digits[x&0xF])!
 }
 
-fn str4(ip: u128): str {
+fn str4(ip: u128): string {
 	const Max = len("255.255.255.255")
 	mut s := strings::Builder{}
 	s.Grow(Max)
@@ -131,7 +131,7 @@ fn str4(ip: u128): str {
 	ret s.Str()
 }
 
-fn str16(ip: u128): str {
+fn str16(ip: u128): string {
 	const Max = len("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff%enp5s0")
 	mut s := strings::Builder{}
 	s.Grow(Max)
@@ -167,7 +167,7 @@ fn str16(ip: u128): str {
 }
 
 #disable boundary
-fn parseIPv4Fields(addr: str, off: int, end: int, mut ip: IP)! {
+fn parseIPv4Fields(addr: string, off: int, end: int, mut ip: IP)! {
 	mut val, mut pos := 0, 0
 	mut digLen := 0 // number of digits in current octet
 	mut s := addr[off:end]
@@ -207,7 +207,7 @@ fn parseIPv4Fields(addr: str, off: int, end: int, mut ip: IP)! {
 	ip[3] = byte(val)
 }
 
-fn parseIPv4(addr: str)!: IPAddr {
+fn parseIPv4(addr: string)!: IPAddr {
 	mut ip := make(IP, 4)
 	parseIPv4Fields(addr, 0, len(addr), ip)?
 	ret IPAddr{IP: ip}
@@ -215,14 +215,14 @@ fn parseIPv4(addr: str)!: IPAddr {
 
 // Parses addr as an IPv6 address (in form "2001:db8::68").
 #disable boundary
-fn parseIPv6(addr: str)!: IPAddr {
+fn parseIPv6(addr: string)!: IPAddr {
 	mut s := addr
 
 	// Split off the zone right from the start. Yes it's a second scan
 	// of the string, but trying to handle it inline makes a bunch of
 	// other inner loop conditionals more expensive, and it ends up
 	// being slower.
-	let mut zone: str = ""
+	let mut zone: string = ""
 	mut i := byteslite::IndexByteStr(s, '%')
 	if i != -1 {
 		s, zone = s[:i], s[i+1:]

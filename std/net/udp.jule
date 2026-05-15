@@ -8,17 +8,17 @@ use "std/internal/conv"
 struct UDPAddr {
 	IP:   IP
 	Port: int
-	Zone: str // IPv6 scoped addressing zone.
+	Zone: string // IPv6 scoped addressing zone.
 }
 
 impl Addr for UDPAddr {
 	// Returns the address's network name.
-	fn Network(*self): str {
+	fn Network(*self): string {
 		ret "udp"
 	}
 
 	// Returns string form of address.
-	fn Str(*self): str {
+	fn Str(*self): string {
 		ip := self.IP.ipEmptyStr()
 		if self.Zone != "" {
 			ret JoinHostPort(ip+"%"+self.Zone, conv::Itoa(self.Port))
@@ -46,13 +46,13 @@ impl UDPAddr {
 	// IP addresses.
 	//
 	// See the [Dial] function for a description of the network and address parameters.
-	async fn Resolve(mut network: Network, address: str)!: &UDPAddr {
+	async fn Resolve(mut network: Network, address: string)!: &UDPAddr {
 		match network {
 		| UDP | UDP4 | UDP6:
 			mut addrs := resolveInternetAddrList(network, address).await?
 			ret addrs.forResolve(network, address).(&UDPAddr)
 		|:
-			throw &AddrError{Err: "invalid network: " + str(network)}
+			throw &AddrError{Err: "invalid network: " + string(network)}
 		}
 	}
 }

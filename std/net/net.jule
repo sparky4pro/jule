@@ -8,13 +8,13 @@ use "std/time"
 
 // Represents a DNS lookup error.
 struct DNSError {
-	Err:    str // description of the error
-	Name:   str // name looked for
-	Server: str // server used
+	Err:    string // description of the error
+	Name:   string // name looked for
+	Server: string // server used
 }
 
 impl DNSError {
-	fn Str(*self): str {
+	fn Str(*self): string {
 		if self == nil {
 			ret "<nil>"
 		}
@@ -27,7 +27,7 @@ impl DNSError {
 	}
 }
 
-fn newDNSError(err: str, name: str, server: str): &DNSError {
+fn newDNSError(err: string, name: string, server: string): &DNSError {
 	ret &DNSError{
 		Err:    err,
 		Name:   name,
@@ -36,7 +36,7 @@ fn newDNSError(err: str, name: str, server: str): &DNSError {
 }
 
 // Network names.
-enum Network: str {
+enum Network: string {
 	IP: "ip",
 	IP4: "ip4",
 	IP6: "ip6",
@@ -48,7 +48,7 @@ enum Network: str {
 	UDP6: "udp6",
 }
 
-fn networkToStr(net: Network): str {
+fn networkToStr(net: Network): string {
 	match net {
 	| IP:
 		ret "ip"

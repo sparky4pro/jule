@@ -37,8 +37,8 @@ let mut defaultNS = ["127.0.0.1:53", "[::1]:53"]
 
 struct dnsConfig {
 	mu:            runtime::mutex
-	servers:       []str          // server addresses (in host:port form) to use
-	search:        []str          // rooted suffixes to append to local name
+	servers:       []string       // server addresses (in host:port form) to use
+	search:        []string       // rooted suffixes to append to local name
 	ndots:         int            // number of dots in name to trigger absolute lookup
 	timeout:       time::Duration // wait before giving up on a query, including retries
 	attempts:      int            // lost packets before giving up on server

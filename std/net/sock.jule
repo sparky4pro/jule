@@ -15,12 +15,12 @@ use "std/time"
 // If the network parameter is points UDP network, function will panic.
 //
 // See the [Dial] function for a description of the network and addr parameters.
-async fn Listen(network: Network, addr: str)!: Listener {
+async fn Listen(network: Network, addr: string)!: Listener {
 	match network {
 	| TCP | TCP4 | TCP6:
 		ret tcpBind(network, addr).await?
 	|:
-		throw &AddrError{Err: "invalid network: " + str(network)}
+		throw &AddrError{Err: "invalid network: " + string(network)}
 	}
 }
 
@@ -29,7 +29,7 @@ async fn Listen(network: Network, addr: str)!: Listener {
 // Just for UDP networks.
 //
 // See the [Dial] function for a description of the network and addr parameters.
-async fn ListenUDP(network: Network, addr: str)!: &UDPConn {
+async fn ListenUDP(network: Network, addr: string)!: &UDPConn {
 	ret udpBind(network, addr).await?
 }
 
@@ -72,7 +72,7 @@ async fn ListenUDP(network: Network, addr: str)!: &UDPConn {
 //	is converted to IPv4 successfully, will use Udp4, otherwise IPv6 and Udp6 preferred.
 //
 // It will forward any error from network connectors.
-async fn Dial(network: Network, addr: str)!: Conn {
+async fn Dial(network: Network, addr: string)!: Conn {
 	ret DialTimeout(network, addr, 0).await?
 }
 
@@ -80,14 +80,14 @@ async fn Dial(network: Network, addr: str)!: Conn {
 // For UDP networks, timeout will be ignored.
 // Timeout precision is microseconds.
 // If the timeout is below one microsecond it will be ignored.
-async fn DialTimeout(network: Network, addr: str, timeout: time::Duration)!: Conn {
+async fn DialTimeout(network: Network, addr: string, timeout: time::Duration)!: Conn {
 	match network {
 	| TCP | TCP4 | TCP6:
 		ret tcpDial(network, addr, timeout).await?
 	| UDP | UDP4 | UDP6:
 		ret udpDial(network, addr).await?
 	|:
-		throw &AddrError{Err: "invalid network: " + str(network)}
+		throw &AddrError{Err: "invalid network: " + string(network)}
 	}
 }
 

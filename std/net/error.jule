@@ -12,12 +12,12 @@ let mut ErrTimeout = errors::New("connection timed out")
 
 // Common type of address errors.
 struct AddrError {
-	Err:  str
-	Addr: str
+	Err:  string
+	Addr: string
 }
 
 impl AddrError {
-	fn Str(*self): str {
+	fn Str(*self): string {
 		mut s := self.Err
 		if self.Addr != "" {
 			s = "address " + self.Addr + ": " + s

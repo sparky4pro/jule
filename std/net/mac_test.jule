@@ -6,7 +6,7 @@ use "std/strings"
 use "std/testing"
 
 struct caseMacParse {
-	s:    str
+	s:    string
 	addr: HardwareAddr
 	ok:   bool
 }

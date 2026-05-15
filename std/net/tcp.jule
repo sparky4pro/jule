@@ -8,17 +8,17 @@ use "std/internal/conv"
 struct TCPAddr {
 	IP:   IP
 	Port: int
-	Zone: str // IPv6 scoped addressing zone.
+	Zone: string // IPv6 scoped addressing zone.
 }
 
 impl Addr for TCPAddr {
 	// Returns the address's network name.
-	fn Network(*self): str {
+	fn Network(*self): string {
 		ret "tcp"
 	}
 
 	// Returns string form of address.
-	fn Str(*self): str {
+	fn Str(*self): string {
 		ip := self.IP.ipEmptyStr()
 		if self.Zone != "" {
 			ret JoinHostPort(ip+"%"+self.Zone, conv::Itoa(self.Port))
@@ -46,13 +46,13 @@ impl TCPAddr {
 	// IP addresses.
 	//
 	// See the [Dial] function for a description of the network and address parameters.
-	async fn Resolve(mut network: Network, address: str)!: &TCPAddr {
+	async fn Resolve(mut network: Network, address: string)!: &TCPAddr {
 		match network {
 		| TCP | TCP4 | TCP6:
 			mut addrs := resolveInternetAddrList(network, address).await?
 			ret addrs.forResolve(network, address).(&TCPAddr)
 		|:
-			throw &AddrError{Err: "invalid network: " + str(network)}
+			throw &AddrError{Err: "invalid network: " + string(network)}
 		}
 	}
 }

@@ -15,7 +15,7 @@ extern let GetAddrInfoW: *unsafe
 extern let FreeAddrInfoW: *unsafe
 
 #disable boundary
-fn integLookupIP(net: Network, host: str)!: (addrs: []IPAddr) {
+fn integLookupIP(net: Network, host: string)!: (addrs: []IPAddr) {
 	let mut hints: windows::AddrinfoW
 	hints.Flags = integAddrInfoFlags
 	hints.Socktype = sys::SOCK_STREAM

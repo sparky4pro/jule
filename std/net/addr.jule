@@ -7,10 +7,10 @@ use "std/internal/byteslite"
 // Represents a network end point address.
 trait Addr {
 	// Returns name of the network.
-	fn Network(*self): str
+	fn Network(*self): string
 
 	// String form of address.
-	fn Str(*self): str
+	fn Str(*self): string
 }
 
 trait addr {
@@ -23,7 +23,7 @@ trait addr {
 // IPv6 addresses, then JoinHostPort returns "[host]:port".
 //
 // See the [Dial] function for a description of the host and port parameters.
-fn JoinHostPort(host: str, port: str): str {
+fn JoinHostPort(host: string, port: string): string {
 	// We assume that host is a literal IPv6 address if host has colons.
 	if byteslite::IndexByteStr(host, ':') >= 0 {
 		ret "[" + host + "]:" + port
@@ -40,7 +40,7 @@ fn JoinHostPort(host: str, port: str): str {
 //
 // See the [Dial] function for a description of the hostport parameter, and host
 // and port results.
-fn SplitHostPort(hostport: str)!: (host: str, port: str) {
+fn SplitHostPort(hostport: string)!: (host: string, port: string) {
 	const (
 		missingPort   = "missing port in address"
 		tooManyColons = "too many colons in address"
@@ -88,7 +88,7 @@ fn SplitHostPort(hostport: str)!: (host: str, port: str) {
 	ret
 }
 
-fn splitHostZone(s: str): (host: str, zone: str) {
+fn splitHostZone(s: string): (host: string, zone: string) {
 	// The IPv6 scoped addressing zone identifier starts after the
 	// last percent sign.
 	i := byteslite::LastIndexByteStr(s, '%')
@@ -109,14 +109,14 @@ fn internetAddr(net: Network, mut ip: IPAddr, port: int): Addr {
 	| IP | IP4 | IP6:
 		ret &IPAddr{IP: ip.IP, Zone: ip.Zone}
 	|:
-		panic("net: unexpected network: " + str(net))
+		panic("net: unexpected network: " + string(net))
 	}
 }
 
 // Parses addr as an IP address, returning the result. The string
 // addr can be in dotted decimal ("192.0.2.1"), IPv6 ("2001:db8::68"),
 // or IPv6 with a scoped addressing zone ("fe80::1cc0:3e8c:119f:c2e1%ens18").
-fn parseAddr(addr: str)!: IPAddr {
+fn parseAddr(addr: string)!: IPAddr {
 	for _, r in addr {
 		match r {
 		| '.':
@@ -201,7 +201,7 @@ impl addrList {
 
 	// Returns the most appropriate address in address for a call to ResolveXAddr variants.
 	// IPv4 is preferred, unless address contains an IPv6 literal.
-	fn forResolve(mut *self, network: Network, address: str): Addr {
+	fn forResolve(mut *self, network: Network, address: string): Addr {
 		let mut want6: bool
 		match network {
 		| IP:
@@ -235,7 +235,7 @@ impl addrList {
 // yielding a list of Addr objects. Known filters are nil, ipv4only,
 // and ipv6only. It returns every address when the filter is nil.
 // The result contains at least one address when error is nil.
-fn filterAddrList(filter: fn(mut IPAddr): bool, net: Network, mut ips: []IPAddr, port: int, originalAddr: str)!: addrList {
+fn filterAddrList(filter: fn(mut IPAddr): bool, net: Network, mut ips: []IPAddr, port: int, originalAddr: string)!: addrList {
 	let mut addrs: addrList
 	for (_, mut ip) in ips {
 		if filter == nil || filter(ip) {
@@ -252,7 +252,7 @@ fn filterAddrList(filter: fn(mut IPAddr): bool, net: Network, mut ips: []IPAddr,
 // returns internal protocol family address.
 //
 // Forwards any error from used methods.
-async fn resolveInternetAddrList(net: Network, addr: str)!: addrList {
+async fn resolveInternetAddrList(net: Network, addr: string)!: addrList {
 	mut host, mut port := "", ""
 	mut portnum := 0
 	match net {
@@ -265,7 +265,7 @@ async fn resolveInternetAddrList(net: Network, addr: str)!: addrList {
 			host = addr
 		}
 	|:
-		throw &AddrError{Err: "invalid network: " + str(net)}
+		throw &AddrError{Err: "invalid network: " + string(net)}
 	}
 	if host == "" {
 		ret [internetAddr(net, IPAddr{}, portnum)]

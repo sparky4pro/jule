@@ -26,7 +26,7 @@ impl IP {
 	}
 
 	// Like self.Str except that it returns and empty string when IP is empty.
-	fn ipEmptyStr(*self): str {
+	fn ipEmptyStr(*self): string {
 		if self.Empty() {
 			ret ""
 		}
@@ -43,11 +43,11 @@ impl IP {
 	fn Equal(*self, x: IP): bool {
 		match {
 		| len(*self) == len(x):
-			ret str(*self) == str(x)
+			ret string(*self) == string(x)
 		| len(*self) == IPv4Len && len(x) == IPv6Len:
-			ret str(x[0:12]) == str(v4InV6Prefix) && str(*self) == str(x[12:])
+			ret string(x[0:12]) == string(v4InV6Prefix) && string(*self) == string(x[12:])
 		| len(*self) == IPv6Len && len(x) == IPv4Len:
-			ret str((*self)[0:12]) == str(v4InV6Prefix) && str((*self)[12:]) == str(x)
+			ret string((*self)[0:12]) == string(v4InV6Prefix) && string((*self)[12:]) == string(x)
 		}
 		ret false
 	}
@@ -125,7 +125,7 @@ impl IP {
 	//	- dotted decimal ("192.0.2.1"), if ip is an IPv4 or IP4-mapped IPv6 address
 	//	- IPv6 conforming to RFC 5952 ("2001:db8::1"), if ip is a valid IPv6 address
 	//	- the hexadecimal form of ip, without punctuation, if no other cases apply
-	fn Str(*self): str {
+	fn Str(*self): string {
 		if self.Empty() {
 			ret "<nil>"
 		}
@@ -211,7 +211,7 @@ fn isZeros(ip: IP): bool {
 }
 
 #disable boundary
-fn hexStr(b: IP): str {
+fn hexStr(b: IP): string {
 	mut s := make([]byte, (len(b)<<1)+1)
 	for i, tn in b {
 		s[i<<1], s[i<<1+1] = hexDigit[tn>>4], hexDigit[tn&0xF]
@@ -225,7 +225,7 @@ fn hexStr(b: IP): str {
 // If s is not a valid textual representation of an IP address,
 // it returns nil. The returned address is always 16 bytes,
 // IPv4 addresses are returned in IPv4-mapped IPv6 form.
-fn ParseIP(s: str): IP {
+fn ParseIP(s: string): IP {
 	mut ip := parseAddr(s) else { ret nil }
 	if ip.Zone != "" {
 		ret nil

@@ -24,7 +24,7 @@ extern struct addrinfo {
 }
 
 #disable boundary
-fn integLookupIP(net: Network, host: str)!: (addrs: []IPAddr) {
+fn integLookupIP(net: Network, host: string)!: (addrs: []IPAddr) {
 	let mut hints: extern.addrinfo
 	unsafe { runtime::memset(&hints, 0, mem::SizeOf(hints)) }
 	hints.ai_flags = integAddrInfoFlags
@@ -69,7 +69,7 @@ fn integLookupIP(net: Network, host: str)!: (addrs: []IPAddr) {
 }
 
 #disable boundary
-fn integLookupPortMap(network: Network, service: str)!: (port: int) {
+fn integLookupPortMap(network: Network, service: string)!: (port: int) {
 	let mut hints: extern.addrinfo
 	match network {
 	| IP:

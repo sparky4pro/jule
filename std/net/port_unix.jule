@@ -34,7 +34,7 @@ async fn readServices() {
 		netw := portnet[j+1:] // "tcp"
 		mut m, (ok) := services[netw]
 		if !ok {
-			m = map[str]int{}
+			m = map[string]int{}
 			services[netw] = m
 		}
 		i = 0
@@ -47,7 +47,7 @@ async fn readServices() {
 	file.close().await
 }
 
-async fn _lookupPort(network: Network, service: str)!: (port: int) {
+async fn _lookupPort(network: Network, service: string)!: (port: int) {
 	if DefaultResolver.PreferJule {
 		onceReadServices.Do(readServices).await
 		ret juleLookupPortMap(network, service)?

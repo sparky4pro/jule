@@ -5,17 +5,17 @@
 // Represents the address of an IP end point.
 struct IPAddr {
 	IP:   IP
-	Zone: str // IPv6 scoped addressing zone
+	Zone: string // IPv6 scoped addressing zone
 }
 
 impl Addr for IPAddr {
 	// Returns the address's network name, "ip".
-	fn Network(*self): str {
+	fn Network(*self): string {
 		ret "ip"
 	}
 
 	// Returns string form of address.
-	fn Str(*self): str {
+	fn Str(*self): string {
 		if self == nil {
 			ret "<nil>"
 		}
@@ -41,13 +41,13 @@ impl IPAddr {
 	// IP addresses.
 	//
 	// See the [Dial] function for a description of the network and address parameters.
-	async fn Resolve(mut network: Network, address: str)!: &IPAddr {
+	async fn Resolve(mut network: Network, address: string)!: &IPAddr {
 		match network {
 		| IP | IP4 | IP6:
 			mut addrs := resolveInternetAddrList(network, address).await?
 			ret addrs.forResolve(network, address).(&IPAddr)
 		|:
-			throw &AddrError{Err: "invalid network: " + str(network)}
+			throw &AddrError{Err: "invalid network: " + string(network)}
 		}
 	}
 }

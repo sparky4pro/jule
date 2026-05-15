@@ -24,7 +24,7 @@ impl TCPListener {
 	// In addition, any bind and listening error will be thrown as error.
 	//
 	// See the [Dial] function for a description of the addr parameter.
-	async fn Bind(addr: str)!: &TCPListener {
+	async fn Bind(addr: string)!: &TCPListener {
 		ret tcpBind(Network.TCP, addr).await?
 	}
 
@@ -64,7 +64,7 @@ impl TCPListener {
 	}
 }
 
-async fn tcpBind(network: Network, addr: str)!: &TCPListener {
+async fn tcpBind(network: Network, addr: string)!: &TCPListener {
 	mut tcpAddr := TCPAddr.Resolve(network, addr).await?
 	mut fd := (&netFD)(nil)
 	let mut ipv: int
@@ -79,7 +79,7 @@ async fn tcpBind(network: Network, addr: str)!: &TCPListener {
 			mut sockaddr := sys::RawSockaddrInet6{}
 			fd = socketipv6(false, uintptr(&sockaddr), tcpAddr, sys::SOCK_STREAM, 0).await?
 		|:
-			throw &AddrError{Err: "invalid network: " + str(network)}
+			throw &AddrError{Err: "invalid network: " + string(network)}
 		}
 	} else {
 		mut ipv4 := tcpAddr.IP.To4()

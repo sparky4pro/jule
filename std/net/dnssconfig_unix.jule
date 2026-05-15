@@ -56,7 +56,7 @@ async fn osResolveConfig() {
 				conf.search = [ensureRooted(f[1])]
 			}
 		| "search": // set search path to given servers
-			conf.search = make([]str, 0, len(f)-1)
+			conf.search = make([]string, 0, len(f)-1)
 			mut i := 1
 			for i < len(f); i++ {
 				name := ensureRooted(f[i])
@@ -125,7 +125,7 @@ async fn osResolveConfig() {
 	file.close().await
 }
 
-fn dnsDefaultSearch(): []str {
+fn dnsDefaultSearch(): []string {
 	hn := os::Hostname() else {
 		// best effort
 		ret nil
@@ -138,7 +138,7 @@ fn dnsDefaultSearch(): []str {
 	ret nil
 }
 
-fn ensureRooted(s: str): str {
+fn ensureRooted(s: string): string {
 	if len(s) > 0 && s[len(s)-1] == '.' {
 		ret s
 	}

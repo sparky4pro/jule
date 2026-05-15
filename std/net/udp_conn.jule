@@ -32,7 +32,7 @@ impl UDPConn {
 	// In addition, any bind and listening error will be thrown as error.
 	//
 	// See the [Dial] function for a description of the addr parameter.
-	async fn Bind(addr: str)!: &UDPConn {
+	async fn Bind(addr: string)!: &UDPConn {
 		ret udpBind(Network.UDP, addr).await?
 	}
 
@@ -42,7 +42,7 @@ impl UDPConn {
 	// In addition, any bind and listening error will be thrown as error.
 	//
 	// See the [Dial] function for a description of the addr parameter.
-	async fn Dial(addr: str)!: &UDPConn {
+	async fn Dial(addr: string)!: &UDPConn {
 		ret udpDial(Network.UDP, addr).await?
 	}
 
@@ -137,7 +137,7 @@ impl UDPConn {
 	}
 }
 
-async fn udpBind(network: Network, addr: str)!: &UDPConn {
+async fn udpBind(network: Network, addr: string)!: &UDPConn {
 	mut connAddr := UDPAddr.Resolve(network, addr).await?
 	mut conn := UDPConn{
 		Addr: connAddr,
@@ -152,7 +152,7 @@ async fn udpBind(network: Network, addr: str)!: &UDPConn {
 			conn.sockaddr6 = sys::RawSockaddrInet6{}
 			conn.fd = socketipv6(false, uintptr(&conn.sockaddr6), connAddr, sys::SOCK_DGRAM, 0).await?
 		|:
-			throw &AddrError{Err: "invalid network: " + str(network)}
+			throw &AddrError{Err: "invalid network: " + string(network)}
 		}
 	} else {
 		mut ipv4 := conn.Addr.IP.To4()
@@ -175,7 +175,7 @@ async fn udpBind(network: Network, addr: str)!: &UDPConn {
 	ret new(UDPConn, conn)
 }
 
-async fn udpDial(network: Network, addr: str)!: &UDPConn {
+async fn udpDial(network: Network, addr: string)!: &UDPConn {
 	mut connAddr := UDPAddr.Resolve(network, addr).await?
 	mut conn := UDPConn{
 		Addr:    connAddr,
@@ -190,7 +190,7 @@ async fn udpDial(network: Network, addr: str)!: &UDPConn {
 			conn.sockaddr6 = sys::RawSockaddrInet6{}
 			conn.fd = socketipv6(true, uintptr(&conn.sockaddr6), connAddr, sys::SOCK_DGRAM, 0).await?
 		|:
-			throw &AddrError{Err: "invalid network: " + str(network)}
+			throw &AddrError{Err: "invalid network: " + string(network)}
 		}
 	} else {
 		mut ipv4 := conn.Addr.IP.To4()

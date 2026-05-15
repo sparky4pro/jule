@@ -17,7 +17,7 @@ use "std/unsafe"
 // See https://www.iana.org/assignments/service-names-port-numbers
 //
 // On Unix, this map is augmented by readServices via lookupPort.
-let mut services = map[str]map[str]int{
+let mut services = map[string]map[string]int{
 	"udp": {
 		"domain": 53,
 	},
@@ -72,8 +72,8 @@ struct dnsQuestion {
 }
 
 // Encodes a domain like "www.example.com" to DNS wire format.
-fn encodeDomainName(mut &buf: *[]byte, mut domain: str)! {
-	handleLabel := fn(mut &buf: *[]byte, label: str)! {
+fn encodeDomainName(mut &buf: *[]byte, mut domain: string)! {
+	handleLabel := fn(mut &buf: *[]byte, label: string)! {
 		if len(label) > 63 {
 			throw errors::New("label too long")
 		}
@@ -101,7 +101,7 @@ fn getDNSId(): u16 {
 }
 
 // Builds a DNS query with EDNS and optional AD flag.
-fn buildQuery(mut &buf: *[]byte, domain: str, mut &idPos: *int, mut &qtypePos: *int, trustAD: bool)! {
+fn buildQuery(mut &buf: *[]byte, domain: string, mut &idPos: *int, mut &qtypePos: *int, trustAD: bool)! {
 	if cap(*buf) == 0 {
 		*buf = make([]byte, 0, maxDNSPacketSize)
 	} else {
@@ -135,8 +135,8 @@ fn buildQuery(mut &buf: *[]byte, domain: str, mut &idPos: *int, mut &qtypePos: *
 }
 
 // Handles DNS name parsing with label compression support.
-fn parseName(msg: []byte, mut offset: int)!: (str, int) {
-	let mut labels: []str
+fn parseName(msg: []byte, mut offset: int)!: (string, int) {
+	let mut labels: []string
 	mut original := offset
 	mut jumped := false
 
@@ -169,7 +169,7 @@ fn parseName(msg: []byte, mut offset: int)!: (str, int) {
 			throw errors::New("label out of range")
 		}
 
-		labels = append(labels, str(msg[offset:offset+length]))
+		labels = append(labels, string(msg[offset:offset+length]))
 		offset += length
 	}
 
@@ -255,7 +255,7 @@ fn parseResponseBody(msg: []byte): ([]IPAddr, ok: bool) {
 }
 
 // Looks up the addresses and the canonical name for the given host from static host.
-async fn lookupStaticHost(mut host: str): (ips: []str, canonical: str) {
+async fn lookupStaticHost(mut host: string): (ips: []string, canonical: string) {
 	hosts.mu.lock()
 	readHosts().await
 	if len(hosts.byName) != 0 {
@@ -266,7 +266,7 @@ async fn lookupStaticHost(mut host: str): (ips: []str, canonical: str) {
 		}
 		byName, ok := hosts.byName[absDomainName(host)]
 		if ok {
-			ips = make([]str, len(byName.addrs))
+			ips = make([]string, len(byName.addrs))
 			copy(ips, byName.addrs)
 			canonical = byName.canonicalName
 		}
@@ -276,7 +276,7 @@ async fn lookupStaticHost(mut host: str): (ips: []str, canonical: str) {
 }
 
 // lookup entries from static host
-async fn lookupIPFiles(name: str): (addrs: []IPAddr, canonical: str) {
+async fn lookupIPFiles(name: string): (addrs: []IPAddr, canonical: string) {
 	addr, canonical := lookupStaticHost(name).await
 	for (_, mut haddr) in addr {
 		haddr, zone := splitHostZone(haddr)
@@ -414,7 +414,7 @@ async fn lookupSingle(mut &buf: *[]byte, mut conn: Conn, idPos: int, qtype: u16,
 	ret nil, false
 }
 
-async fn lookupQuery(mut &buf: *[]byte, mut conn: Conn, network: Network, query: str)!: (results: []IPAddr, ok: bool) {
+async fn lookupQuery(mut &buf: *[]byte, mut conn: Conn, network: Network, query: string)!: (results: []IPAddr, ok: bool) {
 	let mut idPos: int
 	let mut qtypePos: int
 	buildQuery(buf, query, &idPos, &qtypePos, conf.trustAD)?
@@ -464,7 +464,7 @@ async fn lookupQuery(mut &buf: *[]byte, mut conn: Conn, network: Network, query:
 
 // Native implementation for the DNS lookup.
 #disable boundary
-async fn juleLookupIP(net: Network, host: str)!: []IPAddr {
+async fn juleLookupIP(net: Network, host: string)!: []IPAddr {
 	// Lookup files first.
 	{
 		mut addrs, _ := lookupIPFiles(host).await
@@ -523,7 +523,7 @@ async fn juleLookupIP(net: Network, host: str)!: []IPAddr {
 
 // Looks up host using the local resolver and particular network.
 // It returns a slice of that host's IPv4 and IPv6 addresses.
-async fn lookupIPAddr(net: Network, host: str)!: []IPAddr {
+async fn lookupIPAddr(net: Network, host: string)!: []IPAddr {
 	// Make sure that no matter what we do later, host=="" is rejected.
 	if host == "" {
 		throw newDNSError("no such host", host, "")
@@ -549,7 +549,7 @@ async fn lookupIPAddr(net: Network, host: str)!: []IPAddr {
 const maxPortBufSize = len("mobility-header") + 10
 
 // Native implementation for the port lookup.
-fn juleLookupPortMap(network: Network, service: str)!: (port: int) {
+fn juleLookupPortMap(network: Network, service: string)!: (port: int) {
 	match network {
 	| IP: // no hints
 		ret lookupPortMapWithNetwork(Network.TCP, Network.IP, service) else {
@@ -564,7 +564,7 @@ fn juleLookupPortMap(network: Network, service: str)!: (port: int) {
 	}
 }
 
-fn lookupPortMapWithNetwork(network: Network, errNetwork: str, service: str)!: (port: int) {
+fn lookupPortMapWithNetwork(network: Network, errNetwork: string, service: string)!: (port: int) {
 	m, mut ok := services[network]
 	if ok {
 		let mut lowerService: [maxPortBufSize]byte
@@ -579,7 +579,7 @@ fn lookupPortMapWithNetwork(network: Network, errNetwork: str, service: str)!: (
 	throw &DNSError{Err: "unknown network", Name: errNetwork + "/" + service}
 }
 
-async fn lookupPort(net: Network, service: str)!: (port: int) {
+async fn lookupPort(net: Network, service: string)!: (port: int) {
 	port, needsLookup := parsePort(service)
 	if needsLookup {
 		match net {
@@ -610,12 +610,12 @@ fn growBuffer(mut &buf: *[]byte, n: int) {
 // Looks up for IPv4 addresses only, if network is IP4.
 // Looks up for IPv6 addresses only, if network is IP6.
 // Looks up for IPv4 and IPv6 addresses, if network is IP.
-async fn LookupIP(mut network: Network, address: str)!: []&IPAddr {
+async fn LookupIP(mut network: Network, address: string)!: []&IPAddr {
 	match network {
 	| IP | IP4 | IP6:
 		mut addrs := resolveInternetAddrList(network, address).await?
 		ret addrs.forResolveAll(network)
 	|:
-		throw &AddrError{Err: "invalid network: " + str(network)}
+		throw &AddrError{Err: "invalid network: " + string(network)}
 	}
 }

@@ -30,12 +30,12 @@ impl TCPConn {
 	// In addition, any bind and listening error will be thrown as error.
 	//
 	// See the [Dial] function for a description of the addr parameter.
-	async fn Dial(addr: str)!: &TCPConn {
+	async fn Dial(addr: string)!: &TCPConn {
 		ret tcpDial(Network.TCP, addr, 0).await?
 	}
 
 	// Same as TCPListener.Dial, but uses timeout.
-	async fn DialTimeout(addr: str, timeout: time::Duration)!: &TCPConn {
+	async fn DialTimeout(addr: string, timeout: time::Duration)!: &TCPConn {
 		ret tcpDial(Network.TCP, addr, timeout).await?
 	}
 
@@ -127,7 +127,7 @@ impl TCPConn {
 	}
 }
 
-async fn tcpDial(network: Network, addr: str, mut timeout: time::Duration)!: &TCPConn {
+async fn tcpDial(network: Network, addr: string, mut timeout: time::Duration)!: &TCPConn {
 	mut tcpAddr := TCPAddr.Resolve(network, addr).await?
 	mut fd := (&netFD)(nil)
 	mut v6 := false
@@ -140,7 +140,7 @@ async fn tcpDial(network: Network, addr: str, mut timeout: time::Duration)!: &TC
 			mut sockaddr := sys::RawSockaddrInet6{}
 			fd = socketipv6(true, uintptr(&sockaddr), tcpAddr, sys::SOCK_STREAM, timeout).await?
 		|:
-			throw &AddrError{Err: "invalid network: " + str(network)}
+			throw &AddrError{Err: "invalid network: " + string(network)}
 		}
 	} else {
 		mut ipv4 := tcpAddr.IP.To4()
