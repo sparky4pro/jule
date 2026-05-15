@@ -8,7 +8,7 @@ use "std/math/big"
 // Constant data.
 // Use NewNil function instead of Const{} for nil literal.
 struct Const {
-	Kind: str
+	Kind: string
 	data: any
 }
 
@@ -31,7 +31,7 @@ fn NewU64(x: u64): &Const {
 fn NewBool(x: bool): &Const { ret &Const{data: x} }
 
 // Returns new constant value instance from string.
-fn NewStr(x: str): &Const { ret &Const{data: x} }
+fn NewStr(x: string): &Const { ret &Const{data: x} }
 
 // Returns new constant value instance from 64-bit floating-point.
 fn NewF64(x: f64): &Const { ret &Const{data: x} }
@@ -65,11 +65,11 @@ impl Const {
 
 	// Reads string data.
 	// Returns empty string if data is not string.
-	fn ReadStr(*self): str {
+	fn ReadStr(*self): string {
 		if !self.IsStr() {
 			ret ""
 		}
-		ret self.data.(str)
+		ret self.data.(string)
 	}
 
 	// Reads 64-bit floating-point data.
@@ -175,7 +175,7 @@ impl Const {
 	fn SetBool(mut *self, x: bool) { self.data = x }
 
 	// Sets constant value from string.
-	fn SetStr(mut *self, x: str) { self.data = x }
+	fn SetStr(mut *self, x: string) { self.data = x }
 
 	// Sets constant value from 64-bit floating-point.
 	fn SetF64(mut *self, x: f64) { self.data = x }
@@ -200,7 +200,7 @@ impl Const {
 
 	// Reports whether data is string.
 	fn IsStr(*self): bool {
-		_, ok := self.data.(str)
+		_, ok := self.data.(string)
 		ret ok
 	}
 
@@ -654,7 +654,7 @@ impl Const {
 		ret true
 	}
 
-	fn Str(*self): str {
+	fn Str(*self): string {
 		match {
 		| self.IsNil():
 			ret "nil"
@@ -664,7 +664,7 @@ impl Const {
 			}
 			ret "false"
 		| self.IsStr():
-			ret self.data.(str)
+			ret self.data.(string)
 		| self.IsInt():
 			i := self.data.(big::Int)
 			ret i.Format(10)
