@@ -43,7 +43,7 @@
 const Version = "17.0.0"
 
 // The set of Unicode category tables.
-let Categories: map[str]&RangeTable = {
+let Categories: map[string]&RangeTable = {
 	"C":  C,
 	"Cc": Cc,
 	"Cf": Cf,
@@ -85,7 +85,7 @@ let Categories: map[str]&RangeTable = {
 }
 
 // Maps category aliases to standard category names.
-let CategoryAliases = map[str]str{
+let CategoryAliases = map[string]string{
 	"Cased_Letter":          "LC",
 	"Close_Punctuation":     "Pe",
 	"Combining_Mark":        "M",
@@ -5431,7 +5431,7 @@ let mut Zp = _Zp    // Zp is the set of Unicode characters in category Zp (Separ
 let mut Zs = _Zs    // Zs is the set of Unicode characters in category Zs (Separator, space).
 
 // Set of Unicode script tables.
-let mut Scripts = map[str]&RangeTable{
+let mut Scripts = map[string]&RangeTable{
 	"Adlam":                  Adlam,
 	"Ahom":                   Ahom,
 	"Anatolian_Hieroglyphs":  Anatolian_Hieroglyphs,
@@ -7746,7 +7746,7 @@ let mut Yi = _Yi                                         // Yi is the set of Uni
 let mut Zanabazar_Square = _Zanabazar_Square             // Zanabazar_Square is the set of Unicode characters in script Zanabazar_Square.
 
 // Set of Unicode property tables.
-let mut Properties = map[str]&RangeTable{
+let mut Properties = map[string]&RangeTable{
 	"ASCII_Hex_Digit":                    ASCII_Hex_Digit,
 	"Bidi_Control":                       Bidi_Control,
 	"Dash":                               Dash,
@@ -9944,7 +9944,7 @@ let caseOrbit: []foldPair = [
 // code points outside the category that are equivalent under
 // simple case folding to code points inside the category.
 // If there is no entry for a category name, there are no such points.
-let FoldCategory = map[str]&RangeTable{
+let FoldCategory = map[string]&RangeTable{
 	"L":  foldL,
 	"Ll": foldLl,
 	"Lt": foldLt,
@@ -10248,7 +10248,7 @@ let foldMn = &RangeTable{
 // code points outside the script that are equivalent under
 // simple case folding to code points inside the script.
 // If there is no entry for a script name, there are no such points.
-let FoldScript = map[str]&RangeTable{
+let FoldScript = map[string]&RangeTable{
 	"Common":    foldCommon,
 	"Greek":     foldGreek,
 	"Inherited": foldInherited,
