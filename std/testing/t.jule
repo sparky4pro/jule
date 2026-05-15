@@ -25,7 +25,7 @@ impl T {
 	}
 
 	// Wrapper for internal logs.
-	fn println(*self, msg: str) {
+	fn println(*self, msg: string) {
 		print("    ")
 		println(msg)
 	}
@@ -59,7 +59,7 @@ impl T {
 	}
 
 	// Set status of test as failure if expression is evaluated false at runtime.
-	fn Assert(*self, expr: bool, message: str): bool {
+	fn Assert(*self, expr: bool, message: string): bool {
 		if !expr {
 			self.println(message)
 			self.Fail()
@@ -70,13 +70,13 @@ impl T {
 	// Set status of test as failure and print message by formatting.
 	// Prints new-line after formatted text.
 	// Uses "std/fmt" internally.
-	fn Errorf(*self, fmt: str, args: ...any) {
+	fn Errorf(*self, fmt: string, args: ...any) {
 		self.println(fmt::Sprintf(fmt, args...))
 		self.Fail()
 	}
 
 	// Logs message with no error, test status will not be affected.
-	fn Logf(*self, fmt: str, args: ...any) {
+	fn Logf(*self, fmt: string, args: ...any) {
 		self.println(fmt::Sprintf(fmt, args...))
 	}
 }
