@@ -130,7 +130,7 @@ fn Encode(mut dest: []byte, src: []byte): int {
 type CorruptInputError: i64
 
 impl CorruptInputError {
-	fn Str(*self): str {
+	fn Str(*self): string {
 		ret "illegal ascii85 data at input byte " + conv::FormatInt(i64(*self), 10)
 	}
 }
