@@ -6,7 +6,7 @@ use "std/integ"
 use "std/internal/os/filepathlite"
 use "std/sys"
 
-fn readDir(path: str)!: (dirents: []DirEntry) {
+fn readDir(path: string)!: (dirents: []DirEntry) {
 	s := integ::BytesFromStr(path)
 	mut dir := unsafe { sys::Opendir(&s[0]) }
 	if dir == nil {
@@ -28,13 +28,13 @@ fn readDir(path: str)!: (dirents: []DirEntry) {
 	ret
 }
 
-fn mkdir(path: str)! {
+fn mkdir(path: string)! {
 	// NOTICE
 	// Also can has EMLINK error-code.
 	// Make sure this situation should documented or not.
 	ignoringEINTR(fn|| sys::Mkdir(path, 0700)?)?
 }
 
-fn rmdir(path: str)! {
+fn rmdir(path: string)! {
 	sys::Rmdir(path)?
 }

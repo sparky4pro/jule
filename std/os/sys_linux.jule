@@ -8,7 +8,7 @@ use "std/runtime"
 use "std/sys"
 use "std/unsafe"
 
-fn hostname()!: (name: str) {
+fn hostname()!: (name: string) {
 	// Try uname first, as it's only one system call and reading
 	// from /proc is not allowed on Android (future-proof).
 	let mut un: sys::Utsname

@@ -6,7 +6,7 @@ use "std/integ"
 use "std/internal/sys/windows"
 use "std/sys"
 
-fn hostname()!: (name: str) {
+fn hostname()!: (name: string) {
 	// Use PhysicalDnsHostname to uniquely identify host in a cluster
 	const format = windows::ComputerNamePhysicalDnsHostname
 

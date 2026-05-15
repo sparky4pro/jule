@@ -6,7 +6,7 @@ use "std/integ"
 use "std/internal/os/filepathlite"
 use "std/sys"
 
-fn readDir(path: str)!: (dirents: []DirEntry) {
+fn readDir(path: string)!: (dirents: []DirEntry) {
 	utf16Path := integ::UTF16FromStr(filepathlite::Join(path, "*"))
 	mut data := sys::Win32FindData{}
 	handle := unsafe { sys::FindFirstFile(&utf16Path[0], &data) }
@@ -27,7 +27,7 @@ fn readDir(path: str)!: (dirents: []DirEntry) {
 	ret
 }
 
-fn mkdir(path: str)! {
+fn mkdir(path: string)! {
 	// NOTICE
 	// Also can has EMLINK error-code.
 	// Make sure this situation should documented or not.
@@ -37,7 +37,7 @@ fn mkdir(path: str)! {
 	}
 }
 
-fn rmdir(path: str)! {
+fn rmdir(path: string)! {
 	utf16Path := integ::UTF16FromStr(path)
 	if unsafe { !sys::RemoveDirectory(&utf16Path[0]) } {
 		throw sys::GetLastErrno()

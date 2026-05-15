@@ -64,7 +64,7 @@ struct cmdAttrs {
 }
 
 impl Cmd {
-	fn spawn(*self, path: str, stdin: &File, stdout: &File, stderr: &File)! {
+	fn spawn(*self, path: string, stdin: &File, stdout: &File, stderr: &File)! {
 		utf16path := integ::UTF16FromStr(path)
 		argv := integ::UTF16FromStr(makeCmdLine(self.args()))
 
@@ -145,7 +145,7 @@ impl Cmd {
 }
 
 // Escapes the string s, as per escapeArg, appends the result to s.
-fn appendEscapeArg(mut &s: *strings::Builder, arg: str) {
+fn appendEscapeArg(mut &s: *strings::Builder, arg: string) {
 	if len(arg) == 0 {
 		s.WriteStr(`""`)!
 		ret
@@ -206,7 +206,7 @@ fn appendEscapeArg(mut &s: *strings::Builder, arg: str) {
 
 // Builds a command line out of args by escaping "special"
 // characters and joining the arguments with spaces.
-fn makeCmdLine(args: []str): str {
+fn makeCmdLine(args: []string): string {
 	mut s := strings::Builder{}
 	s.Grow(1 << 4)
 	for _, arg in args {
@@ -223,7 +223,7 @@ fn makeCmdLine(args: []str): str {
 // terminated strings followed by a nil.
 // Last bytes are two UCS-2 NULLs, or four NULL bytes.
 // If any string contains a NULL, it returns (nil, EINVAL).
-fn createEnvBlock(env: []str)!: []u16 {
+fn createEnvBlock(env: []string)!: []u16 {
 	if len(env) == 0 {
 		ret utf16::Encode([]rune("\x00\x00"))
 	}
@@ -246,14 +246,14 @@ fn createEnvBlock(env: []str)!: []u16 {
 	ret b
 }
 
-fn chkStat(file: str)! {
+fn chkStat(file: string)! {
 	d := Stat(file)?
 	if d.IsDir() {
 		throw sys::Errno(sys::ERROR_ACCESS_DENIED)
 	}
 }
 
-fn hasExt(file: str): bool {
+fn hasExt(file: string): bool {
 	i := strings::LastIndex(file, ".")
 	if i < 0 {
 		ret false
@@ -261,7 +261,7 @@ fn hasExt(file: str): bool {
 	ret strings::LastIndexAny(file, `:\/`) < i
 }
 
-fn findExecutable(file: str, exts: []str)!: str {
+fn findExecutable(file: string, exts: []string)!: string {
 	if len(exts) == 0 {
 		chkStat(file)?
 		ret file
@@ -284,7 +284,7 @@ fn findExecutable(file: str, exts: []str)!: str {
 	throw errNotFound
 }
 
-fn pathExt(): (exts: []str) {
+fn pathExt(): (exts: []string) {
 	x := Getenv(`PATHEXT`)
 	if x != "" {
 		for (_, mut e) in strings::Split(strings::ToLower(x), `;`) {
@@ -311,9 +311,9 @@ fn pathExt(): (exts: []str) {
 // for additional extensions. For example,
 // "C:\foo\example.com" would be returned as-is even if the
 // program is actually "C:\foo\example.com.exe".
-fn lookExtensions(mut path: str, dir: str)!: str {
+fn lookExtensions(mut path: string, dir: string)!: string {
 	if filepathlite::Base(path) == path {
-		path = "." + str(PathSeparator) + path
+		path = "." + string(PathSeparator) + path
 	}
 	exts := pathExt()
 	mut ext := filepathlite::Ext(path)
@@ -341,12 +341,12 @@ fn lookExtensions(mut path: str, dir: str)!: str {
 	ret path + ext
 }
 
-fn lookPath(file: str)!: str {
+fn lookPath(file: string)!: string {
 	ret _lookPath(file, pathExt())?
 }
 
 // Implements lookPath for the given PATHEXT list.
-fn _lookPath(file: str, exts: []str)!: str {
+fn _lookPath(file: string, exts: []string)!: string {
 	if strings::ContainsAny(file, `:\/`) {
 		ret findExecutable(file, exts) else { throw &lookpathError{file, error} }
 	}

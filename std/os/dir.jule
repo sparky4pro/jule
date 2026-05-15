@@ -4,22 +4,22 @@
 
 // Directory entry.
 struct DirEntry {
-	Name: str
+	Name: string
 	Stat: FileInfo
 }
 
 // Reads the named directory and returns all its directory entries can read.
-fn ReadDir(path: str)!: (dirents: []DirEntry) {
+fn ReadDir(path: string)!: (dirents: []DirEntry) {
 	ret readDir(path)?
 }
 
 // Creates directory.
-fn Mkdir(path: str)! {
+fn Mkdir(path: string)! {
 	longPath := fixLongPath(path)
 	mkdir(longPath)?
 }
 
 // Removes empty directory.
-fn Rmdir(path: str)! {
+fn Rmdir(path: string)! {
 	rmdir(path)?
 }

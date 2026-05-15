@@ -7,7 +7,7 @@
 use "std/sys"
 use "std/unsafe"
 
-fn hostname()!: (name: str) {
+fn hostname()!: (name: string) {
 	let mut size: int
 	mib := []i32([sys::CTL_KERN, sys::KERN_HOSTNAME])
 

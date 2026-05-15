@@ -6,7 +6,7 @@ use "std/integ"
 use "std/internal/os/filepathlite"
 use "std/sys"
 
-fn winstat(path: str, followSurrogates: bool)!: FileInfo {
+fn winstat(path: string, followSurrogates: bool)!: FileInfo {
 	if path == "" {
 		throw sys::Errno(sys::ERROR_PATH_NOT_FOUND)
 	}
@@ -89,7 +89,7 @@ fn statHandle(h: sys::Handle)!: (fs: FileInfo, fi: sys::Win32FileAttributeData, 
 	ret
 }
 
-fn stat(path: str)!: FileInfo {
+fn stat(path: string)!: FileInfo {
 	mut fi := winstat(path, true)?
 	// Assign path if it is not resolved.
 	if fi.sys.vol == 0 {
@@ -98,7 +98,7 @@ fn stat(path: str)!: FileInfo {
 	ret fi
 }
 
-fn lstat(path: str)!: FileInfo {
+fn lstat(path: string)!: FileInfo {
 	mut followSurrogates := false
 	if path != "" && filepathlite::IsPathSeparator(path[len(path)-1]) {
 		// We try to implement POSIX semantics for Lstat path resolution

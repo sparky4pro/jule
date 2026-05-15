@@ -9,7 +9,7 @@ use "std/sys"
 
 const devNull = "/dev/null"
 
-fn openFile(path: str, flag: int, perm: FileMode)!: &File {
+fn openFile(path: string, flag: int, perm: FileMode)!: &File {
 	if path == "" {
 		throw sys::ENOENT
 	}
@@ -133,6 +133,6 @@ fn newFile(fd: int, mut flags: int, nonBlocking: bool)!: &File {
 	ret &File{fd: pfd}
 }
 
-fn remove(path: str)! {
+fn remove(path: string)! {
 	sys::Unlink(path)?
 }

@@ -3,6 +3,6 @@
 // license that can be found in the LICENSE file.
 
 // Returns the host name reported by the kernel.
-fn Hostname()!: str {
+fn Hostname()!: string {
 	ret hostname()?
 }

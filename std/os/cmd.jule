@@ -21,14 +21,14 @@ let mut errDot = errors::New("cannot run executable found relative to current di
 // Returned by [lookPath] when it fails to classify a file as an executable.
 struct lookpathError {
 	// Name is the file name for which the error occurred.
-	Name: str
+	Name: string
 
 	// Err is the underlying error.
 	Err: any
 }
 
 impl lookpathError {
-	fn Str(*self): str {
+	fn Str(*self): string {
 		ret "std/os: Cmd: " + conv::Quote(self.Name) + ": " + runtime::toStr(self.Err)
 	}
 }
@@ -49,18 +49,18 @@ struct Cmd {
 	//
 	// This is the only field that must be set to a non-zero
 	// value. If it is relative, it is evaluated relative to Dir.
-	Path: str
+	Path: string
 
 	// Specifies the working directory of the command.
 	// If it is the empty string, Cmd runs the command in the
 	// calling process's current directory.
-	Dir: str
+	Dir: string
 
 	// Holds command line arguments, including the command as Args[0].
 	// If it is empty or nil, Start uses {Path}.
 	//
 	// In typical use, both Path and Args are set by calling [Cmd.New].
-	Args: []str
+	Args: []string
 
 	// Specifies the environment of the process.
 	// Each entry is of the form "key=value".
@@ -69,7 +69,7 @@ struct Cmd {
 	// value in the slice for each duplicate key is used.
 	// As a special case on Windows, SYSTEMROOT is always added if
 	// missing and not explicitly set to the empty string.
-	Env: []str
+	Env: []string
 
 	// Handles inherited by the process.
 	mut stdin:  &File // reader
@@ -90,10 +90,10 @@ struct Cmd {
 
 impl Cmd {
 	// Returns Cmd instance for path with arguments.
-	fn New(path: str, mut args: ...str): &Cmd {
+	fn New(path: string, mut args: ...string): &Cmd {
 		mut cmd := new(Cmd)
 		cmd.Path = path
-		cmd.Args = make([]str, 0, len(args)+1)
+		cmd.Args = make([]string, 0, len(args)+1)
 		cmd.Args = append(cmd.Args, path)
 		cmd.Args = append(cmd.Args, args...)
 		ret cmd
@@ -318,7 +318,7 @@ impl Cmd {
 	}
 
 	// Returns command-line arguments to start command.
-	fn args(*self): []str {
+	fn args(*self): []string {
 		if len(self.Args) == 0 {
 			ret [self.Path]
 		}
@@ -326,7 +326,7 @@ impl Cmd {
 	}
 
 	// Returns environment variables to start command.
-	fn env(*self)!: []str {
+	fn env(*self)!: []string {
 		mut env := unsafe { *(&self.Env) } // do not mutate content
 		if env == nil {
 			env = Environ()
@@ -357,18 +357,18 @@ impl Cmd {
 
 // Returns a copy of env with any duplicates removed, in favor of later values.
 // Items not of the normal environment "key=value" form are preserved unchanged.
-fn dedupEnv(mut env: []str)!: []str {
+fn dedupEnv(mut env: []string)!: []string {
 	ret dedupEnvCase(runtime::OS == "windows", false, env)?
 }
 
 // This is dedupEnv with a case option.
 // If caseInsensitive is true, the case of keys is ignored.
 // If nulOK is false, items containing NUL characters are allowed.
-fn dedupEnvCase(caseInsensitive: bool, nulOK: bool, env: []str)!: []str {
+fn dedupEnvCase(caseInsensitive: bool, nulOK: bool, env: []string)!: []string {
 	// Construct the output in reverse order, to preserve the
 	// last occurrence of each key.
-	mut out := make([]str, 0, len(env))
-	mut saw := map[str]bool{}
+	mut out := make([]string, 0, len(env))
+	mut saw := map[string]bool{}
 	mut n := len(env)
 	for n > 0; n-- {
 		kv := env[n-1]
@@ -420,7 +420,7 @@ fn dedupEnvCase(caseInsensitive: bool, nulOK: bool, env: []str)!: []str {
 // Adds any critical environment variables that are required
 // (or at least almost always required) on the operating system.
 // Currently this is only used for Windows.
-fn addCriticalEnv(mut env: []str): []str {
+fn addCriticalEnv(mut env: []string): []string {
 	if runtime::OS != "windows" {
 		ret env
 	}

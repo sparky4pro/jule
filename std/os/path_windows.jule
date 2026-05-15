@@ -24,7 +24,7 @@ let wdmu = runtime::mutex{}
 // the absolute path with the extended-length prefix.
 //
 // See https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#maximum-path-length-limitation
-fn fixLongPath(path: str): str {
+fn fixLongPath(path: string): string {
 	if windows::CanUseLongPaths {
 		ret path
 	}
@@ -32,7 +32,7 @@ fn fixLongPath(path: str): str {
 }
 
 // Adds the extended path prefix (\\?\) to path.
-fn addExtendedPrefix(path: str): str {
+fn addExtendedPrefix(path: string): string {
 	if len(path) >= 4 {
 		if path[:4] == `\??\` {
 			// Already extended with \??\

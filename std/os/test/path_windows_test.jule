@@ -8,8 +8,8 @@ use "std/strings"
 use "std/testing"
 
 struct addExtendedPrefixTest {
-	input: str
-	want:  str
+	input: string
+	want:  string
 }
 
 #test

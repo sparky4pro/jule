@@ -8,7 +8,7 @@ use "std/sys"
 
 struct sysFileInfo {
 	mu:    runtime::mutex
-	path:  str
+	path:  string
 	vol:   u32
 	idxhi: u32
 	idxlo: u32

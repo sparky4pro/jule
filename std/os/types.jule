@@ -37,7 +37,7 @@ const (
 )
 
 impl FileMode {
-	fn Str(*self): str {
+	fn Str(*self): string {
 		const s = "dalTLDpSugct?"
 		let mut buf: [32]byte // Mode is u32.
 		mut w := 0
@@ -60,7 +60,7 @@ impl FileMode {
 			}
 			w++
 		}
-		ret str(buf[:w])
+		ret string(buf[:w])
 	}
 
 	// Reports whether self describes a directory.
