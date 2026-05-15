@@ -5,7 +5,7 @@
 use "std/comptime"
 
 fn init() {
-	type String: str
+	type String: string
 	const (
 		copyG: String = "foo"
 		copyH
