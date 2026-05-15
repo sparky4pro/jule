@@ -10,9 +10,9 @@ use "std/testing"
 use "std/unicode/utf8"
 
 struct readTest {
-	Name:      str
-	Input:     str
-	Output:    [][]str
+	Name:      string
+	Input:     string
+	Output:    [][]string
 	Positions: [][][2]int
 	Errors:    []any
 
@@ -469,7 +469,7 @@ field"`,
 
 #test
 async fn testRead(t: &testing::T) {
-	newReader := fn(tt: readTest): (&Reader, [][][2]int, map[int][2]int, str) {
+	newReader := fn(tt: readTest): (&Reader, [][][2]int, map[int][2]int, string) {
 		mut positions, errPositions, input := makePositions(tt.Input)
 		mut r := Reader.New(strings::Reader.New(input).Async())
 
@@ -605,7 +605,7 @@ fn errorWithPosition(mut err: any, recNum: int, positions: [][][2]int, errPositi
 // The start of each field is marked with a § symbol;
 // CSV lines are separated by ¶ symbols;
 // Error positions are marked with ∑ symbols.
-fn makePositions(mut text: str): ([][][2]int, map[int][2]int, str) {
+fn makePositions(mut text: string): ([][][2]int, map[int][2]int, string) {
 	mut buf := make([]byte, 0, len(text))
 	let mut positions: [][][2]int
 	mut errPositions := map[int][2]int{}
@@ -635,5 +635,5 @@ fn makePositions(mut text: str): ([][][2]int, map[int][2]int, str) {
 		}
 		text = text[size:]
 	}
-	ret positions, errPositions, str(buf)
+	ret positions, errPositions, string(buf)
 }

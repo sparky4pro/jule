@@ -83,7 +83,7 @@ impl Writer {
 	// Not quoting the empty string also makes this package match the behavior
 	// of Microsoft Excel and Google Drive.
 	// For Postgres, quote the data terminating string `\.`.
-	fn fieldNeedsQuotes(*self, field: str): bool {
+	fn fieldNeedsQuotes(*self, field: string): bool {
 		if len(field) == 0 {
 			ret false
 		}
@@ -108,7 +108,7 @@ impl Writer {
 
 	// Writes a single CSV record along with any necessary quoting.
 	// A record is a slice of strings with each string being one field.
-	async fn Write(mut *self, record: []str)! {
+	async fn Write(mut *self, record: []string)! {
 		if !validDelim(self.Comma) {
 			throw errInvalidDelim
 		}
@@ -172,7 +172,7 @@ impl Writer {
 	}
 
 	// Writes multiple CSV records using [Writer.Write].
-	async fn WriteAll(mut *self, records: [][]str)! {
+	async fn WriteAll(mut *self, records: [][]string)! {
 		for _, record in records {
 			self.Write(record).await?
 		}

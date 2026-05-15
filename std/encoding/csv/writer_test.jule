@@ -6,8 +6,8 @@ use "std/strings"
 use "std/testing"
 
 struct writeTest {
-	Input:   [][]str
-	Output:  str
+	Input:   [][]string
+	Output:  string
 	Error:   any
 	UseCRLF: bool
 	Comma:   rune
