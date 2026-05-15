@@ -24,20 +24,20 @@ fn init() {
 }
 
 // Ordinary string test.
-enum OrdinaryStr: str {
+enum OrdinaryStr: string {
 	copyD: "foo",
 	copyE,
 	copyF,
 }
 
 fn init() {
-	if str(OrdinaryStr.copyD) != "foo" {
+	if string(OrdinaryStr.copyD) != "foo" {
 		panic("copyD != foo")
 	}
-	if str(OrdinaryStr.copyE) != "foo" {
+	if string(OrdinaryStr.copyE) != "foo" {
 		panic("copyE != foo")
 	}
-	if str(OrdinaryStr.copyF) != "foo" {
+	if string(OrdinaryStr.copyF) != "foo" {
 		panic("copyF != foo")
 	}
 }
@@ -49,13 +49,13 @@ enum OrdinaryStrictStr: String {
 }
 
 fn init() {
-	if str(OrdinaryStrictStr.copyG) != "foo" {
+	if string(OrdinaryStrictStr.copyG) != "foo" {
 		panic("copyG != foo")
 	}
-	if str(OrdinaryStrictStr.copyH) != "foo" {
+	if string(OrdinaryStrictStr.copyH) != "foo" {
 		panic("copyH != foo")
 	}
-	if str(OrdinaryStrictStr.copyI) != "foo" {
+	if string(OrdinaryStrictStr.copyI) != "foo" {
 		panic("copyI != foo")
 	}
 }

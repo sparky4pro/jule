@@ -79,7 +79,7 @@ fn init() {
 }
 
 // Copy with strict type alias test.
-type String: str
+type String: string
 
 const (
 	copyG: String = "foo"
