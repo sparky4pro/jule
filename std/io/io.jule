@@ -54,7 +54,7 @@ trait Writer {
 // Implementations must not retain s.
 // Errors are not standardized. Should be documented by implementations.
 trait StrWriter {
-	async fn WriteStr(mut *self, s: str)!: (n: int)
+	async fn WriteStr(mut *self, s: string)!: (n: int)
 }
 
 // Implements the basic ReadByte method.
@@ -281,7 +281,7 @@ impl Writer for discard {
 }
 
 impl StrWriter for discard {
-	async fn WriteStr(mut *self, s: str)!: (n: int) {
+	async fn WriteStr(mut *self, s: string)!: (n: int) {
 		ret len(s)
 	}
 }
@@ -400,7 +400,7 @@ async fn copyBuffer(mut dst: Writer, mut src: Reader, mut buf: []byte)!: (writte
 
 // Writes the contents of the string s to w efficiently.
 // Guarantees a slice will not be allocated.
-async fn WriteStr(mut w: Writer, s: str)!: (n: int) {
+async fn WriteStr(mut w: Writer, s: string)!: (n: int) {
 	ret w.Write(unsafe::StrBytes(s)).await?
 }
 

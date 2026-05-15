@@ -24,7 +24,7 @@ async fn testMultiReader(t: &testing::T) {
 		}
 		tests().await
 	}
-	expectRead := async fn(size: int, expected: str, eof: bool) {
+	expectRead := async fn(size: int, expected: string, eof: bool) {
 		unsafe {
 			*_nread++
 			n := (*_mr).Read((*_buf)[0:size]).await else {
@@ -47,7 +47,7 @@ async fn testMultiReader(t: &testing::T) {
 					*_nread, nwant, n)
 				ret
 			}
-			got := str((*_buf)[0:n])
+			got := string((*_buf)[0:n])
 			if got != expected {
 				t.Errorf("#{}, expected {}; got {}",
 					*_nread, expected, got)
@@ -82,7 +82,7 @@ async fn testMultiReaderCopy(t: &testing::T) {
 		t.Errorf("unexpected error: {}", error)
 		ret
 	}
-	if str(data) != "hello world" {
+	if string(data) != "hello world" {
 		t.Errorf("ReadAll() = {}, want {}", data, "hello world")
 	}
 }
@@ -111,7 +111,7 @@ impl io::Reader for byteAndEOFReader {
 async fn testMultiReaderSingleByteWithEOF(t: &testing::T) {
 	got := io::ReadAll(io::LimitedReader.New(io::MultiReader(byteAndEOFReader('a'), byteAndEOFReader('b')), 10)).await!
 	const want = "ab"
-	if str(got) != want {
+	if string(got) != want {
 		t.Errorf("got {}; want {}", got, want)
 	}
 }
@@ -155,7 +155,7 @@ async fn testInterleavedMultiReader(t: &testing::T) {
 		t.Errorf("unexpected error: {}", error)
 		use 0
 	}
-	mut got := str(buf[:n])
+	mut got := string(buf[:n])
 	if got != "1234" {
 		t.Errorf(`ReadFull(mr2) = ({}), want ("1234")`, got)
 	}
@@ -166,7 +166,7 @@ async fn testInterleavedMultiReader(t: &testing::T) {
 		t.Errorf("unexpected error: {}", error)
 		use 0
 	}
-	got = str(buf[:n])
+	got = string(buf[:n])
 	if got != "5678" {
 		t.Errorf(`ReadFull(mr1) = ({}), want ("5678")`, got)
 	}
