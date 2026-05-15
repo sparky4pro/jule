@@ -60,7 +60,7 @@ type asciiSet: [8]u32
 impl asciiSet {
 	// Creates a set of ASCII characters and reports whether all
 	// characters in chars are ASCII.
-	fn make(chars: str): (as: asciiSet, ok: bool) {
+	fn make(chars: string): (as: asciiSet, ok: bool) {
 		for _, c in chars {
 			if c >= utf8::RuneSelf {
 				ret as, false
@@ -82,7 +82,7 @@ impl asciiSet {
 fn Equal(a: []byte, b: []byte): bool {
 	// If the required optimization flags passed,
 	// this comparison will not use allocated strings.
-	ret str(a) == str(b)
+	ret string(a) == string(b)
 }
 
 // Returns an integer comparing two byte slices lexicographically.
@@ -121,7 +121,7 @@ fn Contains(b: []byte, subslice: []byte): bool {
 }
 
 // Reports whether any of the UTF-8-encoded code points in chars are within b.
-fn ContainsAny(b: []byte, chars: str): bool {
+fn ContainsAny(b: []byte, chars: string): bool {
 	ret IndexAny(b, chars) >= 0
 }
 
@@ -241,7 +241,7 @@ fn IndexRune(s: []byte, r: rune): int {
 // It returns the byte index of the first occurrence in s of any of the Unicode
 // code points in chars. It returns -1 if chars is empty or if there is no code
 // point in common.
-fn IndexAny(s: []byte, chars: str): int {
+fn IndexAny(s: []byte, chars: string): int {
 	if chars == "" {
 		// Avoid scanning all of s.
 		ret -1
@@ -295,7 +295,7 @@ fn IndexAny(s: []byte, chars: str): int {
 		if r != utf8::RuneError {
 			// r is 2 to 4 bytes
 			if len(chars) == width {
-				if chars == str(r) {
+				if chars == string(r) {
 					ret i
 				}
 				continue
@@ -314,7 +314,7 @@ fn IndexAny(s: []byte, chars: str): int {
 // points. It returns the byte index of the last occurrence in s of any of
 // the Unicode code points in chars. It returns -1 if chars is empty or if
 // there is no code point in common.
-fn LastIndexAny(s: []byte, chars: str): int {
+fn LastIndexAny(s: []byte, chars: string): int {
 	if chars == "" {
 		// Avoid scanning all of s.
 		ret -1
@@ -376,7 +376,7 @@ fn LastIndexAny(s: []byte, chars: str): int {
 		if r != utf8::RuneError {
 			// r is 2 to 4 bytes
 			if len(chars) == size {
-				if chars == str(r) {
+				if chars == string(r) {
 					ret i
 				}
 				continue
@@ -659,7 +659,7 @@ fn lastIndexFunc(s: []byte, f: fn(rune): bool, truth: bool): int {
 
 // Simplified version of strings::ContainsRune to avoid dependation.
 // We avoid bytes::ContainsRune to avoid allocating a temporary copy of s.
-fn containsRune(s: str, r: rune): bool {
+fn containsRune(s: string, r: rune): bool {
 	for _, c in s {
 		if c == r {
 			ret true
@@ -680,7 +680,7 @@ fn TrimLeftFunc(mut s: []byte, f: fn(rune): bool): []byte {
 
 // Returns a subslice of s by slicing off all trailing
 // UTF-8-encoded code points that are contained in cutset.
-fn TrimRight(mut s: []byte, cutset: str): []byte {
+fn TrimRight(mut s: []byte, cutset: string): []byte {
 	if len(s) == 0 || cutset == "" {
 		ret s
 	}
@@ -733,7 +733,7 @@ fn TrimSuffix(mut s: []byte, suffix: []byte): []byte {
 
 // Returns a subslice of s by slicing off all leading and
 // trailing UTF-8-encoded code points contained in cutset.
-fn Trim(mut s: []byte, cutset: str): []byte {
+fn Trim(mut s: []byte, cutset: string): []byte {
 	if len(s) == 0 {
 		// This is what we've historically done.
 		ret nil
@@ -753,7 +753,7 @@ fn Trim(mut s: []byte, cutset: str): []byte {
 
 // Returns a subslice of s by slicing off all leading
 // UTF-8-encoded code points contained in cutset.
-fn TrimLeft(mut s: []byte, cutset: str): []byte {
+fn TrimLeft(mut s: []byte, cutset: string): []byte {
 	if len(s) == 0 {
 		// This is what we've historically done.
 		ret nil
@@ -796,7 +796,7 @@ fn trimLeftASCII(mut s: []byte, &as: *asciiSet): []byte {
 	ret s
 }
 
-fn trimLeftUnicode(mut s: []byte, cutset: str): []byte {
+fn trimLeftUnicode(mut s: []byte, cutset: string): []byte {
 	for len(s) > 0 {
 		mut r, mut n := rune(s[0]), 1
 		if r >= utf8::RuneSelf {
@@ -831,7 +831,7 @@ fn trimRightASCII(mut s: []byte, &as: *asciiSet): []byte {
 	ret s
 }
 
-fn trimRightUnicode(mut s: []byte, cutset: str): []byte {
+fn trimRightUnicode(mut s: []byte, cutset: string): []byte {
 	for len(s) > 0 {
 		mut r, mut n := rune(s[len(s)-1]), 1
 		if r >= utf8::RuneSelf {
