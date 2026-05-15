@@ -17,7 +17,7 @@ fn testEntityLength(t: &testing::T) {
 	// unescaped text is <= the length of escaped text.
 	for k, v in entity {
 		if 1+len(k) < utf8::RuneLen(v) {
-			t.Errorf("escaped entity &" + k + " is shorter than its UTF-8 encoding " + str(v))
+			t.Errorf("escaped entity &" + k + " is shorter than its UTF-8 encoding " + string(v))
 		}
 		if len(k) > longestEntityWithoutSemicolon && k[len(k)-1] != ';' {
 			t.Errorf("entity name %s is %d characters, but longestEntityWithoutSemicolon=%d", k, len(k), longestEntityWithoutSemicolon)
@@ -25,7 +25,7 @@ fn testEntityLength(t: &testing::T) {
 	}
 	for k, v in entity2 {
 		if 1+len(k) < utf8::RuneLen(v[0])+utf8::RuneLen(v[1]) {
-			t.Errorf("escaped entity &" + k + " is shorter than its UTF-8 encoding " + str(v[0]) + str(v[1]))
+			t.Errorf("escaped entity &" + k + " is shorter than its UTF-8 encoding " + string(v[0]) + string(v[1]))
 		}
 	}
 }

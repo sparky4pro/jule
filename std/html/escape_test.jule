@@ -6,9 +6,9 @@ use "std/strings"
 use "std/testing"
 
 struct unescapeTest {
-	desc:      str // A short description of the test case.
-	html:      str // The HTML text.
-	unescaped: str // The unescaped text.
+	desc:      string // A short description of the test case.
+	html:      string // The HTML text.
+	unescaped: string // The unescaped text.
 }
 
 let unescapeTests: []unescapeTest = [
