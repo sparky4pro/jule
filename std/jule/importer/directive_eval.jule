@@ -15,11 +15,11 @@ use "std/jule/token"
 struct directiveEval {
 	logs: []log::Log
 	d:    &ast::Directive
-	tags: []str
+	tags: []string
 }
 
 impl directiveEval {
-	fn pushErr(mut *self, t: &token::Token, fmt: str, args: ...any) {
+	fn pushErr(mut *self, t: &token::Token, fmt: string, args: ...any) {
 		self.logs = append(self.logs, log::Log{
 			Kind:   log::Error,
 			Row:    t.Row,
@@ -62,7 +62,7 @@ impl directiveEval {
 	}
 
 	// Eval directive tag.
-	fn evalDirectiveName(*self, name: str): bool {
+	fn evalDirectiveName(*self, name: string): bool {
 		ret findTag(self.tags, name) >= 0
 	}
 

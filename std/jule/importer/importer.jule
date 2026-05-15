@@ -19,7 +19,7 @@ use "std/strings"
 use "std/unsafe"
 
 // Read buffer by file path.
-fn readBuff(path: str): []byte {
+fn readBuff(path: string): []byte {
 	ret os::ReadFileSync(path) else {
 		println("error: file cannot read")
 		const ErrorExitCode = 1
@@ -30,7 +30,7 @@ fn readBuff(path: str): []byte {
 
 // Make compiler error, just text.
 // Does not includes information about row, column, and etc.
-fn flatCompilerErr(text: str): log::Log {
+fn flatCompilerErr(text: string): log::Log {
 	ret log::Log{
 		Kind: log::Error,
 		Text: text,
@@ -38,16 +38,16 @@ fn flatCompilerErr(text: str): log::Log {
 }
 
 struct file {
-	path:     str
+	path:     string
 	mut data: []byte
 }
 
 impl resource::File for file {
-	fn Path(*self): str { ret self.path }
+	fn Path(*self): string { ret self.path }
 
 	fn Bytes(*self): []byte { ret self.data }
 
-	fn Text(*self): str { ret unsafe::StrFromBytes(self.data) }
+	fn Text(*self): string { ret unsafe::StrFromBytes(self.data) }
 }
 
 // Default importer for the reference Jule compiler.
@@ -55,8 +55,8 @@ struct importer {
 	mod:   &mod::Mod
 	mods:  []&mod::Mod
 	pkgs:  []&sema::ImportInfo
-	tags:  []str
-	files: map[str]resource::File
+	tags:  []string
+	files: map[string]resource::File
 }
 
 impl sema::Importer for importer {
@@ -72,7 +72,7 @@ impl sema::Importer for importer {
 		ret self.mods[id]
 	}
 
-	fn GetImport(mut *self, path: str): &sema::ImportInfo {
+	fn GetImport(mut *self, path: string): &sema::ImportInfo {
 		for (_, mut p) in self.pkgs {
 			// avoid case sensitivity for fair comparison
 			if strings::EqualFold(p.Path, path) {
@@ -82,7 +82,7 @@ impl sema::Importer for importer {
 		ret nil
 	}
 
-	fn ImportPackage(mut *self, path: str, updateMod: bool): ([]&ast::AST, []log::Log) {
+	fn ImportPackage(mut *self, path: string, updateMod: bool): ([]&ast::AST, []log::Log) {
 		mut dirents := os::ReadDir(path) else {
 			ret nil, [flatCompilerErr("cannot read package directory: " + path)]
 		}
@@ -176,12 +176,12 @@ impl sema::Importer for importer {
 		ret self.pkgs
 	}
 
-	fn GetFile(mut *self, path: str): resource::File {
+	fn GetFile(mut *self, path: string): resource::File {
 		mut file, _ := self.files[path]
 		ret file
 	}
 
-	fn IncludeFile(mut *self, path: str): resource::File {
+	fn IncludeFile(mut *self, path: string): resource::File {
 		mut data := os::ReadFileSync(path) else { ret nil }
 		ret &file{path: path, data: data}
 	}
@@ -218,7 +218,7 @@ impl importer {
 fn New(mut info: CompileInfo): sema::Importer {
 	mut imp := new(importer)
 	imp.tags = info.Tags
-	imp.files = make(map[str]resource::File)
+	imp.files = make(map[string]resource::File)
 	imp.mods = [build::ModStdlib()]
 	initTags(&imp.tags, info)
 	ret imp

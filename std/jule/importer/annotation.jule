@@ -7,7 +7,7 @@ use "std/jule/dist"
 use "std/os/filepath"
 use "std/strings"
 
-fn checkOS(arg: str): (ok: bool, exist: bool) {
+fn checkOS(arg: string): (ok: bool, exist: bool) {
 	ok = false
 	exist = true
 	match arg {
@@ -26,7 +26,7 @@ fn checkOS(arg: str): (ok: bool, exist: bool) {
 	ret
 }
 
-fn checkArch(arg: str): (ok: bool, exist: bool) {
+fn checkArch(arg: string): (ok: bool, exist: bool) {
 	ok = false
 	exist = true
 	match arg {
@@ -49,7 +49,7 @@ fn checkArch(arg: str): (ok: bool, exist: bool) {
 
 impl importer {
 	// Reports whether file path passes file annotation by current system.
-	fn isPassFileAnnotation(*self, mut p: str): bool {
+	fn isPassFileAnnotation(*self, mut p: string): bool {
 		p = filepath::Base(p)
 		n := len(p)
 		p = p[:n-len(filepath::Ext(p))]

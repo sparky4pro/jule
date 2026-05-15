@@ -6,13 +6,13 @@ use "std/jule/build"
 use "std/jule/dist"
 
 // Standard back-end compilers.
-enum Compiler: str {
+enum Compiler: string {
 	Clang: "clang",
 	GCC: "gcc",
 }
 
 // Supported C++ standards.
-enum CppStd: str {
+enum CppStd: string {
 	Cpp20: "cpp20",
 }
 
@@ -31,11 +31,11 @@ struct CompileInfo {
 	CppStd: CppStd
 
 	// Tags passed.
-	Tags: []str
+	Tags: []string
 }
 
 // Set operating system tags by native operating system.
-fn setOSTags(mut &tags: *[]str) {
+fn setOSTags(mut &tags: *[]string) {
 	*tags = append(*tags, build::OS)
 	if dist::IsUnix(build::OS) && findTag(*tags, "unix") == -1 {
 		*tags = append(*tags, "unix")
@@ -43,7 +43,7 @@ fn setOSTags(mut &tags: *[]str) {
 }
 
 // Set architecture tags by native architecture.
-fn setArchTags(mut &tags: *[]str) {
+fn setArchTags(mut &tags: *[]string) {
 	*tags = append(*tags, build::Arch)
 	if dist::Is64bit(build::Arch) && findTag(*tags, "x64") == -1 {
 		*tags = append(*tags, "x64")
@@ -54,7 +54,7 @@ fn setArchTags(mut &tags: *[]str) {
 }
 
 // Initialize directive eval tags by compile info.
-fn initTags(mut &tags: *[]str, info: CompileInfo) {
+fn initTags(mut &tags: *[]string, info: CompileInfo) {
 	setOSTags(tags)
 	setArchTags(tags)
 
@@ -85,7 +85,7 @@ fn initTags(mut &tags: *[]str, info: CompileInfo) {
 	}
 }
 
-fn findTag(tags: []str, name: str): int {
+fn findTag(tags: []string, name: string): int {
 	if name == "" {
 		ret -1
 	}
