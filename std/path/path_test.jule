@@ -5,8 +5,8 @@
 use "std/testing"
 
 struct pathCase {
-	path:   str
-	result: str
+	path:   string
+	result: string
 }
 
 let cleanCases: []pathCase = [
@@ -74,9 +74,9 @@ fn testClean(t: &testing::T) {
 }
 
 struct splitCase {
-	path: str
-	dir:  str
-	file: str
+	path: string
+	dir:  string
+	file: string
 }
 
 let splitCases: []splitCase = [
@@ -98,8 +98,8 @@ fn testSplit(t: &testing::T) {
 }
 
 struct joinCase {
-	elem: []str
-	path: str
+	elem: []string
+	path: string
 }
 
 let joinCases: []joinCase = [
@@ -132,8 +132,8 @@ fn testJoin(t: &testing::T) {
 }
 
 struct extCase {
-	path: str
-	ext:  str
+	path: string
+	ext:  string
 }
 
 let extCases: []extCase = [
@@ -206,7 +206,7 @@ fn testDir(t: &testing::T) {
 }
 
 struct absCase {
-	path: str
+	path: string
 	abs:  bool
 }
 

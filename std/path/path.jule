@@ -43,7 +43,7 @@ use "std/unsafe"
 // and retrieving the final string. It does not allocate a buffer
 // to hold the output until that output diverges from s.
 struct lazybuf {
-	s:   str
+	s:   string
 	buf: []byte
 	w:   int
 }
@@ -69,7 +69,7 @@ impl lazybuf {
 		self.w++
 	}
 
-	fn string(*self): str {
+	fn string(*self): string {
 		if self.buf == nil {
 			ret self.s[:self.w]
 		}
@@ -95,7 +95,7 @@ impl lazybuf {
 // See also Rob Pike, “Lexical File Names in Plan 9 or
 // Getting Dot-Dot Right,”
 // https://9p.io/sys/doc/lexnames.html
-fn Clean(path: str): str {
+fn Clean(path: string): string {
 	if path == "" {
 		ret "."
 	}
@@ -168,7 +168,7 @@ fn Clean(path: str): str {
 // If there is no slash in path, returns an empty dir and
 // file set to path.
 // The returned values have the property that path = dir+file.
-fn Split(path: str): (dir: str, file: str) {
+fn Split(path: string): (dir: string, file: string) {
 	let i = byteslite::LastIndexByteStr(path, '/')
 	ret path[:i+1], path[i+1:]
 }
@@ -177,7 +177,7 @@ fn Split(path: str): (dir: str, file: str) {
 // separating them with slashes. Empty elements are ignored.
 // The result is Cleaned. However, if the argument list is
 // empty or all its elements are empty, returns an empty string.
-fn Join(elem: ...str): str {
+fn Join(elem: ...string): string {
 	let mut size = 0
 	for _, e in elem {
 		size += len(e)
@@ -201,7 +201,7 @@ fn Join(elem: ...str): str {
 // The extension is the suffix beginning at the final dot
 // in the final slash-separated element of path;
 // it is empty if there is no dot.
-fn Ext(path: str): str {
+fn Ext(path: string): string {
 	let mut i = len(path) - 1
 	for i >= 0 && path[i] != '/'; i-- {
 		if path[i] == '.' {
@@ -215,7 +215,7 @@ fn Ext(path: str): str {
 // Trailing slashes are removed before extracting the last element.
 // If the path is empty, returns ".".
 // If the path consists entirely of slashes, returns "/".
-fn Base(mut path: str): str {
+fn Base(mut path: string): string {
 	if path == "" {
 		ret "."
 	}
@@ -236,7 +236,7 @@ fn Base(mut path: str): str {
 }
 
 // Reports whether the path is absolute.
-fn IsAbs(path: str): bool {
+fn IsAbs(path: string): bool {
 	ret len(path) > 0 && path[0] == '/'
 }
 
@@ -247,7 +247,7 @@ fn IsAbs(path: str): bool {
 // If the path consists entirely of slashes followed by non-slash bytes,
 // returns a single slash. In any other case, the returned path does not end in a
 // slash.
-fn Dir(path: str): str {
+fn Dir(path: string): string {
 	let (dir, _) = Split(path)
 	ret Clean(dir)
 }
