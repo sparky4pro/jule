@@ -42,7 +42,7 @@ impl io::Reader for rot13Reader {
 }
 
 // Call ReadByte to accumulate the text of a file
-async fn readBytes(mut buf: &Reader): str {
+async fn readBytes(mut buf: &Reader): string {
 	let mut b: [1000]byte
 	mut nb := 0
 	for {
@@ -55,7 +55,7 @@ async fn readBytes(mut buf: &Reader): str {
 		b[nb] = c
 		nb++
 	}
-	ret str(b[0:nb])
+	ret string(b[0:nb])
 }
 
 #test
@@ -75,7 +75,7 @@ async fn testReaderSimple(t: &testing::T) {
 }
 
 struct readMaker {
-	name: str
+	name: string
 	fnc:  fn(mut io::Reader): io::Reader
 }
 
@@ -88,7 +88,7 @@ let readMakers: []readMaker = [
 
 // Call ReadStr (which ends up calling everything else)
 // to accumulate the text of a file.
-async fn readLines(mut b: &Reader): str {
+async fn readLines(mut b: &Reader): string {
 	mut s := ""
 	for {
 		s1 := b.ReadStr('\n').await else {
@@ -103,7 +103,7 @@ async fn readLines(mut b: &Reader): str {
 }
 
 // Call Read to accumulate the text of a file
-async fn reads(mut buf: &Reader, m: int): str {
+async fn reads(mut buf: &Reader, m: int): string {
 	let mut b: [1000]byte
 	mut bs := unsafe::Slice(&b[0], 1000, 1000)
 	mut nb := 0
@@ -116,21 +116,21 @@ async fn reads(mut buf: &Reader, m: int): str {
 		}
 		nb += n
 	}
-	ret str(b[0:nb])
+	ret string(b[0:nb])
 }
 
 struct bufReader {
-	name: str
-	fnc:  async fn(mut &Reader): str
+	name: string
+	fnc:  async fn(mut &Reader): string
 }
 
 let bufreaders: []bufReader = [
-	{"1", async fn(mut b: &Reader): str { ret reads(b, 1).await }},
-	{"2", async fn(mut b: &Reader): str { ret reads(b, 2).await }},
-	{"3", async fn(mut b: &Reader): str { ret reads(b, 3).await }},
-	{"4", async fn(mut b: &Reader): str { ret reads(b, 4).await }},
-	{"5", async fn(mut b: &Reader): str { ret reads(b, 5).await }},
-	{"7", async fn(mut b: &Reader): str { ret reads(b, 7).await }},
+	{"1", async fn(mut b: &Reader): string { ret reads(b, 1).await }},
+	{"2", async fn(mut b: &Reader): string { ret reads(b, 2).await }},
+	{"3", async fn(mut b: &Reader): string { ret reads(b, 3).await }},
+	{"4", async fn(mut b: &Reader): string { ret reads(b, 4).await }},
+	{"5", async fn(mut b: &Reader): string { ret reads(b, 5).await }},
+	{"7", async fn(mut b: &Reader): string { ret reads(b, 7).await }},
 	{"bytes", readBytes},
 	{"lines", readLines},
 ]
@@ -141,14 +141,14 @@ let bufsizes = [
 
 #test
 async fn testReader(t: &testing::T) {
-	let mut texts: [31]str
+	let mut texts: [31]string
 	mut strn := ""
 	mut all := ""
 	mut i := 0
 	for i < len(texts)-1; i++ {
 		texts[i] = strn + "\n"
 		all += texts[i]
-		strn += str(rune(i%26 + 'a'))
+		strn += string(rune(i%26 + 'a'))
 	}
 	texts[len(texts)-1] = all
 
@@ -207,7 +207,7 @@ async fn testZeroReader(t: &testing::T) {
 
 // Delivers its data one string segment at a time via Read.
 struct StrReader {
-	data: []str
+	data: []string
 	step: int
 }
 
@@ -224,7 +224,7 @@ impl io::Reader for StrReader {
 	}
 }
 
-async fn readRuneSegments(t: &testing::T, mut segments: []str) {
+async fn readRuneSegments(t: &testing::T, mut segments: []string) {
 	mut got := ""
 	want := strings::Join(segments, "")
 	mut r := Reader.New(&StrReader{data: segments})
@@ -235,14 +235,14 @@ async fn readRuneSegments(t: &testing::T, mut segments: []str) {
 			}
 			ret
 		}
-		got += str(rn)
+		got += string(rn)
 	}
 	if got != want {
 		t.Errorf("segments={} got={} want={}", segments, got, want)
 	}
 }
 
-let mut segmentList: [][]str = [
+let mut segmentList: [][]string = [
 	[],
 	[""],
 	["日", "本語"],
@@ -275,7 +275,7 @@ async fn testUnreadRune(t: &testing::T) {
 			t.Errorf("unexpected error on ReadRune: {}", error)
 			break
 		}
-		got += str(r1)
+		got += string(r1)
 		// Put it back and read it again.
 		r.UnreadRune().await else {
 			t.Errorf("unexpected error on UnreadRune: {}", error)
@@ -362,7 +362,7 @@ async fn testUnreadByte(t: &testing::T) {
 			t.Errorf("unexpected error on ReadByte: {}", error)
 			break
 		}
-		got += str(b1)
+		got += string(b1)
 		// Put it back and read it again.
 		r.UnreadByte().await else {
 			t.Errorf("unexpected error on UnreadByte: {}", error)
@@ -540,14 +540,14 @@ async fn testBufferFull(t: &testing::T) {
 		t.Errorf("unexpected error: {}", error)
 		ret
 	}
-	if str(line) != "And now, hello, " || !full {
+	if string(line) != "And now, hello, " || !full {
 		t.Errorf("first ReadSlice(,) = {}, {}", line, full)
 	}
 	line, full = buf.ReadSlice('!').await else {
 		t.Errorf("unexpected error: {}", error)
 		ret
 	}
-	if str(line) != "world!" || full {
+	if string(line) != "world!" || full {
 		t.Errorf("second ReadSlice(,) = {}, {}", line, full)
 	}
 }
@@ -562,16 +562,16 @@ async fn testPeek(t: &testing::T) {
 		t.Errorf("unexpected error: {}", error)
 		ret
 	}
-	if str(s) != "a" {
-		t.Errorf("want {} got {}", "a", str(s))
+	if string(s) != "a" {
+		t.Errorf("want {} got {}", "a", string(s))
 		ret
 	}
 	s, _, _ = buf.Peek(4).await else {
 		t.Errorf("unexpected error: {}", error)
 		ret
 	}
-	if str(s) != "abcd" {
-		t.Errorf("want {} got {}", "abcd", str(s))
+	if string(s) != "abcd" {
+		t.Errorf("want {} got {}", "abcd", string(s))
 		ret
 	}
 	mut err := false
@@ -599,56 +599,56 @@ async fn testPeek(t: &testing::T) {
 		t.Errorf("unexpected error: {}", error)
 		ret
 	}
-	if str(p[0:3]) != "abc" {
-		t.Errorf("want {} got {}", "abc", str(p[0:3]))
+	if string(p[0:3]) != "abc" {
+		t.Errorf("want {} got {}", "abc", string(p[0:3]))
 		ret
 	}
 	s, _, _ = buf.Peek(1).await else {
 		t.Errorf("unexpected error: {}", error)
 		ret
 	}
-	if str(s) != "d" {
-		t.Errorf("want {} got {}", "d", str(s))
+	if string(s) != "d" {
+		t.Errorf("want {} got {}", "d", string(s))
 		ret
 	}
 	s, _, _ = buf.Peek(2).await else {
 		t.Errorf("unexpected error: {}", error)
 		ret
 	}
-	if str(s) != "de" {
-		t.Errorf("want {} got {}", "de", str(s))
+	if string(s) != "de" {
+		t.Errorf("want {} got {}", "de", string(s))
 		ret
 	}
 	buf.Read(p[0:3]).await else {
 		t.Errorf("unexpected error: {}", error)
 		ret
 	}
-	if str(p[0:3]) != "def" {
-		t.Errorf("want {} got {}", "def", str(p[0:3]))
+	if string(p[0:3]) != "def" {
+		t.Errorf("want {} got {}", "def", string(p[0:3]))
 		ret
 	}
 	s, _, _ = buf.Peek(4).await else {
 		t.Errorf("unexpected error: {}", error)
 		ret
 	}
-	if str(s) != "ghij" {
-		t.Errorf("want {} got {}", "ghij", str(s))
+	if string(s) != "ghij" {
+		t.Errorf("want {} got {}", "ghij", string(s))
 		ret
 	}
 	buf.Read(p[0:]).await else {
 		t.Errorf("unexpected error: {}", error)
 		ret
 	}
-	if str(p[0:]) != "ghijklmnop" {
-		t.Errorf("want {} got {}", "ghijklmnop", str(p[0:3]))
+	if string(p[0:]) != "ghijklmnop" {
+		t.Errorf("want {} got {}", "ghijklmnop", string(p[0:3]))
 		ret
 	}
 	s, _, _ = buf.Peek(0).await else {
 		t.Errorf("unexpected error: {}", error)
 		ret
 	}
-	if str(s) != "" {
-		t.Errorf("want {} got {}", "", str(s))
+	if string(s) != "" {
+		t.Errorf("want {} got {}", "", string(s))
 		ret
 	}
 	s, _, _ = buf.Peek(1).await else {
@@ -657,7 +657,7 @@ async fn testPeek(t: &testing::T) {
 		}
 		ret
 	}
-	t.Errorf("want EOF got {}", str(s))
+	t.Errorf("want EOF got {}", string(s))
 }
 
 #test
@@ -782,8 +782,8 @@ async fn testReadAfterLines(t: &testing::T) {
 		t.Errorf("unexpected error: {}", error)
 		use nil, false
 	}
-	if isPrefix || str(line) != line1 {
-		t.Errorf("bad result for first line: isPrefix={} line={}", isPrefix, str(line))
+	if isPrefix || string(line) != line1 {
+		t.Errorf("bad result for first line: isPrefix={} line={}", isPrefix, string(line))
 	}
 	n := io::Copy(outbuf.Async(), l).await else {
 		t.Errorf("unexpected error: {}", error)
@@ -833,7 +833,7 @@ struct readLineResult {
 }
 
 struct readLineTest {
-	input:  str
+	input:  string
 	expect: []readLineResult
 }
 
@@ -860,7 +860,7 @@ async fn testReadLineNewlines(t: &testing::T) {
 	}
 }
 
-async fn _testReadLineNewlines(t: &testing::T, input: str, expect: []readLineResult) {
+async fn _testReadLineNewlines(t: &testing::T, input: string, expect: []readLineResult) {
 	mut b := Reader.NewSize(strings::Reader.New(input).Async(), minReadBufferSize)
 	for i, e in expect {
 		let mut err: any
@@ -900,7 +900,7 @@ fn createTestInput(n: int): []byte {
 #test
 async fn testReaderWriteTo(t: &testing::T) {
 	mut input := createTestInput(8192)
-	mut r := Reader.New(strings::Reader.New(str(input)).Async())
+	mut r := Reader.New(strings::Reader.New(string(input)).Async())
 	mut w := new(strings::Builder)
 	n := r.WriteTo(w.Async()).await else {
 		t.Errorf("unexpected error: {}", error)
@@ -965,12 +965,12 @@ async fn testReaderClearError(t: &testing::T) {
 
 #test
 async fn testReaderReset(t: &testing::T) {
-	checkAll := async fn(mut r: &Reader, want: str) {
+	checkAll := async fn(mut r: &Reader, want: string) {
 		all := io::ReadAll(r).await else {
 			t.Errorf("{}", error)
 			ret
 		}
-		if str(all) != want {
+		if string(all) != want {
 			t.Errorf("ReadAll returned {}, want {}", all, want)
 		}
 	}
@@ -978,7 +978,7 @@ async fn testReaderReset(t: &testing::T) {
 	mut r := Reader.New(strings::Reader.New("foo foo").Async())
 	mut buf := make([]byte, 3)
 	r.Read(buf).await!
-	if str(buf) != "foo" {
+	if string(buf) != "foo" {
 		t.Errorf("buf = {}; want foo", buf)
 	}
 
@@ -1031,7 +1031,7 @@ fn newScriptedReader(mut steps: ...fn(mut p: []byte)!: (n: int)): io::Reader {
 }
 
 struct readerDiscardTest {
-	name:     str
+	name:     string
 	r:        io::Reader
 	bufSize:  int // 0 means 16
 	peekSize: int
@@ -1255,7 +1255,7 @@ async fn testWriterAppend(t: &testing::T) {
 	}
 	w.Flush().await!
 
-	wantS := str(want)
+	wantS := string(want)
 	if got.Str() != wantS {
 		t.Errorf("output mismatch:\ngot  {}\nwant {}", got.Str(), wantS)
 	}
@@ -1366,7 +1366,7 @@ async fn restWriterReadFrom(t: &testing::T) {
 
 	for ri, rfunc in rs {
 		for wi, wfunc in ws {
-			mut input := str(createTestInput(8192))
+			mut input := string(createTestInput(8192))
 			mut b := new(strings::Builder)
 			mut w := Writer.New(wfunc(b.Async()))
 			mut r := rfunc(strings::Reader.New(input).Async())

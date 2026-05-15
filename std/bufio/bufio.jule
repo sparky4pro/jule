@@ -545,7 +545,7 @@ impl Reader {
 	// it returns all the data in the buffer.
 	// If there is no data in the buffer, throws io::EOF.
 	// For simple uses, a Scanner may be more convenient.
-	async fn ReadStr(mut *self, delim: byte)!: str {
+	async fn ReadStr(mut *self, delim: byte)!: string {
 		full, frag, n := self.collectFragments(delim).await?
 		if n == 0 {
 			ret ""
@@ -768,7 +768,7 @@ impl Writer {
 			n = self.Available()
 			if n < utf8::UTFMax {
 				// Can only happen if buffer is silly small.
-				ret self.WriteStr(str(r)).await?
+				ret self.WriteStr(string(r)).await?
 			}
 		}
 		size = utf8::EncodeRune(self.buf[self.n:], r)
@@ -780,7 +780,7 @@ impl Writer {
 	// It returns the number of bytes written.
 	// If the count is less than len(s), it throws an error explaining
 	// why the write is short.
-	async fn WriteStr(mut *self, mut s: str)!: int {
+	async fn WriteStr(mut *self, mut s: string)!: int {
 		mut nn := 0
 		for len(s) > self.Available() && self.err == nil {
 			let mut n: int
