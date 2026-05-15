@@ -6,7 +6,7 @@ use "std/conv"
 use "std/jule/build"
 use "std/strings"
 
-type bitChecker = fn(v: str, base: int, bit: int): bool
+type bitChecker = fn(v: string, base: int, bit: int): bool
 
 // Bit-size of target architecture.
 // Possible values are: 32, and 64.
@@ -23,7 +23,7 @@ let SysInt = ""
 // Initialized using build::Arch by the package when imported.
 let SysUint = ""
 
-fn checkBit(v: str, bit: int, checker: bitChecker): bool {
+fn checkBit(v: string, bit: int, checker: bitChecker): bool {
 	match {
 	| v == "":
 		ret false
@@ -45,7 +45,7 @@ fn checkBit(v: str, bit: int, checker: bitChecker): bool {
 // Returns kind's bit-specific kind if bit-specific like int, uint, and uintptr.
 // Returns kind if not bit-specific.
 // Bit-size is determined by runtime.
-fn RealKindOf(kind: str): str {
+fn RealKindOf(kind: string): string {
 	match kind {
 	| Int:
 		ret SysInt
@@ -59,7 +59,7 @@ fn RealKindOf(kind: str): str {
 
 // Returns kind's bit-size.
 // Returns -1 if kind is not numeric.
-fn BitSizeOf(k: str): int {
+fn BitSizeOf(k: string): int {
 	match k {
 	| I8 | U8:
 		ret 8
@@ -81,7 +81,7 @@ fn BitSizeOf(k: str): int {
 // Returns signed integer kind by bit-size.
 // Possible bit-sizes are: 8, 16, 32, and 64.
 // Returns empty string if bits is invalid.
-fn IntFromBits(bits: int): str {
+fn IntFromBits(bits: int): string {
 	match bits {
 	| 8:
 		ret I8
@@ -99,7 +99,7 @@ fn IntFromBits(bits: int): str {
 // Returns unsigned integer kind by bit-size.
 // Possible bit-sizes are: 8, 16, 32, and 64.
 // Panics if bits is invalid.
-fn UintFromBits(bits: int): str {
+fn UintFromBits(bits: int): string {
 	match bits {
 	| 8:
 		ret U8
@@ -117,7 +117,7 @@ fn UintFromBits(bits: int): str {
 // Returns floating-point kind by bit-size.
 // Possible bit-sizes are: 32, and 64.
 // Panics if bits is invalid.
-fn FloatFromBits(bits: int): str {
+fn FloatFromBits(bits: int): string {
 	match bits {
 	| 32:
 		ret F32
@@ -129,7 +129,7 @@ fn FloatFromBits(bits: int): str {
 }
 
 // Reports whether signed integer literal is compatible given bit-size.
-fn CheckBitInt(v: str, bit: int): bool {
+fn CheckBitInt(v: string, bit: int): bool {
 	ret checkBit(v, bit, fn|v, base, bit| {
 		_ = conv::ParseInt(v, base, bit) else { ret false }
 		ret true
@@ -137,7 +137,7 @@ fn CheckBitInt(v: str, bit: int): bool {
 }
 
 // Reports whether unsigned integer literal is compatible given bit-size.
-fn CheckBitUint(v: str, bit: int): bool {
+fn CheckBitUint(v: string, bit: int): bool {
 	ret checkBit(v, bit, fn|v, base, bit| {
 		_ = conv::ParseUint(v, base, bit) else { ret false }
 		ret true
@@ -145,7 +145,7 @@ fn CheckBitUint(v: str, bit: int): bool {
 }
 
 // Reports whether float literal is compatible given bit-size.
-fn CheckBitFloat(val: str, bit: int): bool {
+fn CheckBitFloat(val: string, bit: int): bool {
 	_ = conv::ParseFloat(val, bit) else { ret false }
 	ret true
 }

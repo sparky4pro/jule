@@ -11,13 +11,13 @@ struct FileSet {
 	// And mutating this field may cause mutations of string copies.
 	data: []byte
 
-	Path:   str
+	Path:   string
 	Tokens: []&Token
 }
 
 impl FileSet {
 	// Returns new FileSet with path.
-	fn New(path: str): &FileSet {
+	fn New(path: string): &FileSet {
 		ret &FileSet{
 			Path: path,
 		}
@@ -38,12 +38,12 @@ impl FileSet {
 	}
 
 	// Returns directory of file's path.
-	fn Dir(*self): str {
+	fn Dir(*self): string {
 		ret filepath::Dir(self.Path)
 	}
 
 	// Returns filename.
-	fn Name(*self): str {
+	fn Name(*self): string {
 		ret filepath::Base(self.Path)
 	}
 
@@ -54,7 +54,7 @@ impl FileSet {
 
 	// Returns line (not include new-line char) by row.
 	// Returns empty string if line is not buffer.
-	fn GetRow(*self, row: int): str {
+	fn GetRow(*self, row: int): string {
 		mut n := 0
 		mut lineStart := 0
 		mut i := 0

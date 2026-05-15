@@ -21,11 +21,11 @@ const (
 )
 
 struct kindPair {
-	kind: str
+	kind: string
 	id:   int
 }
 
-let keywords = map[str]int{
+let keywords = map[string]int{
 	"const":    CONST,
 	"ret":      RET,
 	"type":     TYPE,
@@ -91,7 +91,7 @@ impl Scanner {
 	}
 
 	// Pushes new error log to logs.
-	fn pushErr(mut *self, col: int, fmt: str, args: ...any) {
+	fn pushErr(mut *self, col: int, fmt: string, args: ...any) {
 		self.Logs = append(self.Logs, log::Log{
 			Kind:   log::Error,
 			Row:    self.row,
@@ -419,9 +419,9 @@ impl Scanner {
 		for n > 0 {
 			d := u32(digitVal(self.r))
 			if d >= base {
-				let mut msg: str
+				let mut msg: string
 				if self.r >= 0 {
-					msg = "illegal character " + str(self.r) + " in escape sequence"
+					msg = "illegal character " + string(self.r) + " in escape sequence"
 				} else {
 					msg = "escape sequence not terminated"
 				}
@@ -823,7 +823,7 @@ fn isDigit(ch: rune): bool {
 }
 
 // Returns the index of the first invalid separator in z, or -1.
-fn invalidSep(z: str): int {
+fn invalidSep(z: string): int {
 	x := ubuf::Ubuf{}
 	x.SetData(unsafe::StrBytes(z))
 	mut x1 := rune(' ') // prefix char, we only care if it's 'x'
@@ -864,7 +864,7 @@ fn invalidSep(z: str): int {
 	ret -1
 }
 
-fn litname(prefix: rune): str {
+fn litname(prefix: rune): string {
 	match prefix {
 	| 'x':
 		ret "hexadecimal literal"

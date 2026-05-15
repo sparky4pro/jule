@@ -33,7 +33,7 @@ const (
 
 // Returns minimum value of signed integer kinds.
 // Panics if kind is invalid.
-fn MinI(mut k: str): i64 {
+fn MinI(mut k: string): i64 {
 	k = RealKindOf(k)
 	match k {
 	| I8:
@@ -51,7 +51,7 @@ fn MinI(mut k: str): i64 {
 
 // Returns minimum value of signed integer kinds.
 // Panics if kind is invalid.
-fn MaxI(mut k: str): i64 {
+fn MaxI(mut k: string): i64 {
 	k = RealKindOf(k)
 	match k {
 	| I8:
@@ -69,7 +69,7 @@ fn MaxI(mut k: str): i64 {
 
 // Returns maximum value of unsigned integer kinds.
 // Panics if kind is invalid.
-fn MaxU(mut k: str): u64 {
+fn MaxU(mut k: string): u64 {
 	k = RealKindOf(k)
 	match k {
 	| U8:
@@ -87,7 +87,7 @@ fn MaxU(mut k: str): u64 {
 
 // Returns minimum value of signed/unsigned integer and floating-point kinds.
 // Panics if kind is invalid.
-fn Min(mut k: str): f64 {
+fn Min(mut k: string): f64 {
 	k = RealKindOf(k)
 	i := MinI(k)
 	if i != 0 {
@@ -105,7 +105,7 @@ fn Min(mut k: str): f64 {
 
 // Returns maximum value of signed/unsigned integer and floating-point kinds.
 // Panics if kind is invalid.
-fn Max(mut k: str): f64 {
+fn Max(mut k: string): f64 {
 	k = RealKindOf(k)
 	i := MaxI(k)
 	if i != 0 {

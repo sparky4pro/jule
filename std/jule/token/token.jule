@@ -111,7 +111,7 @@ struct Token {
 	File:   &FileSet // Associated FileSet where token appear.
 	Row:    int      // Row position of token.
 	Column: int      // Column position of token.
-	Kind:   str      // Token kind as string.
+	Kind:   string   // Token kind as string.
 }
 
 // A set of constants for precedence-based expression parsing.
@@ -149,7 +149,7 @@ impl Token {
 }
 
 // Reports whether s is keyword.
-fn IsKeyword(s: str): bool {
+fn IsKeyword(s: string): bool {
 	_, exist := keywords[s]
 	ret exist
 }
