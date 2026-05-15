@@ -153,12 +153,12 @@ impl scopeParser {
 		ret self.pos+1 >= len(self.stmts)
 	}
 
-	fn pushErr(mut *self, token: &token::Token, fmt: str, args: ...any) {
+	fn pushErr(mut *self, token: &token::Token, fmt: string, args: ...any) {
 		self.p.pushErr(token, fmt, args...)
 	}
 
 	// Push suggestion to last log.
-	fn pushSuggestion(mut *self, fmt: str, args: ...any) {
+	fn pushSuggestion(mut *self, fmt: string, args: ...any) {
 		self.p.pushSuggestion(fmt, args...)
 	}
 

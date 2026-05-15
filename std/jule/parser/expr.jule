@@ -29,7 +29,7 @@ impl exprBuilder {
 		}
 	}
 
-	fn pushErr(mut *self, token: &token::Token, fmt: str, args: ...any) {
+	fn pushErr(mut *self, token: &token::Token, fmt: string, args: ...any) {
 		if self.err {
 			if token != nil {
 				n := len(self.p.errors)
@@ -42,7 +42,7 @@ impl exprBuilder {
 	}
 
 	// Push suggestion to last log.
-	fn pushSuggestion(mut *self, fmt: str, args: ...any) {
+	fn pushSuggestion(mut *self, fmt: string, args: ...any) {
 		if self.err {
 			self.p.pushSuggestion(fmt, args...)
 		}
@@ -70,7 +70,7 @@ impl exprBuilder {
 	// Expects token, reports error if needed.
 	// Reports whether there is error.
 	// Advances to the next token.
-	fn expect(mut *self, tok: int, msg: str): (err: bool) {
+	fn expect(mut *self, tok: int, msg: string): (err: bool) {
 		if self.eof() {
 			self.pushErr(self.lt, msg)
 			err = true
@@ -85,7 +85,7 @@ impl exprBuilder {
 	// Expects comma or at least following token, reports error if needed.
 	// Reports whether there is no error.
 	// Reports false for follow token, but does not log error.
-	fn atComma(mut *self, follow: int, msg: str): (err: bool) {
+	fn atComma(mut *self, follow: int, msg: string): (err: bool) {
 		if self.eof() {
 			ret false
 		}
@@ -285,7 +285,7 @@ impl exprBuilder {
 		}
 	}
 
-	fn parseNameType(mut *self, mut t: &token::Token, name: str): &ast::Expr {
+	fn parseNameType(mut *self, mut t: &token::Token, name: string): &ast::Expr {
 		if !self.eof() && self.t.ID == token::SEP {
 			// Namespace selection.
 			mut typ := self.parseNamespaceExpr(t)
@@ -430,7 +430,7 @@ impl exprBuilder {
 		ret typ
 	}
 
-	fn parseIdent(mut *self): str {
+	fn parseIdent(mut *self): string {
 		mut name := "_"
 		if self.t.ID == token::NAME ||
 			self.t.ID == token::ERROR ||

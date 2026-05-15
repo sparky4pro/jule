@@ -13,7 +13,7 @@ use "std/jule/token"
 use "std/os/filepath"
 use "std/strings"
 
-fn makeErr(row: int, col: int, f: &token::FileSet, fmt: str, args: ...any): log::Log {
+fn makeErr(row: int, col: int, f: &token::FileSet, fmt: string, args: ...any): log::Log {
 	ret log::Log{
 		Kind:   log::Error,
 		Row:    row,
@@ -163,7 +163,7 @@ fn getCloseOfBrace(left: int): int {
 	}
 }
 
-fn compilerErr(token: &token::Token, fmt: str, args: ...any): log::Log {
+fn compilerErr(token: &token::Token, fmt: string, args: ...any): log::Log {
 	ret log::Log{
 		Kind:   log::Error,
 		Row:    token.Row,
@@ -174,7 +174,7 @@ fn compilerErr(token: &token::Token, fmt: str, args: ...any): log::Log {
 	}
 }
 
-unsafe fn pushSuggestion(mut log: *log::Log, fmt: str, args: ...any) {
+unsafe fn pushSuggestion(mut log: *log::Log, fmt: string, args: ...any) {
 	log.Suggestion = log::Logf(fmt, args...)
 }
 
@@ -195,12 +195,12 @@ impl parser {
 	fn stopped(*self): bool { ret self.ast == nil }
 
 	// Appends error by specified token, key and args.
-	fn pushErr(mut *self, token: &token::Token, fmt: str, args: ...any) {
+	fn pushErr(mut *self, token: &token::Token, fmt: string, args: ...any) {
 		self.errors = append(self.errors, compilerErr(token, fmt, args...))
 	}
 
 	// Push suggestion to last log.
-	fn pushSuggestion(mut *self, fmt: str, args: ...any) {
+	fn pushSuggestion(mut *self, fmt: string, args: ...any) {
 		unsafe { pushSuggestion(&self.errors[len(self.errors)-1], fmt, args...) }
 	}
 
