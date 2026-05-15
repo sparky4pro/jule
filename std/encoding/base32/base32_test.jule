@@ -78,7 +78,7 @@ async fn testEncoder(t: &testing::T) {
 		for i in r {
 			if r[i] != d[i] {
 				println(r)
-				println(str(d))
+				println(string(d))
 				t.Fail()
 				break
 			}
@@ -145,7 +145,7 @@ fn testAppendDecode(t: &testing::T) {
 #test
 fn testDecodeStr(t: &testing::T) {
 	for _, case in encodeDecodeMap {
-		r := StdEncoding.DecodeStr(str(case[1]))!
+		r := StdEncoding.DecodeStr(string(case[1]))!
 		d := case[0]
 		if len(r) != len(d) {
 			t.Fail()
@@ -164,7 +164,7 @@ fn testDecodeStr(t: &testing::T) {
 async fn testDecoder(t: &testing::T) {
 	for _, case in encodeDecodeMap {
 		mut r := make([]byte, StdEncoding.DecodedLen(len(case[1])))
-		mut dec := NewDecoder(StdEncoding, strings::Reader.New(str(case[1])).Async())
+		mut dec := NewDecoder(StdEncoding, strings::Reader.New(string(case[1])).Async())
 		n := dec.Read(r).await!
 		r = r[:n]
 		d := case[0]

@@ -77,7 +77,7 @@ const (
 type CorruptInputError: i64
 
 impl CorruptInputError {
-	fn Str(*self): str {
+	fn Str(*self): string {
 		ret "illegal base32 data at input byte " + conv::Itoa64(i64(*self))
 	}
 }
@@ -86,7 +86,7 @@ impl CorruptInputError {
 // The most common is the "base32" encoding introduced for SASL GSSAPI and
 // standardized in RFC 4648. The alternate "base32hex" encoding is used in DNSSEC.
 struct Encoding {
-	table:     str
+	table:     string
 	decodeMap: [256]byte
 	padByte:   byte
 }
@@ -97,7 +97,7 @@ impl Encoding {
 	// does not contain the padding character or CR / LF ('\r', '\n').
 	// The alphabet is treated as a sequence of byte values
 	// without any special treatment for multi-byte UTF-8.
-	fn New(table: str, padding: byte): &Encoding {
+	fn New(table: string, padding: byte): &Encoding {
 		// Check for illegal padding.
 		match {
 		| padding < NoPadding || padding == '\r' || padding == '\n':
@@ -242,7 +242,7 @@ impl Encoding {
 	}
 
 	// Returns the base32 encoding of src.
-	fn EncodeToStr(*self, src: []byte): str {
+	fn EncodeToStr(*self, src: []byte): string {
 		mut buf := make([]byte, self.EncodedLen(len(src)))
 		self.Encode(buf, src)
 		ret unsafe::StrFromBytes(buf)
@@ -271,7 +271,7 @@ impl Encoding {
 
 	// Returns the bytes represented by the base32 string s.
 	// If the input is malformed, it returns the partially decoded data.
-	fn DecodeStr(*self, s: str)!: []byte {
+	fn DecodeStr(*self, s: string)!: []byte {
 		mut buf := []byte(s)
 		n, _ := self.decode(buf, buf)?
 		ret buf[:n]
