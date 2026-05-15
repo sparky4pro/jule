@@ -104,7 +104,7 @@ fn main() {
 	Inference(fn|x, y| x * y)
 	Inference2(fn(x: int, y: int): (int, int) { ret x * y, y })
 	Inference2(fn|x, y| (x * y, y))
-	f := Foo[str, str]{}
+	f := Foo[string, string]{}
 	f.Infer(fn|s| len(s))
 	Inference3(1, 2, 3, 4)
 	Inference3([1, 2, 3, 4]...)
