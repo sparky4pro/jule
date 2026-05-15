@@ -153,7 +153,7 @@ fn FullRune(p: []byte): bool {
 }
 
 // Like FullRune but its input is a string.
-fn FullRuneStr(s: str): bool {
+fn FullRuneStr(s: string): bool {
 	if len(s) == 0 {
 		ret false
 	}
@@ -226,7 +226,7 @@ fn DecodeRune(p: []byte): (r: rune, size: int) {
 // An encoding is invalid if it is incorrect UTF-8, encodes a rune that is
 // out of range, or is not the shortest possible UTF-8 encoding for the
 // value. No other validation is performed.
-fn DecodeRuneStr(s: str): (r: rune, size: int) {
+fn DecodeRuneStr(s: string): (r: rune, size: int) {
 	if len(s) < 1 {
 		ret RuneError, 0
 	}
@@ -314,7 +314,7 @@ fn DecodeLastRune(p: []byte): (r: rune, size: int) {
 // An encoding is invalid if it is incorrect UTF-8, encodes a rune that is
 // out of range, or is not the shortest possible UTF-8 encoding for the
 // value. No other validation is performed.
-fn DecodeLastRuneStr(s: str): (r: rune, size: int) {
+fn DecodeLastRuneStr(s: string): (r: rune, size: int) {
 	if len(s) == 0 {
 		ret RuneError, 0
 	}
@@ -444,14 +444,14 @@ fn RuneCount(p: []byte): (n: int) {
 		c := p[n]
 		if c >= RuneSelf {
 			// non-ASCII slow path
-			ret n + RuneCountStr(unsafe { *(*str)(&p) }[n:])
+			ret n + RuneCountStr(unsafe { *(*string)(&p) }[n:])
 		}
 	}
 	ret n
 }
 
 // Like RuneCount but its input is a string.
-fn RuneCountStr(s: str): (n: int) {
+fn RuneCountStr(s: string): (n: int) {
 	mut i := 0
 	for i < len(s); n++ {
 		// Detection of rune length is derived from the DecodeRuneStr function.
@@ -556,7 +556,7 @@ fn Valid(p: []byte): bool {
 }
 
 // Reports whether s consists entirely of valid UTF-8-encoded runes.
-fn ValidStr(mut s: str): bool {
+fn ValidStr(mut s: string): bool {
 	// Fast path. Check for and skip 8 bytes of ASCII characters per iteration.
 	for len(s) >= 8 {
 		// Combining two 32 bit loads allows the same code to be used

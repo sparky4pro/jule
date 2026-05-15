@@ -40,7 +40,7 @@ use "std/unsafe"
 
 struct Utf8Map {
 	r: rune
-	s: str
+	s: string
 }
 
 let utf8map: []Utf8Map = [
@@ -107,7 +107,7 @@ fn testFullRune(t: &testing::T) {
 		if utf8::FullRune(b1) {
 			t.Errorf("FullRune({}) = true, want false", b1)
 		}
-		s1 := str(b1)
+		s1 := string(b1)
 		if utf8::FullRuneStr(s1) {
 			t.Errorf("FullRuneStr({}) = true, want false", s1)
 		}
@@ -131,7 +131,7 @@ fn testEncodeRune(t: &testing::T) {
 		b := []byte(m.s)
 		n := utf8::EncodeRune(s, m.r)
 		b1 := s[0:n]
-		if str(b) != str(b1) {
+		if string(b) != string(b1) {
 			t.Errorf("EncodeRune({}) = {} want {}", m.r, b1, b)
 		}
 	}
@@ -141,11 +141,11 @@ fn testEncodeRune(t: &testing::T) {
 fn testAppendRune(t: &testing::T) {
 	for _, m in utf8map {
 		mut buf := utf8::AppendRune(nil, m.r)
-		if str(buf) != m.s {
+		if string(buf) != m.s {
 			t.Errorf("AppendRune(nil, {}) = {}, want {}", m.r, buf, m.s)
 		}
 		buf = utf8::AppendRune([]byte("init"), m.r)
-		if str(buf) != "init"+m.s {
+		if string(buf) != "init"+m.s {
 			t.Errorf("AppendRune(init, {}) = {}, want {}", m.r, buf, "init"+m.s)
 		}
 	}
@@ -201,7 +201,7 @@ fn testDecodeRune(t: &testing::T) {
 		if r != utf8::RuneError || size != 1 {
 			t.Errorf("DecodeRune({}) = {}, {} want {}, {}", b, r, size, utf8::RuneError, 1)
 		}
-		s = str(b)
+		s = string(b)
 		r, size = utf8::DecodeRuneStr(s)
 		if r != utf8::RuneError || size != 1 {
 			t.Errorf("DecodeRuneStr({}) = {}, {} want {}, {}", s, r, size, utf8::RuneError, 1)
@@ -225,7 +225,7 @@ fn testDecodeSurrogateRune(t: &testing::T) {
 	}
 }
 
-fn runtimeRuneCount(s: str): int {
+fn runtimeRuneCount(s: string): int {
 	ret len([]rune(s))
 }
 
@@ -266,13 +266,13 @@ fn testNegativeRune(t: &testing::T) {
 	errorbuf = errorbuf[0:utf8::EncodeRune(errorbuf, utf8::RuneError)]
 	mut buf := make([]byte, utf8::UTFMax)
 	buf = buf[0:utf8::EncodeRune(buf, -1)]
-	if str(buf) != str(errorbuf) {
+	if string(buf) != string(errorbuf) {
 		t.Errorf("incorrect encoding [{}] for -1; expected [{}]", buf, errorbuf)
 	}
 }
 
 struct runeCountTest {
-	inp: str
+	inp: string
 	out: int
 }
 
@@ -328,7 +328,7 @@ fn testRuneLen(t: &testing::T) {
 }
 
 struct validTest {
-	inp: str
+	inp: string
 	out: bool
 }
 
@@ -341,8 +341,8 @@ let validCases: []validTest = [
 	{"брэд-ЛГТМ", true},
 	{"☺☻☹", true},
 	{"aa\xe2", false},
-	{str([]byte([66, 250])), false},
-	{str([]byte([66, 250, 67])), false},
+	{string([]byte([66, 250])), false},
+	{string([]byte([66, 250, 67])), false},
 	{"a\uFFFDb", true},
 	{"\xF4\x8F\xBF\xBF", true},      // U+10FFFF
 	{"\xF4\x90\x80\x80", false},     // U+10FFFF+1; out of range
@@ -400,7 +400,7 @@ struct info {
 	r:     rune
 }
 
-fn testSequence(t: &testing::T, s: str) {
+fn testSequence(t: &testing::T, s: string) {
 	mut index := make([]info, len(s))
 	b := []byte(s)
 	mut si := 0
