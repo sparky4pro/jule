@@ -25,7 +25,7 @@ enum Value: type {
 }
 
 // Dynamic JSON object type.
-type Object: map[str]Value
+type Object: map[string]Value
 
 // Dynamic JSON array type.
 type Array: []Value
@@ -37,4 +37,4 @@ type Bool: bool
 type Number: f64
 
 // Dynamic JSON string type.
-type String: str
+type String: string

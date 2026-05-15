@@ -528,7 +528,7 @@ fn decodeLiteral[T](mut data: []byte, mut &t: *T)! {
 			*t = String(s)
 			ret
 		| tt.Kind() == comptime::Str:
-			ok := decodeStr(unsafe { &(*(*str)(t)) }, data)
+			ok := decodeStr(unsafe { &(*(*string)(t)) }, data)
 			if !ok {
 				throw errors::New("json: invalid value for type " + tt.Str() + ": " + unsafe::BytesStr(data))
 			}
@@ -886,7 +886,7 @@ fn decodeFloat[T](mut &t: *T, lit: []byte)! {
 }
 
 #disable nilptr boundary
-fn decodeStr(mut &s: *str, mut lit: []byte): (ok: bool) {
+fn decodeStr(mut &s: *string, mut lit: []byte): (ok: bool) {
 	mut s2 := unquoteBytes(lit)
 	if s2 == nil {
 		ret false
@@ -898,7 +898,7 @@ fn decodeStr(mut &s: *str, mut lit: []byte): (ok: bool) {
 	if &lit[1] == &s2[0] {
 		// Returned mutable slice from self.data slice.
 		// We should to cast string to make new allocation.
-		*s = str(s2)
+		*s = string(s2)
 	} else {
 		// Returned slice from new allocation.
 		// First element always will point to head element of allocation.

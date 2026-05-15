@@ -90,7 +90,7 @@ impl buffer {
 	}
 
 	// Same as write, but for strings.
-	fn writeStr(mut *self, s: str) {
+	fn writeStr(mut *self, s: string) {
 		m := self.grow(len(s))
 		copy(self.buf.Slice1(m), s)
 	}

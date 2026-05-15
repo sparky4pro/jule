@@ -17,11 +17,11 @@ use "std/unsafe"
 // Returned by [Encode] and [EncodeIndent] when attempting
 // to encode an unsupported value type.
 struct UnsupportedTypeError {
-	Type: str
+	Type: string
 }
 
 impl UnsupportedTypeError {
-	fn Str(*self): str {
+	fn Str(*self): string {
 		ret "json: unsupported type: " + self.Type
 	}
 }
@@ -29,24 +29,24 @@ impl UnsupportedTypeError {
 // Returned by [Encode] and [EncodeIndent] when attempting
 // to encode an unsupported value.
 struct UnsupportedValueError {
-	Value: str
+	Value: string
 }
 
 impl UnsupportedValueError {
-	fn Str(*self): str {
+	fn Str(*self): string {
 		ret "json: unsupported value: " + self.Value
 	}
 }
 
 // Represents an error from calling a reserved [EncodeText] method.
 struct EncodeError {
-	Type:       str
+	Type:       string
 	Err:        any
-	sourceFunc: str
+	sourceFunc: string
 }
 
 impl EncodeError {
-	fn Str(*self): str {
+	fn Str(*self): string {
 		ret "json: error calling " +
 			self.sourceFunc + " for type " +
 			self.Type + ": " + runtime::toStr(self.Err)
@@ -85,7 +85,7 @@ type encodeIndent = uint
 // An encoder only encodes to the internal buffer.
 struct encoder {
 	buf:        buffer // Common internal buffer to encode JSON.
-	indent:     str    // Indentation.
+	indent:     string // Indentation.
 	depth:      int    // Current depth.
 	escapeHTML: bool
 }
@@ -153,7 +153,7 @@ impl encoder {
 	}
 
 	#disable nilptr
-	fn encodeStr(mut *self, s: str) {
+	fn encodeStr(mut *self, s: string) {
 		ss := ubuf::Ubuf{}
 		ss.SetData(unsafe::StrBytes(s))
 		self.buf.writeByte('"')
@@ -446,7 +446,7 @@ impl encoder {
 			self.encodeBool(bool(t))
 			ret
 		| comptime::Str:
-			self.encodeStr(str(t))
+			self.encodeStr(string(t))
 			ret
 		| comptime::Smartptr:
 			// Avoid to implement as a function.
@@ -561,7 +561,7 @@ fn Encode[T](t: T)!: []byte {
 }
 
 // Same as Encode[T] function but enables indentation.
-fn EncodeIndent[T](t: T, indent: str)!: []byte {
+fn EncodeIndent[T](t: T, indent: string)!: []byte {
 	let mut e: encoder
 	e.init()
 	if indent == "" {
@@ -576,8 +576,8 @@ fn EncodeIndent[T](t: T, indent: str)!: []byte {
 // Cache data for the structure field.
 struct field {
 	offset:       uintptr
-	nameNonEsc:   str
-	nameEscHTML:  str
+	nameNonEsc:   string
+	nameEscHTML:  string
 	encodePlain:  fn(mut &e: *encoder, field: uintptr)!
 	encodeIndent: fn(mut &e: *encoder, field: uintptr)!
 	decode:       fn(&d: *decoder, field: uintptr)!
@@ -660,7 +660,7 @@ fn cachedFields[T](): []field {
 }
 
 // Reports whether the JSON tag name is duplicated.
-fn isDuplicateTag[T](tag: str): bool {
+fn isDuplicateTag[T](tag: string): bool {
 	mut seen := false
 	const t = comptime::TypeOf(T).Decl()
 	const for _, f in t.Fields() {
@@ -681,7 +681,7 @@ fn isDuplicateTag[T](tag: str): bool {
 // Tries to use JSON tag name first, if tag name is not valid, falling back to field name.
 // Returns empty string if field name and JSON tag name not suitable to use.
 // The type T must be the structure type of field.
-fn getFieldName[T](pub: bool, name: str, tag: str): str {
+fn getFieldName[T](pub: bool, name: string, tag: string): string {
 	// If the tag is "-", ignore this field for the JSON encode/decode.
 	if tag == "-" {
 		ret ""
@@ -702,7 +702,7 @@ fn getFieldName[T](pub: bool, name: str, tag: str): str {
 }
 
 // Reports whether the JSON tag name valid.
-fn isValidTag(s: str): bool {
+fn isValidTag(s: string): bool {
 	if s == "" {
 		ret false
 	}
@@ -718,11 +718,11 @@ fn isValidTag(s: str): bool {
 	ret true
 }
 
-fn resolveKeyName[T](k: T): str {
+fn resolveKeyName[T](k: T): string {
 	const t = comptime::TypeOf(T)
 	const match t.Kind() {
 	| comptime::Str:
-		ret str(k)
+		ret string(k)
 	| comptime::Int | comptime::I8 | comptime::I16 | comptime::I32 | comptime::I64:
 		ret conv::FormatInt(i64(k), 10)
 	| comptime::Uintptr | comptime::Uint | comptime::U8 | comptime::U16 | comptime::U32 | comptime::U64:

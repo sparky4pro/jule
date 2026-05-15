@@ -5,7 +5,7 @@
 use "std/testing"
 
 struct validCase {
-	data: str
+	data: string
 	ok:   bool
 }
 

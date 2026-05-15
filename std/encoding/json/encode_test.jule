@@ -6,7 +6,7 @@ use "std/encoding"
 use "std/encoding/base64"
 use "std/testing"
 
-fn encodeMapXKey[Map](t: &testing::T, m: Map, kind: str) {
+fn encodeMapXKey[Map](t: &testing::T, m: Map, kind: string) {
 	bytes := Encode(m) else {
 		t.Errorf("Encode({}) failed", kind)
 		ret
@@ -18,81 +18,81 @@ fn encodeMapXKey[Map](t: &testing::T, m: Map, kind: str) {
 
 #test
 fn testEncodeMapStrKey(t: &testing::T) {
-	let encodeMap: map[str]str = {
+	let encodeMap: map[string]string = {
 		"foo": "foo value",
 		"bar": "bar value",
 		"baz": "baz value",
 	}
-	encodeMapXKey(t, encodeMap, "map[str]str")
+	encodeMapXKey(t, encodeMap, "map[string]string")
 
-	type Str: str
-	let encodeMap2: map[Str]Str = {
+	type String: string
+	let encodeMap2: map[String]String = {
 		"foo": "foo value",
 		"bar": "bar value",
 		"baz": "baz value",
 	}
-	encodeMapXKey(t, encodeMap2, "map[Str]Str")
+	encodeMapXKey(t, encodeMap2, "map[String]String")
 }
 
 #test
 fn testEncodeMapNumKey(t: &testing::T) {
-	let encodeMap: map[int]str = {
+	let encodeMap: map[int]string = {
 		234: "foo value",
 		49:  "bar value",
 		0:   "baz value",
 	}
-	encodeMapXKey(t, encodeMap, "map[int]str")
+	encodeMapXKey(t, encodeMap, "map[int]string")
 
 	type Int: int
-	let encodeMap2: map[Int]str = {
+	let encodeMap2: map[Int]string = {
 		234: "foo value",
 		49:  "bar value",
 		0:   "baz value",
 	}
-	encodeMapXKey(t, encodeMap2, "map[Int]str")
+	encodeMapXKey(t, encodeMap2, "map[Int]string")
 }
 
 #test
 fn testEncodeSlice(t: &testing::T) {
 	s := ["foo", "bar", "baz"]
 	mut bytes := Encode(s) else {
-		t.Errorf("Encode([]str) failed")
+		t.Errorf("Encode([]string) failed")
 		ret
 	}
 	if !Valid(bytes) {
-		t.Errorf("Valid() returns false for Encode([]str)")
+		t.Errorf("Valid() returns false for Encode([]string)")
 	}
 
-	type StrSlice: []str
-	s2 := StrSlice(s)
+	type StringSlice: []string
+	s2 := StringSlice(s)
 	bytes = Encode(s2) else {
-		t.Errorf("Encode(StrSlice) failed")
+		t.Errorf("Encode(StringSlice) failed")
 		ret
 	}
 	if !Valid(bytes) {
-		t.Errorf("Valid() returns false for Encode(StrSlice)")
+		t.Errorf("Valid() returns false for Encode(StringSlice)")
 	}
 }
 
 #test
 fn testEncodeArray(t: &testing::T) {
-	let a: [3]str = ["foo", "bar", "baz"]
+	let a: [3]string = ["foo", "bar", "baz"]
 	mut bytes := Encode(a) else {
-		t.Errorf("Encode([3]str) failed")
+		t.Errorf("Encode([3]string) failed")
 		ret
 	}
 	if !Valid(bytes) {
-		t.Errorf("Valid() returns false for Encode([3]str)")
+		t.Errorf("Valid() returns false for Encode([3]string)")
 	}
 
-	type StrArray: [3]str
-	a2 := StrArray(a)
+	type StringArray: [3]string
+	a2 := StringArray(a)
 	bytes = Encode(a2) else {
-		t.Errorf("Encode(StrArray) failed")
+		t.Errorf("Encode(StringArray) failed")
 		ret
 	}
 	if !Valid(bytes) {
-		t.Errorf("Valid() returns false for Encode(StrArray)")
+		t.Errorf("Valid() returns false for Encode(StringArray)")
 	}
 }
 
@@ -156,7 +156,7 @@ fn testEncodeNum(t: &testing::T) {
 }
 
 struct strCase {
-	input:  str
+	input:  string
 	output: []byte
 }
 
@@ -259,12 +259,12 @@ fn testEncodeByteSlice(t: &testing::T) {
 
 // Encode tree is base structure for the pseudo big JSON.
 struct encodeTree {
-	Str1: str
-	Str2: str
-	Num1: int
-	Num2: f64
-	Bool: bool
-	Node: &encodeTree
+	String1: string
+	String2: string
+	Num1:    int
+	Num2:    f64
+	Bool:    bool
+	Node:    &encodeTree
 }
 
 type abc: int
@@ -285,9 +285,9 @@ impl encoding::TextEncoder for abc {
 impl encoding::TextDecoder for abc {
 	fn DecodeText(mut *self, data: []byte)! {
 		match {
-		| str(data) == "true":
+		| string(data) == "true":
 			*self = 1
-		| str(data) == "false":
+		| string(data) == "false":
 			*self = 0
 		}
 	}
@@ -300,16 +300,16 @@ fn testCustomEncode(t: &testing::T) {
 		t.Errorf("want false, threw error")
 		use []byte("false")
 	}
-	if str(r) != "\"false\"" {
-		t.Errorf("want false, found {}", str(r))
+	if string(r) != "\"false\"" {
+		t.Errorf("want false, found {}", string(r))
 	}
 	*a = 1
 	r = Encode(a) else {
 		t.Errorf("want true, threw error")
 		use []byte("true")
 	}
-	if str(r) != "\"true\"" {
-		t.Errorf("want true, found {}", str(r))
+	if string(r) != "\"true\"" {
+		t.Errorf("want true, found {}", string(r))
 	}
 }
 
@@ -320,16 +320,16 @@ fn testCustomEncode1(t: &testing::T) {
 		t.Errorf("want false, threw error")
 		use []byte("false")
 	}
-	if str(r) != "\"false\"" {
-		t.Errorf("want false, found {}", str(r))
+	if string(r) != "\"false\"" {
+		t.Errorf("want false, found {}", string(r))
 	}
 	a = 1
 	r = Encode(a) else {
 		t.Errorf("want true, threw error")
 		use []byte("true")
 	}
-	if str(r) != "\"true\"" {
-		t.Errorf("want true, found {}", str(r))
+	if string(r) != "\"true\"" {
+		t.Errorf("want true, found {}", string(r))
 	}
 }
 
@@ -351,9 +351,9 @@ impl encoding::TextEncoder for abc2 {
 impl encoding::TextDecoder for abc2 {
 	fn DecodeText(mut *self, data: []byte)! {
 		match {
-		| str(data) == "true":
+		| string(data) == "true":
 			**self = 1
-		| str(data) == "false":
+		| string(data) == "false":
 			**self = 0
 		}
 	}
@@ -366,16 +366,16 @@ fn testCustomEncode2(t: &testing::T) {
 		t.Errorf("want false, threw error")
 		use []byte("false")
 	}
-	if str(r) != "\"false\"" {
-		t.Errorf("want false, found {}", str(r))
+	if string(r) != "\"false\"" {
+		t.Errorf("want false, found {}", string(r))
 	}
 	*a = 1
 	r = Encode(a) else {
 		t.Errorf("want true, threw error")
 		use []byte("true")
 	}
-	if str(r) != "\"true\"" {
-		t.Errorf("want true, found {}", str(r))
+	if string(r) != "\"true\"" {
+		t.Errorf("want true, found {}", string(r))
 	}
 }
 
@@ -386,28 +386,28 @@ fn testCustomEncode3(t: &testing::T) {
 		t.Errorf("want false, threw error")
 		use []byte("false")
 	}
-	if str(r) != "\"false\"" {
-		t.Errorf("want false, found {}", str(r))
+	if string(r) != "\"false\"" {
+		t.Errorf("want false, found {}", string(r))
 	}
 	**a = 1
 	r = Encode(a) else {
 		t.Errorf("want true, threw error")
 		use []byte("true")
 	}
-	if str(r) != "\"true\"" {
-		t.Errorf("want true, found {}", str(r))
+	if string(r) != "\"true\"" {
+		t.Errorf("want true, found {}", string(r))
 	}
 }
 
 struct taggedFields {
 	Foo:  int
 	foo:  int
-	fo1:  int `json:"foo1"`
-	bar:  int `json:"baz"`
-	baz:  int `json:"Foo"`
-	Bar:  int `json:"-"`
-	esc1: str `json:"<foo>"`
-	esc2: str `json:"&foo&"`
+	fo1:  int    `json:"foo1"`
+	bar:  int    `json:"baz"`
+	baz:  int    `json:"Foo"`
+	Bar:  int    `json:"-"`
+	esc1: string `json:"<foo>"`
+	esc2: string `json:"&foo&"`
 }
 
 #test
@@ -417,7 +417,7 @@ fn testTaggedFields(t: &testing::T) {
 		t.Errorf("tagged fields throws error for Encode")
 		ret
 	}
-	if str(data) != `{"Foo":10,"foo1":30,"baz":40,"\u003cfoo\u003e":"\u003cfoo\u003e","\u0026foo\u0026":"\u0026baz\u0026"}` {
+	if string(data) != `{"Foo":10,"foo1":30,"baz":40,"\u003cfoo\u003e":"\u003cfoo\u003e","\u0026foo\u0026":"\u0026baz\u0026"}` {
 		t.Errorf("tagged fields encode incorrect")
 		ret
 	}

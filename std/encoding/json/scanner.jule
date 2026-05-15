@@ -155,7 +155,7 @@ impl scanner {
 
 	// Records an error and switches to the error state.
 	#disable nilptr
-	fn onerror(mut *self, c: byte, context: str): int {
+	fn onerror(mut *self, c: byte, context: string): int {
 		self.step = stateError
 		self.err = errors::New("json: invalid character " + quoteChar(c) + " " + context)
 		ret scanError
@@ -610,7 +610,7 @@ fn isSpace(c: byte): bool {
 }
 
 // Formats c as a quoted character literal.
-fn quoteChar(c: byte): str {
+fn quoteChar(c: byte): string {
 	// special cases - different from quoted strings
 	if c == '\'' {
 		ret `'\''`
@@ -620,6 +620,6 @@ fn quoteChar(c: byte): str {
 	}
 
 	// use quoted string with different quotation marks
-	s := conv::Quote(str(c))
+	s := conv::Quote(string(c))
 	ret "'" + s[1 : len(s)-1] + "'"
 }
