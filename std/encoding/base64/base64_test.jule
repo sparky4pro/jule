@@ -301,20 +301,20 @@ async fn testBig(t: &testing::T) {
 	mut w := NewEncoder(StdEncoding, sb.Async())
 	nn := w.Write(raw).await else {
 		t.Errorf("Encoder.Write(raw) error = {} want nil", error)
-		ret
+		return
 	}
 	if nn != n {
 		t.Errorf("Encoder.Write(raw) = {} want {}", nn, n)
-		ret
+		return
 	}
 	w.Close().await else {
 		t.Errorf("Encoder.Close() = {} want nil", error)
-		ret
+		return
 	}
 	mut sr := strings::Reader.New(sb.String())
 	decoded := io::ReadAll(NewDecoder(StdEncoding, sr.Async())).await else {
 		t.Errorf("io::ReadAll(NewDecoder(...)): {}", error)
-		ret
+		return
 	}
 
 	if !bytesequal(raw, decoded) {
@@ -380,18 +380,18 @@ bqbPb06551Y4
 	mut dec := NewDecoder(StdEncoding, strings::Reader.New(encoded).Async())
 	res1 := io::ReadAll(dec).await else {
 		t.Errorf("ReadAll failed: {}", error)
-		ret
+		return
 	}
 
 	dec = NewDecoder(StdEncoding, strings::Reader.New(encodedShort).Async())
 	res2 := io::ReadAll(dec).await else {
 		t.Errorf("ReadAll failed: {}", error)
-		ret
+		return
 	}
 
 	if !bytesequal(res1, res2) {
 		t.Errorf("Decoded results not equal")
-		ret
+		return
 	}
 }
 
@@ -402,7 +402,7 @@ fn testDecoderGoIssue7733(t: &testing::T) {
 		if want != error {
 			t.Errorf("Error = {}; want CorruptInputError(8)", error)
 		}
-		ret
+		return
 	}
 	t.Errorf("DecodeString = nil; want CorruptInputError(8)")
 }
@@ -427,12 +427,12 @@ fn testDecoderGoIssue15656(t: &testing::T) {
 
 fn bytesequal(a: []byte, b: []byte): bool {
 	if len(a) != len(b) {
-		ret false
+		return false
 	}
 	for i in a {
 		if a[i] != b[i] {
-			ret false
+			return false
 		}
 	}
-	ret true
+	return true
 }

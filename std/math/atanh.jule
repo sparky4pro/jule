@@ -80,11 +80,11 @@ fn Atanh(mut x: f64): f64 {
 	// special cases
 	match {
 	| x < -1 | x > 1 | IsNaN(x):
-		ret NaN()
+		return NaN()
 	| x == 1:
-		ret Inf(1)
+		return Inf(1)
 	| x == -1:
-		ret Inf(-1)
+		return Inf(-1)
 	}
 	mut sign := false
 	if x < 0 {
@@ -104,5 +104,5 @@ fn Atanh(mut x: f64): f64 {
 	if sign {
 		temp = -temp
 	}
-	ret temp
+	return temp
 }

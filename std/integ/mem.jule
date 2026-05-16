@@ -11,5 +11,5 @@ use "std/internal/runtime"
 // Make sure the allocation will not be deallocated until unsafe pointer
 // being unreachable, otherwise any memory access may lead SEGFAULT.
 fn AnyToUnsafeptr(x: any): *unsafe {
-	ret unsafe { (*runtime::DynamicType)(&x).Data.Ptr }
+	return unsafe { (*runtime::DynamicType)(&x).Data.Ptr }
 }

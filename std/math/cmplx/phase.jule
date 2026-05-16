@@ -10,5 +10,5 @@ use "std/math"
 // Phase returns the phase (also called the argument) of x.
 // The returned value is in the range [-Pi, Pi].
 fn Phase(x: cmplx128): f64 {
-	ret math::Atan2(imag(x), real(x))
+	return math::Atan2(imag(x), real(x))
 }

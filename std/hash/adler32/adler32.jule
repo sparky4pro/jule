@@ -55,14 +55,14 @@ const Size = 4
 fn New(): hash::Hash32 {
 	mut d := new(adler32)
 	d.Reset()
-	ret d
+	return d
 }
 
 // Returns the Adler-32 checksum of data.
 fn Checksum(data: []byte): u32 {
 	mut d := adler32{d: 1}
 	d.update(data)
-	ret u32(d.d)
+	return u32(d.d)
 }
 
 // Largest prime that is less than 65536.
@@ -125,19 +125,19 @@ impl adler32 {
 		self.d = 1
 	}
 
-	fn Size(*self): int { ret Size }
+	fn Size(*self): int { return Size }
 
-	fn BlockSize(*self): int { ret 4 }
+	fn BlockSize(*self): int { return 4 }
 
 	fn Sum(*self, mut dest: []byte): []byte {
 		s := u32(self.d)
-		ret append(dest, byte(s>>24), byte(s>>16), byte(s>>8), byte(s))
+		return append(dest, byte(s>>24), byte(s>>16), byte(s>>8), byte(s))
 	}
 
-	fn Sum32(*self): u32 { ret u32(self.d) }
+	fn Sum32(*self): u32 { return u32(self.d) }
 
 	async fn Write(mut *self, p: []byte)!: (n: int) {
 		self.update(p)
-		ret len(p)
+		return len(p)
 	}
 }

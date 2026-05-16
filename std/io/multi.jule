@@ -39,7 +39,7 @@ impl Reader for multiReader {
 				throw error
 			}
 			if n > 0 {
-				ret
+				return
 			}
 		}
 		throw EOF
@@ -53,5 +53,5 @@ impl Reader for multiReader {
 fn MultiReader(mut readers: ...Reader): Reader {
 	mut r := make([]Reader, len(readers))
 	copy(r, readers)
-	ret &multiReader{r}
+	return &multiReader{r}
 }

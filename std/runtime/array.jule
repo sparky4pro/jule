@@ -9,15 +9,15 @@
 // Avoid generation instance per array types such as [5]int and [4]int.
 fn arrayCmp[T](mut a1: *T, mut a2: *T, n: int): bool {
 	if n == 0 {
-		ret true
+		return true
 	}
 	end := a1 + n
 	for a1 < end {
 		if unsafe { *a1 != *a2 } {
-			ret false
+			return false
 		}
 		a1++
 		a2++
 	}
-	ret true
+	return true
 }

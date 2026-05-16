@@ -41,7 +41,7 @@ const fnParseCmplx = "ParseCmplx"
 fn handleErr(mut err: &NumError, s: string): &NumError {
 	err.Func = fnParseCmplx
 	err.Num = s
-	ret err
+	return err
 }
 
 // Converts the string s to a complex number
@@ -87,7 +87,7 @@ fn ParseCmplx(mut s: string, bitSize: int)!: cmplx128 {
 
 	// If we have nothing left, we're done.
 	if len(s) == 0 {
-		ret cmplx(re, 0)
+		return cmplx(re, 0)
 	}
 
 	// Otherwise, look at the next character.
@@ -103,7 +103,7 @@ fn ParseCmplx(mut s: string, bitSize: int)!: cmplx128 {
 	| 'i':
 		// If 'i' is the last character, we only have an imaginary part.
 		if len(s) == 1 {
-			ret cmplx(0, re)
+			return cmplx(0, re)
 		}
 		fall
 	|:
@@ -119,5 +119,5 @@ fn ParseCmplx(mut s: string, bitSize: int)!: cmplx128 {
 	if s != "i" {
 		throw syntaxError(fnParseCmplx, orig)
 	}
-	ret cmplx(re, im)
+	return cmplx(re, im)
 }

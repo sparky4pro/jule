@@ -199,7 +199,7 @@ impl decimal {
 	// Round a down to nd digits (or fewer).
 	fn RoundDown(mut *self, nd: int) {
 		if nd < 0 || nd >= self.nd {
-			ret
+			return
 		}
 		self.nd = nd
 		trim(self)
@@ -208,7 +208,7 @@ impl decimal {
 	// Round a up to nd digits (or fewer).
 	fn RoundUp(mut *self, nd: int) {
 		if nd < 0 || nd >= self.nd {
-			ret
+			return
 		}
 
 		// round up
@@ -218,7 +218,7 @@ impl decimal {
 			if c < '9' { // can stop after this digit
 				self.d[i]++
 				self.nd = i + 1
-				ret
+				return
 			}
 		}
 
@@ -235,7 +235,7 @@ impl decimal {
 	// 0.09 -> 0.1.
 	fn Round(mut *self, nd: int) {
 		if nd < 0 || nd >= self.nd {
-			ret
+			return
 		}
 		if shouldRoundUp(self, nd) {
 			self.RoundUp(nd)
@@ -248,7 +248,7 @@ impl decimal {
 	// No guarantees about overflow.
 	fn RoundedInteger(mut *self): u64 {
 		if self.dp > 20 {
-			ret 0xFFFFFFFFFFFFFFFF
+			return 0xFFFFFFFFFFFFFFFF
 		}
 		mut i := 0
 		mut n := u64(0)
@@ -261,7 +261,7 @@ impl decimal {
 		if shouldRoundUp(self, self.dp) {
 			n++
 		}
-		ret n
+		return n
 	}
 
 	fn String(*self): string {
@@ -277,7 +277,7 @@ impl decimal {
 		mut w := 0
 		match {
 		| self.nd == 0:
-			ret "0"
+			return "0"
 		| self.dp <= 0:
 			// zeros fill space between decimal point and digits
 			buf[w] = '0'
@@ -297,7 +297,7 @@ impl decimal {
 			w += copy(buf[w:], self.d[0:self.nd])
 			w += digitZero(buf[w : w+self.dp-self.nd])
 		}
-		ret unsafe::StringFromBytes(buf[0:w])
+		return unsafe::StringFromBytes(buf[0:w])
 	}
 }
 
@@ -305,7 +305,7 @@ fn digitZero(mut dst: []byte): int {
 	for i in dst {
 		dst[i] = '0'
 	}
-	ret len(dst)
+	return len(dst)
 }
 
 // Trailing zeros from number.
@@ -332,7 +332,7 @@ fn rightShift(mut &a: *decimal, k: uint) {
 			if n == 0 {
 				// a == 0; shouldn't get here, but handle anyway.
 				a.nd = 0
-				ret
+				return
 			}
 			for n>>k == 0 {
 				n = n * 10
@@ -379,13 +379,13 @@ fn prefixIsLessThan(b: [800]byte, end: int, s: string): bool {
 	mut i := 0
 	for i < len(s); i++ {
 		if i >= end {
-			ret true
+			return true
 		}
 		if b[i] != s[i] {
-			ret b[i] < s[i]
+			return b[i] < s[i]
 		}
 	}
-	ret false
+	return false
 }
 
 // Binary shift left (* 2) by k bits.  k <= maxShift to avoid overflow.
@@ -438,15 +438,15 @@ fn leftShift(mut &a: *decimal, k: uint) {
 // If we chop a at nd digits, should we round up?
 fn shouldRoundUp(&a: *decimal, nd: int): bool {
 	if nd < 0 || nd >= a.nd {
-		ret false
+		return false
 	}
 	if a.d[nd] == '5' && nd+1 == a.nd { // exactly halfway - round to even
 		// if we truncated, a little higher than what's recorded - always round up
 		if a.trunc {
-			ret true
+			return true
 		}
-		ret nd > 0 && (a.d[nd-1]-'0')%2 != 0
+		return nd > 0 && (a.d[nd-1]-'0')%2 != 0
 	}
 	// not halfway - digit tells all
-	ret a.d[nd] >= '5'
+	return a.d[nd] >= '5'
 }

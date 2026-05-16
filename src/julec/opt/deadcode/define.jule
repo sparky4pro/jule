@@ -25,7 +25,7 @@ struct ObjectDeadCode {
 
 impl ObjectDeadCode {
 	fn new(mut ir: &obj::IR): &ObjectDeadCode {
-		ret &ObjectDeadCode{
+		return &ObjectDeadCode{
 			ir: ir,
 		}
 	}
@@ -44,10 +44,10 @@ impl ObjectDeadCode {
 		}
 		for i in live {
 			if live[i] == t {
-				ret true
+				return true
 			}
 		}
-		ret false
+		return false
 	}
 
 	fn pushLive[T](mut &self, mut t: T) {
@@ -65,7 +65,7 @@ impl ObjectDeadCode {
 
 	fn pushStructAsLive(mut &self, mut s: &sema::StructIns) {
 		if self.isLive[&sema::StructIns](s) {
-			ret
+			return
 		}
 		self.fusePushLive(s)
 		allLive := isAllMethodsLive(s.Decl)
@@ -105,7 +105,7 @@ impl ObjectDeadCode {
 
 	fn setReferencesAsLive(mut &self, mut rs: &sema::ReferenceStack) {
 		if rs == nil {
-			ret
+			return
 		}
 		mut i := 0
 		for i < rs.Len(); i++ {
@@ -423,7 +423,7 @@ fn EliminateDefines(mut ir: &obj::IR) {
 
 // Reports whether all methods live of structure.
 fn isAllMethodsLive(s: &sema::Struct): bool {
-	ret s == meta::Program.Runtime.Map ||
+	return s == meta::Program.Runtime.Map ||
 		s == meta::Program.Runtime.MapIterator ||
 		s == meta::Program.Runtime.Pchan
 }

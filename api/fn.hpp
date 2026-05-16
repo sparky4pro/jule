@@ -14,17 +14,17 @@
 #include "types.hpp"
 
 // Anonymous function / closure wrapper of julec.
-template <typename Ret, typename... Args> struct __jule_Fn {
+template <typename Return, typename... Args> struct __jule_Fn {
 public:
-    Ret (*f)(void *, Args...) = nullptr;
+    Return (*f)(void *, Args...) = nullptr;
     __jule_Ptr<__jule_Uintptr> ctx; // Closure ctx.
     void (*ctxHandler)(__jule_Ptr<__jule_Uintptr> &alloc) = nullptr;
 
     __jule_Fn(void) = default;
-    __jule_Fn(const __jule_Fn<Ret, Args...> &) = default;
+    __jule_Fn(const __jule_Fn<Return, Args...> &) = default;
     __jule_Fn(std::nullptr_t) noexcept : __jule_Fn() {}
 
-    __jule_Fn(Ret (*f)(void *, Args...)) noexcept { this->f = f; }
+    __jule_Fn(Return (*f)(void *, Args...)) noexcept { this->f = f; }
 
     void dealloc(void) noexcept {
         this->f = nullptr;
@@ -38,7 +38,7 @@ public:
 
     ~__jule_Fn(void) noexcept { this->dealloc(); }
 
-    inline __jule_Fn<Ret, Args...> &must_ok(const char *file) noexcept {
+    inline __jule_Fn<Return, Args...> &must_ok(const char *file) noexcept {
 #ifndef __JULE_DISABLE__SAFETY
         if (this->f == nullptr) {
             __jule_panicString(
@@ -48,7 +48,7 @@ public:
         return *this;
     }
 
-    template <typename... Arguments> Ret call(Args... args) noexcept {
+    template <typename... Arguments> Return call(Args... args) noexcept {
         return this->f((void *)(this->ctx.alloc), args...);
     }
 
@@ -56,13 +56,13 @@ public:
         return this->call<Args...>(args...);
     }
 
-    inline __jule_Fn<Ret, Args...> &operator=(std::nullptr_t) noexcept {
+    inline __jule_Fn<Return, Args...> &operator=(std::nullptr_t) noexcept {
         this->dealloc();
         return *this;
     }
 
-    inline __jule_Fn<Ret, Args...> &
-    operator=(const __jule_Fn<Ret, Args...> &f) {
+    inline __jule_Fn<Return, Args...> &
+    operator=(const __jule_Fn<Return, Args...> &f) {
         // Assignment to itself.
         if (this->ctx.alloc == f.ctx.alloc) {
             this->f = f.f;
@@ -76,7 +76,8 @@ public:
         return *this;
     }
 
-    inline __jule_Fn<Ret, Args...> &operator=(__jule_Fn<Ret, Args...> &&f) {
+    inline __jule_Fn<Return, Args...> &
+    operator=(__jule_Fn<Return, Args...> &&f) {
         this->dealloc();
         this->ctx = std::move(f.ctx);
         this->f = f.f;
@@ -97,11 +98,11 @@ public:
     }
 };
 
-template <typename Ret, typename... Args>
-__jule_Fn<Ret, Args...>
+template <typename Return, typename... Args>
+__jule_Fn<Return, Args...>
 __jule_new_closure(void *fn, __jule_Ptr<__jule_Uintptr> ctx,
                    void (*ctxHandler)(__jule_Ptr<__jule_Uintptr> &)) noexcept {
-    __jule_Fn<Ret, Args...> fn2((Ret (*)(void *, Args...))fn);
+    __jule_Fn<Return, Args...> fn2((Return (*)(void *, Args...))fn);
     fn2.ctx = std::move(ctx);
     fn2.ctxHandler = ctxHandler;
     return fn2;

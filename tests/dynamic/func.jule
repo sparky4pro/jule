@@ -3,19 +3,19 @@
 // license that can be found in the LICENSE file.
 
 fn single(): int {
-	ret 90
+	return 90
 }
 
 fn singleAny(): any {
-	ret single()
+	return single()
 }
 
 fn multi(): (int, int) {
-	ret 90, 12
+	return 90, 12
 }
 
 fn multiAny(): (any, any) {
-	ret multi()
+	return multi()
 }
 
 fn fallibleSingle()!: int {
@@ -23,11 +23,11 @@ fn fallibleSingle()!: int {
 }
 
 fn singleAny1(): any {
-	ret fallibleSingle()!
+	return fallibleSingle()!
 }
 
 fn singleAny2(): any {
-	ret fallibleSingle() else {
+	return fallibleSingle() else {
 		use 90
 	}
 }
@@ -37,11 +37,11 @@ fn fallibleMulti()!: (int, int) {
 }
 
 fn multiAny1(): (any, any) {
-	ret fallibleMulti()!
+	return fallibleMulti()!
 }
 
 fn multiAny2(): (any, any) {
-	ret fallibleMulti() else {
+	return fallibleMulti() else {
 		use 90, 12
 	}
 }

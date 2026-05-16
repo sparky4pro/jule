@@ -95,14 +95,14 @@ fn testNextStdChunk(t: &testing::T) {
 			}
 			s = suffix
 		}
-		ret out
+		return out
 	}
 
 	noParens := fn(mut r: rune): rune {
 		if r == '(' || r == ')' {
-			ret -1
+			return -1
 		}
-		ret r
+		return r
 	}
 
 	for _, marked in nextStdChunkTests {
@@ -372,7 +372,7 @@ fn checkTime(time: time::Time, test: parseTest, t: &testing::T) {
 	// Nanoseconds must be checked against the precision of the input.
 	nanosec := conv::ParseUint("012345678"[:test.fracDigits]+"000000000"[:9-test.fracDigits], 10, 0) else {
 		panic("checkTime: conv failed")
-		ret
+		return
 	}
 	if time.Nanosecond() != int(nanosec) {
 		t.Errorf("{}: bad nanosecond: {} not {}", test.name, time.Nanosecond(), nanosec)

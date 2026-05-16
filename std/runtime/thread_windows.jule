@@ -17,7 +17,7 @@ struct osthread {
 impl osthread {
 	// Reports whether the threads are equal.
 	fn equal(*self, other: _DWORD): bool {
-		ret self.id == other
+		return self.id == other
 	}
 }
 
@@ -36,14 +36,14 @@ unsafe fn threadSpawn(func: *unsafe, mut args: *unsafe): bool {
 	handle := sys::Addrcall[*unsafe](uintptr(extern.CreateThread),
 		(*unsafe)(nil), int(0), func, args, _DWORD(0), &id)
 	if handle == nil {
-		ret false
+		return false
 	}
 	sys::CloseHandle(sys::Handle(handle))!
-	ret true
+	return true
 }
 
 fn currentThreadID(): _DWORD {
-	ret sys::Addrcall[_DWORD](uintptr(extern.GetCurrentThreadId))
+	return sys::Addrcall[_DWORD](uintptr(extern.GetCurrentThreadId))
 }
 
 fn osyield() {

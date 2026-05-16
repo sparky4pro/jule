@@ -55,5 +55,5 @@ fn integLookupIP(net: Network, host: string)!: (addrs: []IPAddr) {
 	}
 
 	sys::Addrcall(uintptr(extern.FreeAddrInfoW), uintptr(res))
-	ret addrs
+	return addrs
 }

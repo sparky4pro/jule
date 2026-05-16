@@ -19,7 +19,7 @@ impl netFD {
 
 	// Returns NetHandle.
 	fn Handle(*self): poll::NetHandle {
-		ret poll::NetHandle(self.pfd.File)
+		return poll::NetHandle(self.pfd.File)
 	}
 
 	fn SetDeadline(mut *self, mut deadline: time::Duration) {
@@ -36,46 +36,46 @@ impl netFD {
 
 	// Wrapper for [poll::FD.Write].
 	async fn Write(mut *self, buf: []byte)!: (n: int) {
-		ret self.pfd.Write(buf).await?
+		return self.pfd.Write(buf).await?
 	}
 
 	// Wrapper for [poll::FD.Read].
 	async fn Read(mut *self, mut buf: []byte)!: (n: int) {
-		ret self.pfd.Read(buf).await?
+		return self.pfd.Read(buf).await?
 	}
 
 	// Wrapper for [poll::FD.ReadV].
 	async fn ReadV(mut *self, mut buf: []byte, addr: uintptr, addrLen: sys::Socklen)!: (n: int) {
-		ret self.pfd.ReadV(buf, addr, addrLen).await?
+		return self.pfd.ReadV(buf, addr, addrLen).await?
 	}
 
 	// Wrapper for [poll::FD.ReadV4].
 	async fn ReadV4(mut *self, mut buf: []byte, addr: sys::RawSockaddrInet4)!: (n: int) {
 		addrLen := mem::SizeOf(addr)
-		ret self.ReadV(buf, uintptr(&addr), sys::Socklen(addrLen)).await?
+		return self.ReadV(buf, uintptr(&addr), sys::Socklen(addrLen)).await?
 	}
 
 	// Wrapper for [poll::FD.ReadV6].
 	async fn ReadV6(mut *self, mut buf: []byte, addr: sys::RawSockaddrInet6)!: (n: int) {
 		addrLen := mem::SizeOf(addr)
-		ret self.ReadV(buf, uintptr(&addr), sys::Socklen(addrLen)).await?
+		return self.ReadV(buf, uintptr(&addr), sys::Socklen(addrLen)).await?
 	}
 
 	// Wrapper for [poll::FD.WriteV].
 	async fn WriteV(mut *self, buf: []byte, addr: uintptr, addrLen: sys::Socklen)!: (n: int) {
-		ret self.pfd.WriteV(buf, addr, addrLen).await?
+		return self.pfd.WriteV(buf, addr, addrLen).await?
 	}
 
 	// Wrapper for [poll::FD.WriteV4].
 	async fn WriteV4(mut *self, buf: []byte, addr: sys::RawSockaddrInet4)!: (n: int) {
 		addrLen := mem::SizeOf(addr)
-		ret self.WriteV(buf, uintptr(&addr), sys::Socklen(addrLen)).await?
+		return self.WriteV(buf, uintptr(&addr), sys::Socklen(addrLen)).await?
 	}
 
 	// Wrapper for [poll::FD.WriteV6].
 	async fn WriteV6(mut *self, buf: []byte, addr: sys::RawSockaddrInet6)!: (n: int) {
 		addrLen := mem::SizeOf(addr)
-		ret self.WriteV(buf, uintptr(&addr), sys::Socklen(addrLen)).await?
+		return self.WriteV(buf, uintptr(&addr), sys::Socklen(addrLen)).await?
 	}
 
 	// Wrapper for [poll::FD.Close].
@@ -91,7 +91,7 @@ fn newFD(h: poll::NetHandle, flags: int, sotype: int): &netFD {
 		IsStream:      sotype == sys::SOCK_STREAM,
 		ZeroReadIsEOF: sotype != sys::SOCK_DGRAM && sotype != sys::SOCK_RAW,
 	}
-	ret &netFD{
+	return &netFD{
 		pfd: pfd,
 	}
 }

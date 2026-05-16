@@ -594,7 +594,7 @@ fn Ftruncate(fd: int, length: i64)! {
 
 fn Select(nfd: int, mut &r: *FdSet, mut &w: *FdSet, mut &e: *FdSet, mut &timeout: *Timeval)!: (n: int) {
 	ts := Timespec{Sec: timeout.Sec, Nsec: timeout.Usec * 1000}
-	ret pselect6(nfd, r, w, e, &ts, nil)?
+	return pselect6(nfd, r, w, e, &ts, nil)?
 }
 
 fn Socket(domain: int, typ: int, proto: int)!: (fd: int) {
@@ -603,7 +603,7 @@ fn Socket(domain: int, typ: int, proto: int)!: (fd: int) {
 	if e != _NO_ERROR {
 		throw e
 	}
-	ret
+	return
 }
 
 fn Bind(s: int, addr: uintptr, addrlen: Socklen)! {
@@ -633,7 +633,7 @@ fn Accept(s: int, addr: uintptr, &addrLen: *Socklen)!: (fd: int) {
 	if e != _NO_ERROR {
 		throw e
 	}
-	ret
+	return
 }
 
 fn Recvfrom(fd: int, mut p: []byte, flags: int, from: uintptr, fromLen: Socklen)!: (n: int) {
@@ -648,7 +648,7 @@ fn Recvfrom(fd: int, mut p: []byte, flags: int, from: uintptr, fromLen: Socklen)
 	if e1 != _NO_ERROR {
 		throw e1
 	}
-	ret
+	return
 }
 
 fn Sendto(s: int, buf: []byte, flags: int, to: uintptr, addrlen: Socklen)! {
@@ -692,31 +692,31 @@ fn Getpeername(fd: int)!: RawSockaddrAny {
 	if e1 != _NO_ERROR {
 		throw e1
 	}
-	ret rsa
+	return rsa
 }
 
 fn Getegid(): (egid: int) {
 	r0, _ := syscall(SYS_GETEGID, 0, 0, 0, 0, 0, 0)
 	egid = int(r0)
-	ret
+	return
 }
 
 fn Geteuid(): (euid: int) {
 	r0, _ := syscall(SYS_GETEUID, 0, 0, 0, 0, 0, 0)
 	euid = int(r0)
-	ret
+	return
 }
 
 fn Getgid(): (gid: int) {
 	r0, _ := syscall(SYS_GETGID, 0, 0, 0, 0, 0, 0)
 	gid = int(r0)
-	ret
+	return
 }
 
 fn Getuid(): (uid: int) {
 	r0, _ := syscall(SYS_GETUID, 0, 0, 0, 0, 0, 0)
 	uid = int(r0)
-	ret
+	return
 }
 
 fn getgroups(n: int, list: uintptr)!: (nn: int) {
@@ -725,7 +725,7 @@ fn getgroups(n: int, list: uintptr)!: (nn: int) {
 	if e1 != 0 {
 		throw e1
 	}
-	ret
+	return
 }
 
 fn Uname(mut &buf: *Utsname)! {
@@ -733,5 +733,5 @@ fn Uname(mut &buf: *Utsname)! {
 	if e1 != 0 {
 		throw e1
 	}
-	ret
+	return
 }

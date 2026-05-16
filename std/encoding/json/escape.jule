@@ -11,7 +11,7 @@ use "std/internal/ubuf"
 // All values are true except for the ASCII control characters (0-31), the
 // double quote ("), and the backslash character ("\").
 fn isSafe(b: byte): bool {
-	ret b != '"' && b != '\\' && b > 31
+	return b != '"' && b != '\\' && b > 31
 }
 
 // Returns the value true if the ASCII character with the given
@@ -22,7 +22,7 @@ fn isSafe(b: byte): bool {
 // double quote ("), the backslash character ("\"), HTML opening and closing
 // tags ("<" and ">"), and the ampersand ("&").
 fn isHTMLSafe(b: byte): bool {
-	ret b != '"' && b != '&' && b != '<' && b != '>' && b != '\\' && b > 31
+	return b != '"' && b != '&' && b != '<' && b != '>' && b != '\\' && b > 31
 }
 
 fn isNeedHTMLEscape(src: []byte): bool {
@@ -30,14 +30,14 @@ fn isNeedHTMLEscape(src: []byte): bool {
 	b.SetData(src)
 	for i, c in src {
 		if c == '<' || c == '>' || c == '&' {
-			ret true
+			return true
 		}
 		// Convert U+2028 and U+2029 (E2 80 A8 and E2 80 A9).
 		if c == 0xE2 && i+2 < b.Len() && b.Get(i+1) == 0x80 && b.Get(i+2)&^1 == 0xA8 {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 fn appendHTMLEscape(mut &dst: *buffer, src: []byte) {

@@ -35,7 +35,7 @@ const (
 // and https://learn.microsoft.com/en-us/windows/win32/fileio/reparse-point-tags.
 fn win32FileAttributeDataIsReparseTagNameSurrogate(d: sys::Win32FileAttributeData, info: winstatInfo): bool {
 	// True for IO_REPARSE_TAG_SYMLINK and IO_REPARSE_TAG_MOUNT_POINT.
-	ret d.FileAttributes&sys::FILE_ATTRIBUTE_REPARSE_POINT != 0 && info.reparseTag&0x20000000 != 0
+	return d.FileAttributes&sys::FILE_ATTRIBUTE_REPARSE_POINT != 0 && info.reparseTag&0x20000000 != 0
 }
 
 // Returns FileMode from sys::Win32FileAttributeData d.
@@ -92,7 +92,7 @@ fn modeFromWin32FileAttributeData(d: sys::Win32FileAttributeData, info: winstatI
 			m |= ModeIrregular
 		}
 	}
-	ret
+	return
 }
 
 // Copies all required information from sys::Win32FileAttributeData d into the newly created FileInfo.
@@ -100,7 +100,7 @@ fn newFileStatFromWin32FileAttributeData(d: sys::Win32FileAttributeData, info: w
 	f.size = i64(d.FileSizeHigh)<<32 + i64(d.FileSizeLow)
 	f.mode = modeFromWin32FileAttributeData(d, info)
 	f.modtime = time::Unix(0, d.LastWriteTime.Nanoseconds())
-	ret
+	return
 }
 
 // Copies all required information from sys::Win32FindData d into the newly created FileInfo.
@@ -116,7 +116,7 @@ fn newFileStatFromWin32FindData(d: sys::Win32FindData): (f: FileInfo) {
 	f.size = i64(d.FileSizeHigh)<<32 + i64(d.FileSizeLow)
 	f.mode = modeFromWin32FileAttributeData(unsafe { *(*sys::Win32FileAttributeData)(&d) }, info)
 	f.modtime = time::Unix(0, d.LastWriteTime.Nanoseconds())
-	ret
+	return
 }
 
 // Calls GetFileInformationByHandle to gather all required information about the file handle h.
@@ -146,5 +146,5 @@ fn newFileInfoFromGetFileInformationByHandle(h: sys::Handle)!: (fs: FileInfo, d:
 	fs.sys.vol = fd.VolumeSerialNumber
 	fs.sys.idxhi = fd.FileIndexHigh
 	fs.sys.idxlo = fd.FileIndexLow
-	ret
+	return
 }

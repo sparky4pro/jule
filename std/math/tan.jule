@@ -119,9 +119,9 @@ fn Tan(mut x: f64): f64 {
 	// special cases
 	match {
 	| x == 0 | IsNaN(x):
-		ret x // ret ±0 || NaN()
+		return x // return ±0 || NaN()
 	| IsInf(x, 0):
-		ret NaN()
+		return NaN()
 	}
 
 	// make argument positive but save the sign
@@ -160,5 +160,5 @@ fn Tan(mut x: f64): f64 {
 	if sign {
 		y = -y
 	}
-	ret y
+	return y
 }

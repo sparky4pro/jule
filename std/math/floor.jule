@@ -43,17 +43,17 @@
 //	Floor(NaN) = NaN
 fn Floor(x: f64): f64 {
 	if x == 0 || IsNaN(x) || IsInf(x, 0) {
-		ret x
+		return x
 	}
 	if x < 0 {
 		mut d, fract := Modf(-x)
 		if fract != 0.0 {
 			d = d + 1
 		}
-		ret -d
+		return -d
 	}
 	d, _ := Modf(x)
-	ret d
+	return d
 }
 
 // Returns the least integer value greater than or equal to x.
@@ -62,7 +62,7 @@ fn Floor(x: f64): f64 {
 //	Ceil(±0) = ±0
 //	Ceil(±Inf) = ±Inf
 //	Ceil(NaN) = NaN
-fn Ceil(x: f64): f64 { ret -Floor(-x) }
+fn Ceil(x: f64): f64 { return -Floor(-x) }
 
 // Returns the integer value of x.
 //
@@ -72,10 +72,10 @@ fn Ceil(x: f64): f64 { ret -Floor(-x) }
 //	Trunc(NaN) = NaN
 fn Trunc(x: f64): f64 {
 	if x == 0 || IsNaN(x) || IsInf(x, 0) {
-		ret x
+		return x
 	}
 	d, _ := Modf(x)
-	ret d
+	return d
 }
 
 // Returns the nearest integer, rounding half away from zero.
@@ -90,9 +90,9 @@ fn Round(x: f64): f64 {
 	//	Round(x f64) f64 {
 	//		t: = Trunc(x)
 	//		if Abs(x-t) >= 0.5 {
-	//			ret t + Copysign(1, x)
+	//			return t + Copysign(1, x)
 	//		}
-	//		ret t
+	//		return t
 	//	}
 	mut bits := F64bits(x)
 	mut e := uint(bits>>shift) & mask
@@ -112,7 +112,7 @@ fn Round(x: f64): f64 {
 		bits += Half >> e
 		bits &= ^(fracMask >> e)
 	}
-	ret F64frombits(bits)
+	return F64frombits(bits)
 }
 
 // Returns the nearest integer, rounding ties to even.
@@ -129,9 +129,9 @@ fn RoundEven(x: f64): f64 {
 	//		odd: = Remainder(t, 2) != 0
 	//		d: = Abs(x - t)
 	//		if d > 0.5 || (d == 0.5 && odd) {
-	//			ret t + Copysign(1, x)
+	//			return t + Copysign(1, x)
 	//		}
-	//		ret t
+	//		return t
 	//	}
 	mut bits := F64bits(x)
 	mut e := uint(bits>>shift) & mask
@@ -151,5 +151,5 @@ fn RoundEven(x: f64): f64 {
 		// Round abs(x) <= 0.5 including denormals.
 		bits &= signMask // +-0
 	}
-	ret F64frombits(bits)
+	return F64frombits(bits)
 }

@@ -7,5 +7,5 @@ use "std/sys"
 type sysFileInfo = sys::SysStat
 
 fn sameFile(fi1: FileInfo, fi2: FileInfo): bool {
-	ret fi1.sys.Dev == fi2.sys.Dev && fi1.sys.Ino == fi2.sys.Ino
+	return fi1.sys.Dev == fi2.sys.Dev && fi1.sys.Ino == fi2.sys.Ino
 }

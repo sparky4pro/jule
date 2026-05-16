@@ -22,7 +22,7 @@ struct osthread {
 impl osthread {
 	// Reports whether the threads are equal.
 	fn equal(*self, other: extern.pthread_t): bool {
-		ret sys::Addrcall[i32](uintptr(extern.pthread_equal), self.handle, other) != 0
+		return sys::Addrcall[i32](uintptr(extern.pthread_equal), self.handle, other) != 0
 	}
 }
 
@@ -39,14 +39,14 @@ impl osthread {
 unsafe fn threadSpawn(func: *unsafe, mut args: *unsafe): bool {
 	let mut handle: extern.pthread_t
 	if sys::Addrcall[i32](uintptr(extern.pthread_create), &handle, (*unsafe)(nil), func, args) != 0 {
-		ret false
+		return false
 	}
 	sys::Addrcall(uintptr(extern.pthread_detach), handle)
-	ret true
+	return true
 }
 
 fn currentThreadID(): extern.pthread_t {
-	ret sys::Addrcall[extern.pthread_t](uintptr(extern.pthread_self))
+	return sys::Addrcall[extern.pthread_t](uintptr(extern.pthread_self))
 }
 
 fn osyield() {

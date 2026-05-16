@@ -26,6 +26,6 @@ fn executable(): string {
 		if extern.realpath((*c::Char)(p), (*c::Char)(rp)) == nil {
 			panic("runtime: executable path read error")
 		}
-		ret integ::BytePtrToString(rp)
+		return integ::BytePtrToString(rp)
 	}
 }

@@ -18,13 +18,13 @@ impl Kind for Trait {
 	// Implement: Kind
 	// Returns Trait's identifier.
 	fn String(*self): string {
-		ret self.Name
+		return self.Name
 	}
 
 	// Reports whether types are same.
 	fn Equal(&self, other: &Type): bool {
 		t, ok := other.Kind.(&Trait)
-		ret ok && self == t
+		return ok && self == t
 	}
 }
 
@@ -34,22 +34,22 @@ impl Trait {
 	fn FindMethod(mut *self, name: string): &Func {
 		for (_, mut f) in self.Methods {
 			if f.Name == name {
-				ret f
+				return f
 			}
 		}
-		ret self.findMethodInherit(name)
+		return self.findMethodInherit(name)
 	}
 
 	fn inherits(mut &self, t: &Trait): bool {
 		if self == t {
-			ret true
+			return true
 		}
 		for (_, mut i) in self.Inherits {
 			if i.Type.Trait().inherits(t) {
-				ret true
+				return true
 			}
 		}
-		ret false
+		return false
 	}
 
 	fn findMethodInherit(mut *self, name: string): &Func {
@@ -61,10 +61,10 @@ impl Trait {
 			if t != nil {
 				mut f2 := t.FindMethod(name)
 				if f2 != nil {
-					ret f2
+					return f2
 				}
 			}
 		}
-		ret nil
+		return nil
 	}
 }

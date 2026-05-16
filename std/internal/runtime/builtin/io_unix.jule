@@ -14,5 +14,5 @@ fn newStdioPoll(h: u64): &poll::FD {
 		ZeroReadIsEOF: true,
 	}
 	fd.Init(false)!
-	ret fd
+	return fd
 }

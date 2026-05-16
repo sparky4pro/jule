@@ -9,15 +9,15 @@ use "std/jule/sema"
 fn FindDirective(mut directives: []&ast::Directive, tag: string): &ast::Directive {
 	for (_, mut dr) in directives {
 		if dr.Tag.Kind == tag {
-			ret dr
+			return dr
 		}
 	}
-	ret nil
+	return nil
 }
 
 // Reports whether directive is exist.
 fn HasDirective(directives: []&ast::Directive, tag: string): bool {
-	ret FindDirective(unsafe { *(&directives) }, tag) != nil
+	return FindDirective(unsafe { *(&directives) }, tag) != nil
 }
 
 // Reports whether the directive has argument arg.
@@ -27,20 +27,20 @@ fn HasDirective(directives: []&ast::Directive, tag: string): bool {
 fn HasDirectiveArg(directive: &ast::Directive, arg: string, mode: int, r: int): int {
 	for _, darg in directive.Args {
 		if darg.Kind == arg {
-			ret mode | r
+			return mode | r
 		}
 	}
-	ret mode & ^r
+	return mode & ^r
 }
 
 // Reports whether trait have method in this identifier.
 fn ContainsTraitMethod(mut t: &sema::Trait, name: string): bool {
 	for _, m in t.Methods {
 		if m.Name == name {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 // Returns structure type from t if exist.
@@ -51,12 +51,12 @@ fn FindStructFromType(mut t: &sema::Type): (&sema::StructIns, ptr: bool) {
 		t = t.Kind.(&sema::Sptr).Value
 		match type t.Kind {
 		| &sema::StructIns:
-			ret t.Kind.(&sema::StructIns), true
+			return t.Kind.(&sema::StructIns), true
 		}
 	| &sema::StructIns:
-		ret t.Kind.(&sema::StructIns), false
+		return t.Kind.(&sema::StructIns), false
 	}
-	ret nil, false
+	return nil, false
 }
 
 // Data offset of empty trait.
@@ -68,14 +68,14 @@ const emptyTraitOffset = 0
 // https://manual.jule.dev/memory/memory-model#traits
 fn FindTraitTypeOffsetS(t: &sema::Trait, s: &sema::StructIns): int {
 	if len(t.Implemented) == 0 {
-		ret emptyTraitOffset
+		return emptyTraitOffset
 	}
 	mut i := 0
 	for _, si in t.Implemented {
 		if s.Decl == si {
 			for _, ins in si.Instances {
 				if ins == s {
-					ret i
+					return i
 				}
 				i += 2
 			}
@@ -84,7 +84,7 @@ fn FindTraitTypeOffsetS(t: &sema::Trait, s: &sema::StructIns): int {
 			i += len(si.Instances) << 1
 		}
 	}
-	ret -1
+	return -1
 }
 
 // Same as [FindTraitTypeOffsetS] but designed for Type based lookup.
@@ -94,17 +94,17 @@ fn FindTraitTypeOffsetS(t: &sema::Trait, s: &sema::StructIns): int {
 // https://manual.jule.dev/memory/memory-model#traits
 fn FindTraitTypeOffset(t: &sema::Trait, mut k: &sema::Type): int {
 	if len(t.Implemented) == 0 {
-		ret emptyTraitOffset
+		return emptyTraitOffset
 	}
 	s, ptr := FindStructFromType(k)
 	if s == nil {
-		ret -1
+		return -1
 	}
 	i := FindTraitTypeOffsetS(t, s)
 	if ptr {
-		ret i + 1
+		return i + 1
 	}
-	ret i
+	return i
 }
 
 // Returns function instance by generics.
@@ -118,9 +118,9 @@ lookup:
 				continue lookup
 			}
 		}
-		ret ins
+		return ins
 	}
-	ret nil
+	return nil
 }
 
 // Returns function instance by generics.
@@ -131,7 +131,7 @@ fn FindFuncGenericInstance(mut f: &sema::Func, generics: ...&sema::Type): &sema:
 	if ins == nil {
 		panic("obj: generic instance lookup failed, this is an implementation mistake")
 	}
-	ret ins
+	return ins
 }
 
 // Returns struct instance by generics.
@@ -145,7 +145,7 @@ lookup:
 				continue lookup
 			}
 		}
-		ret ins
+		return ins
 	}
 	panic("obj: generic instance lookup failed, this is an implementation mistake")
 }
@@ -155,20 +155,20 @@ lookup:
 fn SelectImport(mut imports: []&sema::ImportInfo, linkpath: string): &sema::ImportInfo {
 	for (_, mut imp) in imports {
 		if imp.LinkPath == linkpath {
-			ret imp
+			return imp
 		}
 	}
-	ret nil
+	return nil
 }
 
 // Returns index of variable if found, otherwise returns -1.
 fn FindVar(v: &sema::Var, vars: []&sema::Var): int {
 	for i, v2 in vars {
 		if v == v2 {
-			ret i
+			return i
 		}
 	}
-	ret -1
+	return -1
 }
 
 // Returns external identifier of type if it is external.
@@ -178,11 +178,11 @@ fn GetExternName(t: &sema::Type): string {
 	| &sema::StructIns:
 		s := t.Kind.(&sema::StructIns)
 		if s.Decl.Extern {
-			ret s.Decl.Name
+			return s.Decl.Name
 		}
 		if s.Source != nil {
-			ret GetExternName(s.Source)
+			return GetExternName(s.Source)
 		}
 	}
-	ret ""
+	return ""
 }

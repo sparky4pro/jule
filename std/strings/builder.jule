@@ -19,14 +19,14 @@ impl Builder {
 	// Never throws an error.
 	fn Write(mut *self, b: []byte)!: (n: int) {
 		self.buf = append(self.buf, b...)
-		ret len(b)
+		return len(b)
 	}
 
 	// Writes bytes to buffer.
 	// Never throws an error.
 	fn WriteString(mut *self, s: string)!: (n: int) {
 		self.buf = append(self.buf, s...)
-		ret len(s)
+		return len(s)
 	}
 
 	// Writes byte to buffer.
@@ -41,12 +41,12 @@ impl Builder {
 	fn WriteRune(mut *self, r: rune)!: (n: int) {
 		if r < utf8::RuneSelf { // ASCII, fast way.
 			self.buf = append(self.buf, byte(r))
-			ret 1
+			return 1
 		}
 		n = len(self.buf)
 		self.buf = utf8::AppendRune(self.buf, r)
 		n = len(self.buf) - n
-		ret
+		return
 	}
 
 	// Copies the buffer to a new, larger buffer so that there are at least n
@@ -71,7 +71,7 @@ impl Builder {
 
 	// Returns buffer as string. Will not reset the underlying content.
 	fn String(*self): string {
-		ret unsafe::StringFromBytes(self.buf)
+		return unsafe::StringFromBytes(self.buf)
 	}
 
 	// Clears buffer.
@@ -82,17 +82,17 @@ impl Builder {
 
 	// Returns length of buffer.
 	fn Len(*self): int {
-		ret len(self.buf)
+		return len(self.buf)
 	}
 
 	// Returns capacity of buffer.
 	fn Cap(*self): int {
-		ret cap(self.buf)
+		return cap(self.buf)
 	}
 
 	// Returns mutable buffer for low-level interactions.
 	unsafe fn Buf(mut *self): []byte {
-		ret self.buf
+		return self.buf
 	}
 
 	// Sets mutable internal buffer for low-level interactions.
@@ -103,7 +103,7 @@ impl Builder {
 	// Returns async wrapper for the Builder.
 	// Useful to satisfy behavior implemented `io` traits.
 	fn Async(mut &self): asyncBuilder {
-		ret asyncBuilder(self)
+		return asyncBuilder(self)
 	}
 }
 
@@ -120,12 +120,12 @@ impl io::StringWriter for asyncBuilder {}
 impl asyncBuilder {
 	// Implements the io::Writer trait.
 	async fn Write(mut *self, b: []byte)!: (n: int) {
-		ret (&Builder)(*self).Write(b)?
+		return (&Builder)(*self).Write(b)?
 	}
 
 	// Implements the io::StringWriter trait.
 	async fn WriteString(mut *self, s: string)!: (n: int) {
-		ret (&Builder)(*self).WriteString(s)?
+		return (&Builder)(*self).WriteString(s)?
 	}
 
 	// Implements the io::ByteWriter trait.
@@ -135,6 +135,6 @@ impl asyncBuilder {
 
 	// Implements the io::RuneWriter trait.
 	async fn WriteRune(mut *self, r: rune)!: (n: int) {
-		ret (&Builder)(*self).WriteRune(r)?
+		return (&Builder)(*self).WriteRune(r)?
 	}
 }

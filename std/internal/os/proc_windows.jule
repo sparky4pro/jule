@@ -11,7 +11,7 @@ fn Getwd()!: string {
 	if n == 0 {
 		throw sys::GetLastErrno()
 	}
-	ret unsafe { integ::UTF16PtrToString(&buf[0]) }
+	return unsafe { integ::UTF16PtrToString(&buf[0]) }
 }
 
 fn Chdir(path: string)! {

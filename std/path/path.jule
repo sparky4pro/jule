@@ -51,16 +51,16 @@ struct lazybuf {
 impl lazybuf {
 	fn index(*self, i: int): byte {
 		if self.buf != nil {
-			ret self.buf[i]
+			return self.buf[i]
 		}
-		ret self.s[i]
+		return self.s[i]
 	}
 
 	fn append(mut *self, c: byte) {
 		if self.buf == nil {
 			if self.w < len(self.s) && self.s[self.w] == c {
 				self.w++
-				ret
+				return
 			}
 			self.buf = make([]byte, len(self.s))
 			copy(self.buf, self.s[:self.w])
@@ -71,9 +71,9 @@ impl lazybuf {
 
 	fn string(*self): string {
 		if self.buf == nil {
-			ret self.s[:self.w]
+			return self.s[:self.w]
 		}
-		ret unsafe::StringFromBytes(self.buf[:self.w])
+		return unsafe::StringFromBytes(self.buf[:self.w])
 	}
 }
 
@@ -97,7 +97,7 @@ impl lazybuf {
 // https://9p.io/sys/doc/lexnames.html
 fn Clean(path: string): string {
 	if path == "" {
-		ret "."
+		return "."
 	}
 
 	let rooted = path[0] == '/'
@@ -157,10 +157,10 @@ fn Clean(path: string): string {
 
 	// Turn empty string into "."
 	if out.w == 0 {
-		ret "."
+		return "."
 	}
 
-	ret out.string()
+	return out.string()
 }
 
 // Splits path immediately following the final slash,
@@ -170,7 +170,7 @@ fn Clean(path: string): string {
 // The returned values have the property that path = dir+file.
 fn Split(path: string): (dir: string, file: string) {
 	let i = byteslite::LastIndexByteString(path, '/')
-	ret path[:i+1], path[i+1:]
+	return path[:i+1], path[i+1:]
 }
 
 // Joins any number of path elements into a single path,
@@ -183,7 +183,7 @@ fn Join(elem: ...string): string {
 		size += len(e)
 	}
 	if size == 0 {
-		ret ""
+		return ""
 	}
 	let mut buf = make([]byte, 0, size+len(elem)-1)
 	for _, e in elem {
@@ -194,7 +194,7 @@ fn Join(elem: ...string): string {
 			buf = append(buf, e...)
 		}
 	}
-	ret Clean(unsafe::StringFromBytes(buf))
+	return Clean(unsafe::StringFromBytes(buf))
 }
 
 // Returns the file name extension used by path.
@@ -205,10 +205,10 @@ fn Ext(path: string): string {
 	let mut i = len(path) - 1
 	for i >= 0 && path[i] != '/'; i-- {
 		if path[i] == '.' {
-			ret path[i:]
+			return path[i:]
 		}
 	}
-	ret ""
+	return ""
 }
 
 // Returns the last element of path.
@@ -217,7 +217,7 @@ fn Ext(path: string): string {
 // If the path consists entirely of slashes, returns "/".
 fn Base(mut path: string): string {
 	if path == "" {
-		ret "."
+		return "."
 	}
 	// Strip trailing slashes.
 	for len(path) > 0 && path[len(path)-1] == '/' {
@@ -230,14 +230,14 @@ fn Base(mut path: string): string {
 	}
 	// If empty now, it had only slashes.
 	if path == "" {
-		ret "/"
+		return "/"
 	}
-	ret path
+	return path
 }
 
 // Reports whether the path is absolute.
 fn IsAbs(path: string): bool {
-	ret len(path) > 0 && path[0] == '/'
+	return len(path) > 0 && path[0] == '/'
 }
 
 // Returns all but the last element of path, typically the path's directory.
@@ -249,5 +249,5 @@ fn IsAbs(path: string): bool {
 // slash.
 fn Dir(path: string): string {
 	let (dir, _) = Split(path)
-	ret Clean(dir)
+	return Clean(dir)
 }

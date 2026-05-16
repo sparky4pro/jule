@@ -46,9 +46,9 @@ fn Ldexp(mut frac: f64, mut exp: int): f64 {
 	// special cases
 	match {
 	| frac == 0:
-		ret frac // correctly return -0
+		return frac // correctly return -0
 	| IsInf(frac, 0) | IsNaN(frac):
-		ret frac
+		return frac
 	}
 	mut e := 0
 	frac, e = normalize(frac)
@@ -56,13 +56,13 @@ fn Ldexp(mut frac: f64, mut exp: int): f64 {
 	mut x := F64bits(frac)
 	exp += int(x>>shift)&mask - bias
 	if exp < -1075 {
-		ret Copysign(0, frac) // underflow
+		return Copysign(0, frac) // underflow
 	}
 	if exp > 1023 { // overflow
 		if frac < 0 {
-			ret Inf(-1)
+			return Inf(-1)
 		}
-		ret Inf(1)
+		return Inf(1)
 	}
 	mut m := 1.
 	if exp < -1022 { // denormal
@@ -71,5 +71,5 @@ fn Ldexp(mut frac: f64, mut exp: int): f64 {
 	}
 	x = x & ^(mask << shift)
 	x |= u64(exp+bias) << shift
-	ret m * F64frombits(x)
+	return m * F64frombits(x)
 }

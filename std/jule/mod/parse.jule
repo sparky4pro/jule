@@ -62,7 +62,7 @@ impl parser {
 			}
 			self.offset = len(self.buf)
 			self.r = eof
-			ret
+			return
 		}
 		if self.r == '\n' {
 			self.addLine()
@@ -94,7 +94,7 @@ impl parser {
 		for self.r != eof && self.r != '\n' {
 			self.next()
 		}
-		ret unsafe::StringFromBytes(self.buf[offset:self.offset])
+		return unsafe::StringFromBytes(self.buf[offset:self.offset])
 	}
 
 	// module <name>
@@ -103,7 +103,7 @@ impl parser {
 		line = strings::Trim(line[len("module"):], spaces)
 		if len(line) == 0 {
 			self.pushErr("module name is missing")
-			ret
+			return
 		}
 		self.mod.Name = line
 		if !IsName(self.mod.Name) {
@@ -157,7 +157,7 @@ struct ParseOptions {
 fn ParseFile(path: string, options: ParseOptions): (&Mod, []log::Log) {
 	modfile := filepath::Join(path, jule::ModuleFile)
 	mut bytes := os::ReadFileSync(modfile) else {
-		ret nil, [{
+		return nil, [{
 				Kind: log::Error,
 				Text: "module file could not checked because of a problem",
 				Path: modfile,
@@ -174,38 +174,38 @@ fn ParseFile(path: string, options: ParseOptions): (&Mod, []log::Log) {
 	}
 	parser.parse()
 	if len(parser.logs) > 0 {
-		ret parser.mod, parser.logs
+		return parser.mod, parser.logs
 	}
 	checkMod(options, parser.modfile, parser.mod, &parser.logs)
-	ret parser.mod, parser.logs
+	return parser.mod, parser.logs
 }
 
 // Reports whether the name is valid to become module name.
 // It does not checks for reserved names.
 fn IsName(name: string): bool {
 	if len(name) == 0 {
-		ret false
+		return false
 	}
 	for i, r in name {
 		if i == 0 {
 			if r != '_' && !isLetter(r) {
-				ret false
+				return false
 			}
 		} else if !isSpecial(r) && !isLetter(r) && !isDigit(r) {
-			ret false
+			return false
 		}
 	}
-	ret true
+	return true
 }
 
-fn lower(ch: rune): rune { ret ('a' - 'A') | ch }
-fn isDecimal(ch: rune): bool { ret '0' <= ch && ch <= '9' }
-fn isSpecial(ch: rune): bool { ret ch == '_' || ch == '.' }
+fn lower(ch: rune): rune { return ('a' - 'A') | ch }
+fn isDecimal(ch: rune): bool { return '0' <= ch && ch <= '9' }
+fn isSpecial(ch: rune): bool { return ch == '_' || ch == '.' }
 
 fn isLetter(ch: rune): bool {
-	ret 'a' <= lower(ch) && lower(ch) <= 'z' || ch == '_' || ch >= utf8::RuneSelf && unicode::IsLetter(ch)
+	return 'a' <= lower(ch) && lower(ch) <= 'z' || ch == '_' || ch >= utf8::RuneSelf && unicode::IsLetter(ch)
 }
 
 fn isDigit(ch: rune): bool {
-	ret isDecimal(ch) || ch >= utf8::RuneSelf && unicode::IsDigit(ch)
+	return isDecimal(ch) || ch >= utf8::RuneSelf && unicode::IsDigit(ch)
 }

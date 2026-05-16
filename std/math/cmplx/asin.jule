@@ -53,69 +53,69 @@ use "std/math"
 fn Asin(x: cmplx128): cmplx128 {
 	match {
 	| imag(x) == 0 && math::Abs(real(x)) <= 1:
-		ret cmplx(math::Asin(real(x)), imag(x))
+		return cmplx(math::Asin(real(x)), imag(x))
 	| real(x) == 0 && math::Abs(imag(x)) <= 1:
-		ret cmplx(real(x), math::Asinh(imag(x)))
+		return cmplx(real(x), math::Asinh(imag(x)))
 	| math::IsNaN(imag(x)):
 		match {
 		| real(x) == 0:
-			ret cmplx(real(x), math::NaN())
+			return cmplx(real(x), math::NaN())
 		| math::IsInf(real(x), 0):
-			ret cmplx(math::NaN(), real(x))
+			return cmplx(math::NaN(), real(x))
 		|:
-			ret NaN()
+			return NaN()
 		}
 	| math::IsInf(imag(x), 0):
 		match {
 		| math::IsNaN(real(x)):
-			ret x
+			return x
 		| math::IsInf(real(x), 0):
-			ret cmplx(math::Copysign(math::Pi/4, real(x)), imag(x))
+			return cmplx(math::Copysign(math::Pi/4, real(x)), imag(x))
 		|:
-			ret cmplx(math::Copysign(0, real(x)), imag(x))
+			return cmplx(math::Copysign(0, real(x)), imag(x))
 		}
 	| math::IsInf(real(x), 0):
-		ret cmplx(math::Copysign(math::Pi/2, real(x)), math::Copysign(real(x), imag(x)))
+		return cmplx(math::Copysign(math::Pi/2, real(x)), math::Copysign(real(x), imag(x)))
 	}
 	ct := cmplx(-imag(x), real(x)) // i * x
 	xx := x * x
 	x1 := cmplx(1-real(xx), -imag(xx)) // 1 - x*x
 	x2 := Sqrt(x1)                     // x2 = sqrt(1 - x*x)
 	w := Log(ct + x2)
-	ret cmplx(imag(w), -real(w)) // -i * w
+	return cmplx(imag(w), -real(w)) // -i * w
 }
 
 // Returns the inverse hyperbolic sine of complex number.
 fn Asinh(x: cmplx128): cmplx128 {
 	match {
 	| imag(x) == 0 && math::Abs(real(x)) <= 1:
-		ret cmplx(math::Asinh(real(x)), imag(x))
+		return cmplx(math::Asinh(real(x)), imag(x))
 	| real(x) == 0 && math::Abs(imag(x)) <= 1:
-		ret cmplx(real(x), math::Asin(imag(x)))
+		return cmplx(real(x), math::Asin(imag(x)))
 	| math::IsInf(real(x), 0):
 		match {
 		| math::IsInf(imag(x), 0):
-			ret cmplx(real(x), math::Copysign(math::Pi/4, imag(x)))
+			return cmplx(real(x), math::Copysign(math::Pi/4, imag(x)))
 		| math::IsNaN(imag(x)):
-			ret x
+			return x
 		|:
-			ret cmplx(real(x), math::Copysign(0.0, imag(x)))
+			return cmplx(real(x), math::Copysign(0.0, imag(x)))
 		}
 	| math::IsNaN(real(x)):
 		match {
 		| imag(x) == 0:
-			ret x
+			return x
 		| math::IsInf(imag(x), 0):
-			ret cmplx(imag(x), real(x))
+			return cmplx(imag(x), real(x))
 		|:
-			ret NaN()
+			return NaN()
 		}
 	| math::IsInf(imag(x), 0):
-		ret cmplx(math::Copysign(imag(x), real(x)), math::Copysign(math::Pi/2, imag(x)))
+		return cmplx(math::Copysign(imag(x), real(x)), math::Copysign(math::Pi/2, imag(x)))
 	}
 	xx := x * x
 	x1 := cmplx(1+real(xx), imag(xx)) // 1 + x*x
-	ret Log(x + Sqrt(x1)) // log(x + sqrt(1 + x*x))
+	return Log(x + Sqrt(x1)) // log(x + sqrt(1 + x*x))
 }
 
 // Complex circular arc cosine
@@ -134,19 +134,19 @@ fn Asinh(x: cmplx128): cmplx128 {
 // Returns the inverse cosine of complex number.
 fn Acos(x: cmplx128): cmplx128 {
 	w := Asin(x)
-	ret cmplx(math::Pi/2-real(w), -imag(w))
+	return cmplx(math::Pi/2-real(w), -imag(w))
 }
 
 // Returns the inverse hyperbolic cosine of complex number.
 fn Acosh(x: cmplx128): cmplx128 {
 	if x == 0 {
-		ret cmplx(0, math::Copysign(math::Pi/2, imag(x)))
+		return cmplx(0, math::Copysign(math::Pi/2, imag(x)))
 	}
 	w := Acos(x)
 	if imag(w) <= 0 {
-		ret cmplx(-imag(w), real(w)) // i * w
+		return cmplx(-imag(w), real(w)) // i * w
 	}
-	ret cmplx(imag(w), -real(w)) // -i * w
+	return cmplx(imag(w), -real(w)) // -i * w
 }
 
 // Complex circular arc tangent
@@ -186,21 +186,21 @@ fn Acosh(x: cmplx128): cmplx128 {
 fn Atan(x: cmplx128): cmplx128 {
 	match {
 	| imag(x) == 0:
-		ret cmplx(math::Atan(real(x)), imag(x))
+		return cmplx(math::Atan(real(x)), imag(x))
 	| real(x) == 0 && math::Abs(imag(x)) <= 1:
-		ret cmplx(real(x), math::Atanh(imag(x)))
+		return cmplx(real(x), math::Atanh(imag(x)))
 	| math::IsInf(imag(x), 0) | math::IsInf(real(x), 0):
 		if math::IsNaN(real(x)) {
-			ret cmplx(math::NaN(), math::Copysign(0, imag(x)))
+			return cmplx(math::NaN(), math::Copysign(0, imag(x)))
 		}
-		ret cmplx(math::Copysign(math::Pi/2, real(x)), math::Copysign(0, imag(x)))
+		return cmplx(math::Copysign(math::Pi/2, real(x)), math::Copysign(0, imag(x)))
 	| math::IsNaN(real(x)) | math::IsNaN(imag(x)):
-		ret NaN()
+		return NaN()
 	}
 	x2 := real(x) * real(x)
 	a := 1 - x2 - imag(x)*imag(x)
 	if a == 0 {
-		ret NaN()
+		return NaN()
 	}
 	mut t := 0.5 * math::Atan2(2*real(x), a)
 	w := reducePi(t)
@@ -208,15 +208,15 @@ fn Atan(x: cmplx128): cmplx128 {
 	t = imag(x) - 1
 	b := x2 + t*t
 	if b == 0 {
-		ret NaN()
+		return NaN()
 	}
 	t = imag(x) + 1
 	c := (x2 + t*t) / b
-	ret cmplx(w, 0.25*math::Log(c))
+	return cmplx(w, 0.25*math::Log(c))
 }
 
 // Returns the inverse hyperbolic tangent of complex number.
 fn Atanh(x: cmplx128): cmplx128 {
 	z := Atan(cmplx(-imag(x), real(x))) // z = atan(i * x)
-	ret cmplx(imag(z), -real(z)) // z = -i * z
+	return cmplx(imag(z), -real(z)) // z = -i * z
 }

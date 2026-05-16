@@ -70,7 +70,7 @@ impl io::StringWriter for File {}
 // the returned file can be used for reading; the associated file
 // descriptor has mode O_RDONLY.
 fn Open(path: string)!: &File {
-	ret OpenFile(path, O_RDONLY, 0)?
+	return OpenFile(path, O_RDONLY, 0)?
 }
 
 // Opens file stream with named file, specified flag
@@ -79,7 +79,7 @@ fn Open(path: string)!: &File {
 // mode perm (before umask). If successful, returns File reference with handle
 // to file stream and the reference can used for I/O operations.
 fn OpenFile(path: string, flag: int, perm: FileMode)!: &File {
-	ret openFile(path, flag, perm)?
+	return openFile(path, flag, perm)?
 }
 
 // Removes named file.
@@ -93,7 +93,7 @@ fn Remove(path: string)! {
 // be used for I/O; the associated file descriptor has mode O_RDWR.
 // Calls internally `File.Open` and forwards any error.
 fn Create(path: string)!: &File {
-	ret OpenFile(path, O_RDWR|O_CREATE|O_TRUNC, 0666)?
+	return OpenFile(path, O_RDWR|O_CREATE|O_TRUNC, 0666)?
 }
 
 // Reads bytes of file.
@@ -125,7 +125,7 @@ async fn ReadFile(path: string)!: []byte {
 		n := f.Read(data[len(data):cap(data)]).await else {
 			if error == io::EOF {
 				f.Close().await?
-				ret data
+				return data
 			}
 			throw error
 		}
@@ -166,7 +166,7 @@ fn ReadFileSync(path: string)!: []byte {
 		n := f.ReadSync(data[len(data):cap(data)]) else {
 			if error == io::EOF {
 				f.CloseSync()?
-				ret data
+				return data
 			}
 			throw error
 		}
@@ -203,7 +203,7 @@ impl File {
 	// Returns raw file-descriptor.
 	// Intended for low-level use. Just borrow, do not close or something else.
 	fn RawFD(*self): u64 {
-		ret self.fd.File
+		return self.fd.File
 	}
 
 	// Reports whether treating the file descriptor as async is the correct
@@ -211,7 +211,7 @@ impl File {
 	// it should be handled with async API. Behavior in sync API is undefined.
 	// However, this is not a definitive guarantee that the fd is non-blocking.
 	fn ShouldAsync(*self): bool {
-		ret self.fd.ShouldAsync()
+		return self.fd.ShouldAsync()
 	}
 
 	// Sets or updates a deadline for the future read operations.
@@ -247,19 +247,19 @@ impl File {
 	// Writes bytes to handle and returns written byte count.
 	// The number of bytes written can never exceed the length of the buf.
 	async fn Write(mut *self, buf: []byte)!: (n: int) {
-		ret self.fd.Write(buf).await?
+		return self.fd.Write(buf).await?
 	}
 
 	// Sync variant of [Write].
 	// It is provided for blocking operations and must be used carefully
 	// in an async runtime; it blocks the thread, not the coroutine.
 	fn WriteSync(mut *self, buf: []byte)!: (n: int) {
-		ret self.fd.WriteSync(buf)?
+		return self.fd.WriteSync(buf)?
 	}
 
 	// Like Write, but writes the contents of string s rather than a slice of bytes.
 	async fn WriteString(mut *self, s: string)!: (n: int) {
-		ret self.Write(unsafe::StringBytes(s)).await?
+		return self.Write(unsafe::StringBytes(s)).await?
 	}
 
 	// Read bytes to buffer from handle and returns read byte count.
@@ -268,21 +268,21 @@ impl File {
 	// the buffer will not cause an overflow. Offset will be shifted
 	// by the number of bytes read.
 	async fn Read(mut *self, mut buf: []byte)!: (n: int) {
-		ret self.fd.Read(buf).await?
+		return self.fd.Read(buf).await?
 	}
 
 	// Sync variant of [Write].
 	// It is provided for blocking operations and must be used carefully
 	// in an async runtime; it blocks the thread, not the coroutine.
 	fn ReadSync(mut *self, mut buf: []byte)!: (n: int) {
-		ret self.fd.ReadSync(buf)?
+		return self.fd.ReadSync(buf)?
 	}
 
 	// Sets offset to next Read/Write operation and returns the new offset.
 	// whence: 0 (io::SeekStart) means, relative to the whence of the file, 1 (io::SeekCurrent)
 	// means relative to the current offset, and 2 (io::SeekEnd) means relative to end.
 	async fn Seek(mut *self, offset: i64, whence: int)!: i64 {
-		ret self.fd.Seek(offset, whence).await?
+		return self.fd.Seek(offset, whence).await?
 	}
 
 	// Commits the current contents of the file to stable storage.

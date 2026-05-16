@@ -61,22 +61,22 @@ fn Sqrt(x: cmplx128): cmplx128 {
 	if imag(x) == 0 {
 		// Ensure that imag(r) has the same sign as imag(x) for imag(x) == signed zero.
 		if real(x) == 0 {
-			ret cmplx(0, imag(x))
+			return cmplx(0, imag(x))
 		}
 		if real(x) < 0 {
-			ret cmplx(0, math::Copysign(math::Sqrt(-real(x)), imag(x)))
+			return cmplx(0, math::Copysign(math::Sqrt(-real(x)), imag(x)))
 		}
-		ret cmplx(math::Sqrt(real(x)), imag(x))
+		return cmplx(math::Sqrt(real(x)), imag(x))
 	} else if math::IsInf(imag(x), 0) {
-		ret cmplx(math::Inf(1.0), imag(x))
+		return cmplx(math::Inf(1.0), imag(x))
 	}
 	if real(x) == 0 {
 		if imag(x) < 0 {
 			r := math::Sqrt(-0.5 * imag(x))
-			ret cmplx(r, -r)
+			return cmplx(r, -r)
 		}
 		r := math::Sqrt(0.5 * imag(x))
-		ret cmplx(r, r)
+		return cmplx(r, r)
 	}
 	mut a := real(x)
 	mut b := imag(x)
@@ -103,7 +103,7 @@ fn Sqrt(x: cmplx128): cmplx128 {
 		r *= scale
 	}
 	if b < 0 {
-		ret cmplx(t, -r)
+		return cmplx(t, -r)
 	}
-	ret cmplx(t, r)
+	return cmplx(t, r)
 }

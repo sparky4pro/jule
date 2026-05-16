@@ -10,7 +10,7 @@ struct DirEntry {
 
 // Reads the named directory and returns all its directory entries can read.
 fn ReadDir(path: string)!: (dirents: []DirEntry) {
-	ret readDir(path)?
+	return readDir(path)?
 }
 
 // Creates directory.

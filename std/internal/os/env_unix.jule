@@ -50,7 +50,7 @@ fn copyenv() {
 fn lookupenv(key: string): (value: string, found: bool) {
 	envOnce.Do(copyenv)
 	if len(key) == 0 {
-		ret "", false
+		return "", false
 	}
 
 	envLock.rLock()
@@ -58,16 +58,16 @@ fn lookupenv(key: string): (value: string, found: bool) {
 
 	mut i, ok := env[key]
 	if !ok {
-		ret "", false
+		return "", false
 	}
 	s := envs[i]
 	i = 0
 	for i < len(s); i++ {
 		if s[i] == '=' {
-			ret s[i+1:], true
+			return s[i+1:], true
 		}
 	}
-	ret "", false
+	return "", false
 }
 
 fn setenv(key: string, value: string)! {
@@ -106,5 +106,5 @@ fn environ(): []string {
 		}
 	}
 	envLock.rUnlock()
-	ret a
+	return a
 }

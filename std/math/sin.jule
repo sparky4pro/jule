@@ -154,7 +154,7 @@ fn Cos(mut x: f64): f64 {
 	// special cases
 	match {
 	| IsNaN(x) || IsInf(x, 0):
-		ret NaN()
+		return NaN()
 	}
 
 	// make argument positive
@@ -196,7 +196,7 @@ fn Cos(mut x: f64): f64 {
 	if sign {
 		y = -y
 	}
-	ret y
+	return y
 }
 
 // Returns the sine of the radian argument x.
@@ -214,9 +214,9 @@ fn Sin(mut x: f64): f64 {
 	// special cases
 	match {
 	| x == 0 | IsNaN(x):
-		ret x // ret ±0 || NaN()
+		return x // return ±0 || NaN()
 	| IsInf(x, 0):
-		ret NaN()
+		return NaN()
 	}
 
 	// make argument positive but save the sign
@@ -257,5 +257,5 @@ fn Sin(mut x: f64): f64 {
 	if sign {
 		y = -y
 	}
-	ret y
+	return y
 }

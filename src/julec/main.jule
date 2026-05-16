@@ -77,11 +77,11 @@ fn help(args: []string, pads: string, pad: int) {
 		s.WriteByte('\n')!
 		s.WriteString(`Use "julec help <command>" to see information about a command.`)!
 		println(s.String())
-		ret
+		return
 	}
 	if len(args) > 3 { // julec help <command> [unknown]
 		printErrorMessage("invalid command: " + args[3])
-		ret
+		return
 	}
 	// julec help <command>
 	command := args[2]
@@ -237,7 +237,7 @@ write "julec help" to see commands`)
 fn version(args: []string) {
 	if len(args) > 2 {
 		printErrorMessage("invalid command: " + args[2])
-		ret
+		return
 	}
 	println(jule::Version)
 }
@@ -283,10 +283,10 @@ const toolsList = `
 fn tool(args: []string) {
 	if len(args) == 2 {
 		println("The tools are:" + toolsList)
-		ret
+		return
 	} else if len(args) > 3 {
 		printErrorMessage("invalid command: " + args[3])
-		ret
+		return
 	}
 
 	cmd := args[2]
@@ -306,7 +306,7 @@ fn tool(args: []string) {
 fn env(args: []string) {
 	if len(args) > 2 {
 		printErrorMessage("invalid command: " + args[2])
-		ret
+		return
 	}
 	println("julec version: " + jule::Version)
 	println("architecture: " + runtime::Arch)
@@ -324,14 +324,14 @@ fn mod(args: []string) {
 		println(`julec mod is a tool for managing Jule modules.
 
 The commands are:` + modCommandsList)
-		ret
+		return
 	}
 
 	match args[2] {
 	| "init": // julec mod init
 		if len(args) > 4 {
 			printErrorMessage("invalid command: " + args[4])
-			ret
+			return
 		}
 		if len(args) < 4 {
 			printErrorMessage("module name is missing\nuse command like: mod init <modulename>")
@@ -421,7 +421,7 @@ fn main() {
 	// Here is "2" but "args" always have one element for store program name.
 	if len(args) < 2 {
 		showInfo(args)
-		ret
+		return
 	}
 
 	processCommand(args)

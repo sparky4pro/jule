@@ -48,7 +48,7 @@ impl HardwareAddr {
 					i++
 					x += 3
 				}
-				ret hAddr
+				return hAddr
 			} else if s[4] == '.' {
 				if (len(s)+1)%5 != 0 {
 					goto err
@@ -71,7 +71,7 @@ impl HardwareAddr {
 					i += 2
 					x += 5
 				}
-				ret hAddr
+				return hAddr
 			}
 		}
 	err:
@@ -81,7 +81,7 @@ impl HardwareAddr {
 	// Returns address in string form.
 	fn String(*self): string {
 		if len(*self) == 0 {
-			ret ""
+			return ""
 		}
 		mut buf := strings::Builder{}
 		buf.Grow(len(*self)*3 - 1)
@@ -92,6 +92,6 @@ impl HardwareAddr {
 			buf.WriteByte(hexDigit[b>>4])!
 			buf.WriteByte(hexDigit[b&0xF])!
 		}
-		ret buf.String()
+		return buf.String()
 	}
 }

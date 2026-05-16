@@ -63,7 +63,7 @@ impl Replacer {
 		if len(oldnew) != 0 {
 			r.oldnew = append([]string(nil), oldnew...)
 		}
-		ret r
+		return r
 	}
 
 	fn buildOnce(*self) {
@@ -75,14 +75,14 @@ impl Replacer {
 	fn build(*self): replacer {
 		oldnew := self.oldnew
 		if len(oldnew) == 2 && len(oldnew[0]) > 1 {
-			ret singleStrReplacer.make(oldnew[0], oldnew[1])
+			return singleStrReplacer.make(oldnew[0], oldnew[1])
 		}
 
 		mut allNewBytes := true
 		mut i := 0
 		for i < len(oldnew); i += 2 {
 			if len(oldnew[i]) != 1 {
-				ret genericReplacer.make(oldnew)
+				return genericReplacer.make(oldnew)
 			}
 			if len(oldnew[i+1]) != 1 {
 				allNewBytes = false
@@ -102,7 +102,7 @@ impl Replacer {
 				n := oldnew[i+1][0]
 				(*r)[o] = n
 			}
-			ret r
+			return r
 		}
 
 		mut r := new(byteStrReplacer)
@@ -122,19 +122,19 @@ impl Replacer {
 			}
 			r.replacements[o] = []byte(n)
 		}
-		ret r
+		return r
 	}
 
 	// Returns a copy of s with all replacements performed.
 	fn Replace(&self, s: string): string {
 		self.once.Do(fn|| self.buildOnce())
-		ret self.r.Replace(s)
+		return self.r.Replace(s)
 	}
 
 	// Writes s to w with all replacements performed.
 	async fn WriteString(&self, mut w: io::Writer, s: string)!: (n: int) {
 		self.once.Do(fn|| self.buildOnce())
-		ret self.r.WriteString(w, s).await?
+		return self.r.WriteString(w, s).await?
 	}
 }
 
@@ -205,7 +205,7 @@ impl trieNode {
 				self.value = val
 				self.priority = priority
 			}
-			ret
+			return
 		}
 
 		if self.prefix != "" {
@@ -310,7 +310,7 @@ impl genericReplacer {
 		for i < len(oldnew); i += 2 {
 			r.root.add(oldnew[i], oldnew[i+1], len(oldnew)-i, r)
 		}
-		ret r
+		return r
 	}
 
 	#disable boundary
@@ -347,7 +347,7 @@ impl genericReplacer {
 				break
 			}
 		}
-		ret
+		return
 	}
 
 	#disable boundary
@@ -380,7 +380,7 @@ impl genericReplacer {
 		if last != len(s) {
 			n += w.WriteString(s[last:])
 		}
-		ret
+		return
 	}
 }
 
@@ -388,7 +388,7 @@ impl replacer for genericReplacer {
 	fn Replace(mut *self, s: string): string {
 		mut buf := make(appendSliceWriter, 0, len(s))
 		self.appendStr(&buf, s) else {}
-		ret unsafe::StringFromBytes([]byte(buf))
+		return unsafe::StringFromBytes([]byte(buf))
 	}
 
 	#disable boundary
@@ -421,7 +421,7 @@ impl replacer for genericReplacer {
 		if last != len(s) {
 			n += io::WriteString(w, s[last:]).await?
 		}
-		ret
+		return
 	}
 }
 
@@ -431,7 +431,7 @@ impl appendSliceWriter {
 	// WriteString writes to the buffer without string->[]byte->string allocations.
 	fn WriteString(mut *self, s: string): int {
 		*self = append(*self, s...)
-		ret len(s)
+		return len(s)
 	}
 }
 
@@ -446,7 +446,7 @@ struct singleStrReplacer {
 
 impl singleStrReplacer {
 	fn make(pattern: string, value: string): &singleStrReplacer {
-		ret &singleStrReplacer{finder: strFinder.make(pattern), value: value}
+		return &singleStrReplacer{finder: strFinder.make(pattern), value: value}
 	}
 }
 
@@ -467,10 +467,10 @@ impl replacer for singleStrReplacer {
 			i += _match + len(self.finder.pattern)
 		}
 		if !matched {
-			ret s
+			return s
 		}
 		buf.WriteString(s[i:]) else {}
-		ret buf.String()
+		return buf.String()
 	}
 
 	#disable boundary
@@ -486,7 +486,7 @@ impl replacer for singleStrReplacer {
 			i += _match + len(self.finder.pattern)
 		}
 		n += io::WriteString(w, s[i:]).await?
-		ret
+		return
 	}
 }
 
@@ -509,9 +509,9 @@ impl replacer for byteReplacer {
 			}
 		}
 		if buf == nil {
-			ret s
+			return s
 		}
-		ret unsafe::StringFromBytes(buf)
+		return unsafe::StringFromBytes(buf)
 	}
 
 	#disable boundary
@@ -532,7 +532,7 @@ impl replacer for byteReplacer {
 		if last != len(s) {
 			n += io::WriteString(w, s[last:]).await?
 		}
-		ret n
+		return n
 	}
 }
 
@@ -583,7 +583,7 @@ impl replacer for byteStrReplacer {
 			}
 		}
 		if !anyChanges {
-			ret s
+			return s
 		}
 		mut buf := make([]byte, newSize)
 		mut i, mut j := 0, 0
@@ -596,7 +596,7 @@ impl replacer for byteStrReplacer {
 				j++
 			}
 		}
-		ret unsafe::StringFromBytes(buf)
+		return unsafe::StringFromBytes(buf)
 	}
 
 	async fn WriteString(mut *self, mut w: io::Writer, s: string)!: (n: int) {
@@ -615,6 +615,6 @@ impl replacer for byteStrReplacer {
 		if last != len(s) {
 			n += io::WriteString(w, s[last:]).await?
 		}
-		ret
+		return
 	}
 }

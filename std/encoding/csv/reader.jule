@@ -103,12 +103,12 @@ struct ParseError {
 impl ParseError {
 	fn String(*self): string {
 		if self.Err == ErrFieldCount {
-			ret fmt::Sprintf("record on line {}: {}", self.Line, self.Err)
+			return fmt::Sprintf("record on line {}: {}", self.Line, self.Err)
 		}
 		if self.StartLine != self.Line {
-			ret fmt::Sprintf("record on line {}; parse error on line {}, column {}: {}", self.StartLine, self.Line, self.Column, self.Err)
+			return fmt::Sprintf("record on line {}; parse error on line {}, column {}: {}", self.StartLine, self.Line, self.Column, self.Err)
 		}
-		ret fmt::Sprintf("parse error on line {}, column {}: {}", self.Line, self.Column, self.Err)
+		return fmt::Sprintf("parse error on line {}, column {}: {}", self.Line, self.Column, self.Err)
 	}
 }
 
@@ -204,7 +204,7 @@ struct Reader {
 impl Reader {
 	// Returns new Reader instance that reads r.
 	fn New(mut r: io::Reader): &Reader {
-		ret &Reader{
+		return &Reader{
 			Comma: ',',
 			r:     bufio::Reader.New(r),
 		}
@@ -214,7 +214,7 @@ impl Reader {
 	// position. The offset gives the location of the end of the most recently
 	// read row and the beginning of the next row.
 	fn InputOffset(*self): i64 {
-		ret self.offset
+		return self.offset
 	}
 
 	// Reads one record (a slice of fields) from r.
@@ -230,7 +230,7 @@ impl Reader {
 		} else {
 			record = self.readRecord(nil).await?
 		}
-		ret
+		return
 	}
 
 	// Returns the line and column corresponding to
@@ -245,7 +245,7 @@ impl Reader {
 		}
 		p := &self.fieldPositions[field]
 		unsafe {
-			ret p.line, p.col
+			return p.line, p.col
 		}
 	}
 
@@ -255,7 +255,7 @@ impl Reader {
 		for {
 			mut record := self.readRecord(nil).await else {
 				if error == io::EOF {
-					ret
+					return
 				}
 				throw error
 			}
@@ -302,7 +302,7 @@ impl Reader {
 			line[n-2] = '\n'
 			line = line[:n-1]
 		}
-		ret line
+		return line
 	}
 
 	async fn readRecord(mut *self, mut dst: []string)!: []string {
@@ -479,12 +479,12 @@ impl Reader {
 		} else if self.FieldsPerRecord == 0 {
 			self.FieldsPerRecord = len(dst)
 		}
-		ret dst
+		return dst
 	}
 }
 
 fn validDelim(r: rune): bool {
-	ret r != 0 &&
+	return r != 0 &&
 		r != '"' &&
 		r != '\r' &&
 		r != '\n' &&
@@ -495,13 +495,13 @@ fn validDelim(r: rune): bool {
 // Returns the next rune in b or utf8::RuneError.
 fn nextRune(b: []byte): rune {
 	r, _ := utf8::DecodeRune(b)
-	ret r
+	return r
 }
 
 // Reports the number of bytes for the trailing \n.
 fn lengthNL(b: []byte): int {
 	if len(b) > 0 && b[len(b)-1] == '\n' {
-		ret 1
+		return 1
 	}
-	ret 0
+	return 0
 }

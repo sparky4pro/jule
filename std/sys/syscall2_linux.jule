@@ -11,5 +11,5 @@ fn syscall(num: uintptr, arg1: uintptr, arg2: uintptr, arg3: uintptr, arg4: uint
 	if e0 != syscall::NO_ERROR {
 		err = Errno(e0)
 	}
-	ret
+	return
 }

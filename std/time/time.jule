@@ -23,11 +23,11 @@ impl Month {
 	// Returns the English name of the month ("January", "February", ...).
 	fn String(*self): string {
 		if January <= *self && *self <= December {
-			ret longMonthNames[*self-1]
+			return longMonthNames[*self-1]
 		}
 		mut buf := make([]byte, 20)
 		n := formatInt(buf, u64(*self))
-		ret "%!Month(" + string(buf[n:]) + ")"
+		return "%!Month(" + string(buf[n:]) + ")"
 	}
 }
 
@@ -49,15 +49,15 @@ const (
 fn daysIn(m: Month, year: int): int {
 	if m == February {
 		if isLeap(year) {
-			ret 29
+			return 29
 		}
-		ret 28
+		return 28
 	}
 	// With the special case of February eliminated, the pattern is
 	//	31 30 31 30 31 30 31 31 30 31 30 31
 	// Adding m&1 produces the basic alternation;
 	// adding (m>>3)&1 inverts the alternation starting in August.
-	ret 30 + int((m+m>>3)&1)
+	return 30 + int((m+m>>3)&1)
 }
 
 // daysBefore returns the number of days in a non-leap year before month m.
@@ -78,7 +78,7 @@ fn daysBefore(m: Month): int {
 	// integer approximation of the form (a×m + b)/c.
 	// A brute force search over small a, b, c finds that
 	// (214×m - 211) / 7 computes the function perfectly.
-	ret (214*int(m)-211)/7 + adj
+	return (214*int(m)-211)/7 + adj
 }
 
 // Specifies a day of the week (Sunday = 0, ...).
@@ -88,11 +88,11 @@ impl Weekday {
 	// Returns the English name of the day ("Sunday", "Monday", ...).
 	fn String(*self): string {
 		if Sunday <= *self && *self <= Saturday {
-			ret longDayNames[*self]
+			return longDayNames[*self]
 		}
 		mut buf := make([]byte, 20)
 		mut n := formatInt(buf, u64(*self))
-		ret "%!Weekday(" + string(buf[n:]) + ")"
+		return "%!Weekday(" + string(buf[n:]) + ")"
 	}
 }
 
@@ -131,7 +131,7 @@ impl Time {
 	// count of seconds, but since the method here returns a 64-bit
 	// value it is valid for billions of years into the past or future.
 	fn Unix(*self): i64 {
-		ret self.sec
+		return self.sec
 	}
 
 	// Returns time as a Unix time, the number of milliseconds elapsed since
@@ -140,7 +140,7 @@ impl Time {
 	// years before or after 1970). The result does not depend on the
 	// location associated with self.
 	fn UnixMilli(*self): i64 {
-		ret self.sec*1e3 + i64(self.nsec)/1e6
+		return self.sec*1e3 + i64(self.nsec)/1e6
 	}
 
 	// Returns time as a Unix time, the number of microseconds elapsed since
@@ -149,7 +149,7 @@ impl Time {
 	// after year 294246). The result does not depend on the location associated
 	// with self.
 	fn UnixMicro(*self): i64 {
-		ret self.sec*1e6 + i64(self.nsec)/1e3
+		return self.sec*1e6 + i64(self.nsec)/1e3
 	}
 
 	// Returns time as a Unix time, the number of nanoseconds elapsed
@@ -159,13 +159,13 @@ impl Time {
 	// on the zero Time is undefined. The result does not depend on the
 	// location associated with self.
 	fn UnixNano(*self): i64 {
-		ret self.sec*1e9 + i64(self.nsec)
+		return self.sec*1e9 + i64(self.nsec)
 	}
 
 	fn setLoc(mut *self, loc: &Location) {
 		if uintptr(loc) == uintptr(&utcLoc) {
 			self.loc = nil
-			ret
+			return
 		}
 		self.loc = unsafe { *(&loc) }
 	}
@@ -174,14 +174,14 @@ impl Time {
 	fn UTC(*self): Time {
 		mut t := *self
 		t.setLoc(unsafe { (&Location)(&utcLoc) })
-		ret t
+		return t
 	}
 
 	// Returns time with the location set to local time.
 	fn Local(*self): Time {
 		mut t := *self
 		t.setLoc(unsafe { (&Location)(&localLoc) })
-		ret t
+		return t
 	}
 
 	// Returns the time as an absolute time, adjusted by the zone offset.
@@ -200,11 +200,11 @@ impl Time {
 				sec += i64(offset)
 			}
 		}
-		ret u64(sec + unixToAbsolute)
+		return u64(sec + unixToAbsolute)
 	}
 
 	fn absSec(*self): absSeconds {
-		ret absSeconds(self.abs())
+		return absSeconds(self.abs())
 	}
 
 	// Combination of the Zone and absSec methods,
@@ -228,7 +228,7 @@ impl Time {
 			name = "UTC"
 		}
 		abs = absSeconds(sec + unixToAbsolute)
-		ret
+		return
 	}
 
 	// Adds d seconds to the time.
@@ -248,64 +248,64 @@ impl Time {
 	// name of the zone (such as "CET") and its offset in seconds east of UTC.
 	fn Zone(*self): (name: string, offset: int) {
 		name, offset, _, _, _ = self.loc.lookup(self.sec)
-		ret
+		return
 	}
 
 	// Returns the year of the time.
 	fn Year(*self): int {
 		century, cyear, ayday := self.absSec().days().split()
 		janFeb := ayday.janFeb()
-		ret century.year(cyear, janFeb)
+		return century.year(cyear, janFeb)
 	}
 
 	// Returns the month of the year specified by the time.
 	fn Month(*self): Month {
 		_, _, ayday := self.absSec().days().split()
 		amonth, _ := ayday.split()
-		ret amonth.month(ayday.janFeb())
+		return amonth.month(ayday.janFeb())
 	}
 
 	// Returns the day of the month specified by the time.
 	fn Day(*self): int {
 		_, _, ayday := self.absSec().days().split()
 		_, day := ayday.split()
-		ret day
+		return day
 	}
 
 	// Returns the day of the week specified by the time.
 	fn Weekday(*self): Weekday {
-		ret self.absSec().days().weekday()
+		return self.absSec().days().weekday()
 	}
 
 	// Returns the hour within the day specified by the time, in the range [0, 23].
 	fn Hour(*self): int {
-		ret int(self.absSec()%secPerDay) / secPerHour
+		return int(self.absSec()%secPerDay) / secPerHour
 	}
 
 	// Returns the second offset within the minute specified by the time, in the range [0, 59].
 	fn Second(*self): int {
-		ret int(self.absSec() % secPerMinute)
+		return int(self.absSec() % secPerMinute)
 	}
 
 	// Returns the minute offset within the hour specified by the time, in the range [0, 59].
 	fn Minute(*self): int {
-		ret int(self.absSec()%secPerHour) / secPerMinute
+		return int(self.absSec()%secPerHour) / secPerMinute
 	}
 
 	// Returns the nanosecond offset within the second specified by the time,
 	// in the range [0, 999999999].
 	fn Nanosecond(*self): int {
-		ret int(self.nsec)
+		return int(self.nsec)
 	}
 
 	// Returns the year, month, and day of the time.
 	fn Date(*self): (year: int, month: Month, day: int) {
-		ret self.absSec().days().date()
+		return self.absSec().days().date()
 	}
 
 	// Returns the hour, minute, and second of the time.
 	fn Clock(*self): (hour: int, minute: int, second: int) {
-		ret self.absSec().clock()
+		return self.absSec().clock()
 	}
 
 	// Returns the ISO 8601 year and week number of the time.
@@ -326,7 +326,7 @@ impl Time {
 		days := self.absSec().days()
 		thu := days + absDays(Thursday-((days-1).weekday()+1))
 		year, yday := thu.yearYday()
-		ret year, (yday-1)/7 + 1
+		return year, (yday-1)/7 + 1
 	}
 
 	// Returns the time self+d.
@@ -343,7 +343,7 @@ impl Time {
 		}
 		t.nsec = nsec
 		t.addSec(dsec)
-		ret t
+		return t
 	}
 
 	// Returns the duration t(self)-u. If the result exceeds the maximum (or minimum)
@@ -355,22 +355,22 @@ impl Time {
 		// Check for overflow or underflow.
 		match {
 		| u.Add(d).Equal(*self):
-			ret d // d is correct
+			return d // d is correct
 		| self.Before(u):
-			ret durationMin // t - u is negative out of range
+			return durationMin // t - u is negative out of range
 		|:
-			ret durationMax // t - u is positive out of range
+			return durationMax // t - u is positive out of range
 		}
 	}
 
 	// Reports whether the time instant is after u.
 	fn After(*self, u: Time): bool {
-		ret self.sec > u.sec || self.sec == u.sec && self.nsec > u.nsec
+		return self.sec > u.sec || self.sec == u.sec && self.nsec > u.nsec
 	}
 
 	// Reports whether the time instant is before u.
 	fn Before(*self, u: Time): bool {
-		ret self.sec < u.sec || self.sec == u.sec && self.nsec < u.nsec
+		return self.sec < u.sec || self.sec == u.sec && self.nsec < u.nsec
 	}
 
 	// Compares the time instant t(self) with u. If t is before u, it returns -1;
@@ -382,11 +382,11 @@ impl Time {
 		}
 		match {
 		| tc < uc:
-			ret -1
+			return -1
 		| tc > uc:
-			ret +1
+			return +1
 		}
-		ret 0
+		return 0
 	}
 
 	// Reports whether self and u represent the same time instant.
@@ -395,11 +395,11 @@ impl Time {
 	// See the documentation on the Time type for the pitfalls of using == with
 	// Time values; most code should use Equal instead.
 	fn Equal(*self, u: Time): bool {
-		ret self.sec == u.sec && self.nsec == u.nsec
+		return self.sec == u.sec && self.nsec == u.nsec
 	}
 
 	fn appendTo(*self, mut b: []byte)!: []byte {
-		ret appendStrictRFC3339(self, b)?
+		return appendStrictRFC3339(self, b)?
 	}
 
 	// Implements the custom text encoder method which is appends to b.
@@ -408,7 +408,7 @@ impl Time {
 	// (e.g., the year is out of range), then throws error
 	// with the ParseError.InvalidRange.
 	fn AppendText(*self, mut b: []byte)!: []byte {
-		ret self.appendTo(b)?
+		return self.appendTo(b)?
 	}
 
 	// Implements the custom text encoder method.
@@ -416,7 +416,7 @@ impl Time {
 	//
 	// See [Time.AppendText] for more information.
 	fn EncodeText(*self)!: []byte {
-		ret self.appendTo(make([]byte, 0, len(RFC3339Nano)))?
+		return self.appendTo(make([]byte, 0, len(RFC3339Nano)))?
 	}
 
 	// Implements the custom text decoder method.
@@ -429,7 +429,7 @@ impl Time {
 // Returns the current system-time UTC.
 fn Now(): Time {
 	sec, nsec := runtime::timeNow()
-	ret Time{sec: sec, nsec: i32(nsec)}
+	return Time{sec: sec, nsec: i32(nsec)}
 }
 
 // Returns new time by Unix time with nanoseconds.
@@ -447,19 +447,19 @@ fn Unix(mut sec: i64, mut nsec: i64): Time {
 			sec--
 		}
 	}
-	ret Time{sec: sec, nsec: i32(nsec)}
+	return Time{sec: sec, nsec: i32(nsec)}
 }
 
 // Returns the time elapsed since t.
 // It is shorthand for time::Now().Sub(t).
 fn Since(t: Time): Duration {
-	ret Now().Sub(t)
+	return Now().Sub(t)
 }
 
 // Returns the duration until t.
 // It is shorthand for t.Sub(time::Now()).
 fn Until(t: Time): Duration {
-	ret t.Sub(Now())
+	return t.Sub(Now())
 }
 
 // Absolute time.
@@ -498,11 +498,11 @@ fn UnixAbs(sec: i64): AbsTime {
 	t.Month = amonth.month(ayday.janFeb())
 	t.Weekday = days.weekday()
 	t.Hour, t.Minute, t.Second = abs.clock()
-	ret t
+	return t
 }
 
 fn isLeap(year: int): bool {
-	ret year%4 == 0 && (year%100 != 0 || year%400 == 0)
+	return year%4 == 0 && (year%100 != 0 || year%400 == 0)
 }
 
 // Takes a standard year/month/day and returns the
@@ -543,7 +543,7 @@ fn dateToAbsDays(year: i64, month: Month, day: int): absDays {
 	cday := 1461 * cyear / 4
 	centurydays := 146097 * century / 4
 
-	ret absDays(centurydays + u64(i64(cday+ayday)+i64(day)-1))
+	return absDays(centurydays + u64(i64(cday+ayday)+i64(day)-1))
 }
 
 fn norm(mut hi: int, mut lo: int, base: int): (nhi: int, nlo: int) {
@@ -557,7 +557,7 @@ fn norm(mut hi: int, mut lo: int, base: int): (nhi: int, nlo: int) {
 		hi += n
 		lo -= n * base
 	}
-	ret hi, lo
+	return hi, lo
 }
 
 // Internal implementation of the Date function, but returns Unix time instead of Time.
@@ -597,7 +597,7 @@ fn absUnix(mut year: int, mut month: Month, mut day: int,
 		unix -= i64(offset)
 	}
 
-	ret unix
+	return unix
 }
 
 // Returns the Time corresponding to
@@ -621,7 +621,7 @@ fn Date(year: int, month: Month, day: int,
 	t.sec = absUnix(year, month, day, hour, minute, second, unsafe { &(*(&nsecond)) }, unsafe { &(*(&loc)) })
 	t.nsec = i32(nsecond)
 	t.setLoc(loc)
-	ret t
+	return t
 }
 
 // Days from March 1 through end of year.
@@ -664,7 +664,7 @@ type absJanFeb: int
 impl absSeconds {
 	// Converts absolute seconds to absolute days.
 	fn days(*self): absDays {
-		ret absDays(*self / secPerDay)
+		return absDays(*self / secPerDay)
 	}
 
 	fn clock(*self): (hour: int, minute: int, second: int) {
@@ -673,7 +673,7 @@ impl absSeconds {
 		second -= hour * secPerHour
 		minute = second / secPerMinute
 		second -= minute * secPerMinute
-		ret
+		return
 	}
 }
 
@@ -713,7 +713,7 @@ impl absDays {
 		hi, lo := bits::Mul32(2939745, u32(cd))
 		cyear = absCyear(hi)
 		ayday = absYday(lo / 2939745 / 4)
-		ret
+		return
 	}
 
 	// Converts days into the standard year and 1-based yday.
@@ -722,7 +722,7 @@ impl absDays {
 		janFeb := ayday.janFeb()
 		year = century.year(cyear, janFeb)
 		yday = ayday.yday(janFeb, century.leap(cyear))
-		ret
+		return
 	}
 
 	// Converts days into standard year, month, day.
@@ -732,13 +732,13 @@ impl absDays {
 		janFeb := ayday.janFeb()
 		year = century.year(cyear, janFeb)
 		month = amonth.month(janFeb)
-		ret
+		return
 	}
 
 	// Returns the day of the week specified by days.
 	fn weekday(*self): Weekday {
 		// March 1 of the absolute year, like March 1 of 2000, was a Wednesday.
-		ret Weekday((u64(*self) + u64(Wednesday)) % 7)
+		return Weekday((u64(*self) + u64(Wednesday)) % 7)
 	}
 }
 
@@ -746,7 +746,7 @@ impl absMonth {
 	// Returns the standard Month for (m, janFeb).
 	fn month(*self, janFeb: absJanFeb): Month {
 		// See “Computations on Times” comment above.
-		ret Month(*self) - Month(janFeb)*12
+		return Month(*self) - Month(janFeb)*12
 	}
 }
 
@@ -766,13 +766,13 @@ impl absCentury {
 		if *self%4 == 0 {
 			y400ok = 1
 		}
-		ret absLeap(y4ok & (y100ok | y400ok))
+		return absLeap(y4ok & (y100ok | y400ok))
 	}
 
 	// Returns the standard year for (century, cyear, janFeb).
 	fn year(*self, cyear: absCyear, janFeb: absJanFeb): int {
 		// See “Computations on Times” comment above.
-		ret int(u64(*self)*100-absoluteYears) + int(cyear) + int(janFeb)
+		return int(u64(*self)*100-absoluteYears) + int(cyear) + int(janFeb)
 	}
 }
 
@@ -784,13 +784,13 @@ impl absYday {
 		if *self >= marchThruDecember {
 			jf = 1
 		}
-		ret jf
+		return jf
 	}
 
 	// Returns the standard 1-based yday for (ayday, janFeb, leap).
 	fn yday(*self, janFeb: absJanFeb, leap: absLeap): int {
 		// See “Computations on Times” comment above.
-		ret int(*self) + (1 + 31 + 28) + int(leap)&^int(janFeb) - 365*int(janFeb)
+		return int(*self) + (1 + 31 + 28) + int(leap)&^int(janFeb) - 365*int(janFeb)
 	}
 
 	// Splits ayday into absolute month and standard (1-based) day-in-month.
@@ -810,6 +810,6 @@ impl absYday {
 		// so do that instead, saving a few cycles.
 		// See Neri and Schneider, section 8.3.
 		d := 2141*u32(*self) + 197913
-		ret absMonth(d >> 16), 1 + int((d&0xFFFF)/2141)
+		return absMonth(d >> 16), 1 + int((d&0xFFFF)/2141)
 	}
 }

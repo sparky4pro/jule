@@ -35,7 +35,7 @@ impl decoder {
 	// Returns the position of the last byte read.
 	#disable nilptr
 	fn readIndex(*self): int {
-		ret self.off - 1
+		return self.off - 1
 	}
 
 	// Scans to the end of what was started.
@@ -53,7 +53,7 @@ impl decoder {
 			if len(self.scan.parseState) < depth {
 				self.off = i
 				self.opcode = op
-				ret
+				return
 			}
 		}
 		self.opcode = self.scan.eof()
@@ -77,7 +77,7 @@ impl decoder {
 			if op != scanContinue {
 				self.off = i
 				self.opcode = op
-				ret
+				return
 			}
 		}
 		self.opcode = self.scan.eof()
@@ -127,7 +127,7 @@ impl decoder {
 			if newOp != op {
 				self.opcode = newOp
 				self.off = i
-				ret
+				return
 			}
 		}
 
@@ -400,7 +400,7 @@ impl decoder {
 													throw errors::New("json: invalid value for DecodeText function:" + unsafe::BytesString(lit))
 												}
 												m.Unwrap()(lit)?
-												ret true
+												return true
 											}
 										|:
 											panic("std/encoding/json: unimplemented decoding method")
@@ -413,7 +413,7 @@ impl decoder {
 				}
 			}
 		}
-		ret false
+		return false
 	}
 
 	#disable nilptr boundary
@@ -423,7 +423,7 @@ impl decoder {
 		// fallback to default decoding.
 		ok := self.tryCustomDecode(t)?
 		if ok {
-			ret
+			return
 		}
 		const tt = comptime::TypeOf(T)
 		match self.opcode {
@@ -434,12 +434,12 @@ impl decoder {
 				self.array(&array)?
 				self.scanNext()
 				*t = array
-				ret
+				return
 			| tt.Kind() == comptime::Array
 			| tt.Kind() == comptime::Slice:
 				self.array(t)?
 				self.scanNext()
-				ret
+				return
 			|:
 				throw errors::New("json: invalid value for type " + tt.String() + ": array")
 			}
@@ -450,15 +450,15 @@ impl decoder {
 				self.objectMap(&m)?
 				self.scanNext()
 				*t = m
-				ret
+				return
 			| tt.Kind() == comptime::Map:
 				self.objectMap(t)?
 				self.scanNext()
-				ret
+				return
 			| tt.Kind() == comptime::Struct:
 				self.objectStruct(t)?
 				self.scanNext()
-				ret
+				return
 			|:
 				throw errors::New("json: invalid value for type " + tt.String() + ": object")
 			}
@@ -467,7 +467,7 @@ impl decoder {
 			start := self.readIndex()
 			self.rescanLiteral()?
 			decodeLiteral(self.data[start:self.readIndex()], t)?
-			ret
+			return
 		|:
 			b := self.data[self.readIndex()]
 			throw errors::New("json: invalid character " + quoteChar(b) + " looking for beginning of value")
@@ -481,7 +481,7 @@ impl decoder {
 		// fallback to default decoding.
 		ok := self.tryCustomDecode(t)?
 		if ok {
-			ret
+			return
 		}
 		const tt = comptime::TypeOf(T)
 		const match tt.Kind() {
@@ -489,7 +489,7 @@ impl decoder {
 			if self.opcode == scanBeginLiteral && self.data[self.readIndex()] == 'n' { // Null literal.
 				self.rescanLiteral()?
 				*t = nil
-				ret
+				return
 			}
 			if *t == nil {
 				comptime::TypeAlias(valueTyp, tt.Value())
@@ -526,13 +526,13 @@ fn decodeLiteral[T](mut data: []byte, mut &t: *T)! {
 				throw errors::New("json: invalid value for type " + tt.String() + ": " + unsafe::BytesString(data))
 			}
 			*t = String(s)
-			ret
+			return
 		| tt.Kind() == comptime::String:
 			ok := decodeString(unsafe { &(*(*string)(t)) }, data)
 			if !ok {
 				throw errors::New("json: invalid value for type " + tt.String() + ": " + unsafe::BytesString(data))
 			}
-			ret
+			return
 		| tt.Kind() == comptime::Slice:
 			const match tt.Value().Kind() {
 			| comptime::U8:
@@ -542,7 +542,7 @@ fn decodeLiteral[T](mut data: []byte, mut &t: *T)! {
 				}
 				mut r := base64::StdEncoding.AppendDecode(nil, s2)?
 				*t = unsafe { *(*T)(&r) }
-				ret
+				return
 			}
 		}
 		throw errors::New("json: invalid value for type " + tt.String() + ": string")
@@ -550,7 +550,7 @@ fn decodeLiteral[T](mut data: []byte, mut &t: *T)! {
 		const match {
 		| tt.CanNil():
 			*t = nil
-			ret
+			return
 		|:
 			throw errors::New("json: invalid value for type " + tt.String() + ": null")
 		}
@@ -558,10 +558,10 @@ fn decodeLiteral[T](mut data: []byte, mut &t: *T)! {
 		const match {
 		| tt == valueT | tt == boolT:
 			*t = Bool(data[0] == 't')
-			ret
+			return
 		| tt.Kind() == comptime::Bool:
 			*t = data[0] == 't'
-			ret
+			return
 		|:
 			throw errors::New("json: invalid value for type " + tt.String() + ": boolean")
 		}
@@ -571,14 +571,14 @@ fn decodeLiteral[T](mut data: []byte, mut &t: *T)! {
 			mut f := f64(0)
 			decodeFloat(&f, data)?
 			*t = Number(f)
-			ret
+			return
 		| tt.Kind() == comptime::Int
 		| tt.Kind() == comptime::I8
 		| tt.Kind() == comptime::I16
 		| tt.Kind() == comptime::I32
 		| tt.Kind() == comptime::I64:
 			decodeInt(t, data)?
-			ret
+			return
 		| tt.Kind() == comptime::Uint
 		| tt.Kind() == comptime::Uintptr
 		| tt.Kind() == comptime::U8
@@ -586,11 +586,11 @@ fn decodeLiteral[T](mut data: []byte, mut &t: *T)! {
 		| tt.Kind() == comptime::U32
 		| tt.Kind() == comptime::U64:
 			decodeUInt(t, data)?
-			ret
+			return
 		| tt.Kind() == comptime::F32
 		| tt.Kind() == comptime::F64:
 			decodeFloat(t, data)?
-			ret
+			return
 		|:
 			throw errors::New("json: invalid value for type " + tt.String() + ": " + unsafe::BytesString(data))
 		}
@@ -698,7 +698,7 @@ fn typeDecoder[T](&d: *decoder, field: uintptr)! {
 #disable boundary
 fn getu4(s: []byte): rune {
 	if len(s) < 6 || s[0] != '\\' || s[1] != 'u' {
-		ret -1
+		return -1
 	}
 	mut r := rune(0)
 	for (_, mut c) in s[2:6] {
@@ -710,12 +710,12 @@ fn getu4(s: []byte): rune {
 		| 'A' <= c && c <= 'F':
 			c = c - 'A' + 10
 		|:
-			ret -1
+			return -1
 		}
 		r <<= 4
 		r += rune(c)
 	}
-	ret r
+	return r
 }
 
 // Unquotes the JSON string literal s.
@@ -730,11 +730,11 @@ fn unquoteBytes(s: []byte): []byte {
 	ss := ubuf::Ubuf{}
 	ss.SetData(s)
 	if ss.Len() < 2 || ss.Get(0) != '"' || ss.Get(ss.Len()-1) != '"' {
-		ret nil
+		return nil
 	}
 	// Empty literal.
 	if ss.Len() == 2 {
-		ret make([]byte, 0)
+		return make([]byte, 0)
 	}
 	ss.SetLen2(1, ss.Len()-1)
 
@@ -761,7 +761,7 @@ fn unquoteBytes(s: []byte): []byte {
 		// GC must be remain for the allocation.
 		// For memory efficiency, new allocation might be used as result or etc.
 		// Therefore avoid making allocation zero-reference and deallocation.
-		ret ss.GetData()
+		return ss.GetData()
 	}
 
 	b := ubuf::Ubuf{}
@@ -781,7 +781,7 @@ fn unquoteBytes(s: []byte): []byte {
 		| c == '\\':
 			r++
 			if r >= ss.Len() {
-				ret nil
+				return nil
 			}
 			match ss.Get(r) {
 			| '"' | '\\' | '/' | '\'':
@@ -812,7 +812,7 @@ fn unquoteBytes(s: []byte): []byte {
 				r--
 				mut rr := getu4(ss.Slice1(r))
 				if rr < 0 {
-					ret nil
+					return nil
 				}
 				r += 6
 				if utf16::IsSurrogate(rr) {
@@ -829,11 +829,11 @@ fn unquoteBytes(s: []byte): []byte {
 				}
 				w += utf8::EncodeRune(b.Slice1(w), rr)
 			|:
-				ret nil
+				return nil
 			}
 		| c == '"' | c < ' ':
 			// Quote, control characters are invalid.
-			ret nil
+			return nil
 		| c < utf8::RuneSelf:
 			// ASCII
 			b.Set(w, c)
@@ -849,7 +849,7 @@ fn unquoteBytes(s: []byte): []byte {
 	// GC must be remain for the allocation, do not use b.Slice3 to slice.
 	// For memory efficiency, new allocation might be used as result or etc.
 	// Therefore avoid making allocation zero-reference and deallocation.
-	ret b.GetData()[0:w]
+	return b.GetData()[0:w]
 }
 
 #disable nilptr
@@ -889,11 +889,11 @@ fn decodeFloat[T](mut &t: *T, lit: []byte)! {
 fn decodeString(mut &s: *string, mut lit: []byte): (ok: bool) {
 	mut s2 := unquoteBytes(lit)
 	if s2 == nil {
-		ret false
+		return false
 	}
 	if len(s2) == 0 {
 		*s = ""
-		ret true
+		return true
 	}
 	if &lit[1] == &s2[0] {
 		// Returned mutable slice from self.data slice.
@@ -905,5 +905,5 @@ fn decodeString(mut &s: *string, mut lit: []byte): (ok: bool) {
 		// So we can return as string directly without making new allocation.
 		*s = unsafe::StringFromBytes(s2)
 	}
-	ret true
+	return true
 }

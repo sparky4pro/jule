@@ -39,7 +39,7 @@ impl Int {
 	fn New(x: i64): Int {
 		let mut r: Int
 		r.SetI64(x)
-		ret r
+		return r
 	}
 
 	// Returns the Jacobi symbol (x/y), either +1, -1, or 0.
@@ -69,14 +69,14 @@ impl Int {
 
 		for {
 			if b.Cmp(&intOne) == 0 {
-				ret j
+				return j
 			}
 			if len(a.abs) == 0 {
-				ret 0
+				return 0
 			}
 			a.Mod(&a, &b)
 			if len(a.abs) == 0 {
-				ret 0
+				return 0
 			}
 			// a > 0
 
@@ -105,10 +105,10 @@ impl Int {
 		match {
 		| a > b:
 			self.SetU64(0) // empty range
-			ret
+			return
 		| a <= 0 && b >= 0:
 			self.SetU64(0) // range includes 0
-			ret
+			return
 		}
 		// a <= b && (b < 0 || a > 0)
 
@@ -126,7 +126,7 @@ impl Int {
 	fn Binomial(mut *self, n: i64, mut k: i64) {
 		if k > n {
 			self.SetU64(0)
-			ret
+			return
 		}
 		// reduce the number of multiplications by reducing k
 		if k > n-k {
@@ -219,7 +219,7 @@ impl Int {
 		if x == y {
 			sqrW(&self.abs, x.abs)
 			self.neg = false
-			ret
+			return
 		}
 		mulW(&self.abs, x.abs, y.abs)
 		self.neg = len(self.abs) > 0 && x.neg != y.neg // 0 has no sign
@@ -291,7 +291,7 @@ impl Int {
 			mut y0 := *y
 			y0.abs = cloneW(y.abs)
 			self.Mod(x, &y0)
-			ret
+			return
 		}
 		mut q := Int{}
 		q.QuoRem(x, y, self)
@@ -322,7 +322,7 @@ impl Int {
 		if self == y || aliasW(self.abs, y.abs) {
 			mut y0 := *y
 			y0.abs = cloneW(y.abs)
-			ret self.DivMod(x, &y0)
+			return self.DivMod(x, &y0)
 		}
 		self.QuoRem(x, y, &m)
 		if m.neg {
@@ -334,7 +334,7 @@ impl Int {
 				m.Add(&m, y)
 			}
 		}
-		ret
+		return
 	}
 
 	// Sets self = x << y
@@ -351,7 +351,7 @@ impl Int {
 			rshW(&self.abs, self.abs, y)
 			addW(&self.abs, self.abs, wordOne)
 			self.neg = true // cannot be zero if x is negative
-			ret
+			return
 		}
 		rshW(&self.abs, x.abs, y)
 		self.neg = false
@@ -368,13 +368,13 @@ impl Int {
 				subW(&y1, y.abs, wordOne)
 				addW(&self.abs, andW(x1, y1), wordOne)
 				self.neg = true // self cannot be zero if x and y are negative
-				ret
+				return
 			}
 
 			// x | y == x | y
 			self.abs = orW(x.abs, y.abs)
 			self.neg = false
-			ret
+			return
 		}
 
 		// x.neg != y.neg
@@ -402,13 +402,13 @@ impl Int {
 				subW(&y1, y.abs, wordOne)
 				addW(&self.abs, orW(x1, y1), wordOne)
 				self.neg = true // self cannot be zero if x and y are negative
-				ret
+				return
 			}
 
 			// x & y == x & y
 			self.abs = andW(x.abs, y.abs)
 			self.neg = false
-			ret
+			return
 		}
 
 		// x.neg != y.neg
@@ -436,13 +436,13 @@ impl Int {
 				subW(&y1, y.abs, wordOne)
 				self.abs = xorW(x1, y1)
 				self.neg = false
-				ret
+				return
 			}
 
 			// x ^ y == x ^ y
 			self.abs = xorW(x.abs, y.abs)
 			self.neg = false
-			ret
+			return
 		}
 
 		// x.neg != y.neg
@@ -475,7 +475,7 @@ impl Int {
 			if m == nil || len(m.abs) == 0 {
 				setWU64(&self.abs, 1)
 				self.neg = false
-				ret
+				return
 			}
 			// for y < 0: x**y mod m == (x**(-1))**|y| mod m
 			let mut inverse: Int
@@ -483,7 +483,7 @@ impl Int {
 			if inverse.Cmp(&intZero) == 0 {
 				setWU64(&self.abs, 0)
 				self.neg = false
-				ret
+				return
 			}
 			xWords = inverse.abs
 		}
@@ -683,7 +683,7 @@ impl Int {
 					y.neg = negB
 				}
 			}
-			ret
+			return
 		}
 
 		self.lehmerGCD(x, y, a, b)
@@ -699,13 +699,13 @@ impl Int {
 			let mut n0: Int
 			n0.Neg(n)
 			self.ModInverse(g, &n0)
-			ret
+			return
 		}
 		if g.neg {
 			let mut g0: Int
 			g0.Mod(g, n)
 			self.ModInverse(&g0, n)
-			ret
+			return
 		}
 		let mut d: Int
 		let mut x: Int
@@ -715,7 +715,7 @@ impl Int {
 		if d.Cmp(&intOne) != 0 {
 			setWU64(&self.abs, 0)
 			self.neg = false
-			ret
+			return
 		}
 
 		// x and y are such that g*x + n*y = 1, therefore x is the inverse element,
@@ -755,7 +755,7 @@ impl Int {
 			panic("math/rand: Int.ProbablyPrime: negative n given")
 		}
 		if self.neg || len(self.abs) == 0 {
-			ret false
+			return false
 		}
 
 		// records the primes < 64.
@@ -765,11 +765,11 @@ impl Int {
 
 		w := self.abs[0]
 		if len(self.abs) == 1 && w < 64 {
-			ret primeBitMask&(1<<w) != 0
+			return primeBitMask&(1<<w) != 0
 		}
 
 		if w&1 == 0 {
-			ret false // number is even
+			return false // number is even
 		}
 
 		const primesA = 3 * 5 * 7 * 11 * 13 * 17 * 19 * 23 * 37
@@ -791,15 +791,15 @@ impl Int {
 
 		if rA%3 == 0 || rA%5 == 0 || rA%7 == 0 || rA%11 == 0 || rA%13 == 0 || rA%17 == 0 || rA%19 == 0 || rA%23 == 0 || rA%37 == 0 ||
 			rB%29 == 0 || rB%31 == 0 || rB%41 == 0 || rB%43 == 0 || rB%47 == 0 || rB%53 == 0 {
-			ret false
+			return false
 		}
 
-		ret probablyPrimeMillerRabinW(self.abs, n+1, true) && probablyPrimeLucasW(self.abs)
+		return probablyPrimeMillerRabinW(self.abs, n+1, true) && probablyPrimeLucasW(self.abs)
 	}
 
 	// Returns the number of consecutive least significant zero bits of |self|.
 	fn TrailingZeroBits(*self): uint {
-		ret trailingZeroBitsW(self.abs)
+		return trailingZeroBitsW(self.abs)
 	}
 
 	// Returns the length of the absolute value of int in bits. The bit length of 0 is 0.
@@ -807,7 +807,7 @@ impl Int {
 		// This function is may used in cryptographic operations. It must not leak
 		// anything but the Int's sign and bit size through side-channels. Any
 		// changes must be reviewed by a security expert.
-		ret bitLenW(self.abs)
+		return bitLenW(self.abs)
 	}
 
 	// Returns the value of the i'th bit of integer. That is, it
@@ -819,16 +819,16 @@ impl Int {
 		if i == 0 {
 			// optimization for common case: odd/even test of x
 			if len(self.abs) > 0 {
-				ret uint(self.abs[0] & 1) // bit 0 is same for -x
+				return uint(self.abs[0] & 1) // bit 0 is same for -x
 			}
-			ret 0
+			return 0
 		}
 		if self.neg {
 			mut abs := cloneW(self.abs)
 			subW(&abs, abs, wordOne)
-			ret bitW(abs, uint(i)) ^ 1
+			return bitW(abs, uint(i)) ^ 1
 		}
-		ret bitW(self.abs, uint(i))
+		return bitW(self.abs, uint(i))
 	}
 
 	// Sets self to |x| (the absolute value of x).
@@ -843,12 +843,12 @@ impl Int {
 			// ^(-x) == ^(^(x-1)) == x-1
 			subW(&self.abs, x.abs, wordOne)
 			self.neg = false
-			ret
+			return
 		}
 		// ^x == -x-1 == -(x+1)
 		addW(&self.abs, x.abs, wordOne)
 		self.neg = true // self cannot be zero if x is positive
-		ret
+		return
 	}
 
 	// Sets self to -x.
@@ -859,12 +859,12 @@ impl Int {
 
 	// Reports whether x(self) is odd.
 	fn Odd(*self): bool {
-		ret len(self.abs) == 0 || self.abs[0]&1 == 1
+		return len(self.abs) == 0 || self.abs[0]&1 == 1
 	}
 
 	// Reports whether x(self) is even.
 	fn Even(*self): bool {
-		ret len(self.abs) > 0 && self.abs[0]&1 == 0
+		return len(self.abs) > 0 && self.abs[0]&1 == 0
 	}
 
 	// Returns, x = self:
@@ -876,12 +876,12 @@ impl Int {
 		// anything but the Int's sign and bit size through side-channels. Any
 		// changes must be reviewed by a security expert.
 		if len(self.abs) == 0 {
-			ret 0
+			return 0
 		}
 		if self.neg {
-			ret -1
+			return -1
 		}
-		ret +1
+		return +1
 	}
 
 	// Compares integers.
@@ -904,14 +904,14 @@ impl Int {
 		|:
 			r = +1
 		}
-		ret
+		return
 	}
 
 	// Compares absolute value.
 	//	Returns +1 if |self| > |y|
 	//	Returns 0 if |self| == |y|
 	//	Returns -1 if |self| < |y|
-	fn CmpAbs(*self, &y: *Int): int { ret cmpW(self.abs, y.abs) }
+	fn CmpAbs(*self, &y: *Int): int { return cmpW(self.abs, y.abs) }
 
 	// Interprets buf as the bytes of a big-endian unsigned integer,
 	// sets self to that value.
@@ -930,7 +930,7 @@ impl Int {
 			buf[i] = 0
 		}
 		bytesW(self.abs, buf)
-		ret buf
+		return buf
 	}
 
 	// Returns the absolute value of self as a big-endian byte slice.
@@ -941,7 +941,7 @@ impl Int {
 		// anything but the Int's sign and bit size through side-channels. Any
 		// changes must be reviewed by a security expert.
 		mut buf := make([]byte, len(self.abs)*_S)
-		ret buf[bytesW(self.abs, buf):]
+		return buf[bytesW(self.abs, buf):]
 	}
 
 	// Appends the absolute value of self to buf as a big-endian byte slice.
@@ -960,7 +960,7 @@ impl Int {
 		// the data to remove those zeros and keep it big-endian.
 		n = copy(buf[buflen:], buf[buflen+i:])
 		// Return the slice adjusted to the final actual size of the appended data.
-		ret buf[:buflen+n]
+		return buf[:buflen+n]
 	}
 
 	// Sets self to x.
@@ -1019,13 +1019,13 @@ impl Int {
 		(self.abs), _, _, ok := scanW(self.abs[:0], &r, base, false)
 		self.neg = len(self.abs) > 0 && neg // 0 has no sign
 		if !ok {
-			ret false
+			return false
 		}
 		// entire content must have been consumed
 		if len(r.s) != r.i {
-			ret false
+			return false
 		}
-		ret true
+		return true
 	}
 
 	// Returns the i64 representation of x(self).
@@ -1035,32 +1035,32 @@ impl Int {
 		if self.neg {
 			v = -v
 		}
-		ret v
+		return v
 	}
 
 	// Returns the u64 representation of x(self).
 	// If x cannot be represented in a u64, the result is undefined.
 	fn U64(*self): u64 {
-		ret low64W(self.abs)
+		return low64W(self.abs)
 	}
 
 	// Reports whether x(self) can be represented as an i64.
 	fn IsI64(*self): bool {
 		if len(self.abs) <= 64/_W {
 			w := i64(low64W(self.abs))
-			ret w >= 0 || self.neg && w == -w
+			return w >= 0 || self.neg && w == -w
 		}
-		ret false
+		return false
 	}
 
 	// Reports whether x(self) can be represented as a u64.
 	fn IsU64(*self): bool {
-		ret !self.neg && len(self.abs) <= 64/_W
+		return !self.neg && len(self.abs) <= 64/_W
 	}
 
 	// Returns string representation of x(self) in decimal format.
 	fn String(*self): string {
-		ret self.Format(10)
+		return self.Format(10)
 	}
 
 	// Returns the string representation of x(self) in the given base.
@@ -1069,7 +1069,7 @@ impl Int {
 	// the upper-case letters 'A' to 'Z' for digit values 36 to 61.
 	// No prefix (such as "0x") is added to the string.
 	fn Format(*self, b: int): string {
-		ret unsafe::StringFromBytes(itoaW(self.abs, self.neg, b))
+		return unsafe::StringFromBytes(itoaW(self.abs, self.neg, b))
 	}
 
 	// Returns the f64 value nearest x(self),
@@ -1077,7 +1077,7 @@ impl Int {
 	fn F64(*self): (f64, Accuracy) {
 		n := bitLenW(self.abs) // NB: still uses slow crypto impl!
 		if n == 0 {
-			ret 0.0, Exact
+			return 0.0, Exact
 		}
 
 		// Fast path: no more than 53 significant bits.
@@ -1086,11 +1086,11 @@ impl Int {
 			if self.neg {
 				f = -f
 			}
-			ret f, Exact
+			return f, Exact
 		}
 		mut f := float{}
 		f.SetInt(self)
-		ret f.F64()
+		return f.F64()
 	}
 }
 
@@ -1150,7 +1150,7 @@ fn lehmerSimulate(A: Int, B: Int): (u0: Word, u1: Word, v0: Word, v1: Word, even
 		v0, v1, v2 = v1, v2, v1+q*v2
 		even = !even
 	}
-	ret
+	return
 }
 
 // Updates the inputs A and B such that:

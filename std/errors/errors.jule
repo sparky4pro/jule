@@ -8,12 +8,12 @@ type Error: string
 impl Error {
 	// Returns error as string.
 	fn String(*self): string {
-		ret string(*self)
+		return string(*self)
 	}
 }
 
 // Returns an error instance with message.
 // The returned type is an anonymous, meaning it cannot obtain any underlying type.
 fn New(err: string): &Error {
-	ret new(Error, Error(err))
+	return new(Error, Error(err))
 }

@@ -54,5 +54,5 @@ fn FormatCmplx(c: cmplx128, fmt: byte, prec: int, mut bitSize: int): string {
 		im = "+" + im
 	}
 
-	ret "(" + FormatFloat(real(c), fmt, prec, bitSize) + im + "i)"
+	return "(" + FormatFloat(real(c), fmt, prec, bitSize) + im + "i)"
 }

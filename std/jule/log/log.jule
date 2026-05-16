@@ -24,31 +24,31 @@ struct Log {
 
 // Returns formatted error message by fmt and args.
 fn Logf(fmt: string, args: ...any): string {
-	ret applyFmt(fmt, args...)
+	return applyFmt(fmt, args...)
 }
 
 fn argToStr(arg: any): string {
 	match type arg {
 	| string:
-		ret arg.(string)
+		return arg.(string)
 	| byte:
-		ret string(arg.(byte))
+		return string(arg.(byte))
 	| rune:
-		ret string(arg.(rune))
+		return string(arg.(rune))
 	| int:
-		ret conv::Itoa(arg.(int))
+		return conv::Itoa(arg.(int))
 	|:
-		ret "<fmt?>"
+		return "<fmt?>"
 	}
 }
 
 fn findNextFmt(fmt: string): int {
 	for i, b in fmt {
 		if b == '@' {
-			ret i
+			return i
 		}
 	}
-	ret -1
+	return -1
 }
 
 fn applyFmt(mut fmt: string, args: ...any): string {
@@ -64,5 +64,5 @@ fn applyFmt(mut fmt: string, args: ...any): string {
 		fmt = fmt[i+1:]
 	}
 	s.WriteString(fmt)!
-	ret s.String()
+	return s.String()
 }

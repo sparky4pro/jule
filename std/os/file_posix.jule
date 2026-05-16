@@ -18,7 +18,7 @@ fn syscallMode(i: FileMode): (o: u32) {
 	if i&ModeSticky != 0 {
 		o |= sys::S_ISVTX
 	}
-	ret
+	return
 }
 
 // Implementation adopted from the Go programming language.
@@ -53,6 +53,6 @@ fn ignoringEINTR2[T](f: fn()!: T)!: T {
 			}
 			throw error
 		}
-		ret v
+		return v
 	}
 }

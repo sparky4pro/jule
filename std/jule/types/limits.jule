@@ -37,13 +37,13 @@ fn MinI(mut k: string): i64 {
 	k = RealKindOf(k)
 	match k {
 	| I8:
-		ret MinI8
+		return MinI8
 	| I16:
-		ret MinI16
+		return MinI16
 	| I32:
-		ret MinI32
+		return MinI32
 	| I64:
-		ret MinI64
+		return MinI64
 	|:
 		panic("unreachable")
 	}
@@ -55,13 +55,13 @@ fn MaxI(mut k: string): i64 {
 	k = RealKindOf(k)
 	match k {
 	| I8:
-		ret MaxI8
+		return MaxI8
 	| I16:
-		ret MaxI16
+		return MaxI16
 	| I32:
-		ret MaxI32
+		return MaxI32
 	| I64:
-		ret MaxI64
+		return MaxI64
 	|:
 		panic("unreachable")
 	}
@@ -73,13 +73,13 @@ fn MaxU(mut k: string): u64 {
 	k = RealKindOf(k)
 	match k {
 	| U8:
-		ret MaxU8
+		return MaxU8
 	| U16:
-		ret MaxU16
+		return MaxU16
 	| U32:
-		ret MaxU32
+		return MaxU32
 	| U64:
-		ret MaxU64
+		return MaxU64
 	|:
 		panic("unreachable")
 	}
@@ -91,13 +91,13 @@ fn Min(mut k: string): f64 {
 	k = RealKindOf(k)
 	i := MinI(k)
 	if i != 0 {
-		ret f64(i)
+		return f64(i)
 	}
 	match k {
 	| F32:
-		ret MinF32
+		return MinF32
 	| F64:
-		ret MinF64
+		return MinF64
 	|:
 		panic("unreachable")
 	}
@@ -109,17 +109,17 @@ fn Max(mut k: string): f64 {
 	k = RealKindOf(k)
 	i := MaxI(k)
 	if i != 0 {
-		ret f64(i)
+		return f64(i)
 	}
 	u := MaxU(k)
 	if u != 0 {
-		ret f64(u)
+		return f64(u)
 	}
 	match k {
 	| F32:
-		ret MaxF32
+		return MaxF32
 	| F64:
-		ret MaxF64
+		return MaxF64
 	|:
 		panic("unreachable")
 	}

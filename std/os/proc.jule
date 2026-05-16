@@ -14,19 +14,19 @@ fn Exit(code: int) { sys::Exit(code) }
 // Returns executable path.
 // Returns empty string if any error occurs.
 fn Executable(): string {
-	ret runtime::executable()
+	return runtime::executable()
 }
 
 // Returns command-line arguments.
 // Starts with the program name.
 fn Args(): []string {
-	ret runtime::args()
+	return runtime::args()
 }
 
 // Returns an absolute path name of the current working
 // directory of the calling process.
 fn Getwd()!: string {
-	ret os::Getwd()?
+	return os::Getwd()?
 }
 
 // Changes the current working directory to the given directory.
@@ -47,18 +47,18 @@ fn Chdir(path: string)! {
 }
 
 // Returns environment variables.
-fn Environ(): []string { ret os::Environ() }
+fn Environ(): []string { return os::Environ() }
 
 // Retrieves the value of the environment variable named by the key.
 // It returns the value, which will be empty if the variable is not present.
 // To distinguish between an empty value and an found value, use [LookupEnv].
-fn Getenv(key: string): string { ret os::Getenv(key) }
+fn Getenv(key: string): string { return os::Getenv(key) }
 
 // Retrieves the value of the environment variable named by the key.
 // If the variable is present in the environment the value (which may be empty)
 // is returned and the boolean is true. Otherwise the returned value will be
 // empty and the boolean will be false.
-fn LookupEnv(key: string): (value: string, found: bool) { ret os::LookupEnv(key) }
+fn LookupEnv(key: string): (value: string, found: bool) { return os::LookupEnv(key) }
 
 // Sets the value of the environment variable named by the key.
 fn Setenv(key: string, value: string)! { os::Setenv(key, value)? }

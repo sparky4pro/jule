@@ -20,7 +20,7 @@ struct Field {
 
 impl Field {
 	fn instance(mut &self): &FieldIns {
-		ret &FieldIns{
+		return &FieldIns{
 			Decl: self,
 		}
 	}
@@ -62,11 +62,11 @@ impl Struct {
 	// Dispatches methods to instances if needed.
 	fn dispatchMethods(mut &self) {
 		if len(self.Instances) == 0 || len(self.Methods) == 0 {
-			ret
+			return
 		}
 		if len(self.Generics) == 0 {
 			self.Instances[0].Methods = self.Methods
-			ret
+			return
 		}
 		for (_, mut ins) in self.Instances {
 			if len(ins.Methods) != len(self.Methods) {
@@ -84,16 +84,16 @@ impl Struct {
 	fn depended(*self, s: &Struct): bool {
 		for _, ds in self.Depends {
 			if ds == s {
-				ret true
+				return true
 			}
 		}
-		ret false
+		return false
 	}
 
 	fn instance(mut &self): &StructIns {
 		// Returns already created instance for just one unique combination.
 		if len(self.Generics) == 0 && len(self.Instances) == 1 {
-			ret self.Instances[0]
+			return self.Instances[0]
 		}
 
 		mut ins := &StructIns{
@@ -126,7 +126,7 @@ impl Struct {
 			}
 		}
 
-		ret ins
+		return ins
 	}
 
 	// Appends instance if unique.
@@ -134,17 +134,17 @@ impl Struct {
 	fn appendInstance(mut *self, mut ins: &StructIns): &StructIns {
 		// Skip already created instance for just one unique combination.
 		if len(self.Generics) == 0 && len(self.Instances) == 1 {
-			ret self.Instances[0]
+			return self.Instances[0]
 		}
 
 		for (_, mut ains) in self.Instances {
 			if ains.Same(ins) {
-				ret ains
+				return ains
 			}
 		}
 
 		self.Instances = append(self.Instances, ins)
-		ret nil
+		return nil
 	}
 
 	// Returns method by identifier.
@@ -152,10 +152,10 @@ impl Struct {
 	fn FindMethod(mut *self, name: string, _static: bool): &Func {
 		for (_, mut f) in self.Methods {
 			if f.Static == _static && f.Name == name {
-				ret f
+				return f
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	// Returns field by identifier.
@@ -163,30 +163,30 @@ impl Struct {
 	fn FindField(mut *self, name: string): &Field {
 		for (_, mut f) in self.Fields {
 			if f.Name == name {
-				ret f
+				return f
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	// Reports whether structure implements given trait.
 	fn IsImplements(*self, t: &Trait): bool {
 		for _, it in self.Implements {
 			if t == it {
-				ret true
+				return true
 			}
 		}
-		ret false
+		return false
 	}
 
 	// Reports whether structure has only reference-type-accessible defines.
 	fn HasRefAccessible(*self): bool {
 		for _, m in self.Methods {
 			if len(m.Params) > 0 && m.Params[0].IsSmartptr() {
-				ret true
+				return true
 			}
 		}
-		ret false
+		return false
 	}
 }
 
@@ -232,7 +232,7 @@ impl Kind for StructIns {
 			}
 			kind.WriteByte(']')!
 		}
-		ret kind.String()
+		return kind.String()
 	}
 
 	// Reports whether types are same.
@@ -243,18 +243,18 @@ impl Kind for StructIns {
 		if s == nil ||
 			self.Decl != s.Decl ||
 			len(self.Generics) != len(s.Generics) {
-			ret false
+			return false
 		}
 
 		// Check whether generics are matched.
 		mut i := 0
 		for i < len(self.Generics); i++ {
 			if !self.Generics[i].Type.Equal(s.Generics[i].Type) {
-				ret false
+				return false
 			}
 		}
 
-		ret true
+		return true
 	}
 }
 
@@ -262,7 +262,7 @@ impl StructIns {
 	// Sets source type.
 	fn setSource(mut *self, mut t: &Type) {
 		if t == nil {
-			ret
+			return
 		}
 		self.Source = t
 		// We have to check mutable and comparable conditions again.
@@ -277,15 +277,15 @@ impl StructIns {
 	// Returns true if declarations and generics are same.
 	fn Same(*self, s: &StructIns): bool {
 		if self.Decl != s.Decl || len(s.Generics) != len(self.Generics) {
-			ret false
+			return false
 		}
 		for i, g in self.Generics {
 			g2 := s.Generics[i]
 			if !g.Type.Equal(g2.Type) {
-				ret false
+				return false
 			}
 		}
-		ret true
+		return true
 	}
 
 	// Returns method by identifier.
@@ -293,10 +293,10 @@ impl StructIns {
 	fn FindMethod(mut *self, name: string, _static: bool): &Func {
 		for (_, mut f) in self.Methods {
 			if f.Static == _static && f.Name == name {
-				ret f
+				return f
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	// Returns field by identifier.
@@ -304,10 +304,10 @@ impl StructIns {
 	fn FindField(mut *self, name: string): &FieldIns {
 		for (_, mut f) in self.Fields {
 			if f.Decl.Name == name {
-				ret f
+				return f
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	fn fillEnviron(mut &self) {

@@ -57,7 +57,7 @@ fn encodeWTF16(s: string, mut buf: []u16): []u16 {
 		i += size
 		buf = utf16::AppendRune(buf, r)
 	}
-	ret buf
+	return buf
 }
 
 // Returns the WTF-8 encoding of the potentially ill-formed UTF-16 s.
@@ -89,7 +89,7 @@ fn decodeWTF16(s: []u16, mut buf: []byte): []byte {
 		}
 		buf = utf8::AppendRune(buf, ar)
 	}
-	ret buf
+	return buf
 }
 
 // Returns the UTF-16 encoding of the UTF-8 string
@@ -114,7 +114,7 @@ fn UTF16FromString(mut s: string): []u16 {
 	// Also account for the terminating NUL character.
 	mut buf := make([]u16, 0, len(s)+1)
 	buf = encodeWTF16(s, buf)
-	ret append(buf, NUL)
+	return append(buf, NUL)
 }
 
 // Returns the UTF-8 encoding of the UTF-16 sequence s,
@@ -143,14 +143,14 @@ fn UTF16ToString(s: []u16): string {
 		}
 	}
 	buf := decodeWTF16(s, make([]byte, 0, maxLen))
-	ret unsafe::StringFromBytes(buf)
+	return unsafe::StringFromBytes(buf)
 }
 
 // Returns the UTF-8 encoding of the UTF-16 sequence s in *u16 form,
 // with a terminating NULL removed. Returns empty string if s is nil.
 fn UTF16PtrToString(s: *u16): string {
 	if s == nil {
-		ret ""
+		return ""
 	}
 	const NUL = 0
 	let mut codePage: []u16
@@ -158,11 +158,11 @@ fn UTF16PtrToString(s: *u16): string {
 	for ; i++ {
 		r := unsafe { *i }
 		if r == NUL {
-			ret UTF16ToString(codePage)
+			return UTF16ToString(codePage)
 		}
 		codePage = append(codePage, r)
 	}
-	ret ""
+	return ""
 }
 
 // Returns the string of s, with a terminating NULL removed.
@@ -170,7 +170,7 @@ fn UTF16PtrToString(s: *u16): string {
 #disable boundary
 fn BytePtrToString(s: *byte): string {
 	if s == nil {
-		ret ""
+		return ""
 	}
 	mut n := 0
 	unsafe {
@@ -178,7 +178,7 @@ fn BytePtrToString(s: *byte): string {
 		}
 	}
 	if n == 0 {
-		ret ""
+		return ""
 	}
 	mut buf := make([]byte, n)
 	n = 0
@@ -187,7 +187,7 @@ fn BytePtrToString(s: *byte): string {
 			buf[n] = s[n]
 		}
 	}
-	ret string(buf)
+	return string(buf)
 }
 
 // Returns s as NULL terminated byte slice which is able to be used safely as
@@ -198,10 +198,10 @@ fn BytesFromString(s: string): []byte {
 		if c == 0 {
 			mut bytes := make([]byte, i+1)
 			copy(bytes, s[:len(bytes)])
-			ret bytes
+			return bytes
 		}
 	}
 	mut bytes := make([]byte, len(s)+1)
 	copy(bytes, s)
-	ret bytes
+	return bytes
 }

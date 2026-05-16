@@ -60,7 +60,7 @@ impl parker {
 		// Change NOTIFIED=>EMPTY or EMPTY=>PARKED, and directly return in the
 		// first case.
 		if atomic::Add(&self.state, -1, atomic::Acquire) == _PARK_EMPTY {
-			ret
+			return
 		}
 
 		for {
@@ -69,7 +69,7 @@ impl parker {
 			// Change NOTIFIED=>EMPTY but leave PARKED alone.
 			if atomic::CompareAndSwap(&self.state, _PARK_NOTIFIED, _PARK_EMPTY, atomic::Acquire, atomic::Acquire) {
 				// Actually woken up by unpark().
-				ret
+				return
 			} else {
 				// Spurious wake up. We loop to try again.
 			}

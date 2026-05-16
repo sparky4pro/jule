@@ -38,6 +38,6 @@ fn ignoringEINTR2[T](f: fn()!: T)!: T {
 			}
 			throw error
 		}
-		ret v
+		return v
 	}
 }

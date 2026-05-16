@@ -19,7 +19,7 @@ fn loadFileId(mut &fi: *FileInfo)! {
 	defer { fi.sys.mu.unlock() }
 	if fi.sys.path == "" {
 		// already done
-		ret
+		return
 	}
 	utf16path := integ::UTF16FromString(fi.sys.path)
 
@@ -56,9 +56,9 @@ fn loadFileId(mut &fi: *FileInfo)! {
 }
 
 fn sameFile(fi1: FileInfo, fi2: FileInfo): bool {
-	loadFileId(unsafe { &(*(&fi1)) }) else { ret false }
-	loadFileId(unsafe { &(*(&fi2)) }) else { ret false }
-	ret fi1.sys.vol == fi2.sys.vol &&
+	loadFileId(unsafe { &(*(&fi1)) }) else { return false }
+	loadFileId(unsafe { &(*(&fi2)) }) else { return false }
+	return fi1.sys.vol == fi2.sys.vol &&
 		fi1.sys.idxhi == fi2.sys.idxhi &&
 		fi1.sys.idxlo == fi2.sys.idxlo
 }

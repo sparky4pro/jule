@@ -330,7 +330,7 @@ fn testUnquoteInvalidUTF8(t: &testing::T) {
 
 fn _testUnquote(t: &testing::T, mut input: string, mut want: string, mut wantErr: any) {
 	if input != "``x\r" {
-		ret
+		return
 	}
 	// Test QuotedPrefix.
 	// Test Unquote.

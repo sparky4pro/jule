@@ -33,7 +33,7 @@ impl UDPConn {
 	//
 	// See the [Dial] function for a description of the addr parameter.
 	async fn Bind(addr: string)!: &UDPConn {
-		ret udpBind(Network.UDP, addr).await?
+		return udpBind(Network.UDP, addr).await?
 	}
 
 	// Connects to UDP listener by given address.
@@ -43,7 +43,7 @@ impl UDPConn {
 	//
 	// See the [Dial] function for a description of the addr parameter.
 	async fn Dial(addr: string)!: &UDPConn {
-		ret udpDial(Network.UDP, addr).await?
+		return udpDial(Network.UDP, addr).await?
 	}
 
 	// Read bytes to buffer from connection and returns read byte count.
@@ -56,12 +56,12 @@ impl UDPConn {
 			panic("net: UDPConn.Read: connection is closed")
 		}
 		if self.connect {
-			ret self.fd.Read(buf).await?
+			return self.fd.Read(buf).await?
 		}
 		if self.v6 {
-			ret self.fd.ReadV6(buf, self.sockaddr6).await?
+			return self.fd.ReadV6(buf, self.sockaddr6).await?
 		} else {
-			ret self.fd.ReadV4(buf, self.sockaddr4).await?
+			return self.fd.ReadV4(buf, self.sockaddr4).await?
 		}
 	}
 
@@ -72,12 +72,12 @@ impl UDPConn {
 			panic("net: UDPConn.Write: connection is closed")
 		}
 		if self.connect {
-			ret self.fd.Write(buf).await?
+			return self.fd.Write(buf).await?
 		}
 		if self.v6 {
-			ret self.fd.WriteV6(buf, self.sockaddr6).await?
+			return self.fd.WriteV6(buf, self.sockaddr6).await?
 		} else {
-			ret self.fd.WriteV4(buf, self.sockaddr4).await?
+			return self.fd.WriteV4(buf, self.sockaddr4).await?
 		}
 	}
 
@@ -112,24 +112,24 @@ impl UDPConn {
 	fn Network(*self): Network {
 		match {
 		| self.fd == nil:
-			ret Network.UDP
+			return Network.UDP
 		| self.v6:
-			ret Network.UDP6
+			return Network.UDP6
 		|:
-			ret Network.UDP4
+			return Network.UDP4
 		}
 	}
 
 	// Returns raw socket/file-descriptor of the connection.
 	// Intended for low-level use. Just borrow, do not close or something else.
 	fn RawFD(*self): u64 {
-		ret self.fd.pfd.File
+		return self.fd.pfd.File
 	}
 
 	// Closes connection.
 	async fn Close(mut *self)! {
 		if self.fd == nil {
-			ret
+			return
 		}
 		self.fd.Close().await?
 		self.fd = nil
@@ -172,7 +172,7 @@ async fn udpBind(network: Network, addr: string)!: &UDPConn {
 			conn.fd = socketipv4(false, uintptr(&conn.sockaddr4), connAddr, sys::SOCK_DGRAM, 0).await?
 		}
 	}
-	ret new(UDPConn, conn)
+	return new(UDPConn, conn)
 }
 
 async fn udpDial(network: Network, addr: string)!: &UDPConn {
@@ -210,5 +210,5 @@ async fn udpDial(network: Network, addr: string)!: &UDPConn {
 			conn.fd = socketipv4(true, uintptr(&conn.sockaddr4), connAddr, sys::SOCK_DGRAM, 0).await?
 		}
 	}
-	ret new(UDPConn, conn)
+	return new(UDPConn, conn)
 }

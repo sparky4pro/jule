@@ -108,7 +108,7 @@ struct ObjectCoder {
 	Buf: strings::Builder
 
 	resultProto: strings::Builder // Prototype declarations of the result declarations.
-	resultDecls: strings::Builder // Struct wrappers for multi-ret function types.
+	resultDecls: strings::Builder // Struct wrappers for multi-return function types.
 	anyObj:      strings::Builder // Type handlers and others for the <any> type.
 	anonObj:     strings::Builder // Anonymous functions, but also used for trait type mappers.
 	deallocObj:  strings::Builder // Deallocation function for [self.deallocated] types.
@@ -158,7 +158,7 @@ impl ObjectCoder {
 		oc.ec = exprCoder.new(oc)
 		oc.sc = scopeCoder.new(oc)
 		oc.tc = typeCoder.new(oc)
-		ret oc
+		return oc
 	}
 
 	fn write(mut &self, s: string) {
@@ -187,10 +187,10 @@ impl ObjectCoder {
 	fn findAnyType(mut &self, mut t: &sema::Type): int {
 		for (i, mut at) in self.anyTypeMap {
 			if at.Equal(t) {
-				ret i
+				return i
 			}
 		}
-		ret -1
+		return -1
 	}
 
 	fn pushCoSpawn(mut &self, mut f: &sema::FuncIns): int {
@@ -202,7 +202,7 @@ impl ObjectCoder {
 						continue Lookup
 					}
 				}
-				ret i
+				return i
 			}
 		}
 		i := len(self.coSpawnMap)
@@ -296,13 +296,13 @@ impl ObjectCoder {
 		}
 		self.coSpawnObj.WriteString("}\n")!
 
-		ret i
+		return i
 	}
 
 	fn pushDealloc(mut &self, mut t: &sema::Type): int {
 		for i, dt in self.deallocated {
 			if dt.Equal(t) {
-				ret i
+				return i
 			}
 		}
 		i := len(self.deallocated)
@@ -328,7 +328,7 @@ impl ObjectCoder {
 			self.tc.kind(&self.deallocObj, t)
 		}
 		self.deallocObj.WriteString(">().dealloc(); }\n")!
-		ret i
+		return i
 	}
 
 	fn pushAnonFunc(mut &self, mut m: &sema::AnonFuncExpr): (name: string) {
@@ -367,13 +367,13 @@ impl ObjectCoder {
 		self.anons = append(self.anons, &anonHash{expr: m, name: name, mode: self.mode})
 		self.anonFuncInsDecl(m, name)
 		self.anonObj.WriteByte('\n')!
-		ret
+		return
 	}
 
 	fn pushAnyType(mut &self, mut t: &sema::Type): (i: int) {
 		i = self.findAnyType(t)
 		if i != -1 {
-			ret
+			return
 		}
 		i = len(self.anyTypeMap)
 		self.anyTypeMap = append(self.anyTypeMap, t)
@@ -619,14 +619,14 @@ impl ObjectCoder {
 			self.tc.kind(&self.anyObj, t)
 			self.anyObj.WriteString(" other) { return any.type == type && any.type->eq(any.data.alloc, (void*)&other); }\n")!
 		}
-		ret i
+		return i
 	}
 
 	fn pushResultIns(mut &self, mut f: &sema::FuncIns) {
 		s := string(self.tc.rc.code(f.Result))
 		_, ok := self.resultMap[s]
 		if ok {
-			ret
+			return
 		}
 		self.resultMap[s] = false
 		self.resultProto.WriteString("struct ")!
@@ -648,7 +648,7 @@ impl ObjectCoder {
 
 	fn pushResult(mut &self, mut f: &sema::Func) {
 		if f.IsVoid() || len(f.Result.Names) <= 1 {
-			ret
+			return
 		}
 		mut n := len(f.Instances)
 		if len(f.Generics) == 0 {
@@ -673,7 +673,7 @@ impl ObjectCoder {
 		// Lookup and push if this match is not exist.
 		for _, m in self.traitCastMap {
 			if m.t1 == t1 && m.t2 == t2 {
-				ret
+				return
 			}
 		}
 
@@ -763,7 +763,7 @@ impl ObjectCoder {
 		i = conv::Itoa(t.Column)
 		n += len(i)
 		self.write(i)
-		ret
+		return
 	}
 
 	fn head(mut &self) {
@@ -852,7 +852,7 @@ impl ObjectCoder {
 
 	fn structureOperatorEq(mut &self, name: string, mut s: &sema::StructIns, decl: bool) {
 		if !s.Comparable {
-			ret
+			return
 		}
 		self.write("\n")
 		if opt::Inline {
@@ -869,12 +869,12 @@ impl ObjectCoder {
 		if decl {
 			// Declaration only.
 			self.write(";\n\n")
-			ret
+			return
 		}
 		self.write(" {")
 		if len(s.Fields) == 0 {
 			self.write(" return true; }\n\n")
-			ret
+			return
 		}
 		self.addIndent()
 		self.write("\n")
@@ -1099,7 +1099,7 @@ impl ObjectCoder {
 	fn paramsIns(mut &self, mut &buf: *strings::Builder, mut f: &sema::FuncIns) {
 		if !f.AsAnon && len(f.Params) == 0 {
 			buf.WriteString("(void)")!
-			ret
+			return
 		}
 		buf.WriteByte('(')!
 		if f.AsAnon {
@@ -1153,7 +1153,7 @@ impl ObjectCoder {
 
 	fn var(mut &self, mut v: &sema::Var) {
 		if jule::IsBlank(v.Name) {
-			ret
+			return
 		}
 		if v.ValueSym != nil && v.ValueSym.Expr != nil {
 			if v.ValueSym.Value.Model != nil {
@@ -1164,14 +1164,14 @@ impl ObjectCoder {
 					self.write(" ")
 					self.commonVarInit(v)
 				}
-				ret
+				return
 			}
 			self.varInitExpr(v, nil)
-			ret
+			return
 		}
 		if shouldInitialized(v.TypeSym.Type) {
 			self.varInitExpr(v, fn|| self.ec.initExpr(v.TypeSym.Type))
-			ret
+			return
 		}
 		self.varInitExpr(v, nil)
 	}
@@ -1230,10 +1230,10 @@ impl ObjectCoder {
 			if f.Decl.Public == m.Public &&
 				f.Decl.Name == m.Name &&
 				f.EqualFunc(mins, false) {
-				ret f, true
+				return f, true
 			}
 		}
-		ret mins, false
+		return mins, false
 	}
 
 	// See memory handling of traits to understand trait type handling.
@@ -1261,7 +1261,7 @@ impl ObjectCoder {
 				const Static = false
 				mut sm := ins.FindMethod(m.Name, Static)
 				if sm == nil || len(sm.Instances) == 0 {
-					ret
+					return
 				}
 
 				self.addIndent()
@@ -1434,7 +1434,7 @@ impl ObjectCoder {
 			self.doneIndent()
 			self.write("};\n")
 		}
-		ret
+		return
 	}
 
 	// Generates VTM (virtual method table) object code for traits.
@@ -1735,7 +1735,7 @@ impl ObjectCoder {
 			// lookup and do not add already exist methods
 			for _, em in hash.methods {
 				if em == m {
-					ret
+					return
 				}
 			}
 			// m is not exist in hash.methods
@@ -1807,12 +1807,12 @@ fn concatAllParts(parts: ...&token::Token): []byte {
 		n += len(part.Kind)
 	}
 	if n == 0 {
-		ret nil
+		return nil
 	}
 	mut s := strings::Builder{}
 	s.Grow(n)
 	for _, p in parts {
 		s.WriteString(p.Kind)!
 	}
-	ret unsafe { s.Buf() }
+	return unsafe { s.Buf() }
 }

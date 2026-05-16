@@ -4,5 +4,5 @@
 
 async fn _lookupPort(network: Network, service: string)!: (port: int) {
 	// Integrated option is not available for Windows.
-	ret juleLookupPortMap(network, service)?
+	return juleLookupPortMap(network, service)?
 }

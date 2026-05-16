@@ -17,7 +17,7 @@ impl netFD {
 		// Since UDP has no connection handshake, connect timeouts are not applicable.
 		if self.pfd.Flags&poll::SocketNoConn != 0 {
 			sys::Connect(h, sockaddr, socksize)?
-			ret
+			return
 		}
 		if timeout > 0 {
 			self.SetDeadline(timeout)
@@ -55,9 +55,9 @@ impl netFD {
 	async fn accept(mut *self, ipv: int)!: (fd: &netFD, addr: &TCPAddr) {
 		sockfact := fn()!: poll::NetHandle {
 			if ipv == 4 {
-				ret syssocket(sys::AF_INET, sys::SOCK_STREAM, sys::IPPROTO_TCP)?
+				return syssocket(sys::AF_INET, sys::SOCK_STREAM, sys::IPPROTO_TCP)?
 			}
-			ret syssocket(sys::AF_INET6, sys::SOCK_STREAM, sys::IPPROTO_TCP)?
+			return syssocket(sys::AF_INET6, sys::SOCK_STREAM, sys::IPPROTO_TCP)?
 		}
 		let mut h: poll::NetHandle
 		let mut ip: IP
@@ -88,6 +88,6 @@ impl netFD {
 			fd.Close().await else {}
 			throw error
 		}
-		ret
+		return
 	}
 }

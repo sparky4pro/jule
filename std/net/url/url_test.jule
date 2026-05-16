@@ -674,7 +674,7 @@ fn testParseRequestURI(t: &testing::T) {
 
 	url := ParseRequestURI(pathThatLooksSchemeRelative) else {
 		t.Errorf("Unexpected error {}", error)
-		ret
+		return
 	}
 	if url.Path != pathThatLooksSchemeRelative {
 		t.Errorf("ParseRequestURI path:\ngot  {\nwant {}", url.Path, pathThatLooksSchemeRelative)
@@ -1011,7 +1011,7 @@ let resolveReferenceTests: []resolveReferenceTest = [
 #test
 fn testResolveReference(t: &testing::T) {
 	mustParse := fn(url: string): &URL {
-		ret Parse(url) else {
+		return Parse(url) else {
 			t.Errorf("Parse({}) got err {}", url, error)
 			use nil
 		}
@@ -1450,7 +1450,7 @@ fn testParseErrors(t: &testing::T) {
 fn testStarRequest(t: &testing::T) {
 	u := Parse("*") else {
 		t.Errorf("{}", error)
-		ret
+		return
 	}
 	got, want := u.RequestURI(), "*"
 	if got != want {

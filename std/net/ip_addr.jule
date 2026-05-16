@@ -16,16 +16,16 @@ struct parseAddrError {
 impl parseAddrError {
 	fn String(*self): string {
 		if self.at != "" {
-			ret self.msg + " (input " + self.input + ") (at " + self.at + ")"
+			return self.msg + " (input " + self.input + ") (at " + self.at + ")"
 		}
-		ret self.msg + " (input" + self.input + ")"
+		return self.msg + " (input" + self.input + ")"
 	}
 }
 
 // Returns the address of the IPv4 address given by the 4-bytes representation.
 #disable boundary
 fn ipAddrFrom4(ip: IP): u128 {
-	ret u128{
+	return u128{
 		hi: 0,
 		lo: 0xFFFF00000000 | u64(ip[0])<<24 | u64(ip[1])<<16 | u64(ip[2])<<8 | u64(ip[3]),
 	}
@@ -33,7 +33,7 @@ fn ipAddrFrom4(ip: IP): u128 {
 
 // Returns the address of the IPv6 address given by the 16-bytes representation.
 fn ipAddrFrom16(ip: IP): u128 {
-	ret u128{
+	return u128{
 		hi: beU64(ip[:8]),
 		lo: beU64(ip[8:]),
 	}
@@ -41,13 +41,13 @@ fn ipAddrFrom16(ip: IP): u128 {
 
 #disable boundary
 fn beU64(ip: IP): u64 {
-	ret u64(ip[7]) | u64(ip[6])<<8 | u64(ip[5])<<16 | u64(ip[4])<<24 |
+	return u64(ip[7]) | u64(ip[6])<<8 | u64(ip[5])<<16 | u64(ip[4])<<24 |
 		u64(ip[3])<<32 | u64(ip[2])<<40 | u64(ip[1])<<48 | u64(ip[0])<<56
 }
 
 #disable boundary
 fn beU64v4(ip: IP): u64 {
-	ret u64(ip[3])<<24 | u64(ip[2])<<16 | u64(ip[1])<<8 | u64(ip[0])
+	return u64(ip[3])<<24 | u64(ip[2])<<16 | u64(ip[1])<<8 | u64(ip[0])
 }
 
 #disable boundary
@@ -73,7 +73,7 @@ fn bePutU64(mut ip: IP, v: u64) {
 // Returns the i'th byte of ip. If ip is not an IPv4, v4 returns
 // unspecified garbage.
 fn v4(ip: u128, i: u8): u8 {
-	ret u8(ip.lo >> ((3 - i) << 3))
+	return u8(ip.lo >> ((3 - i) << 3))
 }
 
 // Returns the i'th 16-bit word of ip. If ip is an IPv4 address,
@@ -85,7 +85,7 @@ fn v6u16(ip: u128, i: u8): u16 {
 	} else {
 		p = ip.lo
 	}
-	ret u16(p >> ((3 - i%4) << 4))
+	return u16(p >> ((3 - i%4) << 4))
 }
 
 // String of the hex digits from 0 to f. It's used in
@@ -128,7 +128,7 @@ fn str4(ip: u128): string {
 	appendDecimal(&s, v4(ip, 2))
 	s.WriteByte('.')!
 	appendDecimal(&s, v4(ip, 3))
-	ret s.String()
+	return s.String()
 }
 
 fn str16(ip: u128): string {
@@ -163,7 +163,7 @@ fn str16(ip: u128): string {
 		appendHex(&s, v6u16(ip, i))
 	}
 
-	ret s.String()
+	return s.String()
 }
 
 #disable boundary
@@ -210,7 +210,7 @@ fn parseIPv4Fields(addr: string, off: int, end: int, mut ip: IP)! {
 fn parseIPv4(addr: string)!: IPAddr {
 	mut ip := make(IP, 4)
 	parseIPv4Fields(addr, 0, len(addr), ip)?
-	ret IPAddr{IP: ip}
+	return IPAddr{IP: ip}
 }
 
 // Parses addr as an IPv6 address (in form "2001:db8::68").
@@ -245,7 +245,7 @@ fn parseIPv6(addr: string)!: IPAddr {
 				IP:   IPv6Unspecified.To16(),
 				Zone: zone,
 			}
-			ret ipAddr
+			return ipAddr
 		}
 	}
 
@@ -366,19 +366,19 @@ fn parseIPv6(addr: string)!: IPAddr {
 		Zone: zone,
 	}
 	ipAddr.IP = ipAddr.IP.To16()
-	ret ipAddr
+	return ipAddr
 }
 
 fn htons(x: int): u16 {
 	if runtime::BigEndian {
-		ret u16(x)
+		return u16(x)
 	}
-	ret ((u16(x) & 0xFF) << 8) | ((u16(x) & 0xFF00) >> 8)
+	return ((u16(x) & 0xFF) << 8) | ((u16(x) & 0xFF00) >> 8)
 }
 
 fn ntohs(x: int): u16 {
 	if runtime::BigEndian {
-		ret u16(x)
+		return u16(x)
 	}
-	ret ((u16(x) & 0xFF) << 8) | ((u16(x) & 0xFF00) >> 8)
+	return ((u16(x) & 0xFF) << 8) | ((u16(x) & 0xFF00) >> 8)
 }

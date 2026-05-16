@@ -63,43 +63,43 @@ fn IsGraphic(r: rune): bool {
 	// We convert to u32 to avoid the extra test for negative,
 	// and in the index we convert to uint8 to avoid the range check.
 	if u32(r) <= MaxLatin1 {
-		ret properties[u8(r)]&pg != 0
+		return properties[u8(r)]&pg != 0
 	}
-	ret IsIn(r, GraphicRanges...)
+	return IsIn(r, GraphicRanges...)
 }
 
 // Reports whether the rune is a member of one of the ranges.
 fn IsIn(r: rune, ranges: ...&RangeTable): bool {
 	for _, inside in ranges {
 		if Is(inside, r) {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 // Reports whether the rune is a letter (category L).
 fn IsLetter(r: rune): bool {
 	if u32(r) <= MaxLatin1 {
-		ret properties[u8(r)]&pLmask != 0
+		return properties[u8(r)]&pLmask != 0
 	}
-	ret isExcludingLatin(Letter, r)
+	return isExcludingLatin(Letter, r)
 }
 
 // Reports whether the rune is a number (category N).
 fn IsNumber(r: rune): bool {
 	if u32(r) <= MaxLatin1 {
-		ret properties[u8(r)]&pN != 0
+		return properties[u8(r)]&pN != 0
 	}
-	ret isExcludingLatin(Number, r)
+	return isExcludingLatin(Number, r)
 }
 
 // Reports whether the rune is a Unicode punctuation character (category P).
 fn IsPunct(r: rune): bool {
 	if u32(r) <= MaxLatin1 {
-		ret properties[u8(r)]&pP != 0
+		return properties[u8(r)]&pP != 0
 	}
-	ret Is(Punct, r)
+	return Is(Punct, r)
 }
 
 // Reports whether the rune is a space character as defined
@@ -115,11 +115,11 @@ fn IsSpace(r: rune): bool {
 	if u32(r) <= MaxLatin1 {
 		match r {
 		| '\t' | '\n' | '\v' | '\f' | '\r' | ' ' | 0x85 | 0xA0:
-			ret true
+			return true
 		}
-		ret false
+		return false
 	}
-	ret isExcludingLatin(White_Space, r)
+	return isExcludingLatin(White_Space, r)
 }
 
 // Reports whether the rune is defined as printable by Jule. Such
@@ -129,7 +129,7 @@ fn IsSpace(r: rune): bool {
 // only spacing character is ASCII space, U+0020.
 fn IsPrint(r: rune): bool {
 	if u32(r) <= MaxLatin1 {
-		ret properties[u8(r)]&pp != 0
+		return properties[u8(r)]&pp != 0
 	}
-	ret In(r, PrintRanges...)
+	return In(r, PrintRanges...)
 }

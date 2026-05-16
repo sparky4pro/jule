@@ -67,7 +67,7 @@ impl semaRoot {
 					t.waittail = p
 					p.waitlink = nil
 				}
-				ret
+				return
 			}
 			last = t
 			if uintptr(sema) < t.stack {
@@ -129,7 +129,7 @@ impl semaRoot {
 				unsafe { *(&ps) = &p.next }
 			}
 		}
-		ret nil
+		return nil
 
 	Found:
 		mut t := p.waitlink
@@ -178,7 +178,7 @@ impl semaRoot {
 		p.next = nil
 		p.prev = nil
 		p.ticket = 0
-		ret p
+		return p
 	}
 
 	// Rotates the tree rooted at node x.
@@ -253,7 +253,7 @@ let mut semtable: [semTabSize]semTable = []
 // Returns sema space collection for the sema from semtable.
 #disable nilptr
 fn semtable_rootFor(&sema: *u32): &semaRoot {
-	ret unsafe { (&semaRoot)(&semtable[(uintptr(sema)>>3)%semTabSize].root) }
+	return unsafe { (&semaRoot)(&semtable[(uintptr(sema)>>3)%semTabSize].root) }
 }
 
 #disable nilptr
@@ -261,10 +261,10 @@ fn cansemacquire(mut &sema: *u32): bool {
 	for {
 		v := atomic::Load(sema, atomic::Acquire)
 		if v == 0 {
-			ret false
+			return false
 		}
 		if atomic::CompareAndSwap(sema, v, v-1, atomic::AcqRel, atomic::Acquire) {
-			ret true
+			return true
 		}
 	}
 }
@@ -278,7 +278,7 @@ fn cansemacquire(mut &sema: *u32): bool {
 async fn semacquire(mut &sema: *u32, lifo: bool, reason: u32) {
 	// Easy case.
 	if cansemacquire(sema) {
-		ret
+		return
 	}
 
 	// Harder case:
@@ -327,7 +327,7 @@ fn semrelease(mut &sema: *u32, handoff: bool) {
 	// This check must happen after the atomicAdd, to avoid a missed wakeup
 	// (see loop in semacquire).
 	if atomic::Load(&root.nwait, atomic::Acquire) == 0 {
-		ret
+		return
 	}
 
 	// Harder case: search for a waiter and wake it.
@@ -336,7 +336,7 @@ fn semrelease(mut &sema: *u32, handoff: bool) {
 		// The count is already consumed by another coroutine,
 		// so no need to wake up another coroutine.
 		root.lock.unlock()
-		ret
+		return
 	}
 
 	mut p := root.dequeue(sema)
@@ -361,7 +361,7 @@ fn semrelease(mut &sema: *u32, handoff: bool) {
 fn tsemacquire(mut &sema: *u32, lifo: bool, reason: u32) {
 	// Easy case.
 	if cansemacquire(sema) {
-		ret
+		return
 	}
 
 	// Harder case:
@@ -409,7 +409,7 @@ fn tsemrelease(mut &sema: *u32, handoff: bool) {
 	// This check must happen after the atomicAdd, to avoid a missed wakeup
 	// (see loop in semacquire).
 	if atomic::Load(&root.nwait, atomic::Acquire) == 0 {
-		ret
+		return
 	}
 
 	// Harder case: search for a waiter and wake it.
@@ -418,7 +418,7 @@ fn tsemrelease(mut &sema: *u32, handoff: bool) {
 		// The count is already consumed by another thread,
 		// so no need to wake up another thread.
 		root.lock.unlock()
-		ret
+		return
 	}
 
 	mut p := root.dequeue(sema)
@@ -448,7 +448,7 @@ fn tsemrelease(mut &sema: *u32, handoff: bool) {
 // Checks if a < b, considering a & b running counts that may overflow the
 // 32-bit range, and that their "unwrapped" difference is always less than 2^31.
 fn less(a: u32, b: u32): bool {
-	ret i32(a-b) < 0
+	return i32(a-b) < 0
 }
 
 // Ticket-based notification list used to implement condition variable primitives.
@@ -477,7 +477,7 @@ struct notifyList {
 // Adds new notify ticked to list l and returns the ticket number.
 #disable nilptr
 fn notifyListAdd(mut &l: *notifyList): u32 {
-	ret atomic::Add(&l.wait, 1, atomic::AcqRel) - 1
+	return atomic::Add(&l.wait, 1, atomic::AcqRel) - 1
 }
 
 // Waits for a notification. If one has been sent since
@@ -489,7 +489,7 @@ async fn notifyListWait(mut &l: *notifyList, t: u32) {
 	// Return right away if this ticket has already been notified.
 	if less(t, l.notify) {
 		l.lock.unlock()
-		ret
+		return
 	}
 
 	// Enqueue itself.
@@ -514,7 +514,7 @@ fn notifyListNotifyOne(mut &l: *notifyList) {
 	// Fast-path: if there are no new waiters since the last notification
 	// we don't need to acquire the lock at all.
 	if atomic::Load(&l.wait, atomic::Acquire) == atomic::Load(&l.notify, atomic::Acquire) {
-		ret
+		return
 	}
 
 	l.lock.lock()
@@ -523,7 +523,7 @@ fn notifyListNotifyOne(mut &l: *notifyList) {
 	t := l.notify
 	if t == atomic::Load(&l.wait, atomic::Acquire) {
 		l.lock.unlock()
-		ret
+		return
 	}
 
 	// Update the next notify ticket number.
@@ -557,7 +557,7 @@ fn notifyListNotifyOne(mut &l: *notifyList) {
 			l.lock.unlock()
 			s.next = nil
 			unpark(&(*s.cp))
-			ret
+			return
 		}
 	}
 
@@ -570,7 +570,7 @@ fn notifyListNotifyAll(mut &l: *notifyList) {
 	// Fast-path: if there are no new waiters since the last notification
 	// we don't need to acquire the lock.
 	if atomic::Load(&l.wait, atomic::Acquire) == atomic::Load(&l.notify, atomic::Acquire) {
-		ret
+		return
 	}
 
 	// Pull the list out into a local variable, waiters will be readied

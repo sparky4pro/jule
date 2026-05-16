@@ -1639,7 +1639,7 @@ fn Read(fd: int, mut p: []byte)!: (n: int) {
 	if n < _NO_ERROR {
 		throw GetLastErrno()
 	}
-	ret
+	return
 }
 
 fn Write(fd: int, p: []byte)!: (n: int) {
@@ -1653,7 +1653,7 @@ fn Write(fd: int, p: []byte)!: (n: int) {
 	if n < _NO_ERROR {
 		throw GetLastErrno()
 	}
-	ret
+	return
 }
 
 fn Seek(fd: int, offset: i64, whence: int)!: (newoffset: i64) {
@@ -1661,7 +1661,7 @@ fn Seek(fd: int, offset: i64, whence: int)!: (newoffset: i64) {
 	if newoffset < _NO_ERROR {
 		throw GetLastErrno()
 	}
-	ret
+	return
 }
 
 // Path should be NUL-terminated if it is not empty.
@@ -1717,7 +1717,7 @@ fn Openat(dirfd: int, path: string, mode: int, perm: u32)!: (fd: int) {
 	if fd < _NO_ERROR {
 		throw GetLastErrno()
 	}
-	ret
+	return
 }
 
 fn Getcwd(mut buf: []byte)!: (n: int) {
@@ -1733,7 +1733,7 @@ fn Getcwd(mut buf: []byte)!: (n: int) {
 		}
 	}
 	copy(buf, tmp[:n])
-	ret
+	return
 }
 
 fn Chdir(path: string)! {
@@ -1749,7 +1749,7 @@ fn Fcntl(fd: int, cmd: int, arg: int)!: int {
 	if valptr < _NO_ERROR {
 		throw GetLastErrno()
 	}
-	ret valptr
+	return valptr
 }
 
 fn Fstatat(fd: int, path: string, mut &stat: *SysStat, flags: int)! {
@@ -1794,7 +1794,7 @@ fn Select(nfd: int, mut &r: *FdSet, mut &w: *FdSet, mut &e: *FdSet, mut &timeout
 	if n < _NO_ERROR {
 		throw GetLastErrno()
 	}
-	ret
+	return
 }
 
 fn Socket(domain: int, typ: int, proto: int)!: (fd: int) {
@@ -1802,7 +1802,7 @@ fn Socket(domain: int, typ: int, proto: int)!: (fd: int) {
 	if fd < _NO_ERROR {
 		throw GetLastErrno()
 	}
-	ret
+	return
 }
 
 fn Bind(s: int, addr: uintptr, addrlen: Socklen)! {
@@ -1831,7 +1831,7 @@ fn Accept(s: int, addr: uintptr, &addrlen: *Socklen)!: (fd: int) {
 	if fd < _NO_ERROR {
 		throw GetLastErrno()
 	}
-	ret
+	return
 }
 
 fn Recvfrom(fd: int, mut p: []byte, flags: int, from: uintptr, fromlen: Socklen)!: (n: int) {
@@ -1845,7 +1845,7 @@ fn Recvfrom(fd: int, mut p: []byte, flags: int, from: uintptr, fromlen: Socklen)
 	if n < _NO_ERROR {
 		throw GetLastErrno()
 	}
-	ret
+	return
 }
 
 fn Sendto(s: int, buf: []byte, flags: int, to: uintptr, addrlen: Socklen)! {
@@ -1889,7 +1889,7 @@ fn Getpeername(fd: int)!: RawSockaddrAny {
 	if r < 0 {
 		throw GetLastErrno()
 	}
-	ret rsa
+	return rsa
 }
 
 fn Sysctl(name: []i32, oldp: uintptr, oldplen: uintptr, newp: uintptr, newplen: uint)! {
@@ -1919,7 +1919,7 @@ fn Open(path: string, mode: int, perm: u32)!: (fd: int) {
 	if fd < _NO_ERROR {
 		throw GetLastErrno()
 	}
-	ret
+	return
 }
 
 fn Pipe(mut p: []int)! {
@@ -1948,7 +1948,7 @@ fn Fork()!: int {
 	if r < _NO_ERROR {
 		throw GetLastErrno()
 	}
-	ret int(r)
+	return int(r)
 }
 
 fn stringSliceToCstringSlice(&s: *[]string, mut &args: *[][]byte): []*byte {
@@ -1960,7 +1960,7 @@ fn stringSliceToCstringSlice(&s: *[]string, mut &args: *[][]byte): []*byte {
 		p_args[i] = &p_arg[0]
 	}
 	p_args[len(p_args)-1] = nil
-	ret p_args
+	return p_args
 }
 
 fn Exec(file: string, args: []string, env: []string)! {
@@ -2008,7 +2008,7 @@ fn Readlinkat(dirfd: int, path: string, mut buf: []byte)!: (n: int) {
 		throw GetLastErrno()
 	}
 	n = int(r)
-	ret
+	return
 }
 
 fn Readlink(path: string, mut buf: []byte)!: (n: int) {
@@ -2024,5 +2024,5 @@ fn Readlink(path: string, mut buf: []byte)!: (n: int) {
 		throw GetLastErrno()
 	}
 	n = int(r)
-	ret
+	return
 }

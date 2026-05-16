@@ -49,49 +49,49 @@ const Hour = Duration(runtime::_Hour)
 impl Duration {
 	// Returns duration as nanoseconds.
 	fn Nanoseconds(*self): Duration {
-		ret *self
+		return *self
 	}
 
 	// Returns duration as microseconds.
 	fn Microseconds(*self): Duration {
-		ret *self / Microsecond
+		return *self / Microsecond
 	}
 
 	// Returns duration as milliseconds.
 	fn Milliseconds(*self): Duration {
-		ret *self / Millisecond
+		return *self / Millisecond
 	}
 
 	// Returns duration as floating-point seconds.
 	fn Seconds(*self): f64 {
 		sec := *self / Second
 		nsec := *self % Second
-		ret f64(sec) + f64(nsec)/1e9
+		return f64(sec) + f64(nsec)/1e9
 	}
 
 	// Returns duration as floating-point minutes.
 	fn Minutes(*self): f64 {
 		min := *self / Minute
 		nsec := *self % Minute
-		ret f64(min) + f64(nsec)/(60*1e9)
+		return f64(min) + f64(nsec)/(60*1e9)
 	}
 
 	// Returns duration as floating-point hours.
 	fn Hours(*self): f64 {
 		hour := *self / Hour
 		nsec := *self % Hour
-		ret f64(hour) + f64(nsec)/(60*60*1e9)
+		return f64(hour) + f64(nsec)/(60*60*1e9)
 	}
 
 	// Returns absolute value of duration.
 	fn Abs(*self): Duration {
 		match {
 		| *self >= 0:
-			ret *self
+			return *self
 		| *self == durationMin:
-			ret durationMax
+			return durationMax
 		|:
-			ret -(*self)
+			return -(*self)
 		}
 	}
 
@@ -103,7 +103,7 @@ impl Duration {
 		mut buf := make([]byte, 1<<5)
 		n := formatDuration(*self, buf)
 		buf = buf[n:]
-		ret unsafe::StringFromBytes(buf)
+		return unsafe::StringFromBytes(buf)
 	}
 }
 
@@ -129,7 +129,7 @@ fn formatDuration(d: Duration, mut buf: []byte): int {
 		match {
 		| u == 0:
 			buf[w] = '0'
-			ret w
+			return w
 		| u < u64(Microsecond):
 			// print nanoseconds
 			prec = 0
@@ -180,7 +180,7 @@ fn formatDuration(d: Duration, mut buf: []byte): int {
 		buf[w] = '-'
 	}
 
-	ret w
+	return w
 }
 
 // Formats the fraction of v/10**prec (e.g., ".12345") into the
@@ -205,7 +205,7 @@ fn fmtFrac(mut buf: []byte, mut v: u64, prec: int): (nw: int, nv: u64) {
 		w--
 		buf[w] = '.'
 	}
-	ret w, v
+	return w, v
 }
 
 // Formats v into the tail of buf.
@@ -222,5 +222,5 @@ fn formatInt(mut buf: []byte, mut v: u64): int {
 			v /= 10
 		}
 	}
-	ret w
+	return w
 }

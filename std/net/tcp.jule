@@ -14,22 +14,22 @@ struct TCPAddr {
 impl Addr for TCPAddr {
 	// Returns the address's network name.
 	fn Network(*self): string {
-		ret "tcp"
+		return "tcp"
 	}
 
 	// Returns string form of address.
 	fn String(*self): string {
 		ip := self.IP.ipEmptyString()
 		if self.Zone != "" {
-			ret JoinHostPort(ip+"%"+self.Zone, conv::Itoa(self.Port))
+			return JoinHostPort(ip+"%"+self.Zone, conv::Itoa(self.Port))
 		}
-		ret JoinHostPort(ip, conv::Itoa(self.Port))
+		return JoinHostPort(ip, conv::Itoa(self.Port))
 	}
 }
 
 impl addr for TCPAddr {
-	fn ip(mut *self): IP { ret self.IP }
-	fn port(*self): int { ret self.Port }
+	fn ip(mut *self): IP { return self.IP }
+	fn port(*self): int { return self.Port }
 }
 
 impl TCPAddr {
@@ -50,7 +50,7 @@ impl TCPAddr {
 		match network {
 		| TCP | TCP4 | TCP6:
 			mut addrs := resolveInternetAddrList(network, address).await?
-			ret addrs.forResolve(network, address).(&TCPAddr)
+			return addrs.forResolve(network, address).(&TCPAddr)
 		|:
 			throw &AddrError{Err: "invalid network: " + string(network)}
 		}

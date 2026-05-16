@@ -36,7 +36,7 @@ fn eventpollopen(fd: u64, mut &pd: *polldesc)! {
 
 fn eventpollclose(fd: u64): sys::Errno {
 	let mut ev: epollEvent
-	ret syscall_EpollCtl(epfd, sys::EPOLL_CTL_DEL, i32(fd), &ev)
+	return syscall_EpollCtl(epfd, sys::EPOLL_CTL_DEL, i32(fd), &ev)
 }
 
 // delay < 0: blocks indefinitely
@@ -45,7 +45,7 @@ fn eventpollclose(fd: u64): sys::Errno {
 #disable nilptr boundary
 fn eventpoll(delay: i64, mut &toRun: *[prunqsize]c): u32 {
 	if epfd == -1 {
-		ret 0
+		return 0
 	}
 	let mut wait: i32
 	if delay < 0 {
@@ -87,7 +87,7 @@ retry:
 		// If a timed sleep was interrupted, just return to
 		// recalculate how long we should sleep now.
 		if wait >= 0 {
-			ret 0
+			return 0
 		}
 		goto retry
 	}
@@ -118,5 +118,5 @@ retry:
 		pd.setEventErr(ev.events == sys::EPOLLERR, tag)
 		eventpollready(pd, mode, toRun, &b)
 	}
-	ret b
+	return b
 }

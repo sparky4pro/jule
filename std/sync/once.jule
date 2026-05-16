@@ -53,7 +53,7 @@ struct Once {
 impl Once {
 	// Returns new instance for Once.
 	fn New(): Once {
-		ret Once{}
+		return Once{}
 	}
 
 	// Calls the function f if and only if Do is being called for the
@@ -121,7 +121,7 @@ struct AsyncOnce {
 impl AsyncOnce {
 	// Returns new instance for AsyncOnce.
 	fn New(): AsyncOnce {
-		ret AsyncOnce{}
+		return AsyncOnce{}
 	}
 
 	// Calls the function f if and only if Do is being called for the

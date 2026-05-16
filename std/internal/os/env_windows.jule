@@ -13,10 +13,10 @@ fn lookupenv(key: string): (val: string, found: bool) {
 		mut b := make([]u16, n)
 		n = unsafe { sys::GetEnvironmentVariable(&keyPtr[0], &b[0], u32(len(b))) }
 		if n == 0 && sys::GetLastErrno() == sys::ERROR_ENVVAR_NOT_FOUND {
-			ret "", false
+			return "", false
 		}
 		if n <= u32(len(b)) {
-			ret integ::UTF16ToString(b[:n]), true
+			return integ::UTF16ToString(b[:n]), true
 		}
 	}
 }
@@ -31,5 +31,5 @@ fn setenv(key: string, val: string)! {
 }
 
 fn environ(): []string {
-	ret runtime::env()
+	return runtime::env()
 }

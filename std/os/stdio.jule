@@ -10,10 +10,10 @@ let mut stdout = &File{fd: builtin::Stdout}
 let mut stderr = &File{fd: builtin::Stderr}
 
 // Returns File for the standard input file descriptor.
-fn Stdin(): &File { ret stdin }
+fn Stdin(): &File { return stdin }
 
 // Returns File for the standard output file descriptor.
-fn Stdout(): &File { ret stdout }
+fn Stdout(): &File { return stdout }
 
 // Returns File for the standard error file descriptor.
-fn Stderr(): &File { ret stderr }
+fn Stderr(): &File { return stderr }

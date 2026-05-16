@@ -13,7 +13,7 @@ fn parsePort(mut service: string): (port: int, needsLookup: bool) {
 	if service == "" {
 		// Lock in the legacy behavior that an empty string
 		// means port 0. See golang.org/issue/13610.
-		ret 0, false
+		return 0, false
 	}
 	const (
 		max    = u32(1<<32 - 1)
@@ -31,7 +31,7 @@ fn parsePort(mut service: string): (port: int, needsLookup: bool) {
 		if '0' <= d && d <= '9' {
 			d -= '0'
 		} else {
-			ret 0, true
+			return 0, true
 		}
 		if n >= cutoff {
 			n = max
@@ -55,5 +55,5 @@ fn parsePort(mut service: string): (port: int, needsLookup: bool) {
 	if neg {
 		port = -port
 	}
-	ret port, false
+	return port, false
 }

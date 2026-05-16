@@ -15,7 +15,7 @@ struct assignInfo {
 // Reports given token id is allow for
 // assignment left-expression or not.
 fn isAssign(id: int): bool {
-	ret id == token::NAME ||
+	return id == token::NAME ||
 		id == token::ERROR ||
 		id == token::EXTERN ||
 		id == token::LET ||
@@ -29,7 +29,7 @@ fn isAssign(id: int): bool {
 // Checks assignment tokens and whether reports is ok or not.
 fn checkAssignTokens(tokens: []&token::Token): bool {
 	if len(tokens) == 0 || !isAssign(tokens[0].ID) {
-		ret false
+		return false
 	}
 	mut braceN := 0
 	for _, t in tokens {
@@ -45,14 +45,14 @@ fn checkAssignTokens(tokens: []&token::Token): bool {
 		}
 		match {
 		| braceN < 0:
-			ret false
+			return false
 		| braceN > 0:
 			continue
 		| token::IsAssign(t.ID)
 		| t.ID == token::ARROW
 		| t.ID == token::DEFINE:
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }

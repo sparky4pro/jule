@@ -70,15 +70,15 @@ fn IsSorted[S: ~[]E, E: ordered](mut s: S): bool {
 	mut i := len(s) - 1
 	for i > 0; i-- {
 		if cmp::Less(s[i], s[i-1]) {
-			ret false
+			return false
 		}
 	}
-	ret true
+	return true
 }
 
 fn nextPowerOfTwo(length: int): uint {
 	shift := uint(bits::Len(uint(length)))
-	ret uint(1 << shift)
+	return uint(1 << shift)
 }
 
 // xorshift paper: https://www.jstatsoft.org/article/view/v008i14/xorshift.pdf
@@ -88,5 +88,5 @@ fn xorshiftNext(mut &r: *xorshift): u64 {
 	*r ^= *r << 13
 	*r ^= *r >> 17
 	*r ^= *r << 5
-	ret u64(*r)
+	return u64(*r)
 }

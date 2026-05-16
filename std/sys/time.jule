@@ -11,12 +11,12 @@ use "std/mem"
 // If sec or usec have invalid range, out will not be mutated.
 fn NewTimeval(sec: i64, usec: i64, mut &out: *Timeval): bool {
 	if !nbits::Fits(sec, mem::SizeOf(out.Sec)*8) {
-		ret false
+		return false
 	}
 	if !nbits::Fits(usec, mem::SizeOf(out.Usec)*8) {
-		ret false
+		return false
 	}
 	out.Sec = secType(sec)
 	out.Usec = usecType(usec)
-	ret true
+	return true
 }

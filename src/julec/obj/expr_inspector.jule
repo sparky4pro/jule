@@ -17,7 +17,7 @@ struct ExprInspector {
 impl ExprInspector {
 	// Returns new inspector.
 	fn New(): &ExprInspector {
-		ret new(ExprInspector)
+		return new(ExprInspector)
 	}
 
 	fn args(mut *self, mut args: []sema::Expr) {
@@ -51,7 +51,7 @@ impl ExprInspector {
 		self.SkipChild = false
 		self.handler(m)
 		if self.SkipChild {
-			ret
+			return
 		}
 		match type *m {
 		| &sema::BinaryExpr:

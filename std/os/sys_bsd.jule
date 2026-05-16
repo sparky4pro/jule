@@ -19,5 +19,5 @@ fn hostname()!: (name: string) {
 
 	// Read hostname.
 	sys::Sysctl(mib, uintptr(&hostname[0]), uintptr(&size), 0, 0)?
-	ret unsafe::StringFromBytes(hostname)
+	return unsafe::StringFromBytes(hostname)
 }

@@ -18,7 +18,7 @@ use "std/time"
 async fn Listen(network: Network, addr: string)!: Listener {
 	match network {
 	| TCP | TCP4 | TCP6:
-		ret tcpBind(network, addr).await?
+		return tcpBind(network, addr).await?
 	|:
 		throw &AddrError{Err: "invalid network: " + string(network)}
 	}
@@ -30,7 +30,7 @@ async fn Listen(network: Network, addr: string)!: Listener {
 //
 // See the [Dial] function for a description of the network and addr parameters.
 async fn ListenUDP(network: Network, addr: string)!: &UDPConn {
-	ret udpBind(network, addr).await?
+	return udpBind(network, addr).await?
 }
 
 // Connects to the address on the named network.
@@ -73,7 +73,7 @@ async fn ListenUDP(network: Network, addr: string)!: &UDPConn {
 //
 // It will forward any error from network connectors.
 async fn Dial(network: Network, addr: string)!: Conn {
-	ret DialTimeout(network, addr, 0).await?
+	return DialTimeout(network, addr, 0).await?
 }
 
 // Same as Dial, but uses timeout.
@@ -83,9 +83,9 @@ async fn Dial(network: Network, addr: string)!: Conn {
 async fn DialTimeout(network: Network, addr: string, timeout: time::Duration)!: Conn {
 	match network {
 	| TCP | TCP4 | TCP6:
-		ret tcpDial(network, addr, timeout).await?
+		return tcpDial(network, addr, timeout).await?
 	| UDP | UDP4 | UDP6:
-		ret udpDial(network, addr).await?
+		return udpDial(network, addr).await?
 	|:
 		throw &AddrError{Err: "invalid network: " + string(network)}
 	}
@@ -96,11 +96,11 @@ fn getSocketAddr(handle: poll::NetHandle, addr: uintptr, len: sys::Socklen)! {
 }
 
 async fn socketipv4(remote: bool, sockaddr: uintptr, mut addr: addr, typ: int, timeout: time::Duration)!: &netFD {
-	ret socket(remote, sockaddr, addr, sys::AF_INET, typ, timeout).await?
+	return socket(remote, sockaddr, addr, sys::AF_INET, typ, timeout).await?
 }
 
 async fn socketipv6(remote: bool, sockaddr: uintptr, mut addr: addr, typ: int, timeout: time::Duration)!: &netFD {
-	ret socket(remote, sockaddr, addr, sys::AF_INET6, typ, timeout).await?
+	return socket(remote, sockaddr, addr, sys::AF_INET6, typ, timeout).await?
 }
 
 async fn socket(remote: bool, sockaddr: uintptr, mut addr: addr, domain: int, typ: int, timeout: time::Duration)!: (fd: &netFD) {
@@ -187,5 +187,5 @@ async fn socket(remote: bool, sockaddr: uintptr, mut addr: addr, domain: int, ty
 			throw error
 		}
 	}
-	ret fd
+	return fd
 }

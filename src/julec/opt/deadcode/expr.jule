@@ -12,7 +12,7 @@ struct exprDeadCode {
 
 impl exprDeadCode {
 	fn new(mut s: &scopeDeadCode): exprDeadCode {
-		ret exprDeadCode{
+		return exprDeadCode{
 			s: s,
 		}
 	}

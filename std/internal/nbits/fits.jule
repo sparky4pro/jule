@@ -9,16 +9,16 @@ fn Fits(n: i64, bits: uint): bool {
 		if n < 0 {
 			limit := i64(-1) << (bits - 1)
 			if n < limit {
-				ret false
+				return false
 			}
 		} else {
 			limit := i64(1)<<(bits-1) - 1
 			if n > limit {
-				ret false
+				return false
 			}
 		}
 	}
-	ret true
+	return true
 }
 
 // Same as the Fits function, for unsigned integers.
@@ -27,8 +27,8 @@ fn FitsU(n: u64, bits: uint): bool {
 	if bits < MaxBits {
 		limit := u64(1)<<bits - 1
 		if n > limit {
-			ret false
+			return false
 		}
 	}
-	ret true
+	return true
 }

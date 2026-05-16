@@ -64,20 +64,20 @@ fn Tan(x: cmplx128): cmplx128 {
 	| math::IsInf(imag(x), 0):
 		match {
 		| math::IsInf(real(x), 0) | math::IsNaN(real(x)):
-			ret cmplx(math::Copysign(0, real(x)), math::Copysign(1, imag(x)))
+			return cmplx(math::Copysign(0, real(x)), math::Copysign(1, imag(x)))
 		}
-		ret cmplx(math::Copysign(0, math::Sin(2*real(x))), math::Copysign(1, imag(x)))
+		return cmplx(math::Copysign(0, math::Sin(2*real(x))), math::Copysign(1, imag(x)))
 	| real(x) == 0 && math::IsNaN(imag(x)):
-		ret x
+		return x
 	}
 	mut d := math::Cos(2*real(x)) + math::Cosh(2*imag(x))
 	if math::Abs(d) < 0.25 {
 		d = tanSeries(x)
 	}
 	if d == 0 {
-		ret Inf(1)
+		return Inf(1)
 	}
-	ret cmplx(math::Sin(2*real(x))/d, math::Sinh(2*imag(x))/d)
+	return cmplx(math::Sin(2*real(x))/d, math::Sinh(2*imag(x))/d)
 }
 
 // Complex hyperbolic tangent
@@ -98,17 +98,17 @@ fn Tanh(x: cmplx128): cmplx128 {
 	| math::IsInf(real(x), 0):
 		match {
 		| math::IsInf(imag(x), 0) | math::IsNaN(imag(x)):
-			ret cmplx(math::Copysign(1, real(x)), math::Copysign(0, imag(x)))
+			return cmplx(math::Copysign(1, real(x)), math::Copysign(0, imag(x)))
 		}
-		ret cmplx(math::Copysign(1, real(x)), math::Copysign(0, math::Sin(2*imag(x))))
+		return cmplx(math::Copysign(1, real(x)), math::Copysign(0, math::Sin(2*imag(x))))
 	| imag(x) == 0 && math::IsNaN(real(x)):
-		ret x
+		return x
 	}
 	d := math::Cosh(2*real(x)) + math::Cos(2*imag(x))
 	if d == 0 {
-		ret Inf(1)
+		return Inf(1)
 	}
-	ret cmplx(math::Sinh(2*real(x))/d, math::Sin(2*imag(x))/d)
+	return cmplx(math::Sinh(2*real(x))/d, math::Sin(2*imag(x))/d)
 }
 
 // Complex circular cotangent
@@ -143,9 +143,9 @@ fn Cot(x: cmplx128): cmplx128 {
 		d = tanSeries(x)
 	}
 	if d == 0 {
-		ret Inf(1)
+		return Inf(1)
 	}
-	ret cmplx(math::Sin(2*real(x))/d, -math::Sinh(2*imag(x))/d)
+	return cmplx(math::Sin(2*real(x))/d, -math::Sinh(2*imag(x))/d)
 }
 
 // Reduces the input argument x to the range (-PI/2, PI/2].
@@ -186,7 +186,7 @@ fn reducePi(mut x: f64): f64 {
 		mut t := x / math::Pi
 		t += 0.5
 		t = f64(i64(t)) // i64(t) = the multiple
-		ret ((x - t*Pi1) - t*Pi2) - t*Pi3
+		return ((x - t*Pi1) - t*Pi2) - t*Pi3
 	}
 	// Must apply Payne-Hanek range reduction
 	const (
@@ -255,7 +255,7 @@ fn reducePi(mut x: f64): f64 {
 	if x > 0.5 {
 		x--
 	}
-	ret math::Pi * x
+	return math::Pi * x
 }
 
 // Taylor series expansion for cosh(2y) - cos(2x)
@@ -297,5 +297,5 @@ fn tanSeries(z: cmplx128): f64 {
 			break
 		}
 	}
-	ret d
+	return d
 }

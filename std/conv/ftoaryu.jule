@@ -56,7 +56,7 @@ fn ryuFtoaFixed32(mut &d: *decimalSlice, mut mant: u32, exp: int, prec: int) {
 	// Zero input.
 	if mant == 0 {
 		d.nd, d.dp = 0, 0
-		ret
+		return
 	}
 	// Renormalize to a 25-bit mantissa.
 	mut e2 := exp
@@ -125,7 +125,7 @@ fn ryuFtoaFixed64(mut &d: *decimalSlice, mut mant: u64, exp: int, prec: int) {
 	// Zero input.
 	if mant == 0 {
 		d.nd, d.dp = 0, 0
-		ret
+		return
 	}
 	// Renormalize to a 55-bit mantissa.
 	mut e2 := exp
@@ -261,19 +261,19 @@ fn formatDecimal(mut &d: *decimalSlice, mut m: u64, mut trunc: bool, mut roundUp
 fn ryuFtoaShortest(mut &d: *decimalSlice, mut mant: u64, exp: int, &flt: *floatInfo) {
 	if mant == 0 {
 		d.nd, d.dp = 0, 0
-		ret
+		return
 	}
 	// If input is an exact integer with fewer bits than the mantissa,
 	// the previous and next integer are not admissible representations.
 	if exp <= 0 && bits::TrailingZeros64(mant) >= -exp {
 		mant >>= uint(-exp)
 		ryuDigits(d, mant, mant, mant, true, false)
-		ret
+		return
 	}
 	ml, mc, mu, mut e2 := computeBounds(mant, exp, flt)
 	if e2 == 0 {
 		ryuDigits(d, ml, mc, mu, true, false)
-		ret
+		return
 	}
 	// Find 10^q *larger* than 2^-e2
 	q := mulByLog2Log10(-e2) + 1
@@ -376,7 +376,7 @@ fn ryuFtoaShortest(mut &d: *decimalSlice, mut mant: u64, exp: int, &flt: *floatI
 // slower floating point arithmetic. Correctness is verified by unit tests.
 fn mulByLog2Log10(x: int): int {
 	// log(2)/log(10) ≈ 0.30102999566 ≈ 78913 / 2^18
-	ret (x * 78913) >> 18
+	return (x * 78913) >> 18
 }
 
 // Returns math::Floor(x * log(10)/log(2)) for an integer x in
@@ -386,7 +386,7 @@ fn mulByLog2Log10(x: int): int {
 // slower floating point arithmetic. Correctness is verified by unit tests.
 fn mulByLog10Log2(x: int): int {
 	// log(10)/log(2) ≈ 3.32192809489 ≈ 108853 / 2^15
-	ret (x * 108853) >> 15
+	return (x * 108853) >> 15
 }
 
 // Returns a floating-point vector (l, c, u)×2^e2
@@ -403,7 +403,7 @@ fn computeBounds(mant: u64, exp: int,
 		lower, central, upper = 4*mant-1, 4*mant, 4*mant+2
 		e2 = exp - 2
 	}
-	ret
+	return
 }
 
 fn ryuDigits(mut &d: *decimalSlice, lower: u64, central: u64, upper: u64, mut c0: bool, mut cup: bool) {
@@ -455,7 +455,7 @@ fn ryuDigits32(mut &d: *decimalSlice, mut lower: u32, mut central: u32,
 	mut upper: u32, mut c0: bool, mut cup: bool, mut endindex: int) {
 	if upper == 0 {
 		d.dp = endindex + 1
-		ret
+		return
 	}
 	mut trimmed := 0
 	// Remember last trimmed digit to check for round-up.
@@ -534,7 +534,7 @@ fn ryuDigits32(mut &d: *decimalSlice, mut lower: u32, mut central: u32,
 fn mult64bitPow10(m: u32, mut e2: int, q: int): (resM: u32, resE: int, exact: bool) {
 	if q == 0 {
 		// P == 1<<63
-		ret m << 6, e2 - 6, true
+		return m << 6, e2 - 6, true
 	}
 	if q < detailedPowsOfTenMinExp10 || detailedPowsOfTenMaxExp10 < q {
 		// This never happens due to the range of f32/f64 exponent
@@ -547,7 +547,7 @@ fn mult64bitPow10(m: u32, mut e2: int, q: int): (resM: u32, resE: int, exact: bo
 	}
 	hi, lo := bits::Mul64(u64(m), pow)
 	e2 += mulByLog10Log2(q) - 63 + 57
-	ret u32(hi<<7 | lo>>57), e2, lo<<7 == 0
+	return u32(hi<<7 | lo>>57), e2, lo<<7 == 0
 }
 
 // Takes a floating-point input with a 55-bit
@@ -562,7 +562,7 @@ fn mult64bitPow10(m: u32, mut e2: int, q: int): (resM: u32, resE: int, exact: bo
 fn mult128bitPow10(m: u64, mut e2: int, q: int): (resM: u64, resE: int, exact: bool) {
 	if q == 0 {
 		// P == 1<<127
-		ret m << 8, e2 - 8, true
+		return m << 8, e2 - 8, true
 	}
 	if q < detailedPowsOfTenMinExp10 || detailedPowsOfTenMaxExp10 < q {
 		// This never happens due to the range of f32/f64 exponent
@@ -580,31 +580,31 @@ fn mult128bitPow10(m: u64, mut e2: int, q: int): (resM: u64, resE: int, exact: b
 	mut h1, h0 := bits::Mul64(m, pow[1])
 	mid, carry := bits::Add64(l1, h0, 0)
 	h1 += carry
-	ret h1<<9 | mid>>55, e2, mid<<9 == 0 && l0 == 0
+	return h1<<9 | mid>>55, e2, mid<<9 == 0 && l0 == 0
 }
 
 fn divisibleByPow5(mut m: u64, k: int): bool {
 	if m == 0 {
-		ret true
+		return true
 	}
 	mut i := 0
 	for i < k; i++ {
 		if m%5 != 0 {
-			ret false
+			return false
 		}
 		m /= 5
 	}
-	ret true
+	return true
 }
 
 // Computes quotient and remainder of division by 1e9,
 // avoiding runtime u64 division on 32-bit platforms.
 fn divmod1e9(x: u64): (u32, u32) {
 	if !host32bit {
-		ret u32(x / 1e9), u32(x % 1e9)
+		return u32(x / 1e9), u32(x % 1e9)
 	}
 	// Use the same sequence of operations as the amd64 compiler.
 	hi, _ := bits::Mul64(x>>1, 0x89705f4136b4a598) // binary digits of 1e-9
 	q := hi >> 28
-	ret u32(q), u32(x - q*1e9)
+	return u32(q), u32(x - q*1e9)
 }

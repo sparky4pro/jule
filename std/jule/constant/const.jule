@@ -13,34 +13,34 @@ struct Const {
 }
 
 // Returns new constant value instance from big-integer.
-fn NewInt(i: big::Int): &Const { ret &Const{data: i} }
+fn NewInt(i: big::Int): &Const { return &Const{data: i} }
 
 // Returns new constant value instance from 64-bit signed integer.
 // Value will have big-integer precision.
-fn NewI64(x: i64): &Const { ret &Const{data: big::Int.New(x)} }
+fn NewI64(x: i64): &Const { return &Const{data: big::Int.New(x)} }
 
 // Returns new constant value instance from 64-bit unsigned integer.
 // Value will have big-integer precision.
 fn NewU64(x: u64): &Const {
 	let mut i: big::Int
 	i.SetU64(x)
-	ret &Const{data: i}
+	return &Const{data: i}
 }
 
 // Returns new constant value instance from boolean.
-fn NewBool(x: bool): &Const { ret &Const{data: x} }
+fn NewBool(x: bool): &Const { return &Const{data: x} }
 
 // Returns new constant value instance from string.
-fn NewString(x: string): &Const { ret &Const{data: x} }
+fn NewString(x: string): &Const { return &Const{data: x} }
 
 // Returns new constant value instance from 64-bit floating-point.
-fn NewF64(x: f64): &Const { ret &Const{data: x} }
+fn NewF64(x: f64): &Const { return &Const{data: x} }
 
 // Returns new constant value instance from 128-bit floating-point complex.
-fn NewCmplx128(x: cmplx128): &Const { ret &Const{data: x} }
+fn NewCmplx128(x: cmplx128): &Const { return &Const{data: x} }
 
 // Returns new constant value instance with nil.
-fn NewNil(): &Const { ret &Const{data: nil} }
+fn NewNil(): &Const { return &Const{data: nil} }
 
 impl Const {
 	//
@@ -51,43 +51,43 @@ impl Const {
 	// Returns zero value if data is not integer.
 	fn ReadInt(*self): big::Int {
 		mut i, _ := self.data.(big::Int)
-		ret i
+		return i
 	}
 
 	// Reads boolean data.
 	// Returns false if data is not boolean.
 	fn ReadBool(*self): bool {
 		if !self.IsBool() {
-			ret false
+			return false
 		}
-		ret self.data.(bool)
+		return self.data.(bool)
 	}
 
 	// Reads string data.
 	// Returns empty string if data is not string.
 	fn ReadString(*self): string {
 		if !self.IsString() {
-			ret ""
+			return ""
 		}
-		ret self.data.(string)
+		return self.data.(string)
 	}
 
 	// Reads 64-bit floating-point data.
 	// Returns 0 if data is not 64-bit floating-point.
 	fn ReadF64(*self): f64 {
 		if !self.IsF64() {
-			ret 0
+			return 0
 		}
-		ret self.data.(f64)
+		return self.data.(f64)
 	}
 
 	// Reads 128-bit floating-point complex data.
 	// Returns 0 if data is not 128-bit floating-point complex.
 	fn ReadCmplx128(*self): cmplx128 {
 		if !self.IsCmplx128() {
-			ret 0
+			return 0
 		}
-		ret self.data.(cmplx128)
+		return self.data.(cmplx128)
 	}
 
 	//
@@ -101,13 +101,13 @@ impl Const {
 		| big::Int:
 			i := self.data.(big::Int)
 			if i.IsI64() {
-				ret i.I64()
+				return i.I64()
 			}
-			ret i64(i.U64())
+			return i64(i.U64())
 		| f64:
-			ret i64(self.data.(f64))
+			return i64(self.data.(f64))
 		|:
-			ret 0
+			return 0
 		}
 	}
 
@@ -118,13 +118,13 @@ impl Const {
 		| big::Int:
 			i := self.data.(big::Int)
 			if i.IsU64() {
-				ret i.U64()
+				return i.U64()
 			}
-			ret u64(i.I64())
+			return u64(i.I64())
 		| f64:
-			ret u64(self.data.(f64))
+			return u64(self.data.(f64))
 		|:
-			ret 0
+			return 0
 		}
 	}
 
@@ -133,12 +133,12 @@ impl Const {
 	fn AsF64(*self): f64 {
 		match type self.data {
 		| f64:
-			ret self.data.(f64)
+			return self.data.(f64)
 		| big::Int:
 			f, _ := self.data.(big::Int).F64()
-			ret f
+			return f
 		|:
-			ret 0
+			return 0
 		}
 	}
 
@@ -147,14 +147,14 @@ impl Const {
 	fn AsCmplx128(*self): cmplx128 {
 		match type self.data {
 		| f64:
-			ret cmplx(self.data.(f64), 0)
+			return cmplx(self.data.(f64), 0)
 		| big::Int:
 			f, _ := self.data.(big::Int).F64()
-			ret cmplx(f, 0)
+			return cmplx(f, 0)
 		| cmplx128:
-			ret self.data.(cmplx128)
+			return self.data.(cmplx128)
 		|:
-			ret 0
+			return 0
 		}
 	}
 
@@ -189,53 +189,53 @@ impl Const {
 	// Reports whether data is integer.
 	fn IsInt(*self): bool {
 		_, ok := self.data.(big::Int)
-		ret ok
+		return ok
 	}
 
 	// Reports whether data is boolean.
 	fn IsBool(*self): bool {
 		_, ok := self.data.(bool)
-		ret ok
+		return ok
 	}
 
 	// Reports whether data is string.
 	fn IsString(*self): bool {
 		_, ok := self.data.(string)
-		ret ok
+		return ok
 	}
 
 	// Reports whether data is 64-bit floating-point.
 	fn IsF64(*self): bool {
 		_, ok := self.data.(f64)
-		ret ok
+		return ok
 	}
 
 	// Reports whether data is 128-bit floating-point complex.
 	fn IsCmplx128(*self): bool {
 		_, ok := self.data.(cmplx128)
-		ret ok
+		return ok
 	}
 
 	// Reports whether data is nil.
-	fn IsNil(*self): bool { ret self.data == nil }
+	fn IsNil(*self): bool { return self.data == nil }
 
 	// Reports whether self and x has same type.
 	fn AreSameTypes(*self, x: Const): bool {
 		match {
 		| self.IsInt() == x.IsInt():
-			ret true
+			return true
 		| self.IsF64() == x.IsF64():
-			ret true
+			return true
 		| self.IsCmplx128() == x.IsCmplx128():
-			ret true
+			return true
 		| self.IsBool() == x.IsBool():
-			ret true
+			return true
 		| self.IsString() == x.IsString():
-			ret true
+			return true
 		| self.IsNil() == x.IsNil():
-			ret true
+			return true
 		|:
-			ret false
+			return false
 		}
 	}
 
@@ -244,9 +244,9 @@ impl Const {
 	fn LAND(*self, x: Const): bool {
 		match {
 		| self.IsBool() && x.IsBool():
-			ret self.ReadBool() && x.ReadBool()
+			return self.ReadBool() && x.ReadBool()
 		|:
-			ret false
+			return false
 		}
 	}
 
@@ -255,9 +255,9 @@ impl Const {
 	fn LOR(*self, x: Const): bool {
 		match {
 		| self.IsBool() && x.IsBool():
-			ret self.ReadBool() || x.ReadBool()
+			return self.ReadBool() || x.ReadBool()
 		|:
-			ret false
+			return false
 		}
 	}
 
@@ -266,27 +266,27 @@ impl Const {
 	fn EQL(*self, x: Const): bool {
 		match {
 		| self.IsNil():
-			ret x.IsNil()
+			return x.IsNil()
 		| self.IsBool():
-			ret x.IsBool() && self.ReadBool() == x.ReadBool()
+			return x.IsBool() && self.ReadBool() == x.ReadBool()
 		| self.IsString():
-			ret x.IsString() && self.ReadString() == x.ReadString()
+			return x.IsString() && self.ReadString() == x.ReadString()
 		| self.IsInt():
 			a := self.data.(big::Int)
 			if x.IsInt() {
 				b := x.data.(big::Int)
-				ret a.Cmp(&b) == 0
+				return a.Cmp(&b) == 0
 			}
 			if a.Sign() == -1 {
-				ret a.I64() == x.AsI64()
+				return a.I64() == x.AsI64()
 			}
-			ret a.U64() == x.AsU64()
+			return a.U64() == x.AsU64()
 		| self.IsF64():
-			ret self.ReadF64() == x.AsF64()
+			return self.ReadF64() == x.AsF64()
 		| self.IsCmplx128():
-			ret self.ReadCmplx128() == x.AsCmplx128()
+			return self.ReadCmplx128() == x.AsCmplx128()
 		|:
-			ret false
+			return false
 		}
 	}
 
@@ -301,21 +301,21 @@ impl Const {
 	fn LSS(*self, x: Const): bool {
 		match {
 		| self.IsString():
-			ret x.IsString() && self.ReadString() < x.ReadString()
+			return x.IsString() && self.ReadString() < x.ReadString()
 		| self.IsInt():
 			a := self.data.(big::Int)
 			if x.IsInt() {
 				b := x.data.(big::Int)
-				ret a.Cmp(&b) == -1
+				return a.Cmp(&b) == -1
 			}
 			if a.Sign() == -1 {
-				ret a.I64() < x.AsI64()
+				return a.I64() < x.AsI64()
 			}
-			ret a.U64() < x.AsU64()
+			return a.U64() < x.AsU64()
 		| self.IsF64():
-			ret self.ReadF64() < x.AsF64()
+			return self.ReadF64() < x.AsF64()
 		|:
-			ret false
+			return false
 		}
 	}
 
@@ -330,21 +330,21 @@ impl Const {
 	fn LEQ(*self, x: Const): bool {
 		match {
 		| self.IsString():
-			ret x.IsString() && self.ReadString() <= x.ReadString()
+			return x.IsString() && self.ReadString() <= x.ReadString()
 		| self.IsInt():
 			a := self.data.(big::Int)
 			if x.IsInt() {
 				b := x.data.(big::Int)
-				ret a.Cmp(&b) <= 0
+				return a.Cmp(&b) <= 0
 			}
 			if a.Sign() == -1 {
-				ret a.I64() <= x.AsI64()
+				return a.I64() <= x.AsI64()
 			}
-			ret a.U64() <= x.AsU64()
+			return a.U64() <= x.AsU64()
 		| self.IsF64():
-			ret self.ReadF64() <= x.AsF64()
+			return self.ReadF64() <= x.AsF64()
 		|:
-			ret false
+			return false
 		}
 	}
 
@@ -359,21 +359,21 @@ impl Const {
 	fn GTR(*self, x: Const): bool {
 		match {
 		| self.IsString():
-			ret x.IsString() && self.ReadString() > x.ReadString()
+			return x.IsString() && self.ReadString() > x.ReadString()
 		| self.IsInt():
 			a := self.data.(big::Int)
 			if x.IsInt() {
 				b := x.data.(big::Int)
-				ret a.Cmp(&b) > 0
+				return a.Cmp(&b) > 0
 			}
 			if a.Sign() == -1 {
-				ret a.I64() > x.AsI64()
+				return a.I64() > x.AsI64()
 			}
-			ret a.U64() > x.AsU64()
+			return a.U64() > x.AsU64()
 		| self.IsF64():
-			ret self.ReadF64() > x.AsF64()
+			return self.ReadF64() > x.AsF64()
 		|:
-			ret false
+			return false
 		}
 	}
 
@@ -388,21 +388,21 @@ impl Const {
 	fn GEQ(*self, x: Const): bool {
 		match {
 		| self.IsString():
-			ret x.IsString() && self.ReadString() >= x.ReadString()
+			return x.IsString() && self.ReadString() >= x.ReadString()
 		| self.IsInt():
 			a := self.data.(big::Int)
 			if x.IsInt() {
 				b := x.data.(big::Int)
-				ret a.Cmp(&b) >= 0
+				return a.Cmp(&b) >= 0
 			}
 			if a.Sign() == -1 {
-				ret a.I64() >= x.AsI64()
+				return a.I64() >= x.AsI64()
 			}
-			ret a.U64() >= x.AsU64()
+			return a.U64() >= x.AsU64()
 		| self.IsF64():
-			ret self.ReadF64() >= x.AsF64()
+			return self.ReadF64() >= x.AsF64()
 		|:
-			ret false
+			return false
 		}
 	}
 
@@ -412,7 +412,7 @@ impl Const {
 		match {
 		| self.IsString():
 			if !x.IsString() {
-				ret false
+				return false
 			}
 			self.SetString(self.ReadString() + x.ReadString())
 		| self.IsCmplx128() || x.IsCmplx128():
@@ -437,9 +437,9 @@ impl Const {
 				}
 			}
 		|:
-			ret false
+			return false
 		}
-		ret true
+		return true
 	}
 
 	// Subs x's value from itself value.
@@ -468,9 +468,9 @@ impl Const {
 				}
 			}
 		|:
-			ret false
+			return false
 		}
-		ret true
+		return true
 	}
 
 	// Multiplies x's value to c's value.
@@ -499,9 +499,9 @@ impl Const {
 				}
 			}
 		|:
-			ret false
+			return false
 		}
-		ret true
+		return true
 	}
 
 	// Divides itself value to x's value.
@@ -515,14 +515,14 @@ impl Const {
 		| self.IsF64():
 			l := x.AsF64()
 			if l == 0 {
-				ret false
+				return false
 			}
 			self.SetF64(self.ReadF64() / l)
 		| self.IsCmplx128() || x.IsCmplx128():
 			a := self.AsCmplx128()
 			b := x.AsCmplx128()
 			if b == 0 {
-				ret false
+				return false
 			}
 			self.SetCmplx128(a / b)
 		| self.IsInt():
@@ -530,7 +530,7 @@ impl Const {
 			if x.IsInt() {
 				b := x.data.(big::Int)
 				if b.BitLen() == 0 { // b == 0
-					ret false
+					return false
 				}
 				let mut tmp: big::Int
 				let mut r: big::Int
@@ -545,9 +545,9 @@ impl Const {
 				}
 			}
 		|:
-			ret false
+			return false
 		}
-		ret true
+		return true
 	}
 
 	// Mods itself value to x's value.
@@ -556,17 +556,17 @@ impl Const {
 	fn REM(mut *self, x: Const): bool {
 		i, mut ok := self.data.(big::Int)
 		if !ok {
-			ret false
+			return false
 		}
 		xi, ok := x.data.(big::Int)
 		if !ok {
-			ret false
+			return false
 		}
 		let mut tmp: big::Int
 		let mut r: big::Int
 		tmp.QuoRem(&i, &xi, &r)
 		self.SetInt(r)
-		ret true
+		return true
 	}
 
 	// Bitwise and itself value to x's value.
@@ -574,16 +574,16 @@ impl Const {
 	fn AND(mut *self, x: Const): bool {
 		i, mut ok := self.data.(big::Int)
 		if !ok {
-			ret false
+			return false
 		}
 		xi, ok := x.data.(big::Int)
 		if !ok {
-			ret false
+			return false
 		}
 		let mut r: big::Int
 		r.And(&i, &xi)
 		self.SetInt(r)
-		ret true
+		return true
 	}
 
 	// Bitwise or itself value to x's value.
@@ -591,16 +591,16 @@ impl Const {
 	fn OR(mut *self, x: Const): bool {
 		i, mut ok := self.data.(big::Int)
 		if !ok {
-			ret false
+			return false
 		}
 		xi, ok := x.data.(big::Int)
 		if !ok {
-			ret false
+			return false
 		}
 		let mut r: big::Int
 		r.Or(&i, &xi)
 		self.SetInt(r)
-		ret true
+		return true
 	}
 
 	// Bitwise xor itself value to x's value.
@@ -608,16 +608,16 @@ impl Const {
 	fn XOR(mut *self, x: Const): bool {
 		i, mut ok := self.data.(big::Int)
 		if !ok {
-			ret false
+			return false
 		}
 		xi, ok := x.data.(big::Int)
 		if !ok {
-			ret false
+			return false
 		}
 		let mut r: big::Int
 		r.Xor(&i, &xi)
 		self.SetInt(r)
-		ret true
+		return true
 	}
 
 	// Left shifts itself value to x's value.
@@ -625,16 +625,16 @@ impl Const {
 	fn SHL(mut *self, x: Const): bool {
 		i, mut ok := self.data.(big::Int)
 		if !ok {
-			ret false
+			return false
 		}
 		xi, ok := x.data.(big::Int)
 		if !ok {
-			ret false
+			return false
 		}
 		let mut r: big::Int
 		r.Lsh(&i, uint(xi.U64()))
 		self.SetInt(r)
-		ret true
+		return true
 	}
 
 	// Right shifts itself value to x's value.
@@ -642,36 +642,36 @@ impl Const {
 	fn SHR(mut *self, x: Const): bool {
 		i, mut ok := self.data.(big::Int)
 		if !ok {
-			ret false
+			return false
 		}
 		xi, ok := x.data.(big::Int)
 		if !ok {
-			ret false
+			return false
 		}
 		let mut r: big::Int
 		r.Rsh(&i, uint(xi.U64()))
 		self.SetInt(r)
-		ret true
+		return true
 	}
 
 	fn String(*self): string {
 		match {
 		| self.IsNil():
-			ret "nil"
+			return "nil"
 		| self.IsBool():
 			if self.data.(bool) {
-				ret "true"
+				return "true"
 			}
-			ret "false"
+			return "false"
 		| self.IsString():
-			ret self.data.(string)
+			return self.data.(string)
 		| self.IsInt():
 			i := self.data.(big::Int)
-			ret i.Format(10)
+			return i.Format(10)
 		| self.IsF64():
-			ret conv::FormatFloat(self.data.(f64), 'g', -1, 64)
+			return conv::FormatFloat(self.data.(f64), 'g', -1, 64)
 		| self.IsCmplx128():
-			ret conv::FormatCmplx(self.data.(cmplx128), 'g', -1, 128)
+			return conv::FormatCmplx(self.data.(cmplx128), 'g', -1, 128)
 		|:
 			panic("unreachable")
 		}

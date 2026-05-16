@@ -30,43 +30,43 @@ let ObjectiveCppExts: [...]string = [
 
 // Reports whether path is C++ std library path.
 fn IsStdHeaderPath(p: string): bool {
-	ret p[0] == '<' && p[len(p)-1] == '>'
+	return p[0] == '<' && p[len(p)-1] == '>'
 }
 
 // Reports whether C++ header extension is valid.
 fn IsValidHeaderExt(ext: string): bool {
 	for _, validExt in CppHeaderExts {
 		if ext == validExt {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 // Reports whether C++ extension is valid.
 fn IsValidCppExt(ext: string): bool {
 	if ext == ".c" {
-		ret true
+		return true
 	}
 	for _, e in CppExts {
 		if ext == e {
-			ret true
+			return true
 		}
 	}
 	for _, e in ObjectiveCppExts {
 		if ext == e {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 // Reports whether Assembly extension is valid.
 fn IsValidAssemblyExt(ext: string): bool {
 	for _, e in AssemblyExts {
 		if ext == e {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }

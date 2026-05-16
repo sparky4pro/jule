@@ -26,9 +26,9 @@ let wdmu = runtime::mutex{}
 // See https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#maximum-path-length-limitation
 fn fixLongPath(path: string): string {
 	if windows::CanUseLongPaths {
-		ret path
+		return path
 	}
-	ret addExtendedPrefix(path)
+	return addExtendedPrefix(path)
 }
 
 // Adds the extended path prefix (\\?\) to path.
@@ -36,13 +36,13 @@ fn addExtendedPrefix(path: string): string {
 	if len(path) >= 4 {
 		if path[:4] == `\??\` {
 			// Already extended with \??\
-			ret path
+			return path
 		}
 		if filepathlite::IsPathSeparator(path[0]) &&
 			filepathlite::IsPathSeparator(path[1]) &&
 			path[2] == '?' && filepathlite::IsPathSeparator(path[3]) {
 			// Already extended with \\?\ or any combination of directory separators.
-			ret path
+			return path
 		}
 	}
 
@@ -77,7 +77,7 @@ fn addExtendedPrefix(path: string): string {
 
 	if pathLength < 248 {
 		// Don't fix.
-		ret path
+		return path
 	}
 
 	let mut isUNC: bool
@@ -104,7 +104,7 @@ fn addExtendedPrefix(path: string): string {
 
 	// If path contains zero-byte; don't fix, return path.
 	if byteslite::IndexByteString(path, 0) != -1 {
-		ret path
+		return path
 	}
 	p := integ::UTF16FromString(path)
 	// Estimate the required buffer size using the path length plus the null terminator.
@@ -116,7 +116,7 @@ fn addExtendedPrefix(path: string): string {
 		buf = make([]u16, n+u32(len(prefix)))
 		n = unsafe { sys::GetFullPathName(&p[0], n, &buf[len(prefix)], nil) }
 		if n == 0 {
-			ret path
+			return path
 		}
 		if n <= u32(len(buf)-len(prefix)) {
 			buf = buf[:n+u32(len(prefix))]
@@ -128,5 +128,5 @@ fn addExtendedPrefix(path: string): string {
 		buf = buf[2:]
 	}
 	copy(buf, prefix)
-	ret integ::UTF16ToString(buf)
+	return integ::UTF16ToString(buf)
 }

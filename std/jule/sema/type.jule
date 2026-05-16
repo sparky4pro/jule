@@ -22,9 +22,9 @@ struct ConstraintMask {
 impl ConstraintMask {
 	fn String(*self): string {
 		if self.Deep {
-			ret "~" + self.Type.String()
+			return "~" + self.Type.String()
 		}
-		ret self.Type.String()
+		return self.Type.String()
 	}
 }
 
@@ -70,10 +70,10 @@ impl Kind for Type {
 		// Because name of the generic type might be confusing,
 		// expose the current type of the generic.
 		if self.Provider != "" && !self.Generic {
-			ret self.Provider
+			return self.Provider
 		}
 		if self.IsNil() {
-			ret "nil"
+			return "nil"
 		}
 
 		mut kind := strings::Builder{}
@@ -83,15 +83,15 @@ impl Kind for Type {
 			kind.WriteString("...")!
 		}
 		kind.WriteString(self.Kind.String())!
-		ret kind.String()
+		return kind.String()
 	}
 
 	// Reports whether types are same.
 	fn Equal(&self, other: &Type): bool {
 		if self.IsNil() {
-			ret other.IsNil()
+			return other.IsNil()
 		}
-		ret self.Kind.Equal(other)
+		return self.Kind.Equal(other)
 	}
 }
 
@@ -101,22 +101,22 @@ impl Type {
 		s, ok := self.Kind.(&StructIns)
 		if ok {
 			if s.Decl.Extern {
-				ret true
+				return true
 			}
 			if s.Source != nil {
-				ret s.Source.Extern()
+				return s.Source.Extern()
 			}
 		}
-		ret false
+		return false
 	}
 
 	// Reports whether kind is "nil".
-	fn IsNil(*self): bool { ret self.Kind == nil }
+	fn IsNil(*self): bool { return self.Kind == nil }
 
 	// Reports whether actual kind is "void".
 	fn Void(*self): bool {
 		prim := unsafe { (*(&self)).Prim() }
-		ret prim != nil && prim.Kind == "void"
+		return prim != nil && prim.Kind == "void"
 	}
 
 	// Returns actual kind of the type, so returns the root type.
@@ -126,36 +126,36 @@ impl Type {
 	fn ActualKind(mut *self): Kind {
 		mut s, ok := self.Kind.(&StructIns)
 		if ok && s.Source != nil {
-			ret s.Source.ActualKind()
+			return s.Source.ActualKind()
 		}
-		ret self.Kind
+		return self.Kind
 	}
 
 	// Reports whether actual kinds are equal.
 	fn ActualEqual(&self, other: &Type): bool {
 		if self.IsNil() {
-			ret other.IsNil()
+			return other.IsNil()
 		}
 		if self.Extern() || other.Extern() {
-			ret self.Equal(other)
+			return self.Equal(other)
 		}
 		l := unsafe { (*(&self)).ActualKind() }
 		r := unsafe { (*(&other)).ActualKind() }
 		lt := Type{Kind: l}
 		rt := Type{Kind: r}
-		ret (unsafe { (&Type)(&lt) }).Equal(unsafe { (&Type)(&rt) })
+		return (unsafe { (&Type)(&lt) }).Equal(unsafe { (&Type)(&rt) })
 	}
 
 	// Same as the ActualEqual, but ignores the external types.
 	fn deepActualEqual(&self, other: &Type): bool {
 		if self.IsNil() {
-			ret other.IsNil()
+			return other.IsNil()
 		}
 		l := unsafe { (*(&self)).ActualKind() }
 		r := unsafe { (*(&other)).ActualKind() }
 		lt := Type{Kind: l}
 		rt := Type{Kind: r}
-		ret (unsafe { (&Type)(&lt) }).Equal(unsafe { (&Type)(&rt) })
+		return (unsafe { (&Type)(&lt) }).Equal(unsafe { (&Type)(&rt) })
 	}
 
 	// Reports whether actual kind is comparable.
@@ -163,12 +163,12 @@ impl Type {
 		unsafe {
 			mut _self := *(&self)
 			if _self.SoftStruct() != nil {
-				ret _self.SoftStruct().Comparable
+				return _self.SoftStruct().Comparable
 			}
 			if _self.Array() != nil {
-				ret _self.Array().Value.Comparable()
+				return _self.Array().Value.Comparable()
 			}
-			ret _self.Map() == nil && _self.Slice() == nil && _self.Func() == nil
+			return _self.Map() == nil && _self.Slice() == nil && _self.Func() == nil
 		}
 	}
 
@@ -177,26 +177,26 @@ impl Type {
 		unsafe {
 			mut _self := *(&self)
 			if _self.SoftStruct() != nil {
-				ret _self.SoftStruct().Mutable
+				return _self.SoftStruct().Mutable
 			}
 			if _self.Chan() != nil {
-				ret _self.Chan().Value.Mutable()
+				return _self.Chan().Value.Mutable()
 			}
 			if _self.Trait() != nil || _self.TypeEnum() != nil {
-				ret true
+				return true
 			}
 			if _self.Prim() != nil {
 				p := _self.Prim()
-				ret p.IsAny()
+				return p.IsAny()
 			}
 			if _self.Array() != nil {
-				ret _self.Array().Value.Mutable()
+				return _self.Array().Value.Mutable()
 			}
 			if _self.Map() != nil {
 				m := _self.Map()
-				ret m.Key.Mutable() || m.Value.Mutable()
+				return m.Key.Mutable() || m.Value.Mutable()
 			}
-			ret _self.Slice() != nil ||
+			return _self.Slice() != nil ||
 				_self.Ptr() != nil ||
 				_self.Sptr() != nil
 		}
@@ -208,13 +208,13 @@ impl Type {
 			mut _self := *(&self)
 			prim := _self.Prim()
 			if prim != nil {
-				ret types::IsNum(prim.Kind) || prim.IsString()
+				return types::IsNum(prim.Kind) || prim.IsString()
 			}
 			mut enm := _self.Enum()
 			if enm != nil {
-				ret types::IsNum(enm.TypeSym.Type.Prim().String())
+				return types::IsNum(enm.TypeSym.Type.Prim().String())
 			}
-			ret false
+			return false
 		}
 	}
 
@@ -225,10 +225,10 @@ impl Type {
 
 			prim := _self.Prim()
 			if prim != nil && prim.IsAny() {
-				ret true
+				return true
 			}
 
-			ret _self.IsNil() ||
+			return _self.IsNil() ||
 				_self.Func() != nil ||
 				_self.Sptr() != nil ||
 				_self.Ptr() != nil ||
@@ -246,9 +246,9 @@ impl Type {
 			mut _self := *(&self)
 			prim := _self.Prim()
 			if prim != nil {
-				ret prim.IsAny() || prim.IsString()
+				return prim.IsAny() || prim.IsString()
 			}
-			ret _self.Sptr() != nil || _self.Slice() != nil || _self.Trait() != nil ||
+			return _self.Sptr() != nil || _self.Slice() != nil || _self.Trait() != nil ||
 				_self.TypeEnum() != nil || _self.Chan() != nil
 		}
 	}
@@ -257,68 +257,68 @@ impl Type {
 	fn Variadicable(*self): bool {
 		unsafe {
 			mut _self := *(&self)
-			ret _self.Slice() != nil
+			return _self.Slice() != nil
 		}
 	}
 
 	// Returns primitive type if actual kind is primitive type, nil if not.
 	fn Prim(mut *self): &Prim {
 		mut p, _ := self.ActualKind().(&Prim)
-		ret p
+		return p
 	}
 
 	// Returns channel type if actual kind is channel, nil if not.
 	fn Chan(mut *self): &Chan {
 		mut c, _ := self.ActualKind().(&Chan)
-		ret c
+		return c
 	}
 
 	// Returns reference type if actual kind is smart pointer, nil if not.
 	fn Sptr(mut *self): &Sptr {
 		mut p, _ := self.ActualKind().(&Sptr)
-		ret p
+		return p
 	}
 
 	// Returns pointer type if actual kind is pointer, nil if not.
 	fn Ptr(mut *self): &Ptr {
 		mut p, _ := self.ActualKind().(&Ptr)
-		ret p
+		return p
 	}
 
 	// Returns enum type if actual kind is enum, nil if not.
 	fn Enum(mut *self): &Enum {
 		mut e, _ := self.ActualKind().(&Enum)
-		ret e
+		return e
 	}
 
 	// Returns type enum if actual kind is type enum, nil if not.
 	fn TypeEnum(mut *self): &TypeEnum {
 		mut e, _ := self.ActualKind().(&TypeEnum)
-		ret e
+		return e
 	}
 
 	// Returns array type if actual kind is array, nil if not.
 	fn Array(mut *self): &Array {
 		mut a, _ := self.ActualKind().(&Array)
-		ret a
+		return a
 	}
 
 	// Returns slice type if actual kind is slice, nil if not.
 	fn Slice(mut *self): &Slice {
 		mut s, _ := self.ActualKind().(&Slice)
-		ret s
+		return s
 	}
 
 	// Returns function type if actual kind is function, nil if not.
 	fn Func(mut *self): &FuncIns {
 		mut f, _ := self.ActualKind().(&FuncIns)
-		ret f
+		return f
 	}
 
 	// Returns struct type if actual kind is structure, nil if not.
 	fn Struct(mut *self): &StructIns {
 		mut s, _ := self.ActualKind().(&StructIns)
-		ret s
+		return s
 	}
 
 	// Returns struct type if actual kind is structure.
@@ -326,32 +326,32 @@ impl Type {
 	// structure type of the strict type alias.
 	fn SoftStruct(mut *self): &StructIns {
 		mut s, _ := self.Kind.(&StructIns)
-		ret s
+		return s
 	}
 
 	// Returns trait type if actual kind is trait, nil if not.
 	fn Trait(mut *self): &Trait {
 		mut t, _ := self.ActualKind().(&Trait)
-		ret t
+		return t
 	}
 
 	// Returns map type if actual kind is map, nil if not.
 	fn Map(mut *self): &Map {
 		mut m, _ := self.ActualKind().(&Map)
-		ret m
+		return m
 	}
 
 	// Returns tuple type if actual kind is tuple, nil if not.
 	fn Tuple(mut *self): &Tuple {
 		mut t, _ := self.ActualKind().(&Tuple)
-		ret t
+		return t
 	}
 
 	// Reports whether kind is comptime type.
 	// It will not check for the [comptimeRange].
 	// Checks regular constant comptime expression types only.
 	fn comptime(mut *self): bool {
-		ret self.comptimeTypeInfos() != nil ||
+		return self.comptimeTypeInfos() != nil ||
 			self.comptimeTypeInfo() != nil ||
 			self.comptimeStructFields() != nil ||
 			self.comptimeStructField() != nil ||
@@ -370,82 +370,82 @@ impl Type {
 
 	fn comptimeStructFields(mut *self): &comptimeStructFields {
 		mut ct, _ := self.Kind.(&comptimeStructFields)
-		ret ct
+		return ct
 	}
 
 	fn comptimeStructField(mut *self): &comptimeStructField {
 		mut ct, _ := self.Kind.(&comptimeStructField)
-		ret ct
+		return ct
 	}
 
 	fn comptimeEnumFields(mut *self): &comptimeEnumFields {
 		mut ct, _ := self.Kind.(&comptimeEnumFields)
-		ret ct
+		return ct
 	}
 
 	fn comptimeEnumField(mut *self): &comptimeEnumField {
 		mut ct, _ := self.Kind.(&comptimeEnumField)
-		ret ct
+		return ct
 	}
 
 	fn comptimeParams(mut *self): &comptimeParams {
 		mut ct, _ := self.Kind.(&comptimeParams)
-		ret ct
+		return ct
 	}
 
 	fn comptimeParam(mut *self): &comptimeParam {
 		mut ct, _ := self.Kind.(&comptimeParam)
-		ret ct
+		return ct
 	}
 
 	fn comptimeRange(mut *self): &comptimeRange {
 		mut ct, _ := self.Kind.(&comptimeRange)
-		ret ct
+		return ct
 	}
 
 	fn comptimeTypeInfos(mut *self): &comptimeTypeInfos {
 		mut ct, _ := self.Kind.(&comptimeTypeInfos)
-		ret ct
+		return ct
 	}
 
 	fn comptimeTypeInfo(mut *self): &comptimeTypeInfo {
 		mut ct, _ := self.Kind.(&comptimeTypeInfo)
-		ret ct
+		return ct
 	}
 
 	fn comptimeStatics(mut *self): &comptimeStatics {
 		mut ct, _ := self.Kind.(&comptimeStatics)
-		ret ct
+		return ct
 	}
 
 	fn comptimeStatic(mut *self): &comptimeStatic {
 		mut ct, _ := self.Kind.(&comptimeStatic)
-		ret ct
+		return ct
 	}
 
 	fn comptimeValue(mut *self): &comptimeValue {
 		mut ct, _ := self.Kind.(&comptimeValue)
-		ret ct
+		return ct
 	}
 
 	fn comptimeDecl(mut *self): &comptimeDecl {
 		mut ct, _ := self.Kind.(&comptimeDecl)
-		ret ct
+		return ct
 	}
 
 	fn comptimeDecls(mut *self): &comptimeDecls {
 		mut ct, _ := self.Kind.(&comptimeDecls)
-		ret ct
+		return ct
 	}
 
 	fn comptimeFile(mut *self): &comptimeFile {
 		mut ct, _ := self.Kind.(&comptimeFile)
-		ret ct
+		return ct
 	}
 
 	fn comptimeFiles(mut *self): &comptimeFiles {
 		mut ct, _ := self.Kind.(&comptimeFiles)
-		ret ct
+		return ct
 	}
 }
 
@@ -457,7 +457,7 @@ struct TypeSym {
 
 impl TypeSym {
 	// Reports whether type is checked already.
-	fn checked(*self): bool { ret self.Type != nil }
+	fn checked(*self): bool { return self.Type != nil }
 
 	// Removes kind and ready to check.
 	// checked() reports false after this function.
@@ -472,78 +472,78 @@ struct Prim {
 impl Kind for Prim {
 	// Returns kind.
 	fn String(*self): string {
-		ret self.Kind
+		return self.Kind
 	}
 
 	// Reports whether types are same.
 	fn Equal(&self, other: &Type): bool {
 		p, ok := other.Kind.(&Prim)
-		ret ok && self == p
+		return ok && self == p
 	}
 }
 
 impl Prim {
 	// Reports whether type is built-in constraint.
 	fn IsConstraint(*self): bool {
-		ret !self.IsString() &&
+		return !self.IsString() &&
 			!self.IsAny() &&
 			!self.IsBool() &&
 			!types::IsNum(self.Kind)
 	}
 
 	// Reports whether type is primitive i8.
-	fn IsI8(*self): bool { ret self.Kind == types::I8 }
+	fn IsI8(*self): bool { return self.Kind == types::I8 }
 
 	// Reports whether type is primitive i16.
-	fn IsI16(*self): bool { ret self.Kind == types::I16 }
+	fn IsI16(*self): bool { return self.Kind == types::I16 }
 
 	// Reports whether type is primitive i32.
-	fn IsI32(*self): bool { ret self.Kind == types::I32 }
+	fn IsI32(*self): bool { return self.Kind == types::I32 }
 
 	// Reports whether type is primitive i64.
-	fn IsI64(*self): bool { ret self.Kind == types::I64 }
+	fn IsI64(*self): bool { return self.Kind == types::I64 }
 
 	// Reports whether type is primitive u8.
-	fn IsU8(*self): bool { ret self.Kind == types::U8 }
+	fn IsU8(*self): bool { return self.Kind == types::U8 }
 
 	// Reports whether type is primitive u16.
-	fn IsU16(*self): bool { ret self.Kind == types::U16 }
+	fn IsU16(*self): bool { return self.Kind == types::U16 }
 
 	// Reports whether type is primitive u32.
-	fn IsU32(*self): bool { ret self.Kind == types::U32 }
+	fn IsU32(*self): bool { return self.Kind == types::U32 }
 
 	// Reports whether type is primitive u64.
-	fn IsU64(*self): bool { ret self.Kind == types::U64 }
+	fn IsU64(*self): bool { return self.Kind == types::U64 }
 
 	// Reports whether type is primitive f32.
-	fn IsF32(*self): bool { ret self.Kind == types::F32 }
+	fn IsF32(*self): bool { return self.Kind == types::F32 }
 
 	// Reports whether type is primitive f64.
-	fn IsF64(*self): bool { ret self.Kind == types::F64 }
+	fn IsF64(*self): bool { return self.Kind == types::F64 }
 
 	// Reports whether type is primitive cmplx64.
-	fn IsCmplx64(*self): bool { ret self.Kind == types::Cmplx64 }
+	fn IsCmplx64(*self): bool { return self.Kind == types::Cmplx64 }
 
 	// Reports whether type is primitive cmplx128.
-	fn IsCmplx128(*self): bool { ret self.Kind == types::Cmplx128 }
+	fn IsCmplx128(*self): bool { return self.Kind == types::Cmplx128 }
 
 	// Reports whether type is primitive int.
-	fn IsInt(*self): bool { ret self.Kind == types::Int }
+	fn IsInt(*self): bool { return self.Kind == types::Int }
 
 	// Reports whether type is primitive uint.
-	fn IsUint(*self): bool { ret self.Kind == types::Uint }
+	fn IsUint(*self): bool { return self.Kind == types::Uint }
 
 	// Reports whether type is primitive uintptr.
-	fn IsUintptr(*self): bool { ret self.Kind == types::Uintptr }
+	fn IsUintptr(*self): bool { return self.Kind == types::Uintptr }
 
 	// Reports whether type is primitive bool.
-	fn IsBool(*self): bool { ret self.Kind == types::Bool }
+	fn IsBool(*self): bool { return self.Kind == types::Bool }
 
 	// Reports whether type is primitive string.
-	fn IsString(*self): bool { ret self.Kind == types::String }
+	fn IsString(*self): bool { return self.Kind == types::String }
 
 	// Reports whether type is primitive any.
-	fn IsAny(*self): bool { ret self.Kind == types::Any }
+	fn IsAny(*self): bool { return self.Kind == types::Any }
 }
 
 // Channel type.
@@ -559,20 +559,20 @@ impl Kind for Chan {
 		if self.Recv && self.Send {
 			c, ok := self.Value.Kind.(&Chan)
 			if ok && c.Recv && !c.Send {
-				ret "chan (" + self.Value.String() + ")"
+				return "chan (" + self.Value.String() + ")"
 			}
-			ret "chan " + self.Value.String()
+			return "chan " + self.Value.String()
 		} else if self.Recv {
-			ret "<-chan " + self.Value.String()
+			return "<-chan " + self.Value.String()
 		} else {
-			ret "chan<- " + self.Value.String()
+			return "chan<- " + self.Value.String()
 		}
 	}
 
 	// Reports whether types are same.
 	fn Equal(&self, other: &Type): bool {
 		c, ok := other.Kind.(&Chan)
-		ret ok && self.Recv == c.Recv && self.Send == c.Send && self.Value.Equal(c.Value)
+		return ok && self.Recv == c.Recv && self.Send == c.Send && self.Value.Equal(c.Value)
 	}
 }
 
@@ -583,12 +583,12 @@ struct Sptr {
 
 impl Kind for Sptr {
 	// Returns smart pointer kind as string.
-	fn String(*self): string { ret "&" + self.Value.String() }
+	fn String(*self): string { return "&" + self.Value.String() }
 
 	// Reports whether types are same.
 	fn Equal(&self, other: &Type): bool {
 		p, ok := other.Kind.(&Sptr)
-		ret ok && self.Value.Equal(p.Value)
+		return ok && self.Value.Equal(p.Value)
 	}
 }
 
@@ -599,12 +599,12 @@ struct Slice {
 
 impl Kind for Slice {
 	// Returns slice kind as string.
-	fn String(*self): string { ret "[]" + self.Value.String() }
+	fn String(*self): string { return "[]" + self.Value.String() }
 
 	// Reports whether types are same.
 	fn Equal(&self, other: &Type): bool {
 		s, ok := other.Kind.(&Slice)
-		ret ok && self.Value.Equal(s.Value)
+		return ok && self.Value.Equal(s.Value)
 	}
 }
 
@@ -625,22 +625,22 @@ impl Kind for Tuple {
 			s.WriteString(t.String())!
 		}
 		s.WriteByte(')')!
-		ret s.String()
+		return s.String()
 	}
 
 	// Reports whether types are same.
 	fn Equal(&self, other: &Type): bool {
 		tup, ok := other.Kind.(&Tuple)
 		if !ok || len(self.Types) != len(tup.Types) {
-			ret false
+			return false
 		}
 		mut i := 0
 		for i < len(self.Types); i++ {
 			if !self.Types[i].Equal(tup.Types[i]) {
-				ret false
+				return false
 			}
 		}
-		ret true
+		return true
 	}
 }
 
@@ -659,13 +659,13 @@ impl Kind for Map {
 		s.WriteString(self.Key.String())!
 		s.WriteByte(']')!
 		s.WriteString(self.Value.String())!
-		ret s.String()
+		return s.String()
 	}
 
 	// Reports whether types are same.
 	fn Equal(&self, other: &Type): bool {
 		m, ok := other.Kind.(&Map)
-		ret ok && self.Key.Equal(m.Key) && self.Value.Equal(m.Value)
+		return ok && self.Key.Equal(m.Key) && self.Value.Equal(m.Value)
 	}
 }
 
@@ -684,13 +684,13 @@ impl Kind for Array {
 		s.WriteString(conv::Itoa(self.N))!
 		s.WriteByte(']')!
 		s.WriteString(self.Value.String())!
-		ret s.String()
+		return s.String()
 	}
 
 	// Reports whether types are same.
 	fn Equal(&self, other: &Type): bool {
 		a, ok := other.Kind.(&Array)
-		ret ok && self.N == a.N && self.Value.Equal(a.Value)
+		return ok && self.N == a.N && self.Value.Equal(a.Value)
 	}
 }
 
@@ -703,31 +703,31 @@ impl Kind for Ptr {
 	// Returns pointer kind as string.
 	fn String(*self): string {
 		if self.IsUnsafe() {
-			ret "*unsafe"
+			return "*unsafe"
 		}
-		ret "*" + self.Value.String()
+		return "*" + self.Value.String()
 	}
 
 	// Reports whether types are same.
 	fn Equal(&self, other: &Type): bool {
 		p, ok := other.Kind.(&Ptr)
 		if !ok {
-			ret false
+			return false
 		}
 		match {
 		| self.IsUnsafe():
-			ret p.IsUnsafe()
+			return p.IsUnsafe()
 		| p.IsUnsafe():
-			ret self.IsUnsafe()
+			return self.IsUnsafe()
 		|:
-			ret self.Value.Equal(p.Value)
+			return self.Value.Equal(p.Value)
 		}
 	}
 }
 
 impl Ptr {
 	// Reports whether pointer is unsafe pointer (*unsafe).
-	fn IsUnsafe(*self): bool { ret self.Value == nil }
+	fn IsUnsafe(*self): bool { return self.Value == nil }
 }
 
 struct referencer {
@@ -830,10 +830,10 @@ impl typeChecker {
 	fn isIgnoredGeneric(mut *self, name: string): bool {
 		for _, g in self.ignoreGenerics {
 			if g.Name == name {
-				ret true
+				return true
 			}
 		}
-		ret false
+		return false
 	}
 
 	// Push type analysis flag to owner structure instance if exist.
@@ -860,10 +860,10 @@ impl typeChecker {
 
 	fn pushReference[T](mut *self, mut t: &T) {
 		if self.refers == nil {
-			ret
+			return
 		}
 		if self.refers.Exist(t) {
-			ret
+			return
 		}
 		self.refers.Push(t)
 	}
@@ -898,7 +898,7 @@ impl typeChecker {
 		// Runtime metadata collection is disabled.
 		// Return immediately, there is not nothing we can do.
 		if self.s.meta.runtime == nil {
-			ret
+			return
 		}
 		mut s := runtimeFindStruct(self.s.meta.runtime, name)
 		mut ins := s.instance()
@@ -914,7 +914,7 @@ impl typeChecker {
 				prim := typ.Prim()
 				if prim != nil && self.isIgnoredGeneric(prim.Kind) {
 					unsafe { *self.recheckNeed = append(*self.recheckNeed, ins) }
-					ret
+					return
 				}
 			}
 		}
@@ -937,7 +937,7 @@ impl typeChecker {
 		// So, it is means there are only inline cycle possibility,
 		// but it is already checked.
 		if self.referencer.prev == nil {
-			ret true, self.referencer.oself
+			return true, self.referencer.oself
 		}
 		mut r := self.referencer
 		for r != nil && r.prev != nil; r = r.prev {
@@ -955,7 +955,7 @@ impl typeChecker {
 			if oself != nil {
 				if oself.owner == decl {
 					printErr(message)
-					ret false, oself != nil
+					return false, oself != nil
 				}
 				continue
 			}
@@ -964,10 +964,10 @@ impl typeChecker {
 			}
 			if r.owner == decl {
 				printErr(message)
-				ret false, oself != nil
+				return false, oself != nil
 			}
 		}
-		ret true, oself != nil
+		return true, oself != nil
 	}
 
 	// Returns referencer by case.
@@ -980,31 +980,31 @@ impl typeChecker {
 			// Because there is no risk for type aliases and other things.
 			// Just safe. Do not track references, no risk for cycles.
 			if r.oself {
-				ret nil
+				return nil
 			}
 		}
-		ret self.referencer
+		return self.referencer
 	}
 
 	fn checkIllegalCycles(mut *self, name: &token::Token, mut decl: any): (ok: bool) {
-		ret self.isIllegalCycleSafe(name, decl, self.cycleErr&cycleErrDisable == 0)
+		return self.isIllegalCycleSafe(name, decl, self.cycleErr&cycleErrDisable == 0)
 	}
 
 	fn isIllegalCycleSafe(mut *self, name: &token::Token, mut decl: any, err: bool): (ok: bool) {
 		self.cycleErr &= ^cycleErrFail // clear the cycleErrFail flag for the new analysis
 		if self.referencer == nil {
-			ret true
+			return true
 		}
 
 		match type decl {
 		| &StructIns:
 			s := decl.(&StructIns)
 			if s.Decl != nil && s.Decl.Extern {
-				ret true
+				return true
 			}
 		| &TypeAlias:
 			if decl.(&TypeAlias).Extern {
-				ret true
+				return true
 			}
 		}
 
@@ -1024,7 +1024,7 @@ impl typeChecker {
 					self.pushErr(name, "illegal cycle in declaration: @ refers to itself", self.referencer.name)
 				}
 				self.cycleErr |= cycleErrFail
-				ret false
+				return false
 			}
 		}
 
@@ -1035,7 +1035,7 @@ impl typeChecker {
 				self.pushErr(name, "illegal cross cycle in declaration:\n"+message.String())
 			}
 			self.cycleErr |= cycleErrFail
-			ret false
+			return false
 		}
 
 		// Append to structure depend collection if oself is not exist.
@@ -1051,13 +1051,13 @@ impl typeChecker {
 			}
 		}
 
-		ret true
+		return true
 	}
 
 	fn fromTypeAlias(mut *self, mut decl: &token::Token, mut ta: &TypeAlias): Kind {
 		if !self.s.isAccessibleDefine(ta.Public, ta.Token) {
 			self.pushErr(decl, "undefined: "+decl.Kind)
-			ret nil
+			return nil
 		}
 
 		ta.Used = true
@@ -1065,7 +1065,7 @@ impl typeChecker {
 		{
 			ok := self.checkIllegalCycles(decl, ta)
 			if !ok && self.cycleErr&cycleErrDisable == 0 {
-				ret nil
+				return nil
 			}
 		}
 
@@ -1077,7 +1077,7 @@ impl typeChecker {
 			// So, do not use possible nil referencer.
 			ok := self.s.checkTypeAliasDecl(ta, self.referencer, self.lookup)
 			if !ok {
-				ret nil
+				return nil
 			}
 		}
 
@@ -1088,7 +1088,7 @@ impl typeChecker {
 			if s.Source != nil && !s.checked {
 				ok := self.checkStructIns(s, decl)
 				if !ok {
-					ret nil
+					return nil
 				}
 			}
 		}
@@ -1107,43 +1107,43 @@ impl typeChecker {
 		} else {
 			self.pushReferenceByKind(tk)
 		}
-		ret tk
+		return tk
 	}
 
 	fn fromEnum(mut *self, decl: &token::Token, mut e: &Enum): &Enum {
 		if !self.s.isAccessibleDefine(e.Public, e.Token) {
 			self.pushErr(decl, "undefined: "+decl.Kind)
-			ret nil
+			return nil
 		}
-		ret e
+		return e
 	}
 
 	fn fromTypeEnum(mut *self, decl: &token::Token, mut e: &TypeEnum): &TypeEnum {
 		if !self.s.isAccessibleDefine(e.Public, e.Token) {
 			self.pushErr(decl, "undefined: "+decl.Kind)
-			ret nil
+			return nil
 		}
-		ret e
+		return e
 	}
 
 	fn fromTrait(mut *self, decl: &token::Token, mut t: &Trait): &Trait {
 		if !self.s.isAccessibleDefine(t.Public, t.Token) {
 			self.pushErr(decl, "undefined: "+decl.Kind)
-			ret nil
+			return nil
 		}
 		self.pushTA(taMutable)
 		self.pushReference(t)
-		ret t
+		return t
 	}
 
 	fn checkStructIns(mut *self, mut ins: &StructIns, mut errorToken: &token::Token): (ok: bool) {
 		if ins.checked {
-			ret true
+			return true
 		}
 		ins.checked = true
 		// Break algorithm cycle.
 		if self.referencer != nil && self.referencer.owner == ins.Decl {
-			ret true
+			return true
 		}
 		// Do not evaluate generic methods immediately. Just precheck.
 		// Otherwise type issues may occur. For example:
@@ -1179,11 +1179,11 @@ impl typeChecker {
 			mut typ := ins.Decl.alias.TypeSym.Type // Save placeholder type.
 			ins.Decl.alias.TypeSym.Type.Kind = ins // Use instance as placeholder, to resolve source type to it.
 			ok = self.s.basicStructEnvironment(ins, fn|mut sema| {
-				ret unsafe { self.s.checkTypeAliasDeclKind(ins.Decl.alias, ins.env.generics, nil, sema) }
+				return unsafe { self.s.checkTypeAliasDeclKind(ins.Decl.alias, ins.env.generics, nil, sema) }
 			})
 			ins.Decl.alias.TypeSym.Type = typ // Restore placeholder type.
 			if !ok {
-				ret false
+				return false
 			}
 		}
 
@@ -1235,7 +1235,7 @@ impl typeChecker {
 				self.s.checkStructIns(ins)
 			}
 		}
-		ret
+		return
 	}
 
 	// Returns whether instantiation cycle catch analysis required.
@@ -1245,10 +1245,10 @@ impl typeChecker {
 	// Keep it simple.
 	fn inscatchNeeded(mut *self, mut s: &Struct): (yes: bool, letGenerics: []&ast::Generic) {
 		if len(s.Generics) == 0 {
-			ret false, nil
+			return false, nil
 		}
 		if s.alias != nil {
-			ret true, s.Generics
+			return true, s.Generics
 		}
 		mut sc, mut ok := self.lookup.(&scopeChecker)
 		if ok {
@@ -1258,16 +1258,16 @@ impl typeChecker {
 			if yes {
 				letGenerics = s.Generics
 			}
-			ret
+			return
 		}
 		mut r := self.referencer
 		for r != nil; r = r.prev {
 			si, (ok) := r.owner.(&StructIns)
 			if ok && si.Decl == s {
-				ret true, s.Generics
+				return true, s.Generics
 			}
 		}
-		ret false, nil
+		return false, nil
 	}
 
 	// Builds generic types and associates with struct s.
@@ -1297,7 +1297,7 @@ impl typeChecker {
 		pushGenericToIns := fn(mut typDecl: &ast::Expr): bool {
 			mut typ := unsafe { self.checkDecl(typDecl) }
 			if typ == nil {
-				ret false
+				return false
 			}
 			// Catch initiation cycles here if needed.
 			// If type is a type alias (strict or soft), it can cause cycle.
@@ -1317,7 +1317,7 @@ impl typeChecker {
 						}
 					}
 					unsafe { self.pushErr(typDecl.Token, "initiation cycle caused by a type declaration") }
-					ret false
+					return false
 				}
 			Ok:
 			}
@@ -1329,7 +1329,7 @@ impl typeChecker {
 				}
 			}
 			s.Generics = append(s.Generics, &InsGeneric{Type: typ})
-			ret true
+			return true
 		}
 
 		// Build generics.
@@ -1340,26 +1340,26 @@ impl typeChecker {
 			for (_, mut typDecl) in tup.X {
 				ok := pushGenericToIns(typDecl)
 				if !ok {
-					ret nil, false
+					return nil, false
 				}
 			}
 		|:
 			ok := pushGenericToIns(indx.Index)
 			if !ok {
-				ret nil, false
+				return nil, false
 			}
 		}
-		ret s, recheckNeeded
+		return s, recheckNeeded
 	}
 
 	fn buildStructInsWithGenerics(mut *self, mut s: &StructIns, mut indx: &ast::IndexExpr): (&StructIns, recheckNeeded: bool) {
 		s, recheckNeeded = self.getStructInsWithGenerics(s, indx)
 		if s == nil {
-			ret nil, false
+			return nil, false
 		}
 		mut ok := self.s.checkGenericQuantity(len(s.Decl.Generics), len(s.Generics), indx.X.Token)
 		if !ok {
-			ret nil, false
+			return nil, false
 		}
 		// If recheck needed for the structure, do not build instance.
 		// Avoid appending to collection, otherwise we may have duplicate instances.
@@ -1385,9 +1385,9 @@ impl typeChecker {
 		// Return with s directly, and report recheck needed.
 		// Append instance into collection when analysis sent type to recheck.
 		if recheckNeeded {
-			ret s, recheckNeeded
+			return s, recheckNeeded
 		}
-		ret self.buildStructIns(s, indx.X.Token), false
+		return self.buildStructIns(s, indx.X.Token), false
 	}
 
 	fn buildStructIns(mut *self, mut s: &StructIns, mut errToken: &token::Token): &StructIns {
@@ -1401,10 +1401,10 @@ impl typeChecker {
 			}
 			ok := self.checkIllegalCycles(errToken, s)
 			if !ok && self.cycleErr&cycleErrDisable == 0 {
-				ret nil
+				return nil
 			}
 		}
-		ret s
+		return s
 	}
 
 	// Checks structure instance.
@@ -1413,7 +1413,7 @@ impl typeChecker {
 		if ok {
 			self.pushReference(ins)
 		}
-		ret
+		return
 	}
 
 	// Calls _fromStructIns and returns the instance if the instance is new,
@@ -1422,32 +1422,32 @@ impl typeChecker {
 		mut existInstance := ins.Decl.appendInstance(ins)
 		if existInstance != nil {
 			if !self.s.checkConstraintsStruct(ins, token, existInstance) {
-				ret nil
+				return nil
 			}
 			// Already checked instance, did not appended.
 			// So, this instance is not unique.
 			self.pushReference(existInstance)
-			ret existInstance
+			return existInstance
 		}
 		self._fromStructIns(ins, token)
-		ret ins
+		return ins
 	}
 
 	fn fromStruct(mut *self, mut decl: &token::Token, mut s: &Struct): &StructIns {
 		if !self.s.isAccessibleDefine(s.Public, s.Token) {
 			self.pushErr(decl, "undefined: "+decl.Kind)
-			ret nil
+			return nil
 		}
 
 		// Name selection.
 		// Return instance instantly.
 		if self.selection {
-			ret &StructIns{
+			return &StructIns{
 				Decl: s,
 			}
 		}
 
-		ret s.instance()
+		return s.instance()
 	}
 
 	// Returns identifier if found. Also checks founded identifier.
@@ -1459,7 +1459,7 @@ impl typeChecker {
 	// genericed type from another package.
 	fn getDef(mut *self, mut decl: &token::Token, _extern: bool): Kind {
 		if self.isIgnoredGeneric(decl.Kind) {
-			ret buildPrimType(decl.Kind)
+			return buildPrimType(decl.Kind)
 		}
 
 		for (_, mut g) in self.useGenerics {
@@ -1477,36 +1477,36 @@ impl typeChecker {
 				if st != nil {
 					ok := self.checkIllegalCycles(decl, st)
 					if !ok && self.cycleErr&cycleErrDisable == 0 {
-						ret nil
+						return nil
 					}
 				}
-				ret g.TypeSym.Type.Kind
+				return g.TypeSym.Type.Kind
 			}
 		}
 
 		if !_extern {
 			mut e := self.lookup.FindEnum(decl.Kind)
 			if e != nil {
-				ret self.fromEnum(decl, e)
+				return self.fromEnum(decl, e)
 			}
 
 			mut te := self.lookup.FindTypeEnum(decl.Kind)
 			if te != nil {
-				ret self.fromTypeEnum(decl, te)
+				return self.fromTypeEnum(decl, te)
 			}
 
 			mut t := self.lookup.FindTrait(decl.Kind)
 			if t != nil {
-				ret self.fromTrait(decl, t)
+				return self.fromTrait(decl, t)
 			}
 		} else if self.selection {
 			self.pushErr(decl, "external types are not allowed in this scope")
-			ret nil
+			return nil
 		}
 
 		mut s := self.lookup.FindStruct(decl.Kind, _extern)
 		if s != nil {
-			ret self.fromStruct(decl, s)
+			return self.fromStruct(decl, s)
 		}
 
 		mut ta := self.lookup.FindTypeAlias(decl.Kind, _extern)
@@ -1517,27 +1517,27 @@ impl typeChecker {
 			}
 		}
 		if ta != nil {
-			ret self.fromTypeAlias(decl, ta)
+			return self.fromTypeAlias(decl, ta)
 		}
 
 		self.pushErr(decl, "undefined: "+decl.Kind)
-		ret nil
+		return nil
 	}
 
 	fn buildName(mut *self, mut decl: &token::Token, _extern: bool): Kind {
-		ret self.getDef(decl, _extern)
+		return self.getDef(decl, _extern)
 	}
 
 	fn buildSptrFromType(mut *self, mut valueTyp: &Type): &Sptr {
 		// Check special cases.
 		match {
 		| valueTyp == nil:
-			ret nil
+			return nil
 		| valueTyp.Array() != nil && valueTyp.Array().Auto:
 			self.pushErr(self.errorToken, "auto-sized arrays are not allowed as value type")
-			ret nil
+			return nil
 		}
-		ret &Sptr{
+		return &Sptr{
 			Value: valueTyp,
 		}
 	}
@@ -1550,7 +1550,7 @@ impl typeChecker {
 		defer { self.disableTA = disableTA }
 
 		mut valueTyp := self.checkDecl(decl.X)
-		ret self.buildSptrFromType(valueTyp)
+		return self.buildSptrFromType(valueTyp)
 	}
 
 	fn buildSptr(mut *self, mut decl: &ast::UnaryExpr): &Sptr {
@@ -1559,9 +1559,9 @@ impl typeChecker {
 			self.referencer.oself = true
 			mut typ := self.__buildSptr(decl)
 			self.referencer.oself = oself
-			ret typ
+			return typ
 		}
-		ret self.__buildSptr(decl)
+		return self.__buildSptr(decl)
 	}
 
 	fn __buildChan(mut *self, mut decl: &ast::ChanType): &Chan {
@@ -1573,13 +1573,13 @@ impl typeChecker {
 
 		mut valueTyp := self.checkDecl(decl.Value)
 		if valueTyp == nil {
-			ret nil
+			return nil
 		}
 		self.pushRuntimeImpl("pchan", decl.Value.Token, valueTyp)
 		if self.disableTA&taMutable == 0 && valueTyp.Mutable() {
 			self.pushTA(taMutable)
 		}
-		ret &Chan{
+		return &Chan{
 			Recv:  decl.Dir&ast::RECV != 0,
 			Send:  decl.Dir&ast::SEND != 0,
 			Value: valueTyp,
@@ -1592,22 +1592,22 @@ impl typeChecker {
 			self.referencer.oself = true
 			mut typ := self.__buildChan(decl)
 			self.referencer.oself = oself
-			ret typ
+			return typ
 		}
-		ret self.__buildChan(decl)
+		return self.__buildChan(decl)
 	}
 
 	fn buildPtrFromType(mut *self, mut valueTyp: &Type): &Ptr {
 		// Check special cases.
 		match {
 		| valueTyp == nil:
-			ret nil
+			return nil
 		| valueTyp.Array() != nil && valueTyp.Array().Auto:
 			self.pushErr(self.errorToken, "auto-sized arrays are not allowed as value type")
-			ret new(Ptr)
+			return new(Ptr)
 		}
 
-		ret &Ptr{
+		return &Ptr{
 			Value: valueTyp,
 		}
 	}
@@ -1623,10 +1623,10 @@ impl typeChecker {
 
 		if !decl.IsUnsafePtr() {
 			valueTyp = self.checkDecl(decl.X)
-			ret self.buildPtrFromType(valueTyp)
+			return self.buildPtrFromType(valueTyp)
 		}
 
-		ret &Ptr{
+		return &Ptr{
 			Value: valueTyp,
 		}
 	}
@@ -1637,9 +1637,9 @@ impl typeChecker {
 			self.referencer.oself = true
 			mut typ := self.__buildPtr(decl)
 			self.referencer.oself = oself
-			ret typ
+			return typ
 		}
-		ret self.__buildPtr(decl)
+		return self.__buildPtr(decl)
 	}
 
 	fn __buildSlice(mut *self, mut decl: &ast::SliceType): &Slice {
@@ -1654,13 +1654,13 @@ impl typeChecker {
 		// Check special cases.
 		match {
 		| valueTyp == nil:
-			ret nil
+			return nil
 		| valueTyp.Array() != nil && valueTyp.Array().Auto:
 			self.pushErr(decl.Value.Token, "auto-sized arrays are not allowed as value type")
-			ret nil
+			return nil
 		}
 
-		ret &Slice{
+		return &Slice{
 			Value: valueTyp,
 		}
 	}
@@ -1671,9 +1671,9 @@ impl typeChecker {
 			self.referencer.oself = true
 			mut typ := self.__buildSlice(decl)
 			self.referencer.oself = oself
-			ret typ
+			return typ
 		}
-		ret self.__buildSlice(decl)
+		return self.__buildSlice(decl)
 	}
 
 	fn buildArray(mut *self, mut decl: &ast::ArrayType): &Array {
@@ -1681,27 +1681,27 @@ impl typeChecker {
 		if !decl.IsAutoSized() {
 			mut size := self.s.eval(self.lookup).evalExpr(decl.Size, evalDefault|evalPhysicalMem|evalUnwrapUntyped)
 			if size == nil {
-				ret nil
+				return nil
 			}
 
 			if !size.IsConst() {
 				self.pushErr(decl.Size.Token, "expression must be constant")
-				ret nil
+				return nil
 			} else if size.Type.Prim() == nil || !types::IsInt(size.Type.Prim().Kind) {
 				self.pushErr(decl.Size.Token, "array size must be integer")
-				ret nil
+				return nil
 			}
 
 			n = int(size.Constant.AsI64())
 			if n < 0 {
 				self.pushErr(decl.Value.Token, "array size must be positive")
-				ret nil
+				return nil
 			} else {
 				max := types::MaxI(types::Int)
 				if types::BitSize != 64 && i64(n) > max {
 					self.pushErr(decl.Size.Token, "array size @ overflows the comptime-defined limit of @",
 						size.Constant.String(), conv::FormatInt(max, 10))
-					ret nil
+					return nil
 				}
 			}
 		}
@@ -1713,10 +1713,10 @@ impl typeChecker {
 		// Check special cases.
 		match {
 		| valueTyp == nil:
-			ret nil
+			return nil
 		| valueTyp.Array() != nil && valueTyp.Array().Auto:
 			self.pushErr(decl.Value.Token, "auto-sized arrays are not allowed as value type")
-			ret nil
+			return nil
 		}
 
 		if self.disableTA&taNotComparable == 0 && !valueTyp.Comparable() {
@@ -1726,7 +1726,7 @@ impl typeChecker {
 			self.pushTA(taMutable)
 		}
 
-		ret &Array{
+		return &Array{
 			Auto:  decl.IsAutoSized(),
 			N:     n,
 			Value: valueTyp,
@@ -1745,7 +1745,7 @@ impl typeChecker {
 		mut keyTyp := self.checkDecl(decl.Key)
 		if keyTyp == nil {
 			self.cycleErr = cycleErr
-			ret nil
+			return nil
 		}
 		// Check whether key type is valid.
 		// It should be comparable, if cycle analysis failed, we have cycles,
@@ -1753,14 +1753,14 @@ impl typeChecker {
 		if self.cycleErr&cycleErrFail != 0 || !keyTyp.Comparable() {
 			self.cycleErr = cycleErr
 			self.s.pushErr(decl.Key.Token, "type @ does not match constraint of Key: @", keyTyp.String(), constraintComparable)
-			ret nil
+			return nil
 		}
 		self.cycleErr = cycleErr
 
 		// Evaluate value type with no cycle risk.
 		mut valueTyp := self.checkDecl(decl.Value)
 		if valueTyp == nil {
-			ret nil
+			return nil
 		}
 		if valueTyp.Enum() != nil {
 			self.pushErr(decl.Value.Token, "enum types are not supported as map-key")
@@ -1772,7 +1772,7 @@ impl typeChecker {
 			self.pushTA(taMutable)
 		}
 
-		ret &Map{
+		return &Map{
 			Key:   keyTyp,
 			Value: valueTyp,
 		}
@@ -1792,9 +1792,9 @@ impl typeChecker {
 			self.referencer.oself = true
 			mut typ := self.__buildMap(decl)
 			self.referencer.oself = oself
-			ret typ
+			return typ
 		}
-		ret self.__buildMap(decl)
+		return self.__buildMap(decl)
 	}
 
 	fn buildTuple(mut *self, mut decl: &ast::TupleExpr): &Tuple {
@@ -1802,12 +1802,12 @@ impl typeChecker {
 		for (_, mut t) in decl.X {
 			mut kind := self.checkDecl(t)
 			if kind == nil {
-				ret nil
+				return nil
 			}
 			types = append(types, kind)
 		}
 
-		ret &Tuple{Types: types}
+		return &Tuple{Types: types}
 	}
 
 	fn checkFuncTypes(mut *self, mut f: &FuncIns): (ok: bool) {
@@ -1815,17 +1815,17 @@ impl typeChecker {
 			p.Type = self.checkDecl(p.Decl.TypeSym.Decl)
 			ok = p.Type != nil
 			if !ok {
-				ret false
+				return false
 			}
 			self.s.checkFuncParamKind(p)
 		}
 
 		if !f.Decl.IsVoid() {
 			f.Result = self.checkDecl(f.Decl.Result.TypeSym.Decl)
-			ret f.Result != nil
+			return f.Result != nil
 		}
 
-		ret true
+		return true
 	}
 
 	fn __buildFunc(mut *self, mut decl: &ast::Func): &FuncIns {
@@ -1837,7 +1837,7 @@ impl typeChecker {
 
 		if len(decl.Generics) > 0 {
 			self.pushErr(decl.Token, "genericed functions cannot be anonymous")
-			ret nil
+			return nil
 		}
 
 		mut f := buildFunc(decl)
@@ -1845,7 +1845,7 @@ impl typeChecker {
 		n := len(self.s.errors)
 		self.s.checkAnonFuncDecl(f)
 		if n != len(self.s.errors) {
-			ret nil
+			return nil
 		}
 
 		mut ins := f.instanceForce()
@@ -1855,10 +1855,10 @@ impl typeChecker {
 
 		ok := self.checkFuncTypes(ins)
 		if !ok {
-			ret nil
+			return nil
 		}
 
-		ret ins
+		return ins
 	}
 
 	fn buildFunc(mut *self, mut decl: &ast::Func): &FuncIns {
@@ -1867,16 +1867,16 @@ impl typeChecker {
 			self.referencer.oself = true
 			mut typ := self.__buildFunc(decl)
 			self.referencer.oself = oself
-			ret typ
+			return typ
 		}
-		ret self.__buildFunc(decl)
+		return self.__buildFunc(decl)
 	}
 
 	fn buildNamespace(mut *self, mut ns: &ast::NamespaceExpr): Kind {
 		mut imp := findNamespace(self.lookup, ns.Namespace.Kind)
 		if imp == nil || !imp.isLookupable() {
 			self.pushErr(ns.Namespace, "undefined namespace: "+ns.Namespace.Kind)
-			ret nil
+			return nil
 		}
 
 		disableTA := self.disableTA
@@ -1889,24 +1889,24 @@ impl typeChecker {
 		mut kind := self.buildName(ns.Name, false)
 		self.lookup = lookup
 		self.allowBuiltin()
-		ret kind
+		return kind
 	}
 
 	fn buildIndex(mut *self, mut indx: &ast::IndexExpr): (Kind, recheckNeeded: bool) {
 		mut typ := self.build(indx.X.Data)
 		if typ == nil {
-			ret nil, false
+			return nil, false
 		}
 		mut s := typ.SoftStruct()
 		if self.selection {
 			self.pushErr(indx.X.Token, "generics are not allowed in this scope")
-			ret nil, false
+			return nil, false
 		}
 		if s == nil || s.Source != nil || len(s.Generics) > 0 {
 			self.pushErr(indx.X.Token, "type @ does not supports generics or already instantiated", typ.String())
-			ret nil, false
+			return nil, false
 		}
-		ret self.buildStructInsWithGenerics(s, indx)
+		return self.buildStructInsWithGenerics(s, indx)
 	}
 
 	fn build(mut *self, mut declKind: ast::ExprData): &Type {
@@ -1915,7 +1915,7 @@ impl typeChecker {
 		match type declKind {
 		| &ast::RangeExpr:
 			mut r := declKind.(&ast::RangeExpr)
-			ret self.build(r.X.Data)
+			return self.build(r.X.Data)
 		| &ast::NameExpr:
 			mut name := declKind.(&ast::NameExpr)
 			mut t := self.buildName(name.Token, name.Extern)
@@ -1942,7 +1942,7 @@ impl typeChecker {
 				}
 			|:
 				self.pushErr(self.errorToken, "invalid type")
-				ret nil
+				return nil
 			}
 		| &ast::SliceType:
 			mut t := self.buildSlice(declKind.(&ast::SliceType))
@@ -1981,10 +1981,10 @@ impl typeChecker {
 			}
 		|:
 			self.pushErr(self.errorToken, "invalid type")
-			ret nil
+			return nil
 		}
 		if kind == nil {
-			ret nil
+			return nil
 		}
 		mut typ := (&Type)(nil)
 		match type kind {
@@ -2003,7 +2003,7 @@ impl typeChecker {
 		if recheckNeeded {
 			unsafe { *self.recheckNeed = append(*self.recheckNeed, typ) }
 		}
-		ret typ
+		return typ
 	}
 
 	fn checkDecl(mut *self, mut decl: &ast::Expr): &Type {
@@ -2016,31 +2016,31 @@ impl typeChecker {
 			mut s, _ := typ.Kind.(&StructIns)
 			if s != nil && !self.selection {
 				if !self.s.checkGenericQuantity(len(s.Decl.Generics), len(s.Generics), self.errorToken) {
-					ret nil
+					return nil
 				}
 				// If there is no generics and it passes the generics analysis,
 				// it is just an instance and needs to be checked.
 				if len(s.Generics) == 0 {
 					s = self.buildStructIns(s, self.errorToken)
 					if s == nil {
-						ret nil
+						return nil
 					}
 					typ.Kind = s
 				}
 			}
 		}
 
-		ret typ
+		return typ
 	}
 
 	fn check(mut *self, mut t: &TypeSym) {
 		if t.Decl == nil {
-			ret
+			return
 		}
 		mut kind := self.checkDecl(t.Decl)
 		if kind == nil {
 			t.removeKind()
-			ret
+			return
 		}
 		t.Type = kind
 	}
@@ -2075,7 +2075,7 @@ impl typeChecker {
 		*s = self.buildStructIns(*s, errorToken)
 		// The result instance is not nil, so analysis were successful.
 		ok = *s != nil
-		ret
+		return
 	}
 
 	// Rechecks the recheckable type.
@@ -2099,9 +2099,9 @@ impl typeChecker {
 			}
 		| &StructIns:
 			mut s := t.(&StructIns)
-			ret self.recheckStructIns(&s, errorToken)
+			return self.recheckStructIns(&s, errorToken)
 		}
-		ret
+		return
 	}
 }
 
@@ -2110,40 +2110,40 @@ struct identTypeLookup{}
 
 impl identTypeLookup {
 	fn prim(name: string, t: &Prim): bool {
-		ret t.Kind == name
+		return t.Kind == name
 	}
 
 	fn exist(name: string, mut k: &Type): bool {
 		match {
 		| k.Prim() != nil:
-			ret identTypeLookup.prim(name, k.Prim())
+			return identTypeLookup.prim(name, k.Prim())
 		| k.Chan() != nil:
 			mut ch := k.Chan()
-			ret identTypeLookup.exist(name, ch.Value)
+			return identTypeLookup.exist(name, ch.Value)
 		| k.Sptr() != nil:
 			mut sptr := k.Sptr()
-			ret identTypeLookup.exist(name, sptr.Value)
+			return identTypeLookup.exist(name, sptr.Value)
 		| k.Ptr() != nil:
 			mut ptr := k.Ptr()
-			ret identTypeLookup.exist(name, ptr.Value)
+			return identTypeLookup.exist(name, ptr.Value)
 		| k.Slice() != nil:
 			mut slc := k.Slice()
-			ret identTypeLookup.exist(name, slc.Value)
+			return identTypeLookup.exist(name, slc.Value)
 		| k.Array() != nil:
 			mut arr := k.Array()
-			ret identTypeLookup.exist(name, arr.Value)
+			return identTypeLookup.exist(name, arr.Value)
 		| k.Map() != nil:
 			mut m := k.Map()
-			ret identTypeLookup.exist(name, m.Key) ||
+			return identTypeLookup.exist(name, m.Key) ||
 				identTypeLookup.exist(name, m.Value)
 		| k.Struct() != nil:
 			mut s := k.Struct()
 			for (_, mut g) in s.Generics {
 				if identTypeLookup.exist(name, g.Type) {
-					ret true
+					return true
 				}
 			}
-			ret false
+			return false
 		| k.Func() != nil:
 			mut f := k.Func()
 			for (_, mut p) in f.Params {
@@ -2151,23 +2151,23 @@ impl identTypeLookup {
 					continue
 				}
 				if identTypeLookup.exist(name, p.Type) {
-					ret true
+					return true
 				}
 			}
 			if f.Result != nil {
-				ret identTypeLookup.exist(name, f.Result)
+				return identTypeLookup.exist(name, f.Result)
 			}
-			ret false
+			return false
 		| k.Tuple() != nil:
 			mut tup := k.Tuple()
 			for (_, mut t) in tup.Types {
 				if identTypeLookup.exist(name, t) {
-					ret true
+					return true
 				}
 			}
-			ret false
+			return false
 		|:
-			ret false
+			return false
 		}
 	}
 }
@@ -2175,31 +2175,31 @@ impl identTypeLookup {
 fn kindUsesGenerics(mut k: &Type, generics: []&ast::Generic): bool {
 	for _, g in generics {
 		if identTypeLookup.exist(g.Name, k) {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 // Reports whether directive is exist.
 fn hasDirective(mut directives: []&ast::Directive, tag: string): bool {
 	for (_, mut dr) in directives {
 		if dr.Tag.Kind == tag {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
-fn canGetPtr(mut v: &Value): bool { ret v.Lvalue }
+fn canGetPtr(mut v: &Value): bool { return v.Lvalue }
 
 // Reports whether type has built-in string conversion support.
 fn isBuiltinStrConvertible(mut t: &Type): bool {
-	ret !t.Void() && t.Func() == nil && t.Tuple() == nil && !t.comptime()
+	return !t.Void() && t.Func() == nil && t.Tuple() == nil && !t.comptime()
 }
 
 fn buildPrimType(kind: string): &Prim {
-	ret &Prim{
+	return &Prim{
 		Kind: kind,
 	}
 }
@@ -2207,28 +2207,28 @@ fn buildPrimType(kind: string): &Prim {
 fn getStructFromKind(mut k: &Type): &Struct {
 	match {
 	| k == nil:
-		ret nil
+		return nil
 	| k.Struct() != nil:
-		ret k.Struct().Decl
+		return k.Struct().Decl
 	| k.Sptr() != nil:
-		ret getStructFromKind(k.Sptr().Value)
+		return getStructFromKind(k.Sptr().Value)
 	| k.Slice() != nil:
-		ret getStructFromKind(k.Slice().Value)
+		return getStructFromKind(k.Slice().Value)
 	| k.Array() != nil:
-		ret getStructFromKind(k.Array().Value)
+		return getStructFromKind(k.Array().Value)
 	| k.Ptr() != nil:
 		// Pass pointers.
 		// Cloning just copies pointer address.
 		// There is no any illegal cycle risk.
-		ret nil
+		return nil
 	|:
-		ret nil
+		return nil
 	}
 }
 
 // Reports whether type is valid for SizeOf/AlignOf functions.
 fn validTypeForXof(mut t: &Type): bool {
-	ret !t.Void() && t.Func() == nil && t.Tuple() == nil && !t.comptime()
+	return !t.Void() && t.Func() == nil && t.Tuple() == nil && !t.comptime()
 }
 
 // Pseudo source type for strict type alias structure instances.
@@ -2242,7 +2242,7 @@ fn initNewStructType(name: string, mut source: &Type): &StructIns {
 	mut ins := s.instance()
 	s.appendInstance(ins)
 	ins.setSource(source)
-	ret ins
+	return ins
 }
 
 // Returns enum type for matching.
@@ -2251,7 +2251,7 @@ fn getMatchEnum(mut t: &Type): &Enum {
 	// If type is a structure, it might be a strict type alias to an enum.
 	// This is invalid for matching, wee need to pure enum type.
 	if t.SoftStruct() != nil {
-		ret nil
+		return nil
 	}
-	ret t.Enum()
+	return t.Enum()
 }

@@ -26,26 +26,26 @@ impl Lookup for SymTab {
 	// Returns nil if selector is nil.
 	fn SelectPackage(mut *self, selector: fn(&ImportInfo): bool): &ImportInfo {
 		if selector == nil {
-			ret nil
+			return nil
 		}
 		for (_, mut pkg) in self.Imports {
 			if selector(pkg) {
-				ret pkg
+				return pkg
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	// Returns variable by identifier and external state.
 	// Returns nil if refenrece not exist any variable in this identifier.
 	fn FindVar(mut *self, name: string, _extern: bool): &Var {
-		ret self.findVar(name, _extern, false)
+		return self.findVar(name, _extern, false)
 	}
 
 	// Returns type alias by identifier and external state.
 	// Returns nil if not exist any type alias in this identifier.
 	fn FindTypeAlias(mut *self, name: string, _extern: bool): &TypeAlias {
-		ret self.findTypeAlias(name, _extern, false)
+		return self.findTypeAlias(name, _extern, false)
 	}
 
 	// Returns struct by identifier and external state.
@@ -53,10 +53,10 @@ impl Lookup for SymTab {
 	fn FindStruct(mut *self, name: string, _extern: bool): &Struct {
 		for (_, mut s) in self.Structs {
 			if s.Name == name && s.Extern == _extern {
-				ret s
+				return s
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	// Returns function by identifier and external state.
@@ -64,10 +64,10 @@ impl Lookup for SymTab {
 	fn FindFunc(mut *self, name: string, _extern: bool): &Func {
 		for (_, mut f) in self.Funcs {
 			if f.Name == name && f.Extern == _extern {
-				ret f
+				return f
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	// Returns trait by identifier.
@@ -75,10 +75,10 @@ impl Lookup for SymTab {
 	fn FindTrait(mut *self, name: string): &Trait {
 		for (_, mut t) in self.Traits {
 			if t.Name == name {
-				ret t
+				return t
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	// Returns enum by identifier.
@@ -86,10 +86,10 @@ impl Lookup for SymTab {
 	fn FindEnum(mut *self, name: string): &Enum {
 		for (_, mut e) in self.Enums {
 			if e.Name == name {
-				ret e
+				return e
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	// Returns type enum by identifier.
@@ -97,10 +97,10 @@ impl Lookup for SymTab {
 	fn FindTypeEnum(mut *self, name: string): &TypeEnum {
 		for (_, mut e) in self.TypeEnums {
 			if e.Name == name {
-				ret e
+				return e
 			}
 		}
-		ret nil
+		return nil
 	}
 }
 
@@ -108,10 +108,10 @@ impl SymTab {
 	fn findVar1(mut *self, v: &Var): int {
 		for i in self.Vars {
 			if self.Vars[i] == v {
-				ret i
+				return i
 			}
 		}
-		ret -1
+		return -1
 	}
 
 	fn findVar(mut *self, name: string, _extern: bool, reverse: bool): &Var {
@@ -120,17 +120,17 @@ impl SymTab {
 			for i >= 0; i-- {
 				mut v := self.Vars[i]
 				if v.Name == name && v.Extern == _extern {
-					ret v
+					return v
 				}
 			}
 		} else {
 			for (_, mut v) in self.Vars {
 				if v.Name == name && v.Extern == _extern {
-					ret v
+					return v
 				}
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	fn findTypeAlias(mut *self, name: string, _extern: bool, reverse: bool): &TypeAlias {
@@ -139,17 +139,17 @@ impl SymTab {
 			for i >= 0; i-- {
 				mut ta := self.TypeAliases[i]
 				if ta.Name == name && ta.Extern == _extern {
-					ret ta
+					return ta
 				}
 			}
 		} else {
 			for (_, mut ta) in self.TypeAliases {
 				if ta.Name == name && ta.Extern == _extern {
-					ret ta
+					return ta
 				}
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	// Returns define by identifier.
@@ -157,51 +157,51 @@ impl SymTab {
 	fn defByIdent(mut *self, name: string, _extern: bool): any {
 		for (_, mut v) in self.Vars {
 			if v.Name == name && v.Extern == _extern {
-				ret v
+				return v
 			}
 		}
 
 		for (_, mut ta) in self.TypeAliases {
 			if ta.Name == name && ta.Extern == _extern {
-				ret ta
+				return ta
 			}
 		}
 
 		for (_, mut s) in self.Structs {
 			if s.Name == name && s.Extern == _extern {
-				ret s
+				return s
 			}
 		}
 
 		for (_, mut f) in self.Funcs {
 			if f.Name == name && f.Extern == _extern {
-				ret f
+				return f
 			}
 		}
 
 		if _extern {
-			ret nil
+			return nil
 		}
 
 		for (_, mut t) in self.Traits {
 			if t.Name == name {
-				ret t
+				return t
 			}
 		}
 
 		for (_, mut e) in self.Enums {
 			if e.Name == name {
-				ret e
+				return e
 			}
 		}
 
 		for (_, mut te) in self.TypeEnums {
 			if te.Name == name {
-				ret te
+				return te
 			}
 		}
 
-		ret nil
+		return nil
 	}
 
 	// Reports this identifier duplicated in symbol table.
@@ -210,50 +210,50 @@ impl SymTab {
 	fn isDuplicatedName(*self, itself: uintptr, name: string, _extern: bool): bool {
 		for _, v in self.Vars {
 			if uintptr(v) != itself && v.Name == name && v.Extern == _extern {
-				ret true
+				return true
 			}
 		}
 
 		for _, ta in self.TypeAliases {
 			if uintptr(ta) != itself && ta.Name == name && ta.Extern == _extern {
-				ret true
+				return true
 			}
 		}
 
 		for _, s in self.Structs {
 			if uintptr(s) != itself && s.Name == name && s.Extern == _extern {
-				ret true
+				return true
 			}
 		}
 
 		for _, f in self.Funcs {
 			if uintptr(f) != itself && f.Name == name && f.Extern == _extern {
-				ret true
+				return true
 			}
 		}
 
 		if _extern {
-			ret false
+			return false
 		}
 
 		for _, t in self.Traits {
 			if uintptr(t) != itself && t.Name == name {
-				ret true
+				return true
 			}
 		}
 
 		for _, e in self.Enums {
 			if uintptr(e) != itself && e.Name == name {
-				ret true
+				return true
 			}
 		}
 
 		for _, te in self.TypeEnums {
 			if uintptr(te) != itself && te.Name == name {
-				ret true
+				return true
 			}
 		}
 
-		ret false
+		return false
 	}
 }

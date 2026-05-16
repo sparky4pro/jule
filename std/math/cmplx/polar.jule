@@ -11,5 +11,5 @@ use "std/math"
 // such that x = r * e**θi.
 // The phase is in the range [-PI, PI].
 fn Polar(x: cmplx128): (r: f64, theta: f64) {
-	ret Abs(x), Phase(x)
+	return Abs(x), Phase(x)
 }

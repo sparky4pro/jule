@@ -39,32 +39,32 @@ use "std/math/bits"
 
 fn zero(x: u64): u64 {
 	if x == 0 {
-		ret 1
+		return 1
 	}
-	ret 0
+	return 0
 	// branchless:
-	// ret ((x>>1 | x&1) - 1) >> 63
+	// return ((x>>1 | x&1) - 1) >> 63
 }
 
 fn nonzero(x: u64): u64 {
 	if x != 0 {
-		ret 1
+		return 1
 	}
-	ret 0
+	return 0
 	// branchless:
-	// ret 1 - ((x>>1|x&1)-1)>>63
+	// return 1 - ((x>>1|x&1)-1)>>63
 }
 
 fn shl(u1: u64, u2: u64, n: uint): (r1: u64, r2: u64) {
 	r1 = u1<<n | u2>>(64-n) | u2<<(n-64)
 	r2 = u2 << n
-	ret
+	return
 }
 
 fn shr(u1: u64, u2: u64, n: uint): (r1: u64, r2: u64) {
 	r1 = u1 >> n
 	r2 = u2>>n | u1<<(64-n) | u1>>(n-64)
-	ret
+	return
 }
 
 // Compresses the bottom n+1 bits of the two-word
@@ -74,11 +74,11 @@ fn shr(u1: u64, u2: u64, n: uint): (r1: u64, r2: u64) {
 fn shrcompress(u1: u64, u2: u64, n: uint): (r1: u64, r2: u64) {
 	match {
 	| n == 0:
-		ret u1, u2
+		return u1, u2
 	| n == 64:
-		ret 0, u1 | nonzero(u2)
+		return 0, u1 | nonzero(u2)
 	| n >= 128:
-		ret 0, nonzero(u1 | u2)
+		return 0, nonzero(u1 | u2)
 	| n < 64:
 		r1, r2 = shr(u1, u2, n)
 		r2 |= nonzero(u2 & (1<<n - 1))
@@ -86,7 +86,7 @@ fn shrcompress(u1: u64, u2: u64, n: uint): (r1: u64, r2: u64) {
 		r1, r2 = shr(u1, u2, n)
 		r2 |= nonzero(u1&(1<<(n-64)-1) | u2)
 	}
-	ret
+	return
 }
 
 fn lz(u1: u64, u2: u64): (l: i32) {
@@ -94,7 +94,7 @@ fn lz(u1: u64, u2: u64): (l: i32) {
 	if l == 64 {
 		l += i32(bits::LeadingZeros64(u2))
 	}
-	ret l
+	return l
 }
 
 // Splits b into sign, biased exponent, and mantissa.
@@ -114,7 +114,7 @@ fn split(b: u64): (sign: u32, exp: i32, mantissa: u64) {
 		// Add implicit 1 bit
 		mantissa |= 1 << 52
 	}
-	ret
+	return
 }
 
 // Returns x * y + z, computed with only one rounding.
@@ -124,12 +124,12 @@ fn FMA(x: f64, y: f64, z: f64): f64 {
 
 	// Inf or NaN or zero involved. At most one rounding will occur.
 	if x == 0.0 || y == 0.0 || z == 0.0 || bx&uvinf == uvinf || by&uvinf == uvinf {
-		ret x*y + z
+		return x*y + z
 	}
 	// Handle non-finite z separately. Evaluating x*y+z where
 	// x and y are finite, but z is infinite, should always result in z.
 	if bz&uvinf == uvinf {
-		ret z
+		return z
 	}
 	// Inputs are (sub)normal.
 	// Split x, y, z into sign, exponent, mantissa.
@@ -160,7 +160,7 @@ fn FMA(x: f64, y: f64, z: f64): f64 {
 
 	// Special case: if p == -z the result is always +0 since neither operand is zero.
 	if ps != zs && pe == ze && pm1 == zm1 && pm2 == zm2 {
-		ret 0
+		return 0
 	}
 
 	// Align significands
@@ -189,7 +189,7 @@ fn FMA(x: f64, y: f64, z: f64): f64 {
 	// Round and break ties to even
 	if pe > 1022+bias || pe == 1022+bias && (m+1<<9)>>63 == 1 {
 		// rounded value overflows exponent range
-		ret F64frombits(u64(ps)<<63 | uvinf)
+		return F64frombits(u64(ps)<<63 | uvinf)
 	}
 	if pe < 0 {
 		n := uint(-pe)
@@ -198,5 +198,5 @@ fn FMA(x: f64, y: f64, z: f64): f64 {
 	}
 	m = ((m + 1<<9) >> 10) & ^zero((m & (1<<10 - 1)) ^ 1<<9)
 	pe &= -i32(nonzero(m))
-	ret F64frombits(u64(ps)<<63 + u64(pe)<<52 + m)
+	return F64frombits(u64(ps)<<63 + u64(pe)<<52 + m)
 }

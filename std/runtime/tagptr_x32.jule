@@ -12,17 +12,17 @@ const taggedPointerBits = 32
 // Created a taggedPointer from a pointer and a tag.
 // Tag bits that don't fit in the result are discarded.
 fn taggedPointerPack(ptr: *unsafe, tag: uintptr): taggedPointer {
-	ret taggedPointer(uintptr(ptr))<<32 | taggedPointer(tag)
+	return taggedPointer(uintptr(ptr))<<32 | taggedPointer(tag)
 }
 
 impl taggedPointer {
 	// Pointer returns the pointer from a taggedPointer.
 	fn pointer(*self): *unsafe {
-		ret unsafe { (*unsafe)(uintptr(*self >> 32)) }
+		return unsafe { (*unsafe)(uintptr(*self >> 32)) }
 	}
 
 	// Tag returns the tag from a taggedPointer.
 	fn tag(*self): uintptr {
-		ret uintptr(*self)
+		return uintptr(*self)
 	}
 }

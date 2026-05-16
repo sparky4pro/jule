@@ -27,7 +27,7 @@ const (
 
 // Reports whether kind is signed integer.
 fn IsSigInt(mut k: string): bool {
-	ret k == I8 ||
+	return k == I8 ||
 		k == I16 ||
 		k == I32 ||
 		k == I64 ||
@@ -36,7 +36,7 @@ fn IsSigInt(mut k: string): bool {
 
 // Reports kind is unsigned integer.
 fn IsUnsigInt(mut k: string): bool {
-	ret k == U8 ||
+	return k == U8 ||
 		k == U16 ||
 		k == U32 ||
 		k == U64 ||
@@ -46,25 +46,25 @@ fn IsUnsigInt(mut k: string): bool {
 
 // Reports whether kind is signed/unsigned integer.
 fn IsInt(k: string): bool {
-	ret IsSigInt(k) || IsUnsigInt(k)
+	return IsSigInt(k) || IsUnsigInt(k)
 }
 
 // Reports whether kind is float.
 fn IsFloat(k: string): bool {
-	ret k == F32 || k == F64
+	return k == F32 || k == F64
 }
 
 // Reports whether kind is complex.
 fn IsCmplx(k: string): bool {
-	ret k == Cmplx64 || k == Cmplx128
+	return k == Cmplx64 || k == Cmplx128
 }
 
 // Reports whether kind is numeric.
 fn IsNum(k: string): bool {
-	ret IsInt(k) || IsFloat(k) || IsCmplx(k)
+	return IsInt(k) || IsFloat(k) || IsCmplx(k)
 }
 
 // Reports whether kind is signed numeric.
 fn IsSigNum(k: string): bool {
-	ret IsSigInt(k) || IsFloat(k) || IsCmplx(k)
+	return IsSigInt(k) || IsFloat(k) || IsCmplx(k)
 }

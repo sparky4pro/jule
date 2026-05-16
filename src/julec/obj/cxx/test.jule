@@ -20,7 +20,7 @@ struct TestCoder {
 
 impl TestCoder {
 	fn New(mut oc: &ObjectCoder): &TestCoder {
-		ret &TestCoder{
+		return &TestCoder{
 			oc: oc,
 		}
 	}
@@ -28,10 +28,10 @@ impl TestCoder {
 	fn findTestingPackage(mut &self): &sema::ImportInfo {
 		for (_, mut imp) in self.oc.ir.Used {
 			if imp.LinkPath == "std/testing" {
-				ret imp
+				return imp
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	fn appendTest(mut &self, mut f: &sema::FuncIns) {
@@ -71,7 +71,7 @@ impl TestCoder {
 		if p == nil {
 			// "std/testing" is not used.
 			// So, developers cannot write valid test functions.
-			ret false
+			return false
 		}
 
 		const Extern = false
@@ -81,7 +81,7 @@ impl TestCoder {
 		self.tmReset = self.t.FindMethod("reset", Static)
 		self.tmFailed = self.t.FindMethod("Failed", Static)
 		self.tmSkipped = self.t.FindMethod("Skipped", Static)
-		ret true
+		return true
 	}
 
 	fn callTmReset(mut &self) {
@@ -116,7 +116,7 @@ impl TestCoder {
 			self.oc.write("_Exit(0);\n}\n")
 			self.oc.doneIndent()
 			self.oc.end()
-			ret
+			return
 		}
 
 		mut tb := strings::Builder{}

@@ -28,15 +28,15 @@ fn hostname()!: (name: string) {
 	// If we got a name and it's not potentially truncated
 	// (Nodename is 65 bytes), return it.
 	if !err && len(name) > 0 && len(name) < 64 {
-		ret name
+		return name
 	}
 
 	// Future proof.
 	if runtime::OS == "android" {
 		if name != "" {
-			ret name
+			return name
 		}
-		ret "localhost"
+		return "localhost"
 	}
 
 	mut f := Open("/proc/sys/kernel/hostname")?
@@ -45,5 +45,5 @@ fn hostname()!: (name: string) {
 	if n > 0 && buf[n-1] == '\n' {
 		n--
 	}
-	ret unsafe::StringFromBytes(buf[:n])
+	return unsafe::StringFromBytes(buf[:n])
 }

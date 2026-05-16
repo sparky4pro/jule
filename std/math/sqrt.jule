@@ -124,9 +124,9 @@ fn Sqrt(x: f64): f64 {
 	// special cases
 	match {
 	| x == 0 | IsNaN(x) | IsInf(x, 1):
-		ret x
+		return x
 	| x < 0:
-		ret NaN()
+		return NaN()
 	}
 	mut ix := F64bits(x)
 	// normalize x
@@ -165,5 +165,5 @@ fn Sqrt(x: f64): f64 {
 		q += q & 1 // round according to extra bit
 	}
 	ix = q>>1 + u64(exp-1+bias)<<shift // significand + biased exponent
-	ret F64frombits(ix)
+	return F64frombits(ix)
 }

@@ -13,44 +13,44 @@ let _inf = f64frombits(uvinf)
 // Equals to the math::NaN function.
 #export "__jule_NaN"
 fn nan(): f64 {
-	ret f64frombits(uvNaN)
+	return f64frombits(uvNaN)
 }
 
 // Equals to the math::Inf function.
 #export "__jule_Inf"
 fn inf(sign: int): f64 {
 	if sign >= 0 {
-		ret f64frombits(uvinf)
+		return f64frombits(uvinf)
 	}
-	ret f64frombits(uvneginf)
+	return f64frombits(uvneginf)
 }
 
 // Equals to the math::Abs function.
-fn abs(x: f64): f64 { ret f64frombits(f64bits(x) & ^(1 << 63)) }
+fn abs(x: f64): f64 { return f64frombits(f64bits(x) & ^(1 << 63)) }
 
 // Equals to the math::IsNaN function.
-fn isNaN(x: f64): bool { ret x != x }
+fn isNaN(x: f64): bool { return x != x }
 
 // Equals to the math::F64bits function.
-fn f64bits(f: f64): u64 { ret unsafe { *((*u64)(&f)) } }
+fn f64bits(f: f64): u64 { return unsafe { *((*u64)(&f)) } }
 
 // Equals to the math::F64frombits function.
-fn f64frombits(b: u64): f64 { ret unsafe { *((*f64)(&b)) } }
+fn f64frombits(b: u64): f64 { return unsafe { *((*f64)(&b)) } }
 
 // Equals to the math::Copysign function.
 fn copysign(f: f64, sign: f64): f64 {
 	const SignBit = 1 << 63
-	ret f64frombits(f64bits(f)&^SignBit | f64bits(sign)&SignBit)
+	return f64frombits(f64bits(f)&^SignBit | f64bits(sign)&SignBit)
 }
 
 // Reports whether f is neither NaN nor an infinity.
 fn isFinite(f: f64): bool {
-	ret !isNaN(f - f)
+	return !isNaN(f - f)
 }
 
 // Reports whether f is an infinity.
 fn isInf(f: f64): bool {
-	ret !isNaN(f) && !isFinite(f)
+	return !isNaN(f) && !isFinite(f)
 }
 
 // Returns the 128-bit product of x and y: (hi, lo) = x * y
@@ -72,7 +72,7 @@ fn mul64(x: u64, y: u64): (hi: u64, lo: u64) {
 	w1 += x0 * y1
 	hi = x1*y1 + w2 + w1>>32
 	lo = x * y
-	ret
+	return
 }
 
 // Returns the sum with carry of x, y and carry: sum = x + y + carry.
@@ -87,40 +87,40 @@ fn add64(x: u64, y: u64, carry: u64): (sum: u64, carryOut: u64) {
 	// is (x | y), and a carry from the lower place happened. If such a carry
 	// happens, the top bit will be 1 + 0 + 1 = 0 (& ^sum).
 	carryOut = ((x & y) | ((x | y) & ^sum)) >> 63
-	ret
+	return
 }
 
 // lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/
 fn fastModN(x: u32, n: u32): u32 {
-	ret u32((u64(x) * u64(n)) >> 32)
+	return u32((u64(x) * u64(n)) >> 32)
 }
 
 fn min(x: int, y: int): int {
 	if x < y {
-		ret x
+		return x
 	}
-	ret y
+	return y
 }
 
 fn absint(x: int): int {
 	if x < 0 {
-		ret -x
+		return -x
 	}
-	ret x
+	return x
 }
 
 // https://graphics.stanford.edu/~seander/bithacks.html#DetermineIfPowerOf2
 fn isPowerOfTwo(n: u64): bool {
-	ret n&(n-1) == 0
+	return n&(n-1) == 0
 }
 
 // https://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
 fn nextPowerOfTwo(mut n: u64): u64 {
 	if n <= 1 {
-		ret 1
+		return 1
 	}
 	if isPowerOfTwo(n) {
-		ret n
+		return n
 	}
 	n--
 	n |= n >> 1
@@ -131,5 +131,5 @@ fn nextPowerOfTwo(mut n: u64): u64 {
 	if _64bit == 1 {
 		n |= n >> 32
 	}
-	ret n + 1
+	return n + 1
 }

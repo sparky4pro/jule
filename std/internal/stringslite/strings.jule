@@ -7,19 +7,19 @@ use "std/unsafe"
 // See the [strings::Clone] for documentation.
 fn Clone(s: string): string {
 	if len(s) == 0 {
-		ret ""
+		return ""
 	}
 	mut b := make([]byte, len(s))
 	copy(b, s)
-	ret unsafe::StringFromBytes(b)
+	return unsafe::StringFromBytes(b)
 }
 
 // Reports whether the string s begins with prefix.
 fn HasPrefix(s: string, prefix: string): bool {
-	ret len(s) >= len(prefix) && s[:len(prefix)] == prefix
+	return len(s) >= len(prefix) && s[:len(prefix)] == prefix
 }
 
 // Reports whether the string s ends with suffix.
 fn HasSuffix(s: string, suffix: string): bool {
-	ret len(s) >= len(suffix) && s[len(s)-len(suffix):] == suffix
+	return len(s) >= len(suffix) && s[len(s)-len(suffix):] == suffix
 }

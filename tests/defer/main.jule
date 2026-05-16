@@ -58,7 +58,7 @@ fn deferRet0() {
 		}
 	}
 	defer { x++ }
-	ret
+	return
 }
 
 fn deferRet1() {
@@ -71,7 +71,7 @@ fn deferRet1() {
 	defer { x++ }
 	{
 		defer { x++ }
-		ret
+		return
 	}
 }
 
@@ -85,7 +85,7 @@ fn deferRet2() {
 		defer { x++ }
 		{
 			defer { x++ }
-			ret
+			return
 		}
 	}()
 	if r != 2 {
@@ -103,7 +103,7 @@ fn deferRet3() {
 		defer { x++ }
 		{
 			defer { x++ }
-			ret 20
+			return 20
 		}
 	}()
 	if r != 22 {
@@ -125,7 +125,7 @@ fn deferRet4() {
 		defer { x++ }
 		{
 			defer { x++ }
-			ret 20, false
+			return 20, false
 		}
 	}()
 	if r1 != 22 {
@@ -147,7 +147,7 @@ fn deferRet5() {
 		defer { x++ }
 		{
 			defer { x++ }
-			ret x
+			return x
 		}
 	}()
 	if r != 0 {
@@ -651,7 +651,7 @@ fn deferError7()! {
 		defer { y++ }
 		use errorFunc() else {
 			defer { y++ }
-			ret
+			return
 		}
 	}
 	_ = z
@@ -674,7 +674,7 @@ async fn main() {
 	deferScope1()
 	deferScope2()
 
-	// ret statements
+	// return statements
 	deferRet0()
 	deferRet1()
 	deferRet2()

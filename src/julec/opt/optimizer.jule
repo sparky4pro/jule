@@ -19,7 +19,7 @@ struct Optimizer {
 impl Optimizer {
 	// Returns new optimizer for IR.
 	fn New(mut ir: &obj::IR): &Optimizer {
-		ret &Optimizer{
+		return &Optimizer{
 			ir: ir,
 		}
 	}
@@ -36,7 +36,7 @@ impl Optimizer {
 
 	fn optimizeFunction(mut *self, mut func: &sema::Func) {
 		if func.Extern {
-			ret
+			return
 		}
 		for (_, mut ins) in func.Instances {
 			mut so := scopeOptimizer.new(ins, ins.Scope)
@@ -46,7 +46,7 @@ impl Optimizer {
 
 	fn optimizeStruct(mut *self, mut s: &sema::Struct) {
 		if s.Extern {
-			ret
+			return
 		}
 		for (_, mut ins) in s.Instances {
 			for (_, mut m) in ins.Methods {

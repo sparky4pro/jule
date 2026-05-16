@@ -11,10 +11,10 @@ use "std/os/filepath"
 fn FindModuleFile(dirents: []os::DirEntry): bool {
 	for _, d in dirents {
 		if d.Stat.Mode().IsRegular() && d.Name == jule::ModuleFile {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 // Searches module file in path, and their parent paths.
@@ -25,7 +25,7 @@ fn FindModuleFileDeep(mut path: string): string {
 		mut dirents := os::ReadDir(path) else { break }
 		exist := FindModuleFile(dirents)
 		if exist {
-			ret path
+			return path
 		}
 		n := len(path)
 		path = filepath::Dir(path)
@@ -33,5 +33,5 @@ fn FindModuleFileDeep(mut path: string): string {
 			break
 		}
 	}
-	ret ""
+	return ""
 }

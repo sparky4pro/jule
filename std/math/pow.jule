@@ -65,63 +65,63 @@
 fn Pow(x: f64, y: f64): f64 {
 	match {
 	| y == 0 || x == 1:
-		ret 1
+		return 1
 	| y == 1:
-		ret x
+		return x
 	| IsNaN(x) || IsNaN(y):
-		ret NaN()
+		return NaN()
 	| x == 0:
 		match {
 		| y < 0:
 			if Signbit(x) && isOddInt(y) {
-				ret Inf(-1)
+				return Inf(-1)
 			}
-			ret Inf(1)
+			return Inf(1)
 		| y > 0:
 			if Signbit(x) && isOddInt(y) {
-				ret x
+				return x
 			}
-			ret 0
+			return 0
 		}
 	| IsInf(y, 0):
 		match {
 		| x == -1:
-			ret 1
+			return 1
 		| (Abs(x) < 1) == IsInf(y, 1):
-			ret 0
+			return 0
 		|:
-			ret Inf(1)
+			return Inf(1)
 		}
 	| IsInf(x, 0):
 		if IsInf(x, -1) {
-			ret Pow(1/x, -y) // Pow(-0, -y)
+			return Pow(1/x, -y) // Pow(-0, -y)
 		}
 		match {
 		| y < 0:
-			ret 0
+			return 0
 		| y > 0:
-			ret Inf(1)
+			return Inf(1)
 		}
 	| y == 0.5:
-		ret Sqrt(x)
+		return Sqrt(x)
 	| y == -0.5:
-		ret 1 / Sqrt(x)
+		return 1 / Sqrt(x)
 	}
 
 	mut yi, mut yf := Modf(Abs(y))
 	if yf != 0 && x < 0 {
-		ret NaN()
+		return NaN()
 	}
 	if yi >= 9.223372036854776e+18 {
 		// yi is a large even int that will lead to overflow (or underflow to 0)
 		// for all x except -1 (x == 1 was handled earlier)
 		match {
 		| x == -1:
-			ret 1
+			return 1
 		| (Abs(x) < 1) == (y > 0):
-			ret 0
+			return 0
 		|:
-			ret Inf(1)
+			return Inf(1)
 		}
 	}
 
@@ -173,7 +173,7 @@ fn Pow(x: f64, y: f64): f64 {
 		a1 = 1 / a1
 		ae = -ae
 	}
-	ret Ldexp(a1, ae)
+	return Ldexp(a1, ae)
 }
 
 fn isOddInt(x: f64): bool {
@@ -183,9 +183,9 @@ fn isOddInt(x: f64): bool {
 		// an even integer.
 		// Without this check and if x overflows i64 the i64(xi) conversion below may produce incorrect results
 		// on some architectures (and does so on arm64). See Go's issue #57465.
-		ret false
+		return false
 	}
 
 	xi, xf := Modf(x)
-	ret xf == 0 && i64(xi)&1 == 1
+	return xf == 0 && i64(xi)&1 == 1
 }

@@ -10,8 +10,8 @@ use "std/unsafe"
 const cacheMaxAge = 5 * time::Second
 
 fn parseLiteralIP(addr: string): string {
-	ip := parseAddr(addr) else { ret "" }
-	ret ip.String()
+	ip := parseAddr(addr) else { return "" }
+	return ip.String()
 }
 
 struct byName {
@@ -47,12 +47,12 @@ async fn readHosts() {
 	hp := hostsFilePath
 
 	if now.Before(hosts.expire) && hosts.path == hp && len(hosts.byName) > 0 {
-		ret
+		return
 	}
 	mtime, size, mut ok := stat(hp)
 	if ok && hosts.path == hp && hosts.mtime.Equal(mtime) && hosts.size == size {
 		hosts.expire = now.Add(cacheMaxAge)
-		ret
+		return
 	}
 
 	mut hs := map[string]byName{}
@@ -128,5 +128,5 @@ fn absDomainName(mut s: string): string {
 	if byteslite::IndexByteString(s, '.') != -1 && s[len(s)-1] != '.' {
 		s += "."
 	}
-	ret s
+	return s
 }

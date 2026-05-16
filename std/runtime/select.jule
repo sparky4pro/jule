@@ -39,7 +39,7 @@ struct scase {
 unsafe fn sortchans(mut chans: *&uintptr, nchan: int) {
 	// Base case: If the array has 0 or 1 element, it is already sorted.
 	if (nchan < 2) {
-		ret
+		return
 	}
 
 	// 1. Choose the pivot.
@@ -96,7 +96,7 @@ unsafe fn sortchans(mut chans: *&uintptr, nchan: int) {
 
 // Converts general pointer to the general channel type.
 unsafe fn unpackchan(mut p: *&uintptr): *&pchan[uintptr] {
-	ret (*&pchan[uintptr])(p)
+	return (*&pchan[uintptr])(p)
 }
 
 // Locks channels.
@@ -193,13 +193,13 @@ unsafe async fn runselect(mut chans: *&uintptr, mut nchan: int, mut cases: *scas
 			sys::Addrcall(case.trySend, (*unsafe)(uintptr(*case.ch)), &ok, (*unsafe)(case.data))
 		}
 		if ok {
-			ret offset
+			return offset
 		}
 	}
 	// No suitable candidate.
 	// Return if select statement is not blocking.
 	if !block {
-		ret totalCases
+		return totalCases
 	}
 	// Slow-path: we have to park the coroutine until one of the channels notify us.
 
@@ -234,7 +234,7 @@ unsafe async fn runselect(mut chans: *&uintptr, mut nchan: int, mut cases: *scas
 		}
 		if ok {
 			unlockchans(chans, nchan)
-			ret offset
+			return offset
 		}
 	}
 	// There is no waiter in the queue.
@@ -314,7 +314,7 @@ unsafe async fn runselect(mut chans: *&uintptr, mut nchan: int, mut cases: *scas
 		// Look for the selected channel.
 		for i, parker in parkers {
 			if !isSpuriousWake(&(*parker)) {
-				ret i // Return position of the handled channel.
+				return i // Return position of the handled channel.
 			}
 		}
 
@@ -353,7 +353,7 @@ unsafe async fn runselect(mut chans: *&uintptr, mut nchan: int, mut cases: *scas
 				sys::Addrcall(case.trySend, (*unsafe)(uintptr(*case.ch)), &ok, (*unsafe)(case.data))
 			}
 			if ok {
-				ret offset
+				return offset
 			}
 		}
 
@@ -385,7 +385,7 @@ unsafe async fn runselect(mut chans: *&uintptr, mut nchan: int, mut cases: *scas
 			}
 			if ok {
 				unlockchans(chans, nchan)
-				ret offset
+				return offset
 			}
 		}
 		// Failure. We have to park coroutine again, unfortunately.

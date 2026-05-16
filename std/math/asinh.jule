@@ -76,7 +76,7 @@ fn Asinh(mut x: f64): f64 {
 
 	// special cases
 	if IsNaN(x) || IsInf(x, 0) {
-		ret x
+		return x
 	}
 	mut sign := false
 	if x < 0 {
@@ -97,5 +97,5 @@ fn Asinh(mut x: f64): f64 {
 	if sign {
 		temp = -temp
 	}
-	ret temp
+	return temp
 }

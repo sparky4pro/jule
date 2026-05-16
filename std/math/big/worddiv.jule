@@ -518,7 +518,7 @@ fn divW(mut &z: *[]Word, mut &z2: *[]Word, u: []Word, v: []Word) {
 	if cmpW(u, v) < 0 {
 		*z = (*z)[:0]
 		setWW(z2, u)
-		ret
+		return
 	}
 
 	if len(v) == 1 {
@@ -526,7 +526,7 @@ fn divW(mut &z: *[]Word, mut &z2: *[]Word, u: []Word, v: []Word) {
 		// In that case, the 2-by-1 guess is all we need at each step.
 		r2 := divW2(z, u, v[0])
 		setWV(z2, r2)
-		ret
+		return
 	}
 
 	divLargeW(z, z2, u, v)
@@ -543,36 +543,36 @@ fn divW2(mut &z: *[]Word, x: []Word, y: Word): (r: Word) {
 	| y == 1:
 		// result is x
 		setWW(z, x)
-		ret
+		return
 	| m == 0:
 		*z = (*z)[:0] // result is 0
-		ret
+		return
 	}
 	// m > 0
 	*z = makeW(*z, m)
 	r = divWVW(z, 0, x, y)
 	*z = normW(*z)
-	ret
+	return
 }
 
 // Returns x%y.
 fn modW(x: []Word, y: Word): (r: Word) {
 	// This implementation basically is;
 	//	mut q := makeW(nil, len(z))
-	//	ret divWVW(q, 0, z, d)
+	//	return divWVW(q, 0, z, d)
 	//
 	// But we don't actually need to store the q value.
 	// Therefore this implementation is same as divWVW but not computes q.
 	if len(x) == 1 {
 		_, rr := bits::Div(uint(r), uint(x[0]), uint(y))
-		ret Word(rr)
+		return Word(rr)
 	}
 	rec := reciprocalWord(y)
 	mut i := len(x) - 1
 	for i >= 0; i-- {
 		_, r = divWW(r, x[i], y, rec)
 	}
-	ret
+	return
 }
 
 // Overwrites z with ⌊x/y⌋, returning the remainder r.
@@ -582,14 +582,14 @@ fn divWVW(mut &z: *[]Word, xn: Word, x: []Word, y: Word): (r: Word) {
 	if len(x) == 1 {
 		qq, rr := bits::Div(uint(r), uint(x[0]), uint(y))
 		(*z)[0] = Word(qq)
-		ret Word(rr)
+		return Word(rr)
 	}
 	rec := reciprocalWord(y)
 	mut i := len(*z) - 1
 	for i >= 0; i-- {
 		(*z)[i], r = divWW(r, x[i], y, rec)
 	}
-	ret
+	return
 }
 
 // Computes returns q, r such that q = ⌊uIn/vIn⌋ and r = uIn%vIn = uIn - q·vIn.
@@ -638,7 +638,7 @@ const divRecursiveThreshold = 100
 // TODO: In contradiction to most of this file, x1 is the high
 //       digit and x2 is the low digit. This should be fixed.
 fn greaterThan(x1: Word, x2: Word, y1: Word, y2: Word): bool {
-	ret x1 > y1 || x1 == y1 && x2 > y2
+	return x1 > y1 || x1 == y1 && x2 > y2
 }
 
 // Implements long division as described above.
@@ -759,20 +759,20 @@ fn divRecStep(mut &z: *[]Word, mut u: []Word, mut v: []Word,
 	v = normW(v)
 	if len(u) == 0 {
 		clearW(*z)
-		ret
+		return
 	}
 
 	// Fall back to basic division if the problem is now small enough.
 	n := len(v)
 	if n < divRecursiveThreshold {
 		divBasic(z, &u, v)
-		ret
+		return
 	}
 
 	// Nothing to do if u is shorter than v (implies u < v).
 	m := len(u) - n
 	if m < 0 {
-		ret
+		return
 	}
 
 	// We consider W digits in a row as a single wide digit.

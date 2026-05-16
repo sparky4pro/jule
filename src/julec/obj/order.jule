@@ -44,9 +44,9 @@ lookup:
 		}
 		// Dependency is not ordered.
 		// All dependencies should be ordered first.
-		ret false
+		return false
 	}
-	ret true
+	return true
 }
 
 // Orders defines s by their dependencies.

@@ -25,7 +25,7 @@ fn adapterAddresses(mut &b: *[]byte)!: []*windows::IpAdapterAddresses {
 			}
 		}
 		if l == 0 {
-			ret nil
+			return nil
 		}
 		break
 	}
@@ -36,5 +36,5 @@ fn adapterAddresses(mut &b: *[]byte)!: []*windows::IpAdapterAddresses {
 			aas = append(aas, aa)
 		}
 	}
-	ret aas
+	return aas
 }

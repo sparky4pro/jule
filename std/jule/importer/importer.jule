@@ -20,18 +20,18 @@ use "std/unsafe"
 
 // Read buffer by file path.
 fn readBuff(path: string): []byte {
-	ret os::ReadFileSync(path) else {
+	return os::ReadFileSync(path) else {
 		println("error: file cannot read")
 		const ErrorExitCode = 1
 		os::Exit(ErrorExitCode)
-		ret nil // Avoid error
+		return nil // Avoid error
 	}
 }
 
 // Make compiler error, just text.
 // Does not includes information about row, column, and etc.
 fn flatCompilerErr(text: string): log::Log {
-	ret log::Log{
+	return log::Log{
 		Kind: log::Error,
 		Text: text,
 	}
@@ -43,11 +43,11 @@ struct file {
 }
 
 impl resource::File for file {
-	fn Path(*self): string { ret self.path }
+	fn Path(*self): string { return self.path }
 
-	fn Bytes(*self): []byte { ret self.data }
+	fn Bytes(*self): []byte { return self.data }
 
-	fn Text(*self): string { ret unsafe::StringFromBytes(self.data) }
+	fn Text(*self): string { return unsafe::StringFromBytes(self.data) }
 }
 
 // Default importer for the reference Jule compiler.
@@ -65,26 +65,26 @@ impl sema::Importer for importer {
 	}
 
 	fn GetMod(mut *self): &mod::Mod {
-		ret self.mod
+		return self.mod
 	}
 
 	fn ModByID(mut *self, id: mod::ID): &mod::Mod {
-		ret self.mods[id]
+		return self.mods[id]
 	}
 
 	fn GetImport(mut *self, path: string): &sema::ImportInfo {
 		for (_, mut p) in self.pkgs {
 			// avoid case sensitivity for fair comparison
 			if strings::EqualFold(p.Path, path) {
-				ret p
+				return p
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	fn ImportPackage(mut *self, path: string, updateMod: bool): ([]&ast::AST, []log::Log) {
 		mut dirents := os::ReadDir(path) else {
-			ret nil, [flatCompilerErr("cannot read package directory: " + path)]
+			return nil, [flatCompilerErr("cannot read package directory: " + path)]
 		}
 
 		if updateMod {
@@ -97,7 +97,7 @@ impl sema::Importer for importer {
 					AllowStd: isStd,
 				})
 				if len(errs) != 0 {
-					ret nil, errs
+					return nil, errs
 				}
 				self.mod = newMod
 			}
@@ -115,12 +115,12 @@ impl sema::Importer for importer {
 			unsafe { file.FillMut(readBuff(file.Path)) }
 			mut errors := token::ScanAll(file, token::Standard)
 			if len(errors) > 0 {
-				ret nil, errors
+				return nil, errors
 			}
 
 			mut finfo := parser::ParseFile(file)
 			if len(finfo.Errors) > 0 {
-				ret nil, finfo.Errors
+				return nil, finfo.Errors
 			}
 
 			// Skip this source file if file annotation is failed.
@@ -130,7 +130,7 @@ impl sema::Importer for importer {
 
 			r, mut logs := self.isPassBuildDirectives(finfo.AST)
 			if len(logs) > 0 {
-				ret nil, logs
+				return nil, logs
 			}
 
 			// Skip file if can't pass build directives.
@@ -141,7 +141,7 @@ impl sema::Importer for importer {
 			asts = append(asts, finfo.AST)
 		}
 
-		ret asts, nil
+		return asts, nil
 	}
 
 	fn Imported(mut *self, mut imp: &sema::ImportInfo) {
@@ -150,7 +150,7 @@ impl sema::Importer for importer {
 			// avoid case sensitivity for fair comparison
 			if p.Extern == imp.Extern && strings::EqualFold(p.Path, imp.Path) {
 				imp.ModID = p.ModID
-				ret
+				return
 			}
 		}
 
@@ -173,17 +173,17 @@ impl sema::Importer for importer {
 	// The return value is mutable reference to the internal buffer.
 	// You should be care about using that copy.
 	fn AllPackages(mut *self): []&sema::ImportInfo {
-		ret self.pkgs
+		return self.pkgs
 	}
 
 	fn GetFile(mut *self, path: string): resource::File {
 		mut file, _ := self.files[path]
-		ret file
+		return file
 	}
 
 	fn IncludeFile(mut *self, path: string): resource::File {
-		mut data := os::ReadFileSync(path) else { ret nil }
-		ret &file{path: path, data: data}
+		mut data := os::ReadFileSync(path) else { return nil }
+		return &file{path: path, data: data}
 	}
 
 	fn IncludedFile(mut *self, mut file: resource::File) {
@@ -204,13 +204,13 @@ impl importer {
 			}
 			result := de.eval()
 			if len(de.logs) > 0 {
-				ret false, de.logs
+				return false, de.logs
 			}
 			if !result {
-				ret false, nil
+				return false, nil
 			}
 		}
-		ret true, nil
+		return true, nil
 	}
 }
 
@@ -221,5 +221,5 @@ fn New(mut info: CompileInfo): sema::Importer {
 	imp.files = make(map[string]resource::File)
 	imp.mods = [build::ModStdlib()]
 	initTags(&imp.tags, info)
-	ret imp
+	return imp
 }

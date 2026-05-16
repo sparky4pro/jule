@@ -40,11 +40,11 @@ struct polloperation {
 // It can return nil if the entry is not from internal/poll.
 fn polloperationFromOverlappedEntry(mut &e: *overlappedEntry): &polloperation {
 	if e.ov == nil {
-		ret nil
+		return nil
 	}
 	mut opptr := unsafe { (*polloperation)(e.ov) }
 	mut op := unsafe { (&polloperation)(opptr) }
-	ret op
+	return op
 }
 
 let mut iocphandle = sys::InvalidHandle
@@ -73,7 +73,7 @@ fn eventpollopen(fd: u64, mut &pd: *polldesc)! {
 
 fn eventpollclose(fd: u64): sys::Errno {
 	// nothing to do
-	ret 0
+	return 0
 }
 
 // delay < 0: blocks indefinitely
@@ -82,7 +82,7 @@ fn eventpollclose(fd: u64): sys::Errno {
 #disable nilptr boundary
 fn eventpoll(mut delay: i64, mut &toRun: *[prunqsize]c): u32 {
 	if iocphandle == sys::InvalidHandle {
-		ret 0
+		return 0
 	}
 	if delay >= 1e15 {
 		// An arbitrary cap on how long to wait for a timer.
@@ -129,7 +129,7 @@ fn eventpoll(mut delay: i64, mut &toRun: *[prunqsize]c): u32 {
 	} == 0 {
 		err := sys::GetLastErrno()
 		if err == _WAIT_TIMEOUT {
-			ret 0
+			return 0
 		}
 		panic("runtime: eventpoll: IOCP failed")
 	}
@@ -147,5 +147,5 @@ fn eventpoll(mut delay: i64, mut &toRun: *[prunqsize]c): u32 {
 		}
 		eventpollready(&(*op.pd), mode, toRun, &b)
 	}
-	ret b
+	return b
 }

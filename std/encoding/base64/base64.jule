@@ -71,7 +71,7 @@ type CorruptInputError: i64
 
 impl CorruptInputError {
 	fn String(*self): string {
-		ret "illegal base64 data at input byte " + conv::FormatInt(i64(*self), 10)
+		return "illegal base64 data at input byte " + conv::FormatInt(i64(*self), 10)
 	}
 }
 
@@ -139,29 +139,29 @@ impl Encoding {
 			}
 			e.decodeMap[encoder[i]] = u8(i)
 		}
-		ret e
+		return e
 	}
 
 	//Returns the length in bytes of the base64 encoding
 	// of an input buffer of length n.
 	fn EncodedLen(*self, n: int): int {
 		if self.padChar == NoPadding {
-			ret n/3*4 + (n%3*8+5)/6 // minimum # chars at 6 bits per char
+			return n/3*4 + (n%3*8+5)/6 // minimum # chars at 6 bits per char
 		}
-		ret (n + 2) / 3 * 4 // minimum # 4-char quanta, 3 bytes each
+		return (n + 2) / 3 * 4 // minimum # 4-char quanta, 3 bytes each
 	}
 
 	// Returns the maximum length in bytes of the decoded data
 	// corresponding to n bytes of base64-encoded data.
 	fn DecodedLen(*self, n: int): int {
-		ret decodedLen(n, self.padChar)
+		return decodedLen(n, self.padChar)
 	}
 
 	// Returns clone of the self.
 	fn Clone(*self): &Encoding {
 		mut enc := new(Encoding)
 		*enc = *self
-		ret enc
+		return enc
 	}
 
 	// Sets encoding padding to a specified padding character,
@@ -181,7 +181,7 @@ impl Encoding {
 			panic("padding contained in alphabet")
 		}
 		self.padChar = padding
-		ret self
+		return self
 	}
 
 	// Sets strict decoding enabled.
@@ -194,7 +194,7 @@ impl Encoding {
 	// Returns self.
 	fn Strict(mut &self): &Encoding {
 		self.strict = true
-		ret self
+		return self
 	}
 
 	// Encodes src using the encoding self,
@@ -205,7 +205,7 @@ impl Encoding {
 	// of a large data stream. Use [NewEncoder] instead.
 	fn Encode(*self, mut dst: []byte, src: []byte) {
 		if len(src) == 0 {
-			ret
+			return
 		}
 		// self is a pointer receiver, so the use of self.encode within the hot
 		// loop below means a nil check at every operation. Lift that nil check
@@ -229,7 +229,7 @@ impl Encoding {
 
 		remain := len(src) - si
 		if remain == 0 {
-			ret
+			return
 		}
 		// Add the remaining small block
 		mut val := uint(src[si+0]) << 16
@@ -260,14 +260,14 @@ impl Encoding {
 		n := self.EncodedLen(len(src))
 		dst = slices::Grow(dst, n)
 		self.Encode(dst[len(dst):][:n], src)
-		ret dst[:len(dst)+n]
+		return dst[:len(dst)+n]
 	}
 
 	// Returns the base64 encoding of src.
 	fn EncodeToString(*self, src: []byte): string {
 		mut buf := make([]byte, self.EncodedLen(len(src)))
 		self.Encode(buf, src)
-		ret unsafe::StringFromBytes(buf)
+		return unsafe::StringFromBytes(buf)
 	}
 
 	// Decodes up to 4 base64 bytes. The received parameters are
@@ -288,7 +288,7 @@ impl Encoding {
 			if len(src) == si {
 				match {
 				| j == 0:
-					ret si, 0
+					return si, 0
 				| j == 1 | self.padChar != NoPadding:
 					throw CorruptInputError(si - j)
 				}
@@ -370,7 +370,7 @@ impl Encoding {
 			}
 		}
 
-		ret si, dlen - 1
+		return si, dlen - 1
 	}
 
 	// Decodes src using the encoding self. It writes at most
@@ -381,7 +381,7 @@ impl Encoding {
 	// New line characters (\r and \n) are ignored.
 	fn Decode(*self, mut dst: []byte, src: []byte)!: (n: int) {
 		if len(src) == 0 {
-			ret 0
+			return 0
 		}
 
 		// Lift the nil check outside of the loop. self.decodeMap is directly
@@ -432,7 +432,7 @@ impl Encoding {
 			(si), ninc := self.decodeQuantum(dst[n:], src, si)?
 			n += ninc
 		}
-		ret n
+		return n
 	}
 
 	// Appends the base64 decoded src to dst and returns the extended buffer.
@@ -448,7 +448,7 @@ impl Encoding {
 
 		dst = slices::Grow(dst, n)
 		n = self.Decode(dst[len(dst):][:n], src)?
-		ret dst[:len(dst)+n]
+		return dst[:len(dst)+n]
 	}
 
 	// Returns the bytes represented by the base64 string s.
@@ -457,7 +457,7 @@ impl Encoding {
 	fn DecodeString(*self, s: string)!: []byte {
 		mut dbuf := make([]byte, self.DecodedLen(len(s)))
 		n := self.Decode(dbuf, unsafe::BytesFromString(s))?
-		ret dbuf[:n]
+		return dbuf[:n]
 	}
 }
 
@@ -474,7 +474,7 @@ impl encoder {
 	fn getBufOut(mut *self): (buf: []byte, out: []byte) {
 		buf = unsafe::Slice(&self.buf[0], len(self.buf), len(self.buf))
 		out = unsafe::Slice(&self.out[0], len(self.out), len(self.out))
-		ret
+		return
 	}
 }
 
@@ -496,7 +496,7 @@ impl io::WriteCloser for encoder {
 			n += i
 			unsafe { *&p = (*&p)[i:] } // Break mutability, but do not mutate the slice content.
 			if self.nbuf < 3 {
-				ret
+				return
 			}
 			self.enc.Encode(out, buf)
 			self.w.Write(out[:4]).await else {
@@ -504,7 +504,7 @@ impl io::WriteCloser for encoder {
 			}
 			if self.err != nil {
 				if n > 0 {
-					ret n
+					return n
 				}
 				unsafe throw self.err
 			}
@@ -524,7 +524,7 @@ impl io::WriteCloser for encoder {
 			}
 			if self.err != nil {
 				if n > 0 {
-					ret n
+					return n
 				}
 				unsafe throw self.err
 			}
@@ -536,7 +536,7 @@ impl io::WriteCloser for encoder {
 		copy(buf, p)
 		self.nbuf = len(p)
 		n += len(p)
-		ret
+		return
 	}
 
 	// Flushes any pending output from the encoder.
@@ -574,7 +574,7 @@ impl io::Reader for decoder {
 		if len(self.out) > 0 {
 			n = copy(p, self.out)
 			self.out = self.out[n:]
-			ret n
+			return n
 		}
 
 		if self.err != nil {
@@ -613,7 +613,7 @@ impl io::Reader for decoder {
 				n = copy(p, self.out)
 				self.out = self.out[n:]
 				if n > 0 || len(p) == 0 && len(self.out) > 0 {
-					ret n
+					return n
 				}
 				if self.err != nil {
 					unsafe throw self.err
@@ -645,7 +645,7 @@ impl io::Reader for decoder {
 		}
 		self.nbuf -= nr
 		copy(buf[:self.nbuf], buf[nr:])
-		ret n
+		return n
 	}
 }
 
@@ -656,14 +656,14 @@ fn assemble32(n1: byte, n2: byte, n3: byte, n4: byte): (dn: u32, ok: bool) {
 	// Check that all the digits are valid. If any of them was 0xff, their
 	// bitwise OR will be 0xff.
 	if n1|n2|n3|n4 == 0xff {
-		ret 0, false
+		return 0, false
 	}
 	ok = true
 	dn = u32(n1)<<26 |
 		u32(n2)<<20 |
 		u32(n3)<<14 |
 		u32(n4)<<8
-	ret
+	return
 }
 
 // Assembles 8 base64 digits into 6 bytes.
@@ -673,7 +673,7 @@ fn assemble64(n1: byte, n2: byte, n3: byte, n4: byte, n5: byte, n6: byte, n7: by
 	// Check that all the digits are valid. If any of them was 0xff, their
 	// bitwise OR will be 0xff.
 	if n1|n2|n3|n4|n5|n6|n7|n8 == 0xff {
-		ret 0, false
+		return 0, false
 	}
 	ok = true
 	dn = u64(n1)<<58 |
@@ -684,16 +684,16 @@ fn assemble64(n1: byte, n2: byte, n3: byte, n4: byte, n5: byte, n6: byte, n7: by
 		u64(n6)<<28 |
 		u64(n7)<<22 |
 		u64(n8)<<16
-	ret
+	return
 }
 
 fn decodedLen(n: int, padChar: rune): int {
 	if padChar == NoPadding {
 		// Unpadded data may end with partial block of 2-3 characters.
-		ret n/4*3 + n%4*6/8
+		return n/4*3 + n%4*6/8
 	}
 	// Padded base64 should always be a multiple of 4 characters in length.
-	ret n / 4 * 3
+	return n / 4 * 3
 }
 
 struct newlineFilteringReader {
@@ -714,12 +714,12 @@ impl io::Reader for newlineFilteringReader {
 				}
 			}
 			if offset > 0 {
-				ret offset
+				return offset
 			}
 			// Previous buffer entirely whitespace, read again
 			n = self.wrapped.Read(p).await?
 		}
-		ret n
+		return n
 	}
 }
 
@@ -729,10 +729,10 @@ impl io::Reader for newlineFilteringReader {
 // writing, the caller must Close the returned encoder to flush any
 // partially written blocks.
 fn NewEncoder(mut enc: &Encoding, mut w: io::Writer): io::WriteCloser {
-	ret &encoder{enc: enc, w: w}
+	return &encoder{enc: enc, w: w}
 }
 
 // Returns a new base64 stream decoder.
 fn NewDecoder(mut enc: &Encoding, mut r: io::Reader): io::Reader {
-	ret &decoder{enc: enc, r: &newlineFilteringReader{r}}
+	return &decoder{enc: enc, r: &newlineFilteringReader{r}}
 }

@@ -41,9 +41,9 @@
 fn ParseBool(s: string)!: bool {
 	match s {
 	| "1" | "t" | "T" | "true" | "TRUE" | "True":
-		ret true
+		return true
 	| "0" | "f" | "F" | "false" | "FALSE" | "False":
-		ret false
+		return false
 	|:
 		throw syntaxError("ParseBool", s)
 	}
@@ -52,16 +52,16 @@ fn ParseBool(s: string)!: bool {
 // Returns "true" or "false" according to the value of b.
 fn FormatBool(b: bool): string {
 	if b {
-		ret "true"
+		return "true"
 	}
-	ret "false"
+	return "false"
 }
 
 // Appends "true" or "false", according to the value of b,
 // to dst and returns the extended buffer.
 fn AppendBool(mut dst: []byte, b: bool): []byte {
 	if b {
-		ret append(dst, "true"...)
+		return append(dst, "true"...)
 	}
-	ret append(dst, "false"...)
+	return append(dst, "false"...)
 }

@@ -11,13 +11,13 @@ let mut scan = bufio::Scanner.New(os::Stdin())
 
 async fn readLine(): string {
 	scan.Scan().await!
-	ret scan.Text()
+	return scan.Text()
 }
 
 async fn numericInput(msg: string)!: f64 {
 	fmt::Print(msg)
 	input := readLine().await
-	ret conv::ParseFloat(input, 64) else { throw false }
+	return conv::ParseFloat(input, 64) else { throw false }
 }
 
 async fn main() {

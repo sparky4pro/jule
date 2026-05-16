@@ -182,13 +182,13 @@ let mut testsAtoc: []atocTest = [
 fn eqErr(err1: any, err2: any): bool {
 	num1, mut ok := err1.(&conv::NumError)
 	if !ok {
-		ret err1 == err2
+		return err1 == err2
 	}
 	num2, ok := err2.(&conv::NumError)
 	if !ok {
-		ret err1 == err2
+		return err1 == err2
 	}
-	ret *num1 == *num2
+	return *num1 == *num2
 }
 
 #test

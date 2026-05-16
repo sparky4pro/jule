@@ -62,7 +62,7 @@ struct Zipf {
 fn NewZipf(r: &Rand, s: f64, v: f64, imax: u64): &Zipf {
 	mut z := new(Zipf)
 	if s <= 1.0 || v < 1 {
-		ret nil
+		return nil
 	}
 	z.r = unsafe { *(&r) }
 	z.imax = f64(imax)
@@ -73,16 +73,16 @@ fn NewZipf(r: &Rand, s: f64, v: f64, imax: u64): &Zipf {
 	z.hxm = z.h(z.imax + 0.5)
 	z.hx0minusHxm = z.h(0.5) - math::Exp(math::Log(z.v)*(-z.q)) - z.hxm
 	z.s = 1 - z.hinv(z.h(1.5)-math::Exp(-z.q*math::Log(z.v+1.0)))
-	ret z
+	return z
 }
 
 impl Zipf {
 	fn h(*self, x: f64): f64 {
-		ret math::Exp(self.oneminusQ*math::Log(self.v+x)) * self.oneminusQinv
+		return math::Exp(self.oneminusQ*math::Log(self.v+x)) * self.oneminusQinv
 	}
 
 	fn hinv(*self, x: f64): f64 {
-		ret math::Exp(self.oneminusQinv*math::Log(self.oneminusQ*x)) - self.v
+		return math::Exp(self.oneminusQinv*math::Log(self.oneminusQ*x)) - self.v
 	}
 }
 
@@ -106,6 +106,6 @@ impl Source for Zipf {
 				break
 			}
 		}
-		ret u64(k)
+		return u64(k)
 	}
 }

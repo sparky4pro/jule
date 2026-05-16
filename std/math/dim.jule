@@ -50,10 +50,10 @@ fn Dim(x: f64, y: f64): f64 {
 	v := x - y
 	if v <= 0 {
 		// v is negative or 0
-		ret 0
+		return 0
 	}
 	// v is positive or NaN
-	ret v
+	return v
 }
 
 // Returns the larger of x or y.
@@ -67,20 +67,20 @@ fn Max(x: f64, y: f64): f64 {
 	// special cases
 	match {
 	| IsInf(x, 1) | IsInf(y, 1):
-		ret Inf(1)
+		return Inf(1)
 	| IsNaN(x) | IsNaN(y):
-		ret NaN()
+		return NaN()
 	| x == 0 && x == y:
 		if Signbit(x) {
-			ret y
+			return y
 		}
-		ret x
+		return x
 	}
 
 	if x > y {
-		ret x
+		return x
 	}
-	ret y
+	return y
 }
 
 // Returns the smaller of x or y.
@@ -93,18 +93,18 @@ fn Min(x: f64, y: f64): f64 {
 	// special cases
 	match {
 	| IsInf(x, -1) | IsInf(y, -1):
-		ret Inf(-1)
+		return Inf(-1)
 	| IsNaN(x) | IsNaN(y):
-		ret NaN()
+		return NaN()
 	| x == 0 && x == y:
 		if Signbit(x) {
-			ret x
+			return x
 		}
-		ret y
+		return y
 	}
 
 	if x < y {
-		ret x
+		return x
 	}
-	ret y
+	return y
 }

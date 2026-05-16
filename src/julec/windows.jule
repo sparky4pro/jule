@@ -18,12 +18,12 @@ const enableVirtualTerminalProcessing = 0x0004
 fn enableVTP() {
 	hOut := sys::GetStdHandle(uintptr(int(sys::STD_OUTPUT_HANDLE)))
 	if hOut == sys::InvalidHandle {
-		ret
+		return
 	}
 
 	mut dwMode := u32(0)
 	if unsafe { !sys::GetConsoleMode(hOut, &dwMode) } {
-		ret
+		return
 	}
 
 	dwMode |= enableVirtualTerminalProcessing

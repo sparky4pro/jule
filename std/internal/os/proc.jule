@@ -4,7 +4,7 @@
 
 // Returns environment variables.
 fn Environ(): []string {
-	ret environ()
+	return environ()
 }
 
 // Retrieves the value of the environment variable named by the key.
@@ -12,7 +12,7 @@ fn Environ(): []string {
 // To distinguish between an empty value and an found value, use [LookupEnv].
 fn Getenv(key: string): string {
 	v, _ := LookupEnv(key)
-	ret v
+	return v
 }
 
 // Retrieves the value of the environment variable named by the key.
@@ -20,7 +20,7 @@ fn Getenv(key: string): string {
 // is returned and the boolean is true. Otherwise the returned value will be
 // empty and the boolean will be false.
 fn LookupEnv(key: string): (value: string, found: bool) {
-	ret lookupenv(key)
+	return lookupenv(key)
 }
 
 // Sets the value of the environment variable named by the key.

@@ -9,31 +9,31 @@ use "std/unicode/utf8"
 // Reports whether the name is the valid identifier.
 fn IsName(name: string): bool {
 	if len(name) == 0 {
-		ret false
+		return false
 	}
 	if jule::IsBlank(name) {
-		ret false
+		return false
 	}
 	for i, r in name {
 		if i == 0 {
 			if r != '_' && !isLetter(r) {
-				ret false
+				return false
 			}
 		} else if r != '_' && !isLetter(r) && !isDigit(r) {
-			ret false
+			return false
 		}
 	}
-	ret true
+	return true
 }
 
 fn isLetter(r: rune): bool {
-	ret 'a' <= r && r <= 'z' ||
+	return 'a' <= r && r <= 'z' ||
 		'A' <= r && r <= 'Z' ||
 		r == '_' ||
 		r >= utf8::RuneSelf && unicode::IsLetter(r)
 }
 
 fn isDigit(r: rune): bool {
-	ret '0' <= r && r <= '9' ||
+	return '0' <= r && r <= '9' ||
 		r >= utf8::RuneSelf && unicode::IsDigit(r)
 }

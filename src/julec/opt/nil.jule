@@ -23,13 +23,13 @@ impl nils {
 	fn pushVar(mut *self, var: uintptr, safe: bool) {
 		if !Access || var == invalidNil {
 			// Ignore it, because this optimizations within scope of the --opt-access flag.
-			ret
+			return
 		}
 		for i in self.vars {
 			mut &v := unsafe { &(*(&self.vars[i])) }
 			if v.var == var {
 				v.safe = safe
-				ret
+				return
 			}
 		}
 		// Not exist, append new one.
@@ -39,7 +39,7 @@ impl nils {
 				// Empty place, use here instead of append.
 				v.var = var
 				v.safe = safe
-				ret
+				return
 			}
 		}
 		self.vars = append(self.vars, nilVar{var: var, safe: safe})
@@ -52,11 +52,11 @@ impl nils {
 				if v.var == var {
 					v.var = invalidNil
 					v.safe = false
-					ret true
+					return true
 				}
 			}
 		}
-		ret false
+		return false
 	}
 
 	// Reports whether variable is safe.
@@ -64,11 +64,11 @@ impl nils {
 		if var != invalidNil {
 			for _, v in self.vars {
 				if v.var == var {
-					ret v.safe
+					return v.safe
 				}
 			}
 		}
-		ret false
+		return false
 	}
 }
 
@@ -80,14 +80,14 @@ fn possibleNilRemove(mut n: &nils, mut m: sema::Expr) {
 
 fn isGuaranteedNonNilExpr(mut n: &nils, mut m: sema::Expr): bool {
 	_, ok := m.(&sema::BuiltinNewCallExpr)
-	ret ok || n != nil && n.isSafe(getNilVar(m))
+	return ok || n != nil && n.isSafe(getNilVar(m))
 }
 
-fn isNilValidType(mut t: &sema::Type): bool { ret t.Ptr() != nil || t.Sptr() != nil }
+fn isNilValidType(mut t: &sema::Type): bool { return t.Ptr() != nil || t.Sptr() != nil }
 
 fn getNilVar(mut m: sema::Expr): uintptr {
 	if !Access {
-		ret invalidBoundary
+		return invalidBoundary
 	}
 
 Head:
@@ -95,7 +95,7 @@ Head:
 	// Otherwise it might be dereferenced, investigate deeper.
 	mut v, _ := m.(&sema::Var)
 	if v != nil && v.Reference {
-		ret uintptr(v)
+		return uintptr(v)
 	}
 
 	// Assume: x := new(&int)
@@ -107,7 +107,7 @@ Head:
 			v = m.(&sema::Var)
 			if !v.Reference || v.ValueSym == nil || v.ValueSym.Value == nil {
 				// Variable is not reference (or points to unknown such as parameters), return address of it.
-				ret uintptr(m.(&sema::Var))
+				return uintptr(m.(&sema::Var))
 			}
 			// Variable is reference, it should be initialized at source code.
 			// Investigate the initial expression for variable address.
@@ -115,16 +115,16 @@ Head:
 			m = uem.Expr.Model
 			goto Head
 		| &sema::StructSubIdentExpr:
-			ret uintptr(m.(&sema::StructSubIdentExpr).Field)
+			return uintptr(m.(&sema::StructSubIdentExpr).Field)
 		| &sema::UnaryExpr:
 			mut uem := m.(&sema::UnaryExpr)
 			if uem.Op.ID == token::MUL { // Dereferencing.
 				m = uem.Expr.Model
 				continue
 			}
-			ret invalidBoundary
+			return invalidBoundary
 		|:
-			ret invalidBoundary
+			return invalidBoundary
 		}
 	}
 }

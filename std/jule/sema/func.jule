@@ -25,24 +25,24 @@ struct Param {
 
 impl Param {
 	fn instance(mut &self): &ParamIns {
-		ret &ParamIns{
+		return &ParamIns{
 			Decl: self,
 		}
 	}
 
 	// Reports whether parameter is self (receiver) parameter.
 	fn IsSelf(*self): bool {
-		ret self.Name == "&self" || self.Name == "*self"
+		return self.Name == "&self" || self.Name == "*self"
 	}
 
 	// Reports whether self (receiver) parameter is smart pointer.
 	fn IsSmartptr(*self): bool {
-		ret len(self.Name) > 0 && self.Name[0] == '&'
+		return len(self.Name) > 0 && self.Name[0] == '&'
 	}
 
 	// Reports whether self (receiver) parameter is reference pointer.
 	fn IsRefptr(*self): bool {
-		ret len(self.Name) > 0 && self.Name[0] == '*'
+		return len(self.Name) > 0 && self.Name[0] == '*'
 	}
 }
 
@@ -90,27 +90,27 @@ struct Func {
 impl Func {
 	// Reports whether return type is void.
 	fn IsVoid(*self): bool {
-		ret self.Result == nil
+		return self.Result == nil
 	}
 
 	// Reports whether function is method.
 	fn IsMethod(*self): bool {
-		ret self.Owner != nil
+		return self.Owner != nil
 	}
 
 	// Reports whether function is entry point.
 	fn IsEntryPoint(*self): bool {
-		ret self.Name == jule::EntryPoint
+		return self.Name == jule::EntryPoint
 	}
 
 	// Reports whether function is initializer function.
 	fn IsInit(*self): bool {
-		ret self.Name == jule::InitFunc
+		return self.Name == jule::InitFunc
 	}
 
 	// Reports whether function is anonymous function.
 	fn IsAnon(*self): bool {
-		ret jule::IsAnon(self.Name)
+		return jule::IsAnon(self.Name)
 	}
 
 	// Reports whether function has return variable(s).
@@ -118,11 +118,11 @@ impl Func {
 		if self.Result != nil {
 			for _, name in self.Result.Names {
 				if !jule::IsAnon(name.Kind) {
-					ret true
+					return true
 				}
 			}
 		}
-		ret false
+		return false
 	}
 
 	// Force to new instance.
@@ -142,15 +142,15 @@ impl Func {
 			ins.Result = ins.Decl.Result.TypeSym.Type
 		}
 
-		ret ins
+		return ins
 	}
 
 	fn instance(mut &self): &FuncIns {
 		// Returns already created instance for just one unique combination.
 		if len(self.Generics) == 0 && len(self.Instances) == 1 {
-			ret self.Instances[0]
+			return self.Instances[0]
 		}
-		ret self.instanceForce()
+		return self.instanceForce()
 	}
 
 	// Appends function instance.
@@ -159,27 +159,27 @@ impl Func {
 		if len(self.Generics) == 0 {
 			// Skip already created instance for just one unique combination.
 			if len(self.Instances) == 1 {
-				ret self.Instances[0]
+				return self.Instances[0]
 			}
 
 			self.Instances = append(self.Instances, ins)
-			ret nil
+			return nil
 		}
 
 		if len(self.Instances) == 0 {
 			self.Instances = append(self.Instances, ins)
-			ret nil
+			return nil
 		}
 
 		for (_, mut ains) in self.Instances {
 			if ains.Same(ins) {
 				// Instances are same.
-				ret ains
+				return ains
 			}
 		}
 
 		self.Instances = append(self.Instances, ins)
-		ret nil
+		return nil
 	}
 }
 
@@ -212,7 +212,7 @@ impl ParamIns {
 				panic("unreachable")
 			}
 			s.WriteString("self")!
-			ret s.String()
+			return s.String()
 		}
 
 		// Do not write variadic parameter "..." operator.
@@ -220,7 +220,7 @@ impl ParamIns {
 		if self.Type != nil {
 			s.WriteString(self.Type.String())!
 		}
-		ret s.String()
+		return s.String()
 	}
 }
 
@@ -249,16 +249,16 @@ impl Kind for FuncIns {
 	// Returns function's type kind as string.
 	fn String(*self): string {
 		const Ident = false
-		ret self.GetKindString(Ident)
+		return self.GetKindString(Ident)
 	}
 
 	// Reports whether types are same.
 	fn Equal(&self, other: &Type): bool {
 		f := unsafe { (*(&other)).Func() }
 		if f == nil {
-			ret false
+			return false
 		}
-		ret self.EqualFunc(f, false)
+		return self.EqualFunc(f, false)
 	}
 }
 
@@ -268,88 +268,88 @@ impl FuncIns {
 	// See: https://manual.jule.dev/responsiveness/mutability
 	fn EqualFunc(&self, f: &FuncIns, responsive: bool): bool {
 		if self.Decl.Fallible != f.Decl.Fallible {
-			ret false
+			return false
 		}
 		if self.Decl.Unsafe != f.Decl.Unsafe {
-			ret false
+			return false
 		}
 		if self.Decl.Async != f.Decl.Async {
-			ret false
+			return false
 		}
 		if self.Decl.IsVoid() != f.Decl.IsVoid() {
-			ret false
+			return false
 		}
 		checkParams := fn(p1: &ParamIns, p2: &ParamIns): bool {
 			if p1.Decl.Variadic != p2.Decl.Variadic ||
 				p1.Decl.Reference != p2.Decl.Reference {
-				ret false
+				return false
 			}
 
 			if p1.Decl.IsSelf() {
 				if !p2.Decl.IsSelf() {
-					ret false
+					return false
 				}
 				if p1.Decl.IsSmartptr() != p2.Decl.IsSmartptr() {
-					ret false
+					return false
 				}
 				if responsive {
-					ret p1.Decl.Mutable || !p2.Decl.Mutable
+					return p1.Decl.Mutable || !p2.Decl.Mutable
 				}
-				ret p1.Decl.Mutable == p2.Decl.Mutable
+				return p1.Decl.Mutable == p2.Decl.Mutable
 			}
 
 			if responsive {
 				if !p1.Type.Equal(p2.Type) {
-					ret false
+					return false
 				}
 				tmut := p1.Decl.Reference || p1.Decl.Variadic || p1.Type.Mutable()
 				if !tmut {
-					ret true
+					return true
 				}
-				ret p1.Decl.Mutable || !p2.Decl.Mutable
+				return p1.Decl.Mutable || !p2.Decl.Mutable
 			}
 
 			if p1.Decl.Mutable != p2.Decl.Mutable {
-				ret false
+				return false
 			}
-			ret p1.Type.Equal(p2.Type)
+			return p1.Type.Equal(p2.Type)
 		}
 
 		if len(f.Params) != len(self.Params) {
-			ret false
+			return false
 		}
 
 		mut i := 0
 		for i < len(self.Params); i++ {
 			if !checkParams(self.Params[i], f.Params[i]) {
-				ret false
+				return false
 			}
 		}
 
 		if !self.Decl.IsVoid() {
 			if !self.Result.Equal(f.Result) {
-				ret false
+				return false
 			}
 		}
 
-		ret true
+		return true
 	}
 
 	// Reports whether functions are equals by trait implementation rules.
 	fn equalTrait(&self, other: &FuncIns): bool {
 		if self.Decl.Public != other.Decl.Public {
-			ret false
+			return false
 		}
 		if self.Decl.Name != other.Decl.Name {
-			ret false
+			return false
 		}
 		if !self.EqualFunc(other, true) {
-			ret false
+			return false
 		}
 		if len(self.Decl.Generics) != len(other.Decl.Generics) {
-			ret false
+			return false
 		}
-		ret true
+		return true
 	}
 
 	// Returns all types of result.
@@ -358,22 +358,22 @@ impl FuncIns {
 	fn Types(mut *self): []&Type {
 		match {
 		| self.Result == nil:
-			ret nil
+			return nil
 		| self.Result.Tuple() == nil:
-			ret [self.Result]
+			return [self.Result]
 		|:
-			ret self.Result.Tuple().Types
+			return self.Result.Tuple().Types
 		}
 	}
 
 	// Reports whether instance is built-in.
 	fn IsBuiltin(*self): bool {
-		ret self.caller != nil
+		return self.caller != nil
 	}
 
 	// Reports whether instance is anonymous function.
 	fn IsAnon(*self): bool {
-		ret self.Anon ||
+		return self.Anon ||
 			self.Decl != nil && self.Decl.IsAnon()
 	}
 
@@ -381,16 +381,16 @@ impl FuncIns {
 	// Returns true if declarations and generics are same.
 	fn Same(*self, f: &FuncIns): bool {
 		if self.Decl != f.Decl || len(f.Generics) != len(self.Generics) {
-			ret false
+			return false
 		}
 
 		for i, g in self.Generics {
 			g2 := f.Generics[i]
 			if !g.Type.Equal(g2.Type) {
-				ret false
+				return false
 			}
 		}
-		ret true
+		return true
 	}
 
 	// Returns kind string of function instance.
@@ -433,7 +433,7 @@ impl FuncIns {
 			s.WriteByte(':')!
 			s.WriteString(self.Result.String())!
 		}
-		ret s.String()
+		return s.String()
 	}
 
 	fn fillEnviron(mut &self, updateVars: bool) {
@@ -457,15 +457,15 @@ impl FuncIns {
 fn funcParametersUseGenerics(mut params: []&ParamIns, generics: []&ast::Generic): bool {
 	for (_, mut p) in params {
 		if parameterUsesGenerics(p, generics) {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 fn parameterUsesGenerics(mut p: &ParamIns, generics: []&ast::Generic): bool {
 	if p.Decl.IsSelf() {
-		ret false
+		return false
 	}
-	ret kindUsesGenerics(p.Type, generics)
+	return kindUsesGenerics(p.Type, generics)
 }

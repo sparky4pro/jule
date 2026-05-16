@@ -537,18 +537,18 @@ fn testTrim(t: &testing::T) {
 	toFn := fn(name: string): (fn(mut b: []byte, string): []byte, fn(mut b: []byte, []byte): []byte) {
 		match name {
 		| "Trim":
-			ret Trim, nil
+			return Trim, nil
 		| "TrimLeft":
-			ret TrimLeft, nil
+			return TrimLeft, nil
 		| "TrimRight":
-			ret TrimRight, nil
+			return TrimRight, nil
 		| "TrimPrefix":
-			ret nil, TrimPrefix
+			return nil, TrimPrefix
 		| "TrimSuffix":
-			ret nil, TrimSuffix
+			return nil, TrimSuffix
 		|:
 			t.Errorf("Undefined trim function {}", name)
-			ret nil, nil
+			return nil, nil
 		}
 	}
 
@@ -583,9 +583,9 @@ fn testTrim(t: &testing::T) {
 		}
 		report := fn(s: []byte): string {
 			if s == nil {
-				ret "nil"
+				return "nil"
 			} else {
-				ret fmt::Sprint(s)
+				return fmt::Sprint(s)
 			}
 		}
 		if len(actual) != 0 {
@@ -697,15 +697,15 @@ let isDigit = predicate{unicode::IsDigit, "IsDigit"}
 let isUpper = predicate{unicode::IsUpper, "IsUpper"}
 let isValidRune = predicate{
 	fn(r: rune): bool {
-		ret r != utf8::RuneError
+		return r != utf8::RuneError
 	},
 	"IsValidRune",
 }
 
 fn not(p: predicate): predicate {
-	ret predicate{
+	return predicate{
 		fn(r: rune): bool {
-			ret !p.f(r)
+			return !p.f(r)
 		},
 		"not " + p.name,
 	}

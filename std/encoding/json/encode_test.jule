@@ -9,7 +9,7 @@ use "std/testing"
 fn encodeMapXKey[Map](t: &testing::T, m: Map, kind: string) {
 	bytes := Encode(m) else {
 		t.Errorf("Encode({}) failed", kind)
-		ret
+		return
 	}
 	if !Valid(bytes) {
 		t.Errorf("Valid() returns false for Encode({})", kind)
@@ -57,7 +57,7 @@ fn testEncodeSlice(t: &testing::T) {
 	s := ["foo", "bar", "baz"]
 	mut bytes := Encode(s) else {
 		t.Errorf("Encode([]string) failed")
-		ret
+		return
 	}
 	if !Valid(bytes) {
 		t.Errorf("Valid() returns false for Encode([]string)")
@@ -67,7 +67,7 @@ fn testEncodeSlice(t: &testing::T) {
 	s2 := StringSlice(s)
 	bytes = Encode(s2) else {
 		t.Errorf("Encode(StringSlice) failed")
-		ret
+		return
 	}
 	if !Valid(bytes) {
 		t.Errorf("Valid() returns false for Encode(StringSlice)")
@@ -79,7 +79,7 @@ fn testEncodeArray(t: &testing::T) {
 	let a: [3]string = ["foo", "bar", "baz"]
 	mut bytes := Encode(a) else {
 		t.Errorf("Encode([3]string) failed")
-		ret
+		return
 	}
 	if !Valid(bytes) {
 		t.Errorf("Valid() returns false for Encode([3]string)")
@@ -89,7 +89,7 @@ fn testEncodeArray(t: &testing::T) {
 	a2 := StringArray(a)
 	bytes = Encode(a2) else {
 		t.Errorf("Encode(StringArray) failed")
-		ret
+		return
 	}
 	if !Valid(bytes) {
 		t.Errorf("Valid() returns false for Encode(StringArray)")
@@ -148,7 +148,7 @@ fn testEncodeNum(t: &testing::T) {
 	]
 	bytes := Encode(nums) else {
 		t.Errorf("Encode(nums) failed")
-		ret
+		return
 	}
 	if !Valid(bytes) {
 		t.Errorf("Valid() returns false for Encode(nums)")
@@ -208,7 +208,7 @@ fn testEncodeString(t: &testing::T) {
 	for _, case in strCases {
 		bytes := Encode(case.input) else {
 			t.Errorf("Encode(stsr) failed")
-			ret
+			return
 		}
 		if len(bytes) != len(case.output) {
 			t.Errorf("expected {} for {}, found {}", case.output, case.input, bytes)
@@ -239,7 +239,7 @@ fn testEncodeByteSlice(t: &testing::T) {
 	for _, case in encodeByteSliceCases {
 		bytes := Encode(case.input) else {
 			t.Errorf("Encode({}) failed", case.input)
-			ret
+			return
 		}
 		if !Valid(bytes) {
 			t.Errorf("Valid() returns false for Encode({})", case.input)
@@ -273,9 +273,9 @@ impl encoding::TextEncoder for abc {
 	fn EncodeText(*self)!: []byte {
 		match *self {
 		| 1:
-			ret []byte("true")
+			return []byte("true")
 		| 0:
-			ret []byte("false")
+			return []byte("false")
 		|:
 			panic("unimplemented case")
 		}
@@ -339,9 +339,9 @@ impl encoding::TextEncoder for abc2 {
 	fn EncodeText(*self)!: []byte {
 		match **self {
 		| 1:
-			ret []byte("true")
+			return []byte("true")
 		| 0:
-			ret []byte("false")
+			return []byte("false")
 		|:
 			panic("unimplemented case")
 		}
@@ -415,19 +415,19 @@ fn testTaggedFields(t: &testing::T) {
 	mut tf := taggedFields{10, 20, 30, 40, 50, 60, "<foo>", "&baz&"}
 	data := Encode(tf) else {
 		t.Errorf("tagged fields throws error for Encode")
-		ret
+		return
 	}
 	if string(data) != `{"Foo":10,"foo1":30,"baz":40,"\u003cfoo\u003e":"\u003cfoo\u003e","\u0026foo\u0026":"\u0026baz\u0026"}` {
 		t.Errorf("tagged fields encode incorrect")
-		ret
+		return
 	}
 	tf = taggedFields{}
 	Decode(data, &tf) else {
 		t.Errorf("tagged fields throws error for Decode")
-		ret
+		return
 	}
 	if (tf != taggedFields{Foo: 10, fo1: 30, bar: 40, esc1: "<foo>", esc2: "&baz&"}) {
 		t.Errorf("tagged fields decode incorrect")
-		ret
+		return
 	}
 }

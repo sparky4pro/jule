@@ -55,14 +55,14 @@ impl fdMutex {
 		for {
 			old := atomic::Load(&self.state, atomic::SeqCst)
 			if old&mutexClosed != 0 {
-				ret false
+				return false
 			}
 			new := old + mutexRef
 			if new&mutexRefMask == 0 {
 				panic(overflowMsg)
 			}
 			if atomic::CompareAndSwap(&self.state, old, new, atomic::SeqCst, atomic::Relaxed) {
-				ret true
+				return true
 			}
 		}
 	}
@@ -73,7 +73,7 @@ impl fdMutex {
 		for {
 			mut old := atomic::Load(&self.state, atomic::SeqCst)
 			if old&mutexClosed != 0 {
-				ret false
+				return false
 			}
 			// Mark as closed and acquire a reference.
 			mut new := (old | mutexClosed) + mutexRef
@@ -93,7 +93,7 @@ impl fdMutex {
 					old -= mutexWWait
 					semrelease(&self.wsema)
 				}
-				ret true
+				return true
 			}
 		}
 	}
@@ -108,7 +108,7 @@ impl fdMutex {
 			}
 			new := old - mutexRef
 			if atomic::CompareAndSwap(&self.state, old, new, atomic::SeqCst, atomic::Relaxed) {
-				ret new&(mutexClosed|mutexRefMask) == mutexClosed
+				return new&(mutexClosed|mutexRefMask) == mutexClosed
 			}
 		}
 	}
@@ -134,7 +134,7 @@ impl fdMutex {
 		for {
 			old := atomic::Load(&self.state, atomic::SeqCst)
 			if old&mutexClosed != 0 {
-				ret false
+				return false
 			}
 			let mut new: u64
 			if old&mutexBit == 0 {
@@ -152,7 +152,7 @@ impl fdMutex {
 			}
 			if atomic::CompareAndSwap(&self.state, old, new, atomic::SeqCst, atomic::Relaxed) {
 				if old&mutexBit == 0 {
-					ret true
+					return true
 				}
 				unsafe { semacquire(&(*mutexSema)).await }
 				// The signaller has subtracted mutexWait.
@@ -192,7 +192,7 @@ impl fdMutex {
 				if old&mutexMask != 0 {
 					unsafe { semrelease(&(*mutexSema)) }
 				}
-				ret new&(mutexClosed|mutexRefMask) == mutexClosed
+				return new&(mutexClosed|mutexRefMask) == mutexClosed
 			}
 		}
 	}
@@ -284,6 +284,6 @@ impl FD {
 
 	// closing returns true if fd is closing.
 	fn closing(*self): bool {
-		ret atomic::Load(&self.fdmu.state, atomic::SeqCst)&mutexClosed != 0
+		return atomic::Load(&self.fdmu.state, atomic::SeqCst)&mutexClosed != 0
 	}
 }

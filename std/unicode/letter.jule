@@ -127,7 +127,7 @@ struct RangeTable {
 // It additionally reports whether caseRange contained a mapping for r.
 fn to(case: int, r: rune, caseRange: []CaseRange): (mappedRune: rune, foundMapping: bool) {
 	if case < 0 || MaxCase <= case {
-		ret ReplacementChar, false // as reasonable an error as any
+		return ReplacementChar, false // as reasonable an error as any
 	}
 
 	// binary search over ranges
@@ -149,9 +149,9 @@ fn to(case: int, r: rune, caseRange: []CaseRange): (mappedRune: rune, foundMappi
 				// bit in the sequence offset.
 				// The constants UpperCase and TitleCase are even while LowerCase
 				// is odd so we take the low bit from case.
-				ret rune(cr.Lo) + ((r-rune(cr.Lo))&^1 | rune(case&1)), true
+				return rune(cr.Lo) + ((r-rune(cr.Lo))&^1 | rune(case&1)), true
 			}
-			ret r + delta, true
+			return r + delta, true
 		}
 		if r < rune(cr.Lo) {
 			hi = m
@@ -159,13 +159,13 @@ fn to(case: int, r: rune, caseRange: []CaseRange): (mappedRune: rune, foundMappi
 			lo = m + 1
 		}
 	}
-	ret r, false
+	return r, false
 }
 
 // Maps the rune to the specified case: UpperCase, LowerCase, or TitleCase.
 fn To(case: int, mut r: rune): rune {
 	r, _ = to(case, r, CaseRanges)
-	ret r
+	return r
 }
 
 // Maps the rune to upper case.
@@ -174,9 +174,9 @@ fn ToUpper(mut r: rune): rune {
 		if 'a' <= r && r <= 'z' {
 			r -= 'a' - 'A'
 		}
-		ret r
+		return r
 	}
-	ret To(UpperCase, r)
+	return To(UpperCase, r)
 }
 
 // Maps the rune to lower case.
@@ -185,9 +185,9 @@ fn ToLower(mut r: rune): rune {
 		if 'A' <= r && r <= 'Z' {
 			r += 'a' - 'A'
 		}
-		ret r
+		return r
 	}
-	ret To(LowerCase, r)
+	return To(LowerCase, r)
 }
 
 // Maps the rune to title case.
@@ -196,9 +196,9 @@ fn ToTitle(mut r: rune): rune {
 		if 'a' <= r && r <= 'z' { // title case is upper case for ASCII
 			r -= 'a' - 'A'
 		}
-		ret r
+		return r
 	}
-	ret To(TitleCase, r)
+	return To(TitleCase, r)
 }
 
 // Reports whether r is in the sorted slice of 16-bit ranges.
@@ -208,14 +208,14 @@ fn is16(ranges: []Range16, r: u16): bool {
 			range := &ranges[i]
 			unsafe {
 				if r < range.Lo {
-					ret false
+					return false
 				}
 				if r <= range.Hi {
-					ret range.Stride == 1 || (r-range.Lo)%range.Stride == 0
+					return range.Stride == 1 || (r-range.Lo)%range.Stride == 0
 				}
 			}
 		}
-		ret false
+		return false
 	}
 
 	// binary search over ranges
@@ -226,7 +226,7 @@ fn is16(ranges: []Range16, r: u16): bool {
 		range := &ranges[m]
 		unsafe {
 			if range.Lo <= r && r <= range.Hi {
-				ret range.Stride == 1 || (r-range.Lo)%range.Stride == 0
+				return range.Stride == 1 || (r-range.Lo)%range.Stride == 0
 			}
 			if r < range.Lo {
 				hi = m
@@ -235,7 +235,7 @@ fn is16(ranges: []Range16, r: u16): bool {
 			}
 		}
 	}
-	ret false
+	return false
 }
 
 // Reports whether r is in the sorted slice of 32-bit ranges.
@@ -245,14 +245,14 @@ fn is32(ranges: []Range32, r: u32): bool {
 			range := &ranges[i]
 			unsafe {
 				if r < range.Lo {
-					ret false
+					return false
 				}
 				if r <= range.Hi {
-					ret range.Stride == 1 || (r-range.Lo)%range.Stride == 0
+					return range.Stride == 1 || (r-range.Lo)%range.Stride == 0
 				}
 			}
 		}
-		ret false
+		return false
 	}
 
 	// binary search over ranges
@@ -263,7 +263,7 @@ fn is32(ranges: []Range32, r: u32): bool {
 		range := &ranges[m]
 		unsafe {
 			if range.Lo <= r && r <= range.Hi {
-				ret range.Stride == 1 || (r-range.Lo)%range.Stride == 0
+				return range.Stride == 1 || (r-range.Lo)%range.Stride == 0
 			}
 			if r < range.Lo {
 				hi = m
@@ -272,7 +272,7 @@ fn is32(ranges: []Range32, r: u32): bool {
 			}
 		}
 	}
-	ret false
+	return false
 }
 
 // Reports whether the rune is in the specified table of ranges.
@@ -280,23 +280,23 @@ fn Is(rangeTab: &RangeTable, r: rune): bool {
 	&R16 := &rangeTab.R16
 	// Compare as u32 to correctly handle negative runes.
 	if len(*R16) > 0 && u32(r) <= u32((*R16)[len(*R16)-1].Hi) {
-		ret is16(*R16, u16(r))
+		return is16(*R16, u16(r))
 	}
 	&R32 := &rangeTab.R32
 	if len(*R32) > 0 && r >= rune((*R32)[0].Lo) {
-		ret is32(*R32, u32(r))
+		return is32(*R32, u32(r))
 	}
-	ret false
+	return false
 }
 
 // Reports whether the rune is a member of one of the ranges.
 fn In(r: rune, ranges: ...&RangeTable): bool {
 	for _, inside in ranges {
 		if Is(inside, r) {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 fn isExcludingLatin(rangeTab: &RangeTable, r: rune): bool {
@@ -305,40 +305,40 @@ fn isExcludingLatin(rangeTab: &RangeTable, r: rune): bool {
 		// Compare as u32 to correctly handle negative runes.
 		off := rangeTab.LatinOffset
 		if len(*R16) > off && u32(r) <= u32((*R16)[len(*R16)-1].Hi) {
-			ret is16((*R16)[off:], u16(r))
+			return is16((*R16)[off:], u16(r))
 		}
 	}
 	&R32 := &rangeTab.R32
 	if len(*R32) > 0 && r >= rune((*R32)[0].Lo) {
-		ret is32(*R32, u32(r))
+		return is32(*R32, u32(r))
 	}
-	ret false
+	return false
 }
 
 // Reports whether the rune is an upper case letter.
 fn IsUpper(r: rune): bool {
 	// See comment in is_graphic.
 	if u32(r) <= MaxLatin1 {
-		ret properties[u8(r)]&pLmask == pLu
+		return properties[u8(r)]&pLmask == pLu
 	}
-	ret isExcludingLatin(Upper, r)
+	return isExcludingLatin(Upper, r)
 }
 
 // Reports whether the rune is a lower case letter.
 fn IsLower(r: rune): bool {
 	// See comment in is_graphic.
 	if u32(r) <= MaxLatin1 {
-		ret properties[u8(r)]&pLmask == pLl
+		return properties[u8(r)]&pLmask == pLl
 	}
-	ret isExcludingLatin(Lower, r)
+	return isExcludingLatin(Lower, r)
 }
 
 // Reports whether the rune is a title case letter.
 fn IsTitle(r: rune): bool {
 	if r <= MaxLatin1 {
-		ret false
+		return false
 	}
-	ret isExcludingLatin(Title, r)
+	return isExcludingLatin(Title, r)
 }
 
 // Converts r to case using CaseRange cr.
@@ -355,9 +355,9 @@ fn convertCase(case: int, r: rune, cr: &CaseRange): rune {
 		// bit in the sequence offset.
 		// The constants UpperCase and TitleCase are even while LowerCase
 		// is odd so we take the low bit from case.
-		ret rune(cr.Lo) + ((r-rune(cr.Lo))&^1 | rune(case&1))
+		return rune(cr.Lo) + ((r-rune(cr.Lo))&^1 | rune(case&1))
 	}
-	ret r + delta
+	return r + delta
 }
 
 // Returns the CaseRange mapping for rune r or nil if no
@@ -370,7 +370,7 @@ fn lookupCaseRange(r: rune, caseRange: []CaseRange): &CaseRange {
 		m := int(uint(lo+hi) >> 1)
 		mut cr := unsafe { (&CaseRange)(&caseRange[m]) }
 		if rune(cr.Lo) <= r && r <= rune(cr.Hi) {
-			ret cr
+			return cr
 		}
 		if r < rune(cr.Lo) {
 			hi = m
@@ -378,7 +378,7 @@ fn lookupCaseRange(r: rune, caseRange: []CaseRange): &CaseRange {
 			lo = m + 1
 		}
 	}
-	ret nil
+	return nil
 }
 
 // Iterates over Unicode code points equivalent under
@@ -401,11 +401,11 @@ fn lookupCaseRange(r: rune, caseRange: []CaseRange): &CaseRange {
 //	SimpleFold(-2) = -2
 fn SimpleFold(r: rune): rune {
 	if r < 0 || r > MaxRune {
-		ret r
+		return r
 	}
 
 	if int(r) < len(asciiFold) {
-		ret rune(asciiFold[r])
+		return rune(asciiFold[r])
 	}
 
 	// Consult caseOrbit table for special cases.
@@ -420,7 +420,7 @@ fn SimpleFold(r: rune): rune {
 		}
 	}
 	if lo < len(caseOrbit) && rune(caseOrbit[lo].from) == r {
-		ret rune(caseOrbit[lo].to)
+		return rune(caseOrbit[lo].to)
 	}
 
 	// No folding specified. This is a one- or two-element
@@ -430,11 +430,11 @@ fn SimpleFold(r: rune): rune {
 	if cr != nil {
 		l := convertCase(LowerCase, r, cr)
 		if l != r {
-			ret l
+			return l
 		}
-		ret convertCase(UpperCase, r, cr)
+		return convertCase(UpperCase, r, cr)
 	}
-	ret r
+	return r
 }
 
 impl SpecialCase {
@@ -444,7 +444,7 @@ impl SpecialCase {
 		if r1 == r && !hadMapping {
 			r1 = ToUpper(r)
 		}
-		ret r1
+		return r1
 	}
 
 	// Maps the rune to title case giving priority to the special mapping.
@@ -453,7 +453,7 @@ impl SpecialCase {
 		if r1 == r && !hadMapping {
 			r1 = ToTitle(r)
 		}
-		ret r1
+		return r1
 	}
 
 	// Maps the rune to lower case giving priority to the special mapping.
@@ -462,6 +462,6 @@ impl SpecialCase {
 		if r1 == r && !hadMapping {
 			r1 = ToLower(r)
 		}
-		ret r1
+		return r1
 	}
 }

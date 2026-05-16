@@ -66,10 +66,10 @@ trait Importer {
 fn findVarFileInPackage(mut files: []&SymTab, v: &Var): &SymTab {
 	for (_, mut f) in files {
 		if f.findVar1(v) != -1 {
-			ret f
+			return f
 		}
 	}
-	ret nil
+	return nil
 }
 
 // Returns variable by identifier and external state.
@@ -78,10 +78,10 @@ fn findVarInPackage(mut files: []&SymTab, name: string, _extern: bool): &Var {
 	for (_, mut f) in files {
 		mut v := f.FindVar(name, _extern)
 		if v != nil {
-			ret v
+			return v
 		}
 	}
-	ret nil
+	return nil
 }
 
 // Returns type alias by identifier and external state.
@@ -90,10 +90,10 @@ fn findTypeAliasInPackage(mut files: []&SymTab, name: string, _extern: bool): &T
 	for (_, mut f) in files {
 		mut ta := f.FindTypeAlias(name, _extern)
 		if ta != nil {
-			ret ta
+			return ta
 		}
 	}
-	ret nil
+	return nil
 }
 
 // Returns struct by identifier and external state.
@@ -102,10 +102,10 @@ fn findStructInPackage(mut files: []&SymTab, name: string, _extern: bool): &Stru
 	for (_, mut f) in files {
 		mut s := f.FindStruct(name, _extern)
 		if s != nil {
-			ret s
+			return s
 		}
 	}
-	ret nil
+	return nil
 }
 
 // Returns function by identifier and external state.
@@ -114,10 +114,10 @@ fn findFuncInPackage(mut files: []&SymTab, name: string, _extern: bool): &Func {
 	for (_, mut file) in files {
 		mut f := file.FindFunc(name, _extern)
 		if f != nil {
-			ret f
+			return f
 		}
 	}
-	ret nil
+	return nil
 }
 
 // Returns trait by identifier.
@@ -126,10 +126,10 @@ fn findTraitInPackage(mut files: []&SymTab, name: string): &Trait {
 	for (_, mut f) in files {
 		mut t := f.FindTrait(name)
 		if t != nil {
-			ret t
+			return t
 		}
 	}
-	ret nil
+	return nil
 }
 
 // Returns enum by identifier.
@@ -138,10 +138,10 @@ fn findEnumInPackage(mut files: []&SymTab, name: string): &Enum {
 	for (_, mut f) in files {
 		mut e := f.FindEnum(name)
 		if e != nil {
-			ret e
+			return e
 		}
 	}
-	ret nil
+	return nil
 }
 
 // Returns enum by identifier.
@@ -150,10 +150,10 @@ fn findTypeEnumInPackage(mut files: []&SymTab, name: string): &TypeEnum {
 	for (_, mut f) in files {
 		mut e := f.FindTypeEnum(name)
 		if e != nil {
-			ret e
+			return e
 		}
 	}
-	ret nil
+	return nil
 }
 
 // Lookups tables with [SymTab.defByIdent] method.
@@ -161,10 +161,10 @@ fn defByIdentPackage(mut files: []&SymTab, name: string, _extern: bool): any {
 	for (_, mut file) in files {
 		mut def := file.defByIdent(name, _extern)
 		if def != nil {
-			ret def
+			return def
 		}
 	}
-	ret nil
+	return nil
 }
 
 // Import information.
@@ -201,7 +201,7 @@ struct ImportInfo {
 
 impl Lookup for ImportInfo {
 	// Returns always nil.
-	fn SelectPackage(mut *self, fn(&ImportInfo): bool): &ImportInfo { ret nil }
+	fn SelectPackage(mut *self, fn(&ImportInfo): bool): &ImportInfo { return nil }
 
 	// Returns variable by identifier and external state.
 	// Returns nil if not exist any variable in this identifier.
@@ -210,9 +210,9 @@ impl Lookup for ImportInfo {
 	// Just lookups non-external defines.
 	fn FindVar(mut *self, name: string, _: bool): &Var {
 		if !self.isLookupable() {
-			ret nil
+			return nil
 		}
-		ret findVarInPackage(self.Package.Files, name, false)
+		return findVarInPackage(self.Package.Files, name, false)
 	}
 
 	// Returns type alias by identifier.
@@ -222,9 +222,9 @@ impl Lookup for ImportInfo {
 	// Just lookups non-external defines.
 	fn FindTypeAlias(mut *self, name: string, _: bool): &TypeAlias {
 		if !self.isLookupable() {
-			ret nil
+			return nil
 		}
-		ret findTypeAliasInPackage(self.Package.Files, name, false)
+		return findTypeAliasInPackage(self.Package.Files, name, false)
 	}
 
 	// Returns struct by identifier and external state.
@@ -234,9 +234,9 @@ impl Lookup for ImportInfo {
 	// Just lookups non-external defines.
 	fn FindStruct(mut *self, name: string, _: bool): &Struct {
 		if !self.isLookupable() {
-			ret nil
+			return nil
 		}
-		ret findStructInPackage(self.Package.Files, name, false)
+		return findStructInPackage(self.Package.Files, name, false)
 	}
 
 	// Returns function by identifier and external state.
@@ -246,9 +246,9 @@ impl Lookup for ImportInfo {
 	// Just lookups non-external defines.
 	fn FindFunc(mut *self, name: string, _: bool): &Func {
 		if !self.isLookupable() {
-			ret nil
+			return nil
 		}
-		ret findFuncInPackage(self.Package.Files, name, false)
+		return findFuncInPackage(self.Package.Files, name, false)
 	}
 
 	// Returns trait by identifier.
@@ -257,9 +257,9 @@ impl Lookup for ImportInfo {
 	// Lookups by import way such as identifier selection.
 	fn FindTrait(mut *self, name: string): &Trait {
 		if !self.isLookupable() {
-			ret nil
+			return nil
 		}
-		ret findTraitInPackage(self.Package.Files, name)
+		return findTraitInPackage(self.Package.Files, name)
 	}
 
 	// Returns enum by identifier.
@@ -268,9 +268,9 @@ impl Lookup for ImportInfo {
 	// Lookups by import way such as identifier selection.
 	fn FindEnum(mut *self, name: string): &Enum {
 		if !self.isLookupable() {
-			ret nil
+			return nil
 		}
-		ret findEnumInPackage(self.Package.Files, name)
+		return findEnumInPackage(self.Package.Files, name)
 	}
 
 	// Returns type enum by identifier.
@@ -279,15 +279,15 @@ impl Lookup for ImportInfo {
 	// Lookups by import way such as identifier selection.
 	fn FindTypeEnum(mut *self, name: string): &TypeEnum {
 		if !self.isLookupable() {
-			ret nil
+			return nil
 		}
-		ret findTypeEnumInPackage(self.Package.Files, name)
+		return findTypeEnumInPackage(self.Package.Files, name)
 	}
 }
 
 impl ImportInfo {
 	fn isLookupable(*self): bool {
-		ret !self.Extern
+		return !self.Extern
 	}
 }
 
@@ -299,48 +299,48 @@ struct Package {
 
 impl Lookup for Package {
 	// Returns always nil.
-	fn SelectPackage(mut *self, fn(&ImportInfo): bool): &ImportInfo { ret nil }
+	fn SelectPackage(mut *self, fn(&ImportInfo): bool): &ImportInfo { return nil }
 
 	// Returns variable by identifier and external state.
 	// Returns nil if not exist any variable in this identifier.
 	fn FindVar(mut *self, name: string, _extern: bool): &Var {
-		ret findVarInPackage(self.Files, name, _extern)
+		return findVarInPackage(self.Files, name, _extern)
 	}
 
 	// Returns type alias by identifier and external state.
 	// Returns nil if not exist any type alias in this identifier.
 	fn FindTypeAlias(mut *self, name: string, _extern: bool): &TypeAlias {
-		ret findTypeAliasInPackage(self.Files, name, _extern)
+		return findTypeAliasInPackage(self.Files, name, _extern)
 	}
 
 	// Returns struct by identifier and external state.
 	// Returns nil if not exist any struct in this identifier.
 	fn FindStruct(mut *self, name: string, _extern: bool): &Struct {
-		ret findStructInPackage(self.Files, name, _extern)
+		return findStructInPackage(self.Files, name, _extern)
 	}
 
 	// Returns function by identifier and external state.
 	// Returns nil if not exist any function in this identifier.
 	fn FindFunc(mut *self, name: string, _extern: bool): &Func {
-		ret findFuncInPackage(self.Files, name, _extern)
+		return findFuncInPackage(self.Files, name, _extern)
 	}
 
 	// Returns trait by identifier.
 	// Returns nil if not exist any trait in this identifier.
 	fn FindTrait(mut *self, name: string): &Trait {
-		ret findTraitInPackage(self.Files, name)
+		return findTraitInPackage(self.Files, name)
 	}
 
 	// Returns enum by identifier.
 	// Returns nil if not exist any enum in this identifier.
 	fn FindEnum(mut *self, name: string): &Enum {
-		ret findEnumInPackage(self.Files, name)
+		return findEnumInPackage(self.Files, name)
 	}
 
 	// Returns type enum by identifier.
 	// Returns nil if not exist any type enum in this identifier.
 	fn FindTypeEnum(mut *self, name: string): &TypeEnum {
-		ret findTypeEnumInPackage(self.Files, name)
+		return findTypeEnumInPackage(self.Files, name)
 	}
 }
 
@@ -352,5 +352,5 @@ impl Lookup for Package {
 fn isStdPackage(f: string, p: string): bool {
 	// Do not handle '/' separators of p, because it
 	// valid path separator for all supported platforms.
-	ret strings::HasPrefix(f, filepath::Join(build::PathStdlib(), p))
+	return strings::HasPrefix(f, filepath::Join(build::PathStdlib(), p))
 }

@@ -64,7 +64,7 @@ fn WSASocket(domain: int, typ: int, proto: int, &protinfo: *WSAProtocolInfo, gro
 	if fd == INVALID_SOCKET {
 		throw Errno(WSAGetLastError())
 	}
-	ret
+	return
 }
 
 fn Bind(s: Handle, addr: uintptr, addrlen: Socklen)! {
@@ -131,11 +131,11 @@ fn WSAStartup(verReq: u16, mut &data: *WsaData)! {
 }
 
 unsafe fn WSAIoctl(h: Handle, iocc: u32, inbuf: *byte, cbif: u32, outbuf: *byte, cbob: u32, cbbr: *u32): int {
-	ret extern.WSAIoctl(h, extern.DWORD(iocc), inbuf, extern.DWORD(cbif), outbuf, extern.DWORD(cbob), (*extern.DWORD)(cbbr), nil, nil)
+	return extern.WSAIoctl(h, extern.DWORD(iocc), inbuf, extern.DWORD(cbif), outbuf, extern.DWORD(cbob), (*extern.DWORD)(cbbr), nil, nil)
 }
 
 fn MakeWord(a: u8, b: u8): u16 {
-	ret u16(a) | u16(b)<<8
+	return u16(a) | u16(b)<<8
 }
 
 fn Getsockopt(s: Handle, level: int, name: int, val: Handle, vallen: Socklen)! {
@@ -166,5 +166,5 @@ fn Select(nfd: int, mut &r: *FdSet, mut &w: *FdSet, mut &e: *FdSet, mut &timeout
 	if n < 0 {
 		throw Errno(WSAGetLastError())
 	}
-	ret
+	return
 }

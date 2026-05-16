@@ -60,7 +60,7 @@ const reduceThreshold = 1 << 29
 fn trigReduce(mut x: f64): (j: u64, z: f64) {
 	const Pi4 = Pi / 4
 	if x < Pi4 {
-		ret 0, x
+		return 0, x
 	}
 	// Extract out the integer and exponent such that,
 	// x = ix * 2 ** exp.
@@ -100,7 +100,7 @@ fn trigReduce(mut x: f64): (j: u64, z: f64) {
 		z--
 	}
 	// Multiply the fractional part by pi/4.
-	ret j, z * Pi4
+	return j, z * Pi4
 }
 
 // Is the binary digits of 4/pi as a u64 array,

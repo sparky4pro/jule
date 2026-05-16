@@ -46,40 +46,40 @@ const ListSeparator = ':'
 
 // Reports whether c is path separator.
 fn IsPathSeparator(c: byte): bool {
-	ret Separator == c
+	return Separator == c
 }
 
 // Reports whether the path is absolute.
 fn IsAbs(path: string): bool {
-	ret strings::HasPrefix(path, "/")
+	return strings::HasPrefix(path, "/")
 }
 
 // Returns length of the leading volume name on Windows.
 // It returns 0 elsewhere.
 fn VolumeNameLen(path: string): int {
-	ret 0
+	return 0
 }
 
 fn abs(path: string)!: string {
 	if IsAbs(path) {
-		ret Clean(path)
+		return Clean(path)
 	}
 	wd := os::Getwd()?
-	ret join(wd, path)
+	return join(wd, path)
 }
 
 fn join(elem: ...string): string {
 	for i, e in elem {
 		if e != "" {
-			ret Clean(strings::Join(elem[i:], string(Separator)))
+			return Clean(strings::Join(elem[i:], string(Separator)))
 		}
 	}
-	ret ""
+	return ""
 }
 
 fn splitList(path: string): []string {
 	if path == "" {
-		ret []
+		return []
 	}
-	ret strings::Split(path, string(ListSeparator))
+	return strings::Split(path, string(ListSeparator))
 }

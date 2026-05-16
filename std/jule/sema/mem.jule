@@ -13,40 +13,40 @@ fn Fastmemcopy(mut t: &Type): (r: bool) {
 	// The memcpy implementation is a kind of the memcpy function of C.
 	// There is no support for constructors, destructors, and other high level things.
 	if t.Extern() {
-		ret false
+		return false
 	}
 
 	mut arr := t.Array()
 	if arr != nil {
-		ret Fastmemcopy(arr.Value)
+		return Fastmemcopy(arr.Value)
 	}
 	mut s := t.Struct()
 	if s != nil {
-		ret fastmemcopyStruct(s)
+		return fastmemcopyStruct(s)
 	}
 
 	prim := t.Prim()
 	if prim == nil {
-		ret false
+		return false
 	}
 
 	// Type any is dynamic and perform GC.
 	// Like type any, type string performs GC too.
 	// We cannot use fastmemcopy for GC types.
-	ret !prim.IsAny() && !prim.IsString()
+	return !prim.IsAny() && !prim.IsString()
 }
 
 fn fastmemcopyStruct(mut s: &StructIns): (r: bool) {
 	// If struct type is empty (no fields), report true.
 	// No caching needed.
 	if len(s.Fields) == 0 {
-		ret true
+		return true
 	}
 
 	// Look to cache before analysis.
 	r, ok := memcpyCache[s]
 	if ok {
-		ret r
+		return r
 	}
 
 	for (_, mut field) in s.Fields {
@@ -60,5 +60,5 @@ fn fastmemcopyStruct(mut s: &StructIns): (r: bool) {
 Cache:
 	memcpyCache[s] = r
 
-	ret
+	return
 }

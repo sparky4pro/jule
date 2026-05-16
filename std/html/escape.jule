@@ -59,13 +59,13 @@ fn unescapeEntity(mut b: []byte, dst: int, src: int, &entity: *map[string]rune, 
 
 	if len(s) <= 1 {
 		b[dst] = b[src]
-		ret dst + 1, src + 1
+		return dst + 1, src + 1
 	}
 
 	if s[i] == '#' {
 		if len(s) <= 3 { // We need to have at least "&#.".
 			b[dst] = b[src]
-			ret dst + 1, src + 1
+			return dst + 1, src + 1
 		}
 		i++
 		mut c := s[i]
@@ -102,7 +102,7 @@ fn unescapeEntity(mut b: []byte, dst: int, src: int, &entity: *map[string]rune, 
 
 		if i <= 3 { // No characters matched.
 			b[dst] = b[src]
-			ret dst + 1, src + 1
+			return dst + 1, src + 1
 		}
 
 		if 0x80 <= x && x <= 0x9F {
@@ -113,7 +113,7 @@ fn unescapeEntity(mut b: []byte, dst: int, src: int, &entity: *map[string]rune, 
 			x = '\uFFFD'
 		}
 
-		ret dst + utf8::EncodeRune(b[dst:], x), src + i
+		return dst + utf8::EncodeRune(b[dst:], x), src + i
 	}
 
 	// Consume the maximum number of characters possible, with the
@@ -140,12 +140,12 @@ fn unescapeEntity(mut b: []byte, dst: int, src: int, &entity: *map[string]rune, 
 	} else {
 		mut x := (*entity)[string(entityName)]
 		if x != 0 {
-			ret dst + utf8::EncodeRune(b[dst:], x), src + i
+			return dst + utf8::EncodeRune(b[dst:], x), src + i
 		} else {
 			y := (*entity2)[string(entityName)]
 			if y[0] != 0 {
 				dst1 = dst + utf8::EncodeRune(b[dst:], y[0])
-				ret dst1 + utf8::EncodeRune(b[dst1:], y[1]), src + i
+				return dst1 + utf8::EncodeRune(b[dst1:], y[1]), src + i
 			} else if !attribute {
 				mut maxLen := len(entityName) - 1
 				if maxLen > longestEntityWithoutSemicolon {
@@ -155,7 +155,7 @@ fn unescapeEntity(mut b: []byte, dst: int, src: int, &entity: *map[string]rune, 
 				for j > 1; j-- {
 					x = (*entity)[string(entityName[:j])]
 					if x != 0 {
-						ret dst + utf8::EncodeRune(b[dst:], x), src + j + 1
+						return dst + utf8::EncodeRune(b[dst:], x), src + j + 1
 					}
 				}
 			}
@@ -164,7 +164,7 @@ fn unescapeEntity(mut b: []byte, dst: int, src: int, &entity: *map[string]rune, 
 
 	dst1, src1 = dst+i, src+i
 	copy(b[dst:dst1], b[src:src1])
-	ret dst1, src1
+	return dst1, src1
 }
 
 // "&#39;" is shorter than "&apos;" and apos was not in HTML until HTML5.
@@ -180,7 +180,7 @@ let htmlEscaper = strings::Replacer.New(
 // escapes only five such characters: <, >, &, ' and ".
 // UnescapeString(EscapeString(s)) == s always holds, but the converse isn't always true.
 fn EscapeString(s: string): string {
-	ret htmlEscaper.Replace(s)
+	return htmlEscaper.Replace(s)
 }
 
 // Unescapes entities like "&lt;" to become "<". It unescapes a
@@ -190,7 +190,7 @@ fn EscapeString(s: string): string {
 fn UnescapeString(s: string): string {
 	mut i := strings::IndexByte(s, '&')
 	if i < 0 {
-		ret s
+		return s
 	}
 	mut b := []byte(s)
 	mut dst, mut src := unescapeEntity(b, i, i, &entity, &entity2)
@@ -210,5 +210,5 @@ fn UnescapeString(s: string): string {
 		}
 		dst, src = unescapeEntity(b, dst+i, src+i, &entity, &entity2)
 	}
-	ret unsafe::StringFromBytes(b[:dst])
+	return unsafe::StringFromBytes(b[:dst])
 }

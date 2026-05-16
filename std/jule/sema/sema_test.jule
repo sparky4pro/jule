@@ -18,7 +18,7 @@ fn checkSema(data: string): (err: bool) {
 		panic("sema: parser issue")
 	}
 	_, logs := AnalyzeFile(fi.AST, nil, Default)
-	ret len(logs) > 0
+	return len(logs) > 0
 }
 
 struct missingRetCheckerTest {
@@ -187,7 +187,7 @@ Fizz:
 		code: `
 fn test(): int {
 	if true {
-		ret 0
+		return 0
 	}
 }
 `,
@@ -197,9 +197,9 @@ fn test(): int {
 		code: `
 fn test(): int {
 	if true {
-		ret 0
+		return 0
 	} else {
-		ret 0
+		return 0
 	}
 }
 `,
@@ -209,11 +209,11 @@ fn test(): int {
 		code: `
 fn test(): int {
 	if true {
-		ret 0
+		return 0
 	} else if true {
-		ret 0
+		return 0
 	} else {
-		ret 0
+		return 0
 	}
 }
 `,
@@ -223,10 +223,10 @@ fn test(): int {
 		code: `
 fn test(): int {
 	if true {
-		ret 0
+		return 0
 	} else if true {
 	} else {
-		ret 0
+		return 0
 	}
 }
 `,
@@ -237,7 +237,7 @@ fn test(): int {
 fn test(): int {
 	match {
 	| true:
-		ret 0
+		return 0
 	}
 }
 `,
@@ -248,9 +248,9 @@ fn test(): int {
 fn test(): int {
 	match {
 	| true:
-		ret 0
+		return 0
 	|:
-		ret 0
+		return 0
 	}
 }
 `,
@@ -261,11 +261,11 @@ fn test(): int {
 fn test(): int {
 	match {
 	| true:
-		ret 0
+		return 0
 	| true:
-		ret 0
+		return 0
 	|:
-		ret 0
+		return 0
 	}
 }
 `,
@@ -276,10 +276,10 @@ fn test(): int {
 fn test(): int {
 	match {
 	| true:
-		ret 0
+		return 0
 	| true:
 	|:
-		ret 0
+		return 0
 	}
 }
 `,
@@ -291,7 +291,7 @@ fn test(): int {
 	if true {
 		goto Bar
 	}
-	ret 0
+	return 0
 Bar:
 }
 `,
@@ -304,7 +304,7 @@ fn test(): int {
 		goto Bar
 	}
 Bar:
-	ret 0
+	return 0
 }
 `,
 		err: false,
@@ -315,7 +315,7 @@ async fn test(): int {
 	if true {
 		goto Bar
 	}
-	ret 0
+	return 0
 Bar:
 	select{}
 }
@@ -341,11 +341,11 @@ fn test()!: int {
 	{
 		code: `
 fn foo()!: int {
-	ret 0
+	return 0
 }
 
 fn test()!: int {
-	ret foo()!
+	return foo()!
 }
 `,
 		err: false,
@@ -353,11 +353,11 @@ fn test()!: int {
 	{
 		code: `
 fn foo()!: int {
-	ret 0
+	return 0
 }
 
 fn test()!: int {
-	ret foo() else { use 1 }
+	return foo() else { use 1 }
 }
 `,
 		err: false,
@@ -365,11 +365,11 @@ fn test()!: int {
 	{
 		code: `
 fn foo()!: int {
-	ret 0
+	return 0
 }
 
 fn test()!: int {
-	ret foo() else { ret 1 }
+	return foo() else { return 1 }
 }
 `,
 		err: false,
@@ -377,11 +377,11 @@ fn test()!: int {
 	{
 		code: `
 fn foo()!: int {
-	ret 0
+	return 0
 }
 
 fn test()!: int {
-	ret foo() else {
+	return foo() else {
 		goto Foo
 	}
 Foo:
@@ -392,12 +392,12 @@ Foo:
 	{
 		code: `
 fn foo()!: int {
-	ret 0
+	return 0
 }
 
 fn test()!: int {
 	for {
-		ret foo() else {
+		return foo() else {
 			goto Foo
 		}
 	}
@@ -409,7 +409,7 @@ Foo:
 	{
 		code: `
 fn foo()!: int {
-	ret 0
+	return 0
 }
 
 fn test()!: int {
@@ -426,7 +426,7 @@ Foo:
 	{
 		code: `
 fn foo()!: int {
-	ret 0
+	return 0
 }
 
 fn test()!: int {
@@ -489,7 +489,7 @@ fn foo()! {}
 fn test()!: string {
 	{
 		foo() else { goto Keep }
-		ret ""
+		return ""
 	Keep:
 	}
 	throw "pseudo error"
@@ -504,7 +504,7 @@ fn foo()! {}
 fn test()!: string {
 	{
 		foo() else { goto Keep }
-		ret ""
+		return ""
 	}
 	throw "pseudo error"
 Keep:
@@ -520,7 +520,7 @@ fn test()!: string {
 	for {
 		{
 			foo() else { goto Keep }
-			ret ""
+			return ""
 		}
 	Keep:
 	}
@@ -535,7 +535,7 @@ fn foo()! {}
 fn test()!: string {
 	for {
 		foo() else { goto Keep }
-		ret ""
+		return ""
 	Keep:
 	}
 }
@@ -547,9 +547,9 @@ fn test()!: string {
 async fn foo(mut ch: chan bool): bool {
 	select {
 	| ch <- true:
-		ret true
+		return true
 	|:
-		ret false
+		return false
 	}
 }
 `,
@@ -561,9 +561,9 @@ async fn foo(mut ch: chan bool): bool {
 	select {
 	| ch <- true:
 		break
-		ret true
+		return true
 	|:
-		ret false
+		return false
 	}
 }
 `,
@@ -577,9 +577,9 @@ async fn foo(mut ch: chan bool): bool {
 		if true {
 			break
 		}
-		ret true
+		return true
 	|:
-		ret false
+		return false
 	}
 }
 `,
@@ -594,9 +594,9 @@ async fn foo(mut ch: chan bool): bool {
 		| ch <- true:
 			break
 		}
-		ret true
+		return true
 	|:
-		ret false
+		return false
 	}
 }
 `,
@@ -612,9 +612,9 @@ Root:
 		| ch <- true:
 			break Root
 		}
-		ret true
+		return true
 	|:
-		ret false
+		return false
 	}
 }
 `,
@@ -630,7 +630,7 @@ fn foo()!: []int {
 	for {
 		{
 			bar() else { goto Label }
-			ret nil
+			return nil
 		}
 	Label:
 	}
@@ -647,7 +647,7 @@ fn foo()!: []int {
 	{
 		{
 			bar() else { goto Label }
-			ret nil
+			return nil
 		}
 	Label:
 	}

@@ -21,7 +21,7 @@ impl netFD {
 		}
 		sys::Connect(fd, sockaddr, socksize) else {
 			if error == sys::EISCONN {
-				ret
+				return
 			}
 			if error != sys::EINPROGRESS &&
 				error != sys::EALREADY &&
@@ -48,17 +48,17 @@ impl netFD {
 					// see Go's issues 14548 and 19289. Check that we are
 					// really connected; if not, wait again.
 					sys::Getpeername(fd) else { continue }
-					ret
+					return
 				| sys::EINPROGRESS | sys::EALREADY | sys::EINTR:
 					continue
 				| sys::EISCONN:
-					ret
+					return
 				|:
 					throw err
 				}
 			}
 		}
-		ret
+		return
 	}
 
 	#disable nilptr
@@ -92,6 +92,6 @@ impl netFD {
 			fd.Close().await else {}
 			throw error
 		}
-		ret
+		return
 	}
 }

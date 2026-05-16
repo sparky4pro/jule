@@ -144,11 +144,11 @@ fn Log1p(x: f64): f64 {
 	// special cases
 	match {
 	| x < -1 | IsNaN(x): // includes -inf
-		ret NaN()
+		return NaN()
 	| x == -1:
-		ret Inf(-1)
+		return Inf(-1)
 	| IsInf(x, 1):
-		ret Inf(1)
+		return Inf(1)
 	}
 
 	absx := Abs(x)
@@ -159,9 +159,9 @@ fn Log1p(x: f64): f64 {
 	if absx < Sqrt2m1 { // |x| < sqrt(2)-1
 		if absx < Small { // |x| < 2**-29
 			if absx < Tiny { // |x| < 2**-54
-				ret x
+				return x
 			}
-			ret x - x*x*0.5
+			return x - x*x*0.5
 		}
 		if x > Sqrt2Halfm1 { // sqrt(2)/2-1 < x
 			// (sqrt(2)/2-1) < x < (sqrt(2)-1)
@@ -208,22 +208,22 @@ fn Log1p(x: f64): f64 {
 	if iu == 0 { // |f| < 2**-20
 		if f == 0 {
 			if k == 0 {
-				ret 0
+				return 0
 			}
 			c += f64(k) * Ln2Lo
-			ret f64(k)*Ln2Hi + c
+			return f64(k)*Ln2Hi + c
 		}
 		R = hfsq * (1.0 - 0.66666666666666666*f) // avoid division
 		if k == 0 {
-			ret f - R
+			return f - R
 		}
-		ret f64(k)*Ln2Hi - ((R - (f64(k)*Ln2Lo + c)) - f)
+		return f64(k)*Ln2Hi - ((R - (f64(k)*Ln2Lo + c)) - f)
 	}
 	s = f / (2.0 + f)
 	z = s * s
 	R = z * (LP1 + z*(LP2+z*(LP3+z*(LP4+z*(LP5+z*(LP6+z*LP7))))))
 	if k == 0 {
-		ret f - (hfsq - s*(hfsq+R))
+		return f - (hfsq - s*(hfsq+R))
 	}
-	ret f64(k)*Ln2Hi - ((hfsq - (s*(hfsq+R) + (f64(k)*Ln2Lo + c))) - f)
+	return f64(k)*Ln2Hi - ((hfsq - (s*(hfsq+R) + (f64(k)*Ln2Lo + c))) - f)
 }

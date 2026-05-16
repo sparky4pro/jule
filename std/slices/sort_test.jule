@@ -11,7 +11,7 @@ let caseF64sWithNaNs = [74.3, 59.0, math::Inf(1), 238.2, -784.0, 2.3, math::NaN(
 let caseStrs = ["", "Hello", "foo", "bar", "foo", "f00", "%*&^*&^&", "***"]
 
 fn cloneSlice[T](s: T): T {
-	ret append(make(T, 0, len(s)), s...)
+	return append(make(T, 0, len(s)), s...)
 }
 
 #test
@@ -66,7 +66,7 @@ fn testIntsFunc(t: &testing::T) {
 
 #test
 fn testF64sFunc(t: &testing::T) {
-	cmp := fn(a: f64, b: f64): int { ret compare(a, b) }
+	cmp := fn(a: f64, b: f64): int { return compare(a, b) }
 	mut case := cloneSlice(caseF64s)
 	SortFunc(case, cmp)
 	if !IsSorted(case) {
@@ -83,7 +83,7 @@ fn testF64sFunc(t: &testing::T) {
 
 #test
 fn testStrsFunc(t: &testing::T) {
-	cmp := fn(a: string, b: string): int { ret compare(a, b) }
+	cmp := fn(a: string, b: string): int { return compare(a, b) }
 	mut case := cloneSlice(caseStrs)
 	SortFunc(case, cmp)
 	if !IsSorted(case) {
@@ -101,10 +101,10 @@ fn testStrsFunc(t: &testing::T) {
 fn compare[T](a: T, b: T): int {
 	match {
 	| a < b:
-		ret -1
+		return -1
 	| a > b:
-		ret +1
+		return +1
 	|:
-		ret 0
+		return 0
 	}
 }

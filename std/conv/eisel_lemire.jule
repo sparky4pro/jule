@@ -47,10 +47,10 @@ fn eiselLemire64(mut man: u64, exp10: int, neg: bool): (f: f64, ok: bool) {
 		if neg {
 			f = math::F64frombits(0x8000000000000000) // Negative zero.
 		}
-		ret f, true
+		return f, true
 	}
 	if exp10 < detailedPowsOfTenMinExp10 || detailedPowsOfTenMaxExp10 < exp10 {
-		ret 0, false
+		return 0, false
 	}
 
 	// Normalization.
@@ -70,7 +70,7 @@ fn eiselLemire64(mut man: u64, exp10: int, neg: bool): (f: f64, ok: bool) {
 			mergedHi++
 		}
 		if mergedHi&0x1FF == 0x1FF && mergedLo+1 == 0 && yLo+man < man {
-			ret 0, false
+			return 0, false
 		}
 		xHi, xLo = mergedHi, mergedLo
 	}
@@ -82,7 +82,7 @@ fn eiselLemire64(mut man: u64, exp10: int, neg: bool): (f: f64, ok: bool) {
 
 	// Half-way Ambiguity.
 	if xLo == 0 && xHi&0x1FF == 0 && retMantissa&3 == 1 {
-		ret 0, false
+		return 0, false
 	}
 
 	// From 54 to 53 Bits.
@@ -98,13 +98,13 @@ fn eiselLemire64(mut man: u64, exp10: int, neg: bool): (f: f64, ok: bool) {
 	// The if block is equivalent to (but has fewer branches than):
 	//   if retExp2 <= 0 || retExp2 >= 0x7FF { etc }
 	if retExp2-1 >= 0x7FF-1 {
-		ret 0, false
+		return 0, false
 	}
 	mut retBits := retExp2<<52 | retMantissa&0x000FFFFFFFFFFFFF
 	if neg {
 		retBits |= 0x8000000000000000
 	}
-	ret math::F64frombits(retBits), true
+	return math::F64frombits(retBits), true
 }
 
 fn eiselLemire32(mut man: u64, exp10: int, neg: bool): (f: f32, ok: bool) {
@@ -122,10 +122,10 @@ fn eiselLemire32(mut man: u64, exp10: int, neg: bool): (f: f32, ok: bool) {
 		if neg {
 			f = math::F32frombits(0x80000000) // Negative zero.
 		}
-		ret f, true
+		return f, true
 	}
 	if exp10 < detailedPowsOfTenMinExp10 || detailedPowsOfTenMaxExp10 < exp10 {
-		ret 0, false
+		return 0, false
 	}
 
 	// Normalization.
@@ -145,7 +145,7 @@ fn eiselLemire32(mut man: u64, exp10: int, neg: bool): (f: f32, ok: bool) {
 			merged_hi++
 		}
 		if merged_hi&0x3FFFFFFFFF == 0x3FFFFFFFFF && merged_lo+1 == 0 && y_lo+man < man {
-			ret 0, false
+			return 0, false
 		}
 		x_hi, x_lo = merged_hi, merged_lo
 	}
@@ -157,7 +157,7 @@ fn eiselLemire32(mut man: u64, exp10: int, neg: bool): (f: f32, ok: bool) {
 
 	// Half-way Ambiguity.
 	if x_lo == 0 && x_hi&0x3FFFFFFFFF == 0 && retMantissa&3 == 1 {
-		ret 0, false
+		return 0, false
 	}
 
 	// From 54 to 53 Bits (and for f32, it's from 25 to 24 bits).
@@ -173,13 +173,13 @@ fn eiselLemire32(mut man: u64, exp10: int, neg: bool): (f: f32, ok: bool) {
 	// The if block is equivalent to (but has fewer branches than):
 	//   if retExp2 <= 0 || retExp2 >= 0xFF { etc }
 	if retExp2-1 >= 0xFF-1 {
-		ret 0, false
+		return 0, false
 	}
 	mut retBits := retExp2<<23 | retMantissa&0x007FFFFF
 	if neg {
 		retBits |= 0x80000000
 	}
-	ret math::F32frombits(u32(retBits)), true
+	return math::F32frombits(u32(retBits)), true
 }
 
 // detailed_pows_of_ten{min,max}exp10 is the power of 10 represented by the

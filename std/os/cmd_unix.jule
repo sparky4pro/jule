@@ -112,10 +112,10 @@ impl Cmd {
 		stat := ignoringEINTR2(fn()!: i32 {
 			mut stat := i32(0)
 			sys::Waitpid(pid, &stat, 0)?
-			ret stat
+			return stat
 		})?
 		self.attrs.pid = invalidPid
-		ret extern.WEXITSTATUS(stat)
+		return extern.WEXITSTATUS(stat)
 	}
 }
 
@@ -133,7 +133,7 @@ fn findExecutable(file: string)! {
 			throw error
 		}
 		if m&0111 != 0 {
-			ret
+			return
 		}
 		throw sys::Errno(sys::EACCES)
 	}
@@ -148,7 +148,7 @@ fn lookPath(file: string)!: string {
 		findExecutable(file) else {
 			throw &lookpathError{file, error}
 		}
-		ret file
+		return file
 	}
 	mut path := Getenv("PATH")
 	for (_, mut dir) in filepathlite::SplitList(path) {
@@ -161,11 +161,11 @@ fn lookPath(file: string)!: string {
 		if !filepathlite::IsAbs(path) {
 			throw &lookpathError{file, errDot}
 		}
-		ret path
+		return path
 	}
 	throw &lookpathError{file, errNotFound}
 }
 
 // This is a no-op on non-Windows platforms, since
 // they do not restrict executables to specific extensions.
-fn lookExtensions(path: string, dir: string)!: string { ret path }
+fn lookExtensions(path: string, dir: string)!: string { return path }

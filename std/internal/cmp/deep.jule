@@ -12,43 +12,43 @@ fn DeepEqual[T](a: T, b: T): bool {
 	const match {
 	| t.CanNil():
 		if a == nil {
-			ret b == nil
+			return b == nil
 		}
 		if b == nil {
-			ret false
+			return false
 		}
 	}
 	const match t.Kind() {
 	| comptime::Slice:
 		if len(a) != len(b) {
-			ret false
+			return false
 		}
 		for i in a {
 			if !DeepEqual(a[i], b[i]) {
-				ret false
+				return false
 			}
 		}
-		ret true
+		return true
 	| comptime::Any | comptime::Trait | comptime::TypeEnum:
-		ret a == b
+		return a == b
 	| comptime::Smartptr:
-		ret DeepEqual(*a, *b)
+		return DeepEqual(*a, *b)
 	| comptime::Enum:
-		ret a == b
+		return a == b
 	| comptime::String | comptime::Bool
 	| comptime::F32 | comptime::F64
 	| comptime::Int | comptime::I8 | comptime::I16 | comptime::I32 | comptime::I64
 	| comptime::Uint | comptime::Uintptr | comptime::U8 | comptime::U16 | comptime::U32 | comptime::U64:
-		ret a == b
+		return a == b
 	| comptime::Struct:
 		const av = comptime::ValueOf(a)
 		const bv = comptime::ValueOf(b)
 		const for i in t.Fields() {
 			if !DeepEqual(av.FieldByIndex(i).Unwrap(), bv.FieldByIndex(i).Unwrap()) {
-				ret false
+				return false
 			}
 		}
-		ret true
+		return true
 	|:
 		panic("std/internal/cmd: DeepEqual: unsupported type: " + t.String())
 	}

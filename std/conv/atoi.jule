@@ -45,7 +45,7 @@ const IntSize = intSize
 // Instead of writing c == 'x' || c == 'X' one can write lower(c) == 'x'.
 // Note that lower of non-letters can produce other non-letters.
 fn lower(c: byte): byte {
-	ret c | ('x' - 'X')
+	return c | ('x' - 'X')
 }
 
 // Is like [ParseInt] but for unsigned numbers.
@@ -145,7 +145,7 @@ fn ParseUint(mut s: string, mut base: int, mut bitSize: int)!: u64 {
 		throw syntaxError(fnParseUint, s0)
 	}
 
-	ret n
+	return n
 }
 
 // Interprets a string s in the given base (0, 2 to 36) and
@@ -214,7 +214,7 @@ fn ParseInt(mut s: string, base: int, mut bitSize: int)!: i64 {
 	if neg {
 		n = -n
 	}
-	ret n
+	return n
 }
 
 // Is equivalent to ParseInt(s, 10, 0), converted to int.
@@ -244,7 +244,7 @@ fn Atoi(mut s: string)!: int {
 		if s0[0] == '-' {
 			n = -n
 		}
-		ret n
+		return n
 	}
 
 	// Slow path for invalid, big, or underscored integers.
@@ -255,7 +255,7 @@ fn Atoi(mut s: string)!: int {
 		}
 		throw error
 	}
-	ret int(int64)
+	return int(int64)
 }
 
 // Reports whether the underscores in s are allowed.
@@ -293,17 +293,17 @@ fn underscoreOK(mut s: string): bool {
 		// Underscore must follow digit.
 		if s[i] == '_' {
 			if saw != '0' {
-				ret false
+				return false
 			}
 			saw = '_'
 			continue
 		}
 		// Underscore must also be followed by digit.
 		if saw == '_' {
-			ret false
+			return false
 		}
 		// Saw non-digit, non-underscore.
 		saw = '!'
 	}
-	ret saw != '_'
+	return saw != '_'
 }

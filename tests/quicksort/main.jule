@@ -4,7 +4,7 @@
 
 fn quicksort(mut s: []int) {
 	if len(s) <= 1 {
-		ret
+		return
 	}
 
 	let mut i = -1

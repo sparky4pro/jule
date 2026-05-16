@@ -121,14 +121,14 @@ fn Collect(mut ir: &obj::IR): &Meta {
 	mut meta := new(Meta)
 	meta.Runtime = CollectRuntime(ir)
 	meta.StringBuilder = CollectStringBuilder(ir)
-	ret meta
+	return meta
 }
 
 // Collects Runtime from IR if possible.
 fn CollectRuntime(mut ir: &obj::IR): &Runtime {
 	mut p := obj::SelectImport(ir.Used, linkpathRuntime)
 	if p == nil {
-		ret nil
+		return nil
 	}
 	mut meta := new(Runtime)
 
@@ -209,13 +209,13 @@ fn CollectRuntime(mut ir: &obj::IR): &Runtime {
 
 	p = obj::SelectImport(ir.Used, linkpathInternalRuntimeBuiltin)
 	if p == nil {
-		ret nil
+		return nil
 	}
 
 	meta.Zprint = obj::RuntimeFindFunc(p, "zprint").Instances[0]
 	meta.Zprintln = obj::RuntimeFindFunc(p, "zprintln").Instances[0]
 
-	ret meta
+	return meta
 }
 
 // Collects StringBuilder from IR if possible.
@@ -224,7 +224,7 @@ fn CollectStringBuilder(mut ir: &obj::IR): &StringBuilder {
 	const Static = false
 	mut p := obj::SelectImport(ir.Used, linkpathStrings)
 	if p == nil {
-		ret nil
+		return nil
 	}
 	mut b := p.FindStruct("Builder", Extern).Instances[0]
 	mut meta := new(StringBuilder)
@@ -232,5 +232,5 @@ fn CollectStringBuilder(mut ir: &obj::IR): &StringBuilder {
 	const for _, f in metav.Type().Decl().Fields() {
 		metav.Field(f.Name()).Unwrap() = b.FindMethod(f.Name(), Static).Instances[0]
 	}
-	ret meta
+	return meta
 }

@@ -630,7 +630,7 @@ fn Select(nfd: int, mut &r: *FdSet, mut &w: *FdSet, mut &e: *FdSet, mut &timeout
 	if e1 != _NO_ERROR {
 		throw e1
 	}
-	ret
+	return
 }
 
 fn socketcall(call: uintptr, arg0: uintptr, arg1: uintptr, arg2: uintptr, arg3: uintptr, arg4: uintptr, arg5: uintptr): (n: int, err: Errno) {
@@ -638,7 +638,7 @@ fn socketcall(call: uintptr, arg0: uintptr, arg1: uintptr, arg2: uintptr, arg3: 
 	r0, e0 := syscall(SYS_SOCKETCALL, call, uintptr(&args[0]), 0, 0, 0, 0)
 	err = e0
 	n = int(r0)
-	ret
+	return
 }
 
 fn Socket(domain: int, typ: int, proto: int)!: (fd: int) {
@@ -646,7 +646,7 @@ fn Socket(domain: int, typ: int, proto: int)!: (fd: int) {
 	if e != _NO_ERROR {
 		throw e
 	}
-	ret
+	return
 }
 
 fn Bind(s: int, addr: uintptr, addrlen: Socklen)! {
@@ -676,7 +676,7 @@ fn Accept(s: int, addr: uintptr, &addrLen: *Socklen)!: (fd: int) {
 	if e != _NO_ERROR {
 		throw e
 	}
-	ret
+	return
 }
 
 fn Recvfrom(fd: int, mut p: []byte, flags: int, from: uintptr, fromLen: Socklen)!: (n: int) {
@@ -689,7 +689,7 @@ fn Recvfrom(fd: int, mut p: []byte, flags: int, from: uintptr, fromLen: Socklen)
 	if e1 != _NO_ERROR {
 		throw e1
 	}
-	ret
+	return
 }
 
 fn Sendto(s: int, buf: []byte, flags: int, to: uintptr, addrlen: Socklen)! {
@@ -731,31 +731,31 @@ fn Getpeername(fd: int)!: RawSockaddrAny {
 	if e1 != _NO_ERROR {
 		throw e1
 	}
-	ret rsa
+	return rsa
 }
 
 fn Getegid(): (egid: int) {
 	r0, _ := syscall(SYS_GETEGID32, 0, 0, 0, 0, 0, 0)
 	egid = int(r0)
-	ret
+	return
 }
 
 fn Geteuid(): (euid: int) {
 	r0, _ := syscall(SYS_GETEUID32, 0, 0, 0, 0, 0, 0)
 	euid = int(r0)
-	ret
+	return
 }
 
 fn Getgid(): (gid: int) {
 	r0, _ := syscall(SYS_GETGID32, 0, 0, 0, 0, 0, 0)
 	gid = int(r0)
-	ret
+	return
 }
 
 fn Getuid(): (uid: int) {
 	r0, _ := syscall(SYS_GETUID32, 0, 0, 0, 0, 0, 0)
 	uid = int(r0)
-	ret
+	return
 }
 
 fn getgroups(n: int, list: uintptr)!: (nn: int) {
@@ -764,7 +764,7 @@ fn getgroups(n: int, list: uintptr)!: (nn: int) {
 	if e1 != 0 {
 		throw e1
 	}
-	ret
+	return
 }
 
 fn Uname(mut &buf: *Utsname)! {
@@ -772,5 +772,5 @@ fn Uname(mut &buf: *Utsname)! {
 	if e1 != 0 {
 		throw e1
 	}
-	ret
+	return
 }

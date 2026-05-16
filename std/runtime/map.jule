@@ -203,13 +203,13 @@ impl bitset {
 	// Returns groupSize if the bitset is empty.
 	#disable nilptr
 	fn first(*self): u32 {
-		ret u32(bits::TrailingZeros64(u64(*self))) >> 3
+		return u32(bits::TrailingZeros64(u64(*self))) >> 3
 	}
 
 	// Removes the first set bit (that is, resets the least significant set bit to 0).
 	#disable nilptr
 	fn removeFirst(*self): bitset {
-		ret *self & (*self - 1)
+		return *self & (*self - 1)
 	}
 }
 
@@ -230,10 +230,10 @@ impl ctrlGroup {
 	fn get(*self, mut i: u32): ctrl {
 		const match {
 		| LittleEndian:
-			ret unsafe { *((*ctrl)(self) + uint(i)) }
+			return unsafe { *((*ctrl)(self) + uint(i)) }
 		| BigEndian:
 			i = i ^ (groupSize - 1) // equivalent to (groupSize-1-i).
-			ret unsafe { *((*ctrl)(self) + uint(i)) }
+			return unsafe { *((*ctrl)(self) + uint(i)) }
 		|:
 			panic("unreachable")
 		}
@@ -272,7 +272,7 @@ impl ctrlGroup {
 		// match and never occur on ctrlEmpty, or ctrlDeleted. The subsequent key
 		// comparisons ensure that there is no correctness issue.
 		v := u64(*self) ^ (bitsetLSB * u64(h))
-		ret bitset(((v - bitsetLSB) & ^v) & bitsetMSB)
+		return bitset(((v - bitsetLSB) & ^v) & bitsetMSB)
 	}
 
 	// Returns the set of slots in the group that are empty.
@@ -285,7 +285,7 @@ impl ctrlGroup {
 		// A slot is empty iff bit 7 is set and bit 1 is not. We could select any
 		// of the other bits here (e.g. v << 1 would also work).
 		v := u64(*self)
-		ret bitset((v & ^(v << 6)) & bitsetMSB)
+		return bitset((v & ^(v << 6)) & bitsetMSB)
 	}
 
 	// Returns the set of slots in the group that are empty or deleted.
@@ -297,7 +297,7 @@ impl ctrlGroup {
 		//
 		// A slot is empty or deleted iff bit 7 is set and bit 0 is not.
 		v := u64(*self)
-		ret bitset((v & ^(v << 7)) & bitsetMSB)
+		return bitset((v & ^(v << 7)) & bitsetMSB)
 	}
 
 	// Converts deleted control bytes in a group to empty control bytes,
@@ -347,7 +347,7 @@ struct probeSeq {
 
 impl probeSeq {
 	fn make(hash: uintptr, mask: u32): probeSeq {
-		ret probeSeq{
+		return probeSeq{
 			mask:   mask,
 			offset: u32(hash) & mask,
 			index:  0,
@@ -359,20 +359,20 @@ impl probeSeq {
 		mut s := *self
 		s.index++
 		s.offset = (s.offset + s.index) & s.mask
-		ret s
+		return s
 	}
 }
 
 // Extracts the H1 portion of a hash: the 57 upper bits.
 fn h1(h: uintptr): uintptr {
-	ret h >> 7
+	return h >> 7
 }
 
 // Extracts the H2 portion of a hash: the 7 bits not used for h1.
 //
 // These are used as an occupied control byte.
 fn h2(h: uintptr): uintptr {
-	ret h & 0x7f
+	return h & 0x7f
 }
 
 // Holds groupSize control bytes and slots (key:value) arrays.
@@ -434,7 +434,7 @@ impl table {
 	// occupied so as not to violate the probing invariant.
 	#disable nilptr
 	fn tombstones(*self): u32 {
-		ret (self.capacity*maxAvgGroupLoad)/groupSize - self.used - self.growthLeft
+		return (self.capacity*maxAvgGroupLoad)/groupSize - self.used - self.growthLeft
 	}
 
 	// Inserts an entry known not to be in the table. Used by set
@@ -461,7 +461,7 @@ impl table {
 						self.growthLeft--
 					}
 					g.ctrls.set(i, ctrl(h2(h)))
-					ret &g.values[i]
+					return &g.values[i]
 				}
 			}
 		}
@@ -482,7 +482,7 @@ impl table {
 		// number of tomstones is capacity*7/8 - used.
 		if self.capacity > groupSize && self.tombstones() >= self.capacity/3 {
 			self.rehashInPlace(m)
-			ret
+			return
 		}
 
 		// If the newCapacity is larger than the maxTableCapacity split the
@@ -491,7 +491,7 @@ impl table {
 		newCapacity := self.capacity << 1
 		if newCapacity > m.maxTableCapacity {
 			self.split(m)
-			ret
+			return
 		}
 
 		self.resize(m, newCapacity)
@@ -621,7 +621,7 @@ impl table {
 				m.maxTableCapacity = m.maxTableCapacity << 1
 				*newt = table[K, V]{}
 				t.resize(m, t.capacity<<1)
-				ret
+				return
 			}
 
 			if t.used == 0 {
@@ -633,7 +633,7 @@ impl table {
 				m.maxTableCapacity = m.maxTableCapacity << 1
 				newt = m.installTable(&(*newt))
 				newt.resize(m, newt.capacity<<1)
-				ret
+				return
 			}
 
 			// We need to ensure table t, which we evacuated records from, has empty
@@ -668,7 +668,7 @@ impl table {
 	#disable boundary nilptr
 	fn rehashInPlace(mut *self, mut &m: *hmap[K, V]) {
 		if self.capacity == 0 {
-			ret
+			return
 		}
 
 		// We want to drop all of the deletes in place. We first walk over the
@@ -872,22 +872,22 @@ impl hmap {
 			}
 		}
 
-		ret m
+		return m
 	}
 
 	// Returns the number of entries in the map.
 	// Implementation of the built-in len function for map types.
 	fn len(*self): int {
 		if self == nil {
-			ret 0
+			return 0
 		}
-		ret self.used
+		return self.used
 	}
 
 	// Returns the hash value of the key.
 	#disable nilptr
 	fn hash(*self, &key: *K): uintptr {
-		ret maphash(key, self.seed)
+		return maphash(key, self.seed)
 	}
 
 	// Returns the number of bits from the top of the hash to use for
@@ -895,16 +895,16 @@ impl hmap {
 	#disable nilptr
 	fn globalDepth(*self): u32 {
 		if self.globalShift == 0 {
-			ret 0
+			return 0
 		}
-		ret runtime::PtrBits - self.globalShift
+		return runtime::PtrBits - self.globalShift
 	}
 
 	// Returns the number of tables in the tables directory.
 	#disable nilptr
 	fn tableCount(*self): u32 {
 		const shiftMask = 31
-		ret u32(1) << (self.globalDepth() & shiftMask)
+		return u32(1) << (self.globalDepth() & shiftMask)
 	}
 
 	// Installs a table into the tables directory, overwriting
@@ -916,7 +916,7 @@ impl hmap {
 		for i < step; i++ {
 			self.dir[t.index+i] = *t
 		}
-		ret &self.dir[t.index]
+		return &self.dir[t.index]
 	}
 
 	// Grows the directory slice to 1<<newGlobalDepth tables. Grow
@@ -958,7 +958,7 @@ impl hmap {
 		self.dir = newDir
 		self.globalShift = runtime::PtrBits - newGlobalDepth
 
-		ret newIndex
+		return newIndex
 	}
 
 	// Returns the table corresponding to hash value h.
@@ -967,9 +967,9 @@ impl hmap {
 		// NB: It is faster to check for the single table case using a
 		// conditional than to index into the directory.
 		if self.globalShift == 0 {
-			ret &self.table0
+			return &self.table0
 		}
-		ret &self.dir[h>>(self.globalShift&shiftMask)]
+		return &self.dir[h>>(self.globalShift&shiftMask)]
 	}
 
 	#disable boundary nilptr
@@ -977,13 +977,13 @@ impl hmap {
 		// NB: It is faster to check for the single table case using a
 		// conditional than to to index into the directory.
 		if self.globalShift == 0 {
-			ret &self.table0
+			return &self.table0
 		}
 		bidx := self.dir[h>>(self.globalShift&shiftMask)].index
 		// The mutable table is the one located at self.dir[t.index]. This will
 		// usually be either the current table t, or the immediately preceding
 		// table which is usually in the same cache line.
-		ret &self.dir[bidx]
+		return &self.dir[bidx]
 	}
 
 	// Inserts an entry into the map, overwriting an existing value if an
@@ -1015,7 +1015,7 @@ impl hmap {
 				for _match != 0 {
 					i := _match.first()
 					if key == g.keys[i] {
-						ret &g.values[i]
+						return &g.values[i]
 					}
 					_match = _match.removeFirst()
 				}
@@ -1034,7 +1034,7 @@ impl hmap {
 						t.growthLeft--
 						t.used++
 						self.used++
-						ret &g.values[i]
+						return &g.values[i]
 					}
 
 					// Find the first empty or deleted slot in the key's probe
@@ -1057,7 +1057,7 @@ impl hmap {
 								g.ctrls.set(i, ctrl(h2(h)))
 								t.used++
 								self.used++
-								ret &g.values[i]
+								return &g.values[i]
 							}
 							break
 						}
@@ -1076,7 +1076,7 @@ impl hmap {
 					mut value := t.uncheckedSet(h, &key)
 					t.used++
 					self.used++
-					ret value
+					return value
 				}
 			}
 		}
@@ -1091,7 +1091,7 @@ impl hmap {
 	#disable boundary nilptr
 	fn delete(mut *self, key: K): bool {
 		if self == nil || self.used == 0 {
-			ret false
+			return false
 		}
 		unsafe {
 			// delete is find composed with "deleted at": we perform find(key), and
@@ -1135,14 +1135,14 @@ impl hmap {
 						} else {
 							g.ctrls.set(i, ctrlDeleted)
 						}
-						ret true
+						return true
 					}
 					_match = _match.removeFirst()
 				}
 
 				_match = g.ctrls.matchEmpty()
 				if _match != 0 {
-					ret false
+					return false
 				}
 			}
 		}
@@ -1155,7 +1155,7 @@ impl hmap {
 	#disable boundary nilptr
 	fn clear(mut *self) {
 		if self == nil {
-			ret
+			return
 		}
 
 		let mut keyZero: K
@@ -1251,7 +1251,7 @@ impl hmap {
 						if ok != nil {
 							*ok = true
 						}
-						ret
+						return
 					}
 					_match = _match.removeFirst()
 				}
@@ -1280,13 +1280,13 @@ impl hmap {
 	fn get(mut *self, mut key: K): (value: V) {
 		// The lookup function is safe for nil receiver parameters.
 		self.lookup(key, &value, nil)
-		ret
+		return
 	}
 
 	fn iterator(mut *self): hmapiterator[K, V] {
 		let mut iterator: hmapiterator[K, V]
 		iterator.init(self)
-		ret iterator
+		return iterator
 	}
 }
 
@@ -1326,7 +1326,7 @@ impl hmapiterator {
 				for {
 					mut t := self.tw.next()
 					if t == nil {
-						ret nil, nil
+						return nil, nil
 					}
 					if t.used == 0 {
 						continue
@@ -1345,7 +1345,7 @@ impl hmapiterator {
 			self.j++
 			// Match full entries which have a high-bit of zero.
 			if (g.ctrls.get(k)&ctrlEmpty) != ctrlEmpty {
-				ret &g.keys[k], &g.values[k]
+				return &g.keys[k], &g.values[k]
 			}
 		}
 		goto Over
@@ -1372,7 +1372,7 @@ impl tablewalker {
 	fn init(mut *self, offset: uintptr, mut &m: *hmap[K, V]) {
 		if m == nil || m.used == 0 {
 			self.m = nil
-			ret
+			return
 		}
 		self.m = m
 		self.index = m.dir[offset&uintptr(m.tableCount()-1)].index
@@ -1391,7 +1391,7 @@ impl tablewalker {
 	#disable boundary nilptr
 	unsafe fn next(mut *self): *table[K, V] {
 		if self.m == nil {
-			ret nil
+			return nil
 		}
 
 		// We iterate over the first table in a logical group of tables (i.e.
@@ -1472,7 +1472,7 @@ impl tablewalker {
 			adjustedStartIndex := adjustTableIndex(self.startIndex, self.m.globalDepth(), self.startGlobalDepth)
 			if i == adjustedStartIndex {
 				self.m = nil
-				ret nil
+				return nil
 			} else {
 				self.index = i
 			}
@@ -1484,7 +1484,7 @@ impl tablewalker {
 		self.originalLocalDepth = t.localDepth
 		self.originalIndex = t.index
 
-		ret t
+		return t
 	}
 }
 
@@ -1495,7 +1495,7 @@ impl tablewalker {
 //	[t.index:t.index+tableStep(m.globalDepth(), t.localDepth)]
 fn tableStep(globalDepth: u32, localDepth: u32): u32 {
 	const shiftMask = 31
-	ret u32(1) << ((globalDepth - localDepth) & shiftMask)
+	return u32(1) << ((globalDepth - localDepth) & shiftMask)
 }
 
 // Adjusts the index of a table to account for the growth
@@ -1503,12 +1503,12 @@ fn tableStep(globalDepth: u32, localDepth: u32): u32 {
 // computing where that index will reside in the directory at
 // currentGlobalDepth.
 fn adjustTableIndex(index: u32, currentGlobalDepth: u32, originalGlobalDepth: u32): u32 {
-	ret index * (1 << (currentGlobalDepth - originalGlobalDepth))
+	return index * (1 << (currentGlobalDepth - originalGlobalDepth))
 }
 
 // Rounds capacity to the next power of 2.
 fn normalizeCapacity(capacity: u32): u32 {
-	ret u32(1) << min(bits::Len32(capacity-1), 31)
+	return u32(1) << min(bits::Len32(capacity-1), 31)
 }
 
 // Singleton for a single empty groupSize set of controls.

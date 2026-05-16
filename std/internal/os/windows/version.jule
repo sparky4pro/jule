@@ -34,7 +34,7 @@ fn init() {
 	info.osVersionInfoSize = u32(mem::SizeOf(info))
 	sys::Addrcall(_RtlGetVersion, &info)
 	if info.majorVersion < 10 || (info.majorVersion == 10 && info.minorVersion == 0 && info.buildNumber < 15063) {
-		ret
+		return
 	}
 
 	CanUseLongPaths = true

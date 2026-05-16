@@ -8,7 +8,7 @@ struct FuncPattern{}
 impl FuncPattern {
 	// Reports whether function is the reserved main function.
 	fn Main(f: &Func): bool {
-		ret f != nil &&
+		return f != nil &&
 			f.Owner == nil &&
 			f.Name == "main" &&
 			!f.Extern &&
@@ -22,7 +22,7 @@ impl FuncPattern {
 
 	// Reports whether function is the reserved init function.
 	fn Init(f: &Func): bool {
-		ret f != nil &&
+		return f != nil &&
 			f.Owner == nil &&
 			f.Name == "init" &&
 			!f.Async &&
@@ -48,14 +48,14 @@ impl FuncPattern {
 			len(f.Params) != 1 ||
 			f.Params[0].Mutable ||
 			!f.Params[0].IsRefptr() {
-			ret false
+			return false
 		}
 
 		mut ins := unsafe { *(&f.Instances[0]) }
 		prim := ins.Result.Prim()
 		if prim == nil {
-			ret false
+			return false
 		}
-		ret prim.IsString()
+		return prim.IsString()
 	}
 }

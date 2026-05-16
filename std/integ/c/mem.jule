@@ -14,7 +14,7 @@ extern fn free(mut ptr: *unsafe)
 // This function is part of the C-style memory management.
 // It might be very dangerous.
 fn Malloc(size: uint): *unsafe {
-	ret extern.malloc(size)
+	return extern.malloc(size)
 }
 
 // Allocates n elements of size bytes each, all initialized to zero.
@@ -23,7 +23,7 @@ fn Malloc(size: uint): *unsafe {
 // This function is part of the C-style memory management.
 // It can be very dangerous.
 fn Calloc(size: uint, n: uint): *unsafe {
-	ret extern.calloc(size, n)
+	return extern.calloc(size, n)
 }
 
 // Re-allocates the previously allocated block in ptr,
@@ -33,7 +33,7 @@ fn Calloc(size: uint, n: uint): *unsafe {
 // This function is part of the C-style memory management.
 // It can be very dangerous.
 fn Realloc(mut ptr: *unsafe, size: uint): *unsafe {
-	ret extern.realloc(ptr, size)
+	return extern.realloc(ptr, size)
 }
 
 // Free a block allocated by malloc, realloc or calloc.

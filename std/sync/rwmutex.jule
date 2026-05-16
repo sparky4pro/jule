@@ -61,10 +61,10 @@ impl RWMutex {
 		for {
 			c := self.readerCount.Load(atomic::Acquire)
 			if c < 0 {
-				ret false
+				return false
 			}
 			if self.readerCount.CompareAndSwap(c, c+1, atomic::AcqRel, atomic::Acquire) {
-				ret true
+				return true
 			}
 		}
 	}
@@ -114,13 +114,13 @@ impl RWMutex {
 	// in a particular use of mutexes.
 	fn TryLock(*self): bool {
 		if !self.w.TryLock() {
-			ret false
+			return false
 		}
 		if !self.readerCount.CompareAndSwap(0, -rwmutexMaxReaders, atomic::AcqRel, atomic::Acquire) {
 			self.w.Unlock()
-			ret false
+			return false
 		}
-		ret true
+		return true
 	}
 
 	// Unlocks for writing. It is a run-time error if it is
@@ -147,7 +147,7 @@ impl RWMutex {
 	// Returns a [Locker] interface that implements
 	// the [Locker.Lock] and [Locker.Unlock] methods by calling RLock and RUnlock.
 	fn RLocker(mut &self): Locker {
-		ret rlocker(self)
+		return rlocker(self)
 	}
 }
 

@@ -26,19 +26,19 @@ let SysUint = ""
 fn checkBit(v: string, bit: int, checker: bitChecker): bool {
 	match {
 	| v == "":
-		ret false
+		return false
 	| len(v) == 1:
-		ret true
+		return true
 	| strings::HasPrefix(v, "0x"):
-		ret checker(v[2:], 16, bit) // Hexadecimal
+		return checker(v[2:], 16, bit) // Hexadecimal
 	| strings::HasPrefix(v, "0b"):
-		ret checker(v[2:], 2, bit) // Binary
+		return checker(v[2:], 2, bit) // Binary
 	| strings::HasPrefix(v, "0o"):
-		ret checker(v[2:], 8, bit) // Octal
+		return checker(v[2:], 8, bit) // Octal
 	| v[0] == '0':
-		ret checker(v[1:], 8, bit) // Octal
+		return checker(v[1:], 8, bit) // Octal
 	|:
-		ret checker(v, 10, bit) // Decimal
+		return checker(v, 10, bit) // Decimal
 	}
 }
 
@@ -48,12 +48,12 @@ fn checkBit(v: string, bit: int, checker: bitChecker): bool {
 fn RealKindOf(kind: string): string {
 	match kind {
 	| Int:
-		ret SysInt
+		return SysInt
 	| Uint
 	| Uintptr:
-		ret SysUint
+		return SysUint
 	|:
-		ret kind
+		return kind
 	}
 }
 
@@ -62,19 +62,19 @@ fn RealKindOf(kind: string): string {
 fn BitSizeOf(k: string): int {
 	match k {
 	| I8 | U8:
-		ret 8
+		return 8
 	| I16 | U16:
-		ret 16
+		return 16
 	| I32 | U32 | F32:
-		ret 32
+		return 32
 	| I64 | U64 | F64 | Cmplx64:
-		ret 64
+		return 64
 	| Cmplx128:
-		ret 128
+		return 128
 	| Uint | Int | Uintptr:
-		ret BitSize
+		return BitSize
 	|:
-		ret -1
+		return -1
 	}
 }
 
@@ -84,13 +84,13 @@ fn BitSizeOf(k: string): int {
 fn IntFromBits(bits: int): string {
 	match bits {
 	| 8:
-		ret I8
+		return I8
 	| 16:
-		ret I16
+		return I16
 	| 32:
-		ret I32
+		return I32
 	| 64:
-		ret I64
+		return I64
 	|:
 		panic("unreachable")
 	}
@@ -102,13 +102,13 @@ fn IntFromBits(bits: int): string {
 fn UintFromBits(bits: int): string {
 	match bits {
 	| 8:
-		ret U8
+		return U8
 	| 16:
-		ret U16
+		return U16
 	| 32:
-		ret U32
+		return U32
 	| 64:
-		ret U64
+		return U64
 	|:
 		panic("unreachable")
 	}
@@ -120,9 +120,9 @@ fn UintFromBits(bits: int): string {
 fn FloatFromBits(bits: int): string {
 	match bits {
 	| 32:
-		ret F32
+		return F32
 	| 64:
-		ret F64
+		return F64
 	|:
 		panic("unreachable")
 	}
@@ -130,24 +130,24 @@ fn FloatFromBits(bits: int): string {
 
 // Reports whether signed integer literal is compatible given bit-size.
 fn CheckBitInt(v: string, bit: int): bool {
-	ret checkBit(v, bit, fn|v, base, bit| {
-		_ = conv::ParseInt(v, base, bit) else { ret false }
-		ret true
+	return checkBit(v, bit, fn|v, base, bit| {
+		_ = conv::ParseInt(v, base, bit) else { return false }
+		return true
 	})
 }
 
 // Reports whether unsigned integer literal is compatible given bit-size.
 fn CheckBitUint(v: string, bit: int): bool {
-	ret checkBit(v, bit, fn|v, base, bit| {
-		_ = conv::ParseUint(v, base, bit) else { ret false }
-		ret true
+	return checkBit(v, bit, fn|v, base, bit| {
+		_ = conv::ParseUint(v, base, bit) else { return false }
+		return true
 	})
 }
 
 // Reports whether float literal is compatible given bit-size.
 fn CheckBitFloat(val: string, bit: int): bool {
-	_ = conv::ParseFloat(val, bit) else { ret false }
-	ret true
+	_ = conv::ParseFloat(val, bit) else { return false }
+	return true
 }
 
 // Reports minimum bit-size of given floating-point.
@@ -158,9 +158,9 @@ fn CheckBitFloat(val: string, bit: int): bool {
 fn BitSizeOfFloat(x: f64): int {
 	match {
 	| MinF32 <= x && x <= MaxF32:
-		ret 32
+		return 32
 	| MinF64 <= x && x <= MaxF64:
-		ret 64
+		return 64
 	|:
 		panic("unreachable")
 	}
@@ -176,13 +176,13 @@ fn BitSizeOfFloat(x: f64): int {
 fn BitSizeOfInt(x: i64): int {
 	match {
 	| MinI8 <= x && x <= MaxI8:
-		ret 8
+		return 8
 	| MinI16 <= x && x <= MaxI16:
-		ret 16
+		return 16
 	| MinI32 <= x && x <= MaxI32:
-		ret 32
+		return 32
 	| MinI64 <= x && x <= MaxI64:
-		ret 64
+		return 64
 	|:
 		panic("unreachable")
 	}
@@ -198,13 +198,13 @@ fn BitSizeOfInt(x: i64): int {
 fn BitSizeOfUint(x: u64): int {
 	match {
 	| x <= MaxU8:
-		ret 8
+		return 8
 	| x <= MaxU16:
-		ret 16
+		return 16
 	| x <= MaxU32:
-		ret 32
+		return 32
 	| x <= MaxU64:
-		ret 64
+		return 64
 	|:
 		panic("unreachable")
 	}

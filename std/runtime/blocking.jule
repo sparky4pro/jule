@@ -34,7 +34,7 @@ impl blockingenv {
 			ok = true
 		}
 		self.mu.unlock()
-		ret
+		return
 	}
 
 	// Wakes a worker thread, if needed.
@@ -47,7 +47,7 @@ impl blockingenv {
 			self.widle = w.link
 			w.link = nil
 			w.parker.unpark()
-			ret
+			return
 		}
 		// Spawn a new one, if possible.
 		if self.nw < self.maxWorkers {

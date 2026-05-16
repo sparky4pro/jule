@@ -59,7 +59,7 @@ struct scopeCoder {
 
 impl scopeCoder {
 	fn new(mut oc: &ObjectCoder): &scopeCoder {
-		ret &scopeCoder{
+		return &scopeCoder{
 			oc:      oc,
 			addrmap: make(map[uintptr]uintptr, 256),
 		}
@@ -72,7 +72,7 @@ impl scopeCoder {
 		if addrmap == 0 {
 			panic("project is too large for the current architecture: " + runtime::Arch)
 		}
-		ret addrmap
+		return addrmap
 	}
 
 	// Returns the corresponding addrmap value by addr.
@@ -83,7 +83,7 @@ impl scopeCoder {
 		if addrmap == 0 {
 			addrmap = 1
 		}
-		ret addrmap
+		return addrmap
 	}
 
 	fn rangeChanIter(mut &self, mut it: &sema::RangeIter) {
@@ -254,9 +254,9 @@ impl scopeCoder {
 				self.oc.ec.varPrefixes = append(self.oc.ec.varPrefixes, fn|v| {
 					if v == it.KeyB {
 						self.oc.write(name)
-						ret true
+						return true
 					}
-					ret false
+					return false
 				})
 			}
 			self.oc.varInitExpr(it.KeyB, fn|| {
@@ -700,11 +700,11 @@ impl scopeCoder {
 	fn tryMapSet(mut &self, mut m: compExpr): (ok: bool) {
 		mut iem, ok := m.(&sema::IndexingExpr)
 		if !ok {
-			ret
+			return
 		}
 		_map := iem.Expr.Type.Map()
 		if _map == nil {
-			ret false
+			return false
 		}
 		// Map indexing used for assignment.
 		// Generate direct lookup unlike expression coder.
@@ -720,7 +720,7 @@ impl scopeCoder {
 		self.oc.write("\").alloc, ")
 		self.oc.ec.possibleRefExpr(iem.Index.Model)
 		self.oc.write("))")
-		ret
+		return
 	}
 
 	fn postfix(mut &self, mut p: &sema::Postfix) {
@@ -769,7 +769,7 @@ impl scopeCoder {
 				OpID:     opID,
 				OpKind:   opKind,
 			})
-			ret
+			return
 		}
 
 		// Build necessary temporary variable.
@@ -796,7 +796,7 @@ impl scopeCoder {
 		match opID {
 		| token::ASSIGN:
 			self.oc.ec.possibleRefExpr(r)
-			ret
+			return
 		| token::ADD_ASSIGN:
 			if kind == types::Cmplx128 {
 				self.oc.ic.funcIns(&self.oc.Buf, meta::Program.Runtime.Cmplx128Add)
@@ -859,7 +859,7 @@ impl scopeCoder {
 		lp := lt.Prim()
 		if lp != nil && types::IsCmplx(lp.Kind) {
 			self.cmplxAssign(opID, opKind, l, lt, r, rt, lp.Kind)
-			ret
+			return
 		}
 
 		mut fc := isFallibleResult(r)
@@ -872,21 +872,21 @@ impl scopeCoder {
 				OpID:     opID,
 				OpKind:   opKind,
 			})
-			ret
+			return
 		}
 
 		match opID {
 		| token::QUO_ASSIGN | token::REM_ASSIGN:
 			if env::Safety {
 				self.divByZeroAssign(loc, opID, l, lt, r, rt)
-				ret
+				return
 			}
 		| token::SHL_ASSIGN:
 			self.shl(l, lt, r, rt)
-			ret
+			return
 		| token::SHR_ASSIGN:
 			self.shr(l, lt, r, rt)
-			ret
+			return
 		}
 
 		self.assignLeft(l)
@@ -902,7 +902,7 @@ impl scopeCoder {
 				if rt.SoftStruct() == nil && obj::IsAny(rt) {
 					self.oc.write(opKind)
 					self.oc.ec.possibleRefExpr(r)
-					ret
+					return
 				}
 				self.oc.write(opKind)
 				self.oc.write(typeAny + "(")
@@ -1088,7 +1088,7 @@ impl scopeCoder {
 			// Expression is like: _, _ = <-c
 			// Handle as plain expression.
 			self.oc.ec.chanRecv(a.Right.(&sema::ChanRecv), nil)
-			ret
+			return
 		}
 		if a.Left[0] != nil {
 			// Received data assigned to this.
@@ -1159,19 +1159,19 @@ impl scopeCoder {
 		match type r {
 		| &sema::IndexingExpr:
 			self.mapLookupAssign(a)
-			ret
+			return
 		| &sema::TypeAssertionExpr:
 			self.typeAssertionAssign(a)
-			ret
+			return
 		| &opt::UnsafeTypeAssertionExpr:
 			// We avoiding misanalysis for assertion casting expressions here.
 			// Since we know the casting result, assign directly with no analysis.
 			mut uc := r.(&opt::UnsafeTypeAssertionExpr)
 			self.typeAssertionAssignUnsafe(a, uc)
-			ret
+			return
 		| &sema::ChanRecv:
 			self.chanRecvAssign(a)
-			ret
+			return
 		| &sema::TupleExpr:
 			self.multiAssignTuple(a)
 		| &sema::FuncCallExpr:
@@ -1242,10 +1242,10 @@ impl scopeCoder {
 
 	fn matchStmt(mut &self, mut m: &sema::Match) {
 		if len(m.Cases) == 0 && m.Default == nil {
-			ret
+			return
 		}
 		if m.Comptime && (m.Default == nil || len(m.Default.Scope.Stmts) == 0) {
-			ret
+			return
 		}
 		self.oc.write("{\n")
 		self.oc.addIndent()
@@ -1316,7 +1316,7 @@ impl scopeCoder {
 				// Just the default case.
 				self.scope(slct.Default.Scope)
 			}
-			ret
+			return
 		}
 		block := slct.Default == nil
 
@@ -1355,7 +1355,7 @@ impl scopeCoder {
 			self.oc.write("\n")
 			self.oc.indent()
 			self.oc.write("}")
-			ret
+			return
 		}
 
 		mut scase := ""
@@ -1686,7 +1686,7 @@ impl scopeCoder {
 			self.oc.ec.handleFallibleCallWithData(fc, dest)
 			self.oc.write("\n")
 			self.oc.indent()
-			ret
+			return
 		}
 
 		if len(r.Func.Decl.Result.Names) == 1 {
@@ -1694,7 +1694,7 @@ impl scopeCoder {
 			self.oc.ec.possibleRefExpr(r.Expr)
 			self.oc.write(";\n")
 			self.oc.indent()
-			ret
+			return
 		}
 		match type r.Expr {
 		| &sema::TupleExpr:
@@ -1707,7 +1707,7 @@ impl scopeCoder {
 				self.oc.write(";\n")
 				self.oc.indent()
 			}
-			ret
+			return
 		| &sema::FuncCallExpr:
 			// If function call could not returned by isFallibleResult,
 			// the use the pure function call.
@@ -1721,7 +1721,7 @@ impl scopeCoder {
 				self.oc.ec.model(r.Expr)
 				self.oc.write(");\n")
 				self.oc.indent()
-				ret
+				return
 			}
 			goto assignFC
 		|:
@@ -1781,11 +1781,11 @@ impl scopeCoder {
 			if r.Func.Decl.Fallible {
 				self.oc.write(returnKw(r.Func))
 				self.oc.write(" __jule_VoidFallible{};")
-				ret
+				return
 			}
 			self.oc.write(returnKw(r.Func))
 			self.oc.write(";")
-			ret
+			return
 		} else if len(r.Func.Decl.Result.Names) == 0 && fc == nil {
 			if r.Func.Decl.Fallible {
 				// Use scope to prevent "goto" errors about declarations.
@@ -1837,7 +1837,7 @@ impl scopeCoder {
 				self.oc.indent()
 				self.oc.write("}")
 			}
-			ret
+			return
 		}
 
 		// If function have not explicit result variables, push to stack temporarily.
@@ -1893,10 +1893,10 @@ impl scopeCoder {
 			if cv == v {
 				self.oc.write(closureCtxIdent + "->")
 				self.oc.ic.anonFuncVar(&self.oc.Buf, v)
-				ret true
+				return true
 			}
 		}
-		ret false
+		return false
 	}
 
 	fn var(mut &self, mut v: &sema::Var) {
@@ -1937,7 +1937,7 @@ impl scopeCoder {
 			self.oc.write(returnKw(m.Func))
 			self.oc.write(" ")
 			self.oc.ec.pureFuncCall(m.Expr)
-			ret
+			return
 		}
 		if m.Func.Decl.IsVoid() {
 			self.oc.write("__jule_VoidFallible")
@@ -1967,7 +1967,7 @@ impl scopeCoder {
 					// Because it may be captured, use captured variable handler.
 					self.oc.ec.var(v)
 					self.oc.write(")}")
-					ret
+					return
 				}
 				self.oc.write("{\n")
 				self.oc.addIndent()
@@ -1986,14 +1986,14 @@ impl scopeCoder {
 				self.oc.doneIndent()
 				self.oc.indent()
 				self.oc.write("}")
-				ret
+				return
 			}
 			if !hasDefer {
 				self.oc.write(returnKw(m.Func))
 				self.oc.write(" __jule_VoidFallible{.error=")
 				self.oc.ec.possibleRefExpr(m.Error.Model)
 				self.oc.write("}")
-				ret
+				return
 			}
 			self.oc.write("{\n")
 			self.oc.addIndent()
@@ -2021,7 +2021,7 @@ impl scopeCoder {
 					// Because it may be captured, use captured variable handler.
 					self.oc.ec.var(v)
 					self.oc.write(")}")
-					ret
+					return
 				}
 				self.oc.write("{\n")
 				self.oc.addIndent()
@@ -2042,7 +2042,7 @@ impl scopeCoder {
 				self.oc.doneIndent()
 				self.oc.indent()
 				self.oc.write("}")
-				ret
+				return
 			}
 			if !hasDefer {
 				self.oc.write(returnKw(m.Func))
@@ -2051,7 +2051,7 @@ impl scopeCoder {
 				self.oc.write(">{.error=")
 				self.oc.ec.possibleRefExpr(m.Error.Model)
 				self.oc.write("}")
-				ret
+				return
 			}
 			self.oc.write("{\n")
 			self.oc.addIndent()
@@ -2075,7 +2075,7 @@ impl scopeCoder {
 	// Generates C++ code of statement.
 	fn st(mut &self, mut st: compStmt) {
 		if st == nil {
-			ret
+			return
 		}
 		match type st {
 		| &sema::Scope:
@@ -2153,7 +2153,7 @@ impl scopeCoder {
 	fn emitDefers(mut &self, nds: int, remove: bool) {
 		mut diff := len(self.deferredScopes) - nds
 		if diff <= 0 {
-			ret
+			return
 		}
 		mut i := len(self.deferredScopes) - 1
 		for diff > 0; diff, i = diff-1, i-1 {
@@ -2280,7 +2280,7 @@ impl scopeCoder {
 		// Memorize it for deferred handling.
 		if s.Deferred {
 			self.deferredScopes = append(self.deferredScopes, s)
-			ret
+			return
 		}
 
 		self.__scope(s, stmt)
@@ -2332,12 +2332,12 @@ impl scopeCoder {
 			match type stmt {
 			| &sema::Throw
 			| &sema::Return:
-				ret
+				return
 			| &sema::Value:
 				v := stmt.(&sema::Value)
 				match type v.Model {
 				| &sema::BuiltinPanicCallExpr:
-					ret
+					return
 				|:
 					// no-op
 				}
@@ -2368,7 +2368,7 @@ impl scopeCoder {
 
 	fn anonFuncScope(mut &self, mut m: &sema::AnonFuncExpr, name: string) {
 		if m.Func.Scope == nil {
-			ret
+			return
 		}
 		closure := obj::IsClosure(m)
 		if closure {
@@ -2410,7 +2410,7 @@ impl scopeCoder {
 	// Generates C++ code of function's scope.
 	fn funcScope(mut &self, mut f: &sema::FuncIns, raw: bool) {
 		if f.Scope == nil {
-			ret
+			return
 		}
 
 		// Save the mode and restore before return.
@@ -2450,22 +2450,22 @@ fn isCopyOptimizable(v: &sema::Value, iter: bool): bool {
 	// Because the value may be mutated in the iteration.
 	// Compiler will not analysis such cases yet, so we cannot know.
 	if !v.Lvalue || (iter && v.Mutable) {
-		ret false
+		return false
 	}
 	_, slicing := v.Model.(&sema::SlicingExpr)
-	ret !slicing
+	return !slicing
 }
 
 fn isIterCopyOptimizable(val: &sema::Value, v: &sema::Var): bool {
 	if !val.Lvalue && !val.Type.Mutable() {
-		ret true
+		return true
 	}
-	ret !v.Mutable && !val.Mutable
+	return !v.Mutable && !val.Mutable
 }
 
 fn returnKw(f: &sema::FuncIns): string {
 	if f.Decl == nil || !f.Decl.Async {
-		ret "return"
+		return "return"
 	}
-	ret "__jule_AsyncRet"
+	return "__jule_AsyncRet"
 }

@@ -15,7 +15,7 @@ fn String(b: *byte, n: int): string {
 		sp.Slice = sp.Buffer.Ptr
 		sp.Len = n
 	}
-	ret s
+	return s
 }
 
 // Returns slice based on e, the parameter e means first element of slice.
@@ -29,34 +29,34 @@ fn Slice[Elem](mut e: *Elem, len: int, cap: int): []Elem {
 		sp.Slice = sp.Data.Ptr
 		sp.Len, sp.Cap = len, cap
 	}
-	ret buf
+	return buf
 }
 
 // Alias for Slice(b, n, n).
 fn Bytes(mut b: *byte, n: int): []byte {
-	ret Slice(b, n, n)
+	return Slice(b, n, n)
 }
 
 // Alias for Slice(&s[0], len(s), len(s)).
 // Returns nil if len(s) == 0.
 fn StringBytes(s: string): []byte {
 	if len(s) == 0 {
-		ret nil
+		return nil
 	}
-	ret Slice(&s[0], len(s), len(s))
+	return Slice(&s[0], len(s), len(s))
 }
 
 // Alias for String(&b[0], len(b), len(b)).
 // Returns empty string if len(b) == 0.
 fn BytesString(b: []byte): string {
 	if len(b) == 0 {
-		ret ""
+		return ""
 	}
-	ret String(&b[0], len(b))
+	return String(&b[0], len(b))
 }
 
 // Same as [BytesString] but keeps garbage collection.
-fn StringFromBytes(b: []byte): string { ret unsafe { *(*string)(&b) } }
+fn StringFromBytes(b: []byte): string { return unsafe { *(*string)(&b) } }
 
 // Same as [StringBytes] but keeps garbage collection.
 fn BytesFromString(s: string): []byte {
@@ -66,5 +66,5 @@ fn BytesFromString(s: string): []byte {
 		mut sp := (*runtime::Slice[byte])(&b)
 		sp.Cap = sp.Len
 	}
-	ret b
+	return b
 }

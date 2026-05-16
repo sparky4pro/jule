@@ -69,14 +69,14 @@ struct Error {
 }
 
 impl Error {
-	fn String(*self): string { ret fmt::Sprintf("{} {}: {}", self.Op, self.URL, self.Err) }
+	fn String(*self): string { return fmt::Sprintf("{} {}: {}", self.Op, self.URL, self.Err) }
 }
 
 type EscapeError: string
 
 impl EscapeError {
 	fn String(*self): string {
-		ret "invalid URL escape " + conv::Quote(string(*self))
+		return "invalid URL escape " + conv::Quote(string(*self))
 	}
 }
 
@@ -84,7 +84,7 @@ type InvalidHostError: string
 
 impl InvalidHostError {
 	fn String(*self): string {
-		ret "invalid character " + conv::Quote(string(*self)) + " in host name"
+		return "invalid character " + conv::Quote(string(*self)) + " in host name"
 	}
 }
 
@@ -95,7 +95,7 @@ impl InvalidHostError {
 fn shouldEscape(c: byte, mode: int): bool {
 	// §2.3 Unreserved characters (alphanum)
 	if 'a' <= c && c <= 'z' || 'A' <= c && c <= 'Z' || '0' <= c && c <= '9' {
-		ret false
+		return false
 	}
 
 	if mode == encodingHost || mode == encodingZone {
@@ -110,13 +110,13 @@ fn shouldEscape(c: byte, mode: int): bool {
 		// ASCII bytes).
 		match c {
 		| '!' | '$' | '&' | '\'' | '(' | ')' | '*' | '+' | ',' | ';' | '=' | ':' | '[' | ']' | '<' | '>' | '"':
-			ret false
+			return false
 		}
 	}
 
 	match c {
 	| '-' | '_' | '.' | '~': // §2.3 Unreserved characters (mark)
-		ret false
+		return false
 	| '$' | '&' | '+' | ',' | '/' | ':' | ';' | '=' | '?' | '@': // §2.2 Reserved characters (reserved)
 		// Different sections of the URL allow a few of
 		// the reserved characters to appear unescaped.
@@ -126,24 +126,24 @@ fn shouldEscape(c: byte, mode: int): bool {
 			// meaning to individual path segments. This package
 			// only manipulates the path as a whole, so we allow those
 			// last three as well. That leaves only ? to escape.
-			ret c == '?'
+			return c == '?'
 		| encodingPathSegment: // §3.3
 			// The RFC allows : @ & = + $ but saves / ; , for assigning
 			// meaning to individual path segments.
-			ret c == '/' || c == ';' || c == ',' || c == '?'
+			return c == '/' || c == ';' || c == ',' || c == '?'
 		| encodingUserPassword: // §3.2.1
 			// The RFC allows ';', ':', '&', '=', '+', '$', and ',' in
 			// userinfo, so we must escape only '@', '/', and '?'.
 			// The parsing of userinfo treats ':' as special so we must escape
 			// that too.
-			ret c == '@' || c == '/' || c == '?' || c == ':'
+			return c == '@' || c == '/' || c == '?' || c == ':'
 		| encodingQueryComponent: // §3.4
 			// The RFC reserves (so we must escape) everything.
-			ret true
+			return true
 		| encodingFragment: // §4.1
 			// The RFC text is silent but the grammar allows
 			// everything, so escape nothing.
-			ret false
+			return false
 		}
 	}
 
@@ -156,12 +156,12 @@ fn shouldEscape(c: byte, mode: int): bool {
 		// single quotes would be escaped. See Go's issue #19917.
 		match c {
 		| '!' | '(' | ')' | '*':
-			ret false
+			return false
 		}
 	}
 
 	// Everything else must be escaped.
-	ret true
+	return true
 }
 
 // Unescapes a string; the mode specifies
@@ -217,7 +217,7 @@ fn unescape(mut s: string, mode: int)!: string {
 	}
 
 	if n == 0 && !hasPlus {
-		ret s
+		return s
 	}
 	mut t := strings::Builder{}
 	t.Grow(len(s) - 2*n)
@@ -237,32 +237,32 @@ fn unescape(mut s: string, mode: int)!: string {
 			t.WriteByte(s[i])!
 		}
 	}
-	ret t.String()
+	return t.String()
 }
 
 fn ishex(c: byte): bool {
 	match {
 	| '0' <= c && c <= '9':
-		ret true
+		return true
 	| 'a' <= c && c <= 'f':
-		ret true
+		return true
 	| 'A' <= c && c <= 'F':
-		ret true
+		return true
 	|:
-		ret false
+		return false
 	}
 }
 
 fn unhex(c: byte): byte {
 	match {
 	| '0' <= c && c <= '9':
-		ret c - '0'
+		return c - '0'
 	| 'a' <= c && c <= 'f':
-		ret c - 'a' + 10
+		return c - 'a' + 10
 	| 'A' <= c && c <= 'F':
-		ret c - 'A' + 10
+		return c - 'A' + 10
 	|:
-		ret 0
+		return 0
 	}
 }
 
@@ -271,7 +271,7 @@ fn unhex(c: byte): byte {
 // hex-decoded byte 0xAB.
 // It returns an error if any % is not followed by two hexadecimal digits.
 fn QueryUnescape(s: string)!: string {
-	ret unescape(s, encodingQueryComponent)?
+	return unescape(s, encodingQueryComponent)?
 }
 
 // Does the inverse transformation of [PathEscape],
@@ -281,7 +281,7 @@ fn QueryUnescape(s: string)!: string {
 //
 // It is identical to [QueryUnescape] except that it does not unescape '+' to ' ' (space).
 fn PathUnescape(s: string)!: string {
-	ret unescape(s, encodingPathSegment)?
+	return unescape(s, encodingPathSegment)?
 }
 
 fn escape(s: string, mode: int): string {
@@ -299,7 +299,7 @@ fn escape(s: string, mode: int): string {
 	}
 
 	if spaceCount == 0 && hexCount == 0 {
-		ret s
+		return s
 	}
 
 	required := len(s) + 2*hexCount
@@ -313,7 +313,7 @@ fn escape(s: string, mode: int): string {
 				t[i] = '+'
 			}
 		}
-		ret unsafe::StringFromBytes(t)
+		return unsafe::StringFromBytes(t)
 	}
 
 	mut j := 0
@@ -334,7 +334,7 @@ fn escape(s: string, mode: int): string {
 			j++
 		}
 	}
-	ret unsafe::StringFromBytes(t)
+	return unsafe::StringFromBytes(t)
 }
 
 // Reports whether s is a valid encoded path or fragment, according to mode.
@@ -357,11 +357,11 @@ fn validEncoded(s: string, mode: int): bool {
 			// ok - percent encoded, will decode
 		|:
 			if shouldEscape(b, mode) {
-				ret false
+				return false
 			}
 		}
 	}
-	ret true
+	return true
 }
 
 // Applies special path segments from refs and applies them to base, per RFC 3986.
@@ -376,7 +376,7 @@ fn resolvePath(base: string, ref: string): string {
 		full = ref
 	}
 	if full == "" {
-		ret ""
+		return ""
 	}
 
 	mut elem := ""
@@ -424,18 +424,18 @@ fn resolvePath(base: string, ref: string): string {
 	if len(r) > 1 && r[1] == '/' {
 		r = r[1:]
 	}
-	ret r
+	return r
 }
 
 // Escapes the string so it can be safely placed inside a [URL] query.
 fn QueryEscape(s: string): string {
-	ret escape(s, encodingQueryComponent)
+	return escape(s, encodingQueryComponent)
 }
 
 // Escapes the string so it can be safely placed inside a [URL] path segment,
 // replacing special characters (including /) with %XX sequences as needed.
 fn PathEscape(s: string): string {
-	ret escape(s, encodingPathSegment)
+	return escape(s, encodingPathSegment)
 }
 
 // Immutable encapsulation of username and password details for a [URL].
@@ -450,12 +450,12 @@ struct UserInfo {
 impl UserInfo {
 	// Returns the username.
 	fn Username(*self): string {
-		ret self.username
+		return self.username
 	}
 
 	// Returns the password in case it is set, and whether it is set.
 	fn Password(*self): (string, bool) {
-		ret self.password, self.passwordSet
+		return self.password, self.passwordSet
 	}
 
 	// Returns the encoded userinfo information in the standard form of "username[:password]".
@@ -464,7 +464,7 @@ impl UserInfo {
 		if self.passwordSet {
 			s += ":" + escape(self.password, encodingUserPassword)
 		}
-		ret s
+		return s
 	}
 }
 
@@ -480,7 +480,7 @@ fn splitHostPort(hostPort: string): (host: string, port: string) {
 	if strings::HasPrefix(host, "[") && strings::HasSuffix(host, "]") {
 		host = host[1 : len(host)-1]
 	}
-	ret
+	return
 }
 
 // A URL represents a parsed URL (technically, a URI reference).
@@ -536,14 +536,14 @@ impl URL {
 		if self.RawPath != "" && validEncoded(self.RawPath, encodingPath) {
 			p := unescape(self.RawPath, encodingPath) else { goto skip }
 			if p == self.Path {
-				ret self.RawPath
+				return self.RawPath
 			}
 		}
 	skip:
 		if self.Path == "*" {
-			ret "*" // don't escape (Go's issue 11202)
+			return "*" // don't escape (Go's issue 11202)
 		}
-		ret escape(self.Path, encodingPath)
+		return escape(self.Path, encodingPath)
 	}
 
 	// Returns the escaped form of self.Fragment.
@@ -556,17 +556,17 @@ impl URL {
 		if self.RawFragment != "" && validEncoded(self.RawFragment, encodingFragment) {
 			f := unescape(self.RawFragment, encodingFragment) else { goto skip }
 			if f == self.Fragment {
-				ret self.RawFragment
+				return self.RawFragment
 			}
 		}
 	skip:
-		ret escape(self.Fragment, encodingFragment)
+		return escape(self.Fragment, encodingFragment)
 	}
 
 	// Reports whether the [URL] is absolute.
 	// Absolute means that it has a non-empty scheme.
 	fn IsAbs(*self): bool {
-		ret self.Scheme != ""
+		return self.Scheme != ""
 	}
 
 	// Resolves a URI reference to an absolute URI from
@@ -584,13 +584,13 @@ impl URL {
 			// We can ignore the error from setPath since we know we provided a
 			// validly-escaped path.
 			url.setPath(resolvePath(ref.EscapedPath(), ""))!
-			ret url
+			return url
 		}
 		if ref.Opaque != "" {
 			url.User = nil
 			url.Host = ""
 			url.Path = ""
-			ret url
+			return url
 		}
 		if ref.Path == "" && !ref.ForceQuery && ref.RawQuery == "" {
 			url.RawQuery = self.RawQuery
@@ -604,13 +604,13 @@ impl URL {
 			url.User = nil
 			url.Host = ""
 			url.Path = ""
-			ret url
+			return url
 		}
 		// The "abs_path" or "rel_path" cases.
 		url.Host = self.Host
 		url.User = self.User
 		url.setPath(resolvePath(self.EscapedPath(), ref.EscapedPath()))!
-		ret url
+		return url
 	}
 
 	// Parses a [URL] in the context of the receiver. The provided URL
@@ -618,12 +618,12 @@ impl URL {
 	// failure, otherwise its return value is the same as [URL.ResolveReference].
 	fn Parse(mut *self, ref: string)!: &URL {
 		mut refURL := Parse(ref)?
-		ret self.ResolveReference(refURL)
+		return self.ResolveReference(refURL)
 	}
 
 	// Parses RawQuery and returns the corresponding values.
 	fn Query(*self)!: Values {
-		ret ParseQuery(self.RawQuery)?
+		return ParseQuery(self.RawQuery)?
 	}
 
 	// Returns the encoded path?query or opaque?query
@@ -643,7 +643,7 @@ impl URL {
 		if self.ForceQuery || self.RawQuery != "" {
 			result += "?" + self.RawQuery
 		}
-		ret result
+		return result
 	}
 
 	// Returns self.Host, stripping any valid port number if present.
@@ -652,7 +652,7 @@ impl URL {
 	// the square brackets are removed from the result.
 	fn Hostname(*self): string {
 		host, _ := splitHostPort(self.Host)
-		ret host
+		return host
 	}
 
 	// Returns the port part of self.Host, without the leading colon.
@@ -660,7 +660,7 @@ impl URL {
 	// If self.Host doesn't contain a valid numeric port, returns an empty string.
 	fn Port(*self): string {
 		_, port := splitHostPort(self.Host)
-		ret port
+		return port
 	}
 
 	// Returns a new [URL] with the provided path elements joined to
@@ -684,7 +684,7 @@ impl URL {
 		}
 		mut url := *self
 		url.setPath(p)!
-		ret new(URL, url)
+		return new(URL, url)
 	}
 
 	// Reassembles the [URL] into a valid URL string.
@@ -778,7 +778,7 @@ impl URL {
 			buf.WriteByte('#')!
 			buf.WriteString(self.EscapedFragment())!
 		}
-		ret buf.String()
+		return buf.String()
 	}
 
 	// Like [URL.String] but replaces any password with "xxxxx".
@@ -789,10 +789,10 @@ impl URL {
 			if has {
 				mut &url := unsafe { &(*(*(&self))) } // Break immutability, no risk for reflective mutation.
 				url.User = UserPassword(self.User.Username(), "xxxxx")
-				ret url.String()
+				return url.String()
 			}
 		}
-		ret self.String()
+		return self.String()
 	}
 
 	// Sets the Path and RawPath fields of the URL based on the provided
@@ -828,7 +828,7 @@ impl URL {
 
 // Returns a [UserInfo] containing the provided username and no password set.
 fn User(username: string): &UserInfo {
-	ret &UserInfo{username, "", false}
+	return &UserInfo{username, "", false}
 }
 
 // Returns a [UserInfo] containing the provided username and password.
@@ -839,7 +839,7 @@ fn User(username: string): &UserInfo {
 // information in clear text (such as URI) has proven to be a
 // security risk in almost every case where it has been used.”
 fn UserPassword(username: string, password: string): &UserInfo {
-	ret &UserInfo{username, password, true}
+	return &UserInfo{username, password, true}
 }
 
 // Maybe rawURL is of the form scheme:path.
@@ -854,20 +854,20 @@ fn getScheme(rawURL: string)!: (scheme: string, path: string) {
 			// do nothing
 		| '0' <= c && c <= '9' | c == '+' | c == '-' | c == '.':
 			if i == 0 {
-				ret "", rawURL
+				return "", rawURL
 			}
 		| c == ':':
 			if i == 0 {
 				throw errors::New("missing protocol scheme")
 			}
-			ret rawURL[:i], rawURL[i+1:]
+			return rawURL[:i], rawURL[i+1:]
 		|:
 			// we have encountered an invalid character,
 			// so there is no valid scheme
-			ret "", rawURL
+			return "", rawURL
 		}
 	}
-	ret "", rawURL
+	return "", rawURL
 }
 
 // Reports whether s is a valid userinfo string per RFC 3986
@@ -895,36 +895,36 @@ fn validUserinfo(s: string): bool {
 		| '(' | ')' | '*' | '+' | ',' | ';' | '=' | '%' | '@':
 			continue
 		|:
-			ret false
+			return false
 		}
 	}
-	ret true
+	return true
 }
 
 // Reports whether port is either an empty string or matches /^:\d*$/
 fn validOptionalPort(port: string): bool {
 	if port == "" {
-		ret true
+		return true
 	}
 	if port[0] != ':' {
-		ret false
+		return false
 	}
 	for _, b in port[1:] {
 		if b < '0' || b > '9' {
-			ret false
+			return false
 		}
 	}
-	ret true
+	return true
 }
 
 // Reports whether s contains any ASCII control character.
 fn strContainsCTLByte(s: string): bool {
 	for _, b in s {
 		if b < ' ' || b == 0x7f {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 // Parses host as an authority without user
@@ -953,7 +953,7 @@ fn parseHost(mut host: string)!: string {
 			host1 := unescape(host[:zone], encodingHost)?
 			host2 := unescape(host[zone:i], encodingZone)?
 			host3 := unescape(host[i:], encodingHost)?
-			ret host1 + host2 + host3
+			return host1 + host2 + host3
 		}
 	} else {
 		i := strings::LastIndex(host, ":")
@@ -966,14 +966,14 @@ fn parseHost(mut host: string)!: string {
 	}
 
 	host = unescape(host, encodingHost)?
-	ret host
+	return host
 }
 
 fn parseAuthority(authority: string)!: (user: &UserInfo, host: string) {
 	i := strings::LastIndex(authority, "@")
 	if i < 0 {
 		host = parseHost(authority)?
-		ret nil, host
+		return nil, host
 	}
 	host = parseHost(authority[i+1:])?
 	mut userinfo := authority[:i]
@@ -989,7 +989,7 @@ fn parseAuthority(authority: string)!: (user: &UserInfo, host: string) {
 		password = unescape(password, encodingUserPassword)?
 		user = UserPassword(username, password)
 	}
-	ret user, host
+	return user, host
 }
 
 // Parses a URL from a string in one of two contexts. If
@@ -1011,7 +1011,7 @@ fn parse(rawURL: string, viaRequest: bool)!: &URL {
 
 	if rawURL == "*" {
 		url.Path = "*"
-		ret url
+		return url
 	}
 
 	// Split off possible leading "http:", "mailto:", etc.
@@ -1030,7 +1030,7 @@ fn parse(rawURL: string, viaRequest: bool)!: &URL {
 		if url.Scheme != "" {
 			// We consider rootless paths per RFC 3986 as opaque.
 			url.Opaque = rest
-			ret url
+			return url
 		}
 		if viaRequest {
 			throw errors::New("invalid URI for request")
@@ -1066,7 +1066,7 @@ fn parse(rawURL: string, viaRequest: bool)!: &URL {
 	// the default escaping of Path is equivalent, to help make sure that people
 	// don't rely on it in general.
 	url.setPath(rest)?
-	ret url
+	return url
 }
 
 // Parses a raw url into a [URL] structure.
@@ -1082,12 +1082,12 @@ fn Parse(rawURL: string)!: &URL {
 		throw &Error{"parse", u, error}
 	}
 	if frag == "" {
-		ret url
+		return url
 	}
 	url.setFragment(frag) else {
 		throw &Error{"parse", rawURL, error}
 	}
-	ret url
+	return url
 }
 
 // Parses a raw url into a [URL] structure. It assumes that url was
@@ -1096,7 +1096,7 @@ fn Parse(rawURL: string)!: &URL {
 // a #fragment suffix.
 // (Web browsers strip #fragment before sending the URL to a web server.)
 fn ParseRequestURI(rawURL: string)!: &URL {
-	ret parse(rawURL, true) else {
+	return parse(rawURL, true) else {
 		throw &Error{"parse", rawURL, error}
 	}
 }
@@ -1114,9 +1114,9 @@ impl Values {
 	fn Get(*self, key: string): string {
 		vs := (*self)[key]
 		if len(vs) == 0 {
-			ret ""
+			return ""
 		}
-		ret vs[0]
+		return vs[0]
 	}
 
 	// Sets the key to value. It replaces any existing values.
@@ -1137,14 +1137,14 @@ impl Values {
 	// Reports whether a given key is set.
 	fn Has(*self, key: string): bool {
 		_, ok := (*self)[key]
-		ret ok
+		return ok
 	}
 
 	// Encodes the values into “URL encoded” form
 	// ("bar=baz&foo=quux") sorted by key.
 	fn Encode(*self): string {
 		if len(*self) == 0 {
-			ret ""
+			return ""
 		}
 		mut keys := make([]string, 0, len(*self))
 		for k in *self {
@@ -1164,7 +1164,7 @@ impl Values {
 				buf.WriteString(QueryEscape(v))!
 			}
 		}
-		ret buf.String()
+		return buf.String()
 	}
 }
 
@@ -1196,12 +1196,12 @@ fn parseQuery(mut m: Values, mut query: string)! {
 fn ParseQuery(query: string)!: Values {
 	let mut m: Values = {}
 	parseQuery(m, query)?
-	ret m
+	return m
 }
 
 // Returns a [URL] string with the provided path elements joined to
 // the existing path of base and the resulting path cleaned of any ./ or ../ elements.
 fn JoinPath(base: string, elem: ...string)!: string {
 	mut url := Parse(base)?
-	ret url.JoinPath(elem...).String()
+	return url.JoinPath(elem...).String()
 }

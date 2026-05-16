@@ -65,7 +65,7 @@ fn integLookupIP(net: Network, host: string)!: (addrs: []IPAddr) {
 	}
 
 	sys::Addrcall(uintptr(extern.freeaddrinfo), uintptr(res))
-	ret addrs
+	return addrs
 }
 
 #disable boundary
@@ -125,11 +125,11 @@ fn integLookupPortMap(network: Network, service: string)!: (port: int) {
 			| sys::AF_INET:
 				sa := (*sys::RawSockaddrInet4)(r.ai_addr)
 				p := (*[2]byte)(&sa.Port)
-				ret int((*p)[0])<<8 | int((*p)[1])
+				return int((*p)[0])<<8 | int((*p)[1])
 			| sys::AF_INET6:
 				sa := (*sys::RawSockaddrInet6)(r.ai_addr)
 				p := (*[2]byte)(&sa.Port)
-				ret int((*p)[0])<<8 | int((*p)[1])
+				return int((*p)[0])<<8 | int((*p)[1])
 			}
 		}
 	}

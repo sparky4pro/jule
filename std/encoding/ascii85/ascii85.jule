@@ -40,7 +40,7 @@ use "std/io"
 
 // Returns the maximum length of an encoding of n source bytes.
 fn MaxEncodeLen(n: int): int {
-	ret (n + 3) / 4 * 5
+	return (n + 3) / 4 * 5
 }
 
 // Returns new Ascii85 encoder for stream.
@@ -48,13 +48,13 @@ fn MaxEncodeLen(n: int): int {
 // The Close method of the encoder flushes any pending output.
 // It is an error to call write after calling close.
 fn NewEncoder(mut w: io::Writer): io::WriteCloser {
-	ret encoder.new(w)
+	return encoder.new(w)
 }
 
 // Returns new Ascii85 decoder for stream.
 // Decoder forwards any error.
 fn NewDecoder(mut r: io::Reader): io::Reader {
-	ret decoder.new(r)
+	return decoder.new(r)
 }
 
 // Encodes src into at most MaxEncodeLen(len(src))
@@ -68,7 +68,7 @@ fn NewDecoder(mut r: io::Reader): io::Reader {
 // The encode does not add these.
 fn Encode(mut dest: []byte, src: []byte): int {
 	if len(src) == 0 {
-		ret 0
+		return 0
 	}
 
 	mut n := 0
@@ -124,14 +124,14 @@ fn Encode(mut dest: []byte, src: []byte): int {
 		dest = dest[m:]
 		n += m
 	}
-	ret n
+	return n
 }
 
 type CorruptInputError: i64
 
 impl CorruptInputError {
 	fn String(*self): string {
-		ret "illegal ascii85 data at input byte " + conv::FormatInt(i64(*self), 10)
+		return "illegal ascii85 data at input byte " + conv::FormatInt(i64(*self), 10)
 	}
 }
 
@@ -152,7 +152,7 @@ fn Decode(mut dest: []byte, src: []byte, flush: bool)!: (ndst: int, nsrc: int) {
 	mut nb := 0
 	for i, b in src {
 		if len(dest)-ndst < 4 {
-			ret
+			return
 		}
 		match {
 		| b <= ' ':
@@ -202,7 +202,7 @@ fn Decode(mut dest: []byte, src: []byte, flush: bool)!: (ndst: int, nsrc: int) {
 			}
 		}
 	}
-	ret
+	return
 }
 
 struct encoder {
@@ -224,7 +224,7 @@ impl io::WriteCloser for encoder {
 			n += i
 			unsafe { *(&dest) = (*(&dest))[i:] }
 			if self.nbuf < 4 {
-				ret
+				return
 			}
 			nout := Encode(self.out, self.buf)
 			self.w.Write(self.out[:nout]).await?
@@ -250,7 +250,7 @@ impl io::WriteCloser for encoder {
 		_ = copy(self.buf, dest)
 		self.nbuf = len(dest)
 		n += len(dest)
-		ret
+		return
 	}
 
 	// Close flushes any pending output from the encoder.
@@ -267,7 +267,7 @@ impl io::WriteCloser for encoder {
 
 impl encoder {
 	fn new(mut w: io::Writer): &encoder {
-		ret &encoder{
+		return &encoder{
 			w:   w,
 			buf: make([]byte, 4),
 			out: make([]byte, 1<<10),
@@ -288,7 +288,7 @@ struct decoder {
 impl io::Reader for decoder {
 	async fn Read(mut *self, mut p: []byte)!: (n: int) {
 		if len(p) == 0 {
-			ret 0
+			return 0
 		}
 		if self.err != nil {
 			unsafe throw self.err
@@ -298,7 +298,7 @@ impl io::Reader for decoder {
 			if len(self.out) > 0 {
 				n = copy(p, self.out)
 				self.out = self.out[n:]
-				ret
+				return
 			}
 
 			// Decode leftover input from last read.
@@ -345,7 +345,7 @@ impl io::Reader for decoder {
 
 impl decoder {
 	fn new(mut r: io::Reader): &decoder {
-		ret &decoder{
+		return &decoder{
 			r:      r,
 			buf:    make([]byte, 1<<10),
 			outbuf: make([]byte, 1<<10),

@@ -51,11 +51,11 @@ impl IR {
 		const UpdateMod = true // Detect and use the root module for the main package if exist.
 		mut files, mut logs := importer.ImportPackage(path, UpdateMod)
 		if len(logs) > 0 {
-			ret nil, logs
+			return nil, logs
 		}
 
 		if len(files) == 0 {
-			ret nil, nil
+			return nil, nil
 		}
 
 		// Push runtime package to first file.
@@ -66,7 +66,7 @@ impl IR {
 
 		mut pkg, logs := sema::AnalyzePackage(files, importer, flags)
 		if len(logs) > 0 {
-			ret nil, logs
+			return nil, logs
 		}
 
 		// Collect data.
@@ -76,7 +76,7 @@ impl IR {
 		ir.Main = pkg
 		ir.Runtime = pkg.Files[0].Imports[0] // runtime package
 
-		ret ir, nil
+		return ir, nil
 	}
 }
 
@@ -142,7 +142,7 @@ impl IR {
 			}
 		}
 		self.appendStructs(self.Main, &buffer)
-		ret buffer
+		return buffer
 	}
 
 	fn appendGlobals(*self, mut p: &sema::Package, mut &buffer: *[]&sema::Var) {
@@ -183,7 +183,7 @@ impl IR {
 		if orderDefs {
 			order(buffer[n:], true)
 		}
-		ret buffer
+		return buffer
 	}
 
 	// Orders defines for initialization by dependencies.
@@ -238,7 +238,7 @@ fn buildCompileInfo(): importer::CompileInfo {
 		info.CppStd = importer::CppStd.Cpp20
 	}
 
-	ret info
+	return info
 }
 
 // See "std/jule" developer reference (8).

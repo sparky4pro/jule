@@ -23,7 +23,7 @@ struct Cond {
 impl Cond {
 	// Returns a new Cond with locker l.
 	fn New(l: Locker): &Cond {
-		ret &Cond{l: unsafe { *(&l) }}
+		return &Cond{l: unsafe { *(&l) }}
 	}
 
 	// Locks the locker.

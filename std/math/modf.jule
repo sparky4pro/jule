@@ -47,11 +47,11 @@ fn Modf(f: f64): (i: f64, frac: f64) {
 		match {
 		| f < 0:
 			i, frac = Modf(-f)
-			ret -i, -frac
+			return -i, -frac
 		| f == 0:
-			ret f, f // Return -0, -0 when f == -0
+			return f, f // Return -0, -0 when f == -0
 		}
-		ret 0, f
+		return 0, f
 	}
 
 	mut x := F64bits(f)
@@ -63,5 +63,5 @@ fn Modf(f: f64): (i: f64, frac: f64) {
 	}
 	i = F64frombits(x)
 	frac = f - i
-	ret
+	return
 }

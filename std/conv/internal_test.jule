@@ -10,23 +10,23 @@ let BaseError = baseError
 fn NewDecimal(i: u64): &decimal {
 	mut d := new(decimal)
 	d.Assign(i)
-	ret d
+	return d
 }
 
 fn SetOptimize(b: bool): bool {
 	old := optimize
 	optimize = b
-	ret old
+	return old
 }
 
 fn ParseFloatPrefix(s: string, bitSize: int): (f64, int, any) {
-	ret parseFloatPrefix(s, bitSize)
+	return parseFloatPrefix(s, bitSize)
 }
 
 fn MulByLog2Log10(x: int): int {
-	ret mulByLog2Log10(x)
+	return mulByLog2Log10(x)
 }
 
 fn MulByLog10Log2(x: int): int {
-	ret mulByLog10Log2(x)
+	return mulByLog10Log2(x)
 }

@@ -39,7 +39,7 @@ use "std/io"
 
 // Returns a Reader that implements
 // each non-empty Read by reading one byte from r.
-fn OneByteReader(mut r: io::Reader): io::Reader { ret &oneByteReader{r} }
+fn OneByteReader(mut r: io::Reader): io::Reader { return &oneByteReader{r} }
 
 struct oneByteReader {
 	r: io::Reader
@@ -48,15 +48,15 @@ struct oneByteReader {
 impl io::Reader for oneByteReader {
 	async fn Read(mut *self, mut p: []byte)!: int {
 		if len(p) == 0 {
-			ret 0
+			return 0
 		}
-		ret self.r.Read(p[0:1]).await?
+		return self.r.Read(p[0:1]).await?
 	}
 }
 
 // Returns a Reader that implements Read
 // by reading half as many requested bytes from r.
-fn HalfReader(mut r: io::Reader): io::Reader { ret &halfReader{r} }
+fn HalfReader(mut r: io::Reader): io::Reader { return &halfReader{r} }
 
 struct halfReader {
 	r: io::Reader
@@ -64,7 +64,7 @@ struct halfReader {
 
 impl io::Reader for halfReader {
 	async fn Read(mut *self, mut p: []byte)!: int {
-		ret self.r.Read(p[0 : (len(p)+1)/2]).await?
+		return self.r.Read(p[0 : (len(p)+1)/2]).await?
 	}
 }
 
@@ -73,7 +73,7 @@ impl io::Reader for halfReader {
 // last piece of data is read. DataErrReader wraps a Reader and changes its
 // behavior so the final error is returned along with the final data, instead
 // of in the first call after the final data.
-fn DataErrReader(mut r: io::Reader): io::Reader { ret &dataErrReader{r, nil, make([]byte, 1024)} }
+fn DataErrReader(mut r: io::Reader): io::Reader { return &dataErrReader{r, nil, make([]byte, 1024)} }
 
 struct dataErrReader {
 	r:      io::Reader
@@ -102,6 +102,6 @@ impl io::Reader for dataErrReader {
 			n = copy(p, self.unread)
 			self.unread = self.unread[n:]
 		}
-		ret
+		return
 	}
 }

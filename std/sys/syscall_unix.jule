@@ -19,7 +19,7 @@ fn CloseOnExec(fd: int) { Fcntl(fd, F_SETFD, FD_CLOEXEC) else {} }
 fn SetNonblock(fd: int, nonblocking: bool)! {
 	mut flag := Fcntl(fd, F_GETFL, 0)?
 	if (flag&O_NONBLOCK != 0) == nonblocking {
-		ret
+		return
 	}
 	if nonblocking {
 		flag |= O_NONBLOCK

@@ -26,8 +26,8 @@ struct comptimeRange {
 }
 
 impl Kind for comptimeRange {
-	fn String(*self): string { ret "comptimeRange" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeRange" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 // Compile-time field for structure.
@@ -36,8 +36,8 @@ struct comptimeStructField {
 }
 
 impl Kind for comptimeStructField {
-	fn String(*self): string { ret "comptimeStructField" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeStructField" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 impl comptimeStructField {
@@ -45,9 +45,9 @@ impl comptimeStructField {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Decl")
 			e.pushSuggestion("call like; Decl()")
-			ret nil
+			return nil
 		}
-		ret &Value{
+		return &Value{
 			Type: &Type{
 				Kind: &comptimeDecl{decl: self.field.Decl},
 			},
@@ -58,9 +58,9 @@ impl comptimeStructField {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Type")
 			e.pushSuggestion("call like; Type()")
-			ret nil
+			return nil
 		}
-		ret buildComptimeTypeInfoData(e.s, self.field.Type)
+		return buildComptimeTypeInfoData(e.s, self.field.Type)
 	}
 
 	fn subIdent(mut &self, name: string): &Value {
@@ -69,14 +69,14 @@ impl comptimeStructField {
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Decl(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Type":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Type(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		|:
-			ret nil
+			return nil
 		}
 	}
 }
@@ -87,8 +87,8 @@ struct comptimeStructFields {
 }
 
 impl Kind for comptimeStructFields {
-	fn String(*self): string { ret "comptimeStructFields" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeStructFields" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 impl comptimeRangeKind for comptimeStructFields {
@@ -137,7 +137,7 @@ impl comptimeRangeKind for comptimeStructFields {
 	}
 
 	fn len(*self): int {
-		ret len(self.fields)
+		return len(self.fields)
 	}
 }
 
@@ -147,8 +147,8 @@ struct comptimeStatic {
 }
 
 impl Kind for comptimeStatic {
-	fn String(*self): string { ret "comptimeStatic" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeStatic" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 impl comptimeStatic {
@@ -156,9 +156,9 @@ impl comptimeStatic {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Decl")
 			e.pushSuggestion("call like; Decl()")
-			ret nil
+			return nil
 		}
-		ret &Value{
+		return &Value{
 			Type: &Type{
 				Kind: &comptimeDecl{decl: self.field},
 			},
@@ -169,9 +169,9 @@ impl comptimeStatic {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Type")
 			e.pushSuggestion("call like; Type()")
-			ret nil
+			return nil
 		}
-		ret buildComptimeTypeInfoData(e.s, self.field.TypeSym.Type)
+		return buildComptimeTypeInfoData(e.s, self.field.TypeSym.Type)
 	}
 
 	fn subIdent(mut &self, name: string): &Value {
@@ -180,14 +180,14 @@ impl comptimeStatic {
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Decl(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Type":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Type(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		|:
-			ret nil
+			return nil
 		}
 	}
 }
@@ -198,8 +198,8 @@ struct comptimeStatics {
 }
 
 impl Kind for comptimeStatics {
-	fn String(*self): string { ret "comptimeStatics" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeStatics" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 impl comptimeRangeKind for comptimeStatics {
@@ -248,7 +248,7 @@ impl comptimeRangeKind for comptimeStatics {
 	}
 
 	fn len(*self): int {
-		ret len(self.fields)
+		return len(self.fields)
 	}
 }
 
@@ -258,8 +258,8 @@ struct comptimeEnumField {
 }
 
 impl Kind for comptimeEnumField {
-	fn String(*self): string { ret "comptimeEnumField" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeEnumField" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 impl comptimeEnumField {
@@ -267,9 +267,9 @@ impl comptimeEnumField {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Decl")
 			e.pushSuggestion("call like; Decl()")
-			ret nil
+			return nil
 		}
-		ret &Value{
+		return &Value{
 			Type: &Type{
 				Kind: &comptimeDecl{decl: self.field},
 			},
@@ -282,9 +282,9 @@ impl comptimeEnumField {
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Decl(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		|:
-			ret nil
+			return nil
 		}
 	}
 }
@@ -295,8 +295,8 @@ struct comptimeEnumFields {
 }
 
 impl Kind for comptimeEnumFields {
-	fn String(*self): string { ret "comptimeEnumFields" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeEnumFields" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 impl comptimeRangeKind for comptimeEnumFields {
@@ -345,7 +345,7 @@ impl comptimeRangeKind for comptimeEnumFields {
 	}
 
 	fn len(*self): int {
-		ret len(self.fields)
+		return len(self.fields)
 	}
 }
 
@@ -355,8 +355,8 @@ struct comptimeParam {
 }
 
 impl Kind for comptimeParam {
-	fn String(*self): string { ret "comptimeParam" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeParam" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 impl comptimeParam {
@@ -364,9 +364,9 @@ impl comptimeParam {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Decl")
 			e.pushSuggestion("call like; Decl()")
-			ret nil
+			return nil
 		}
-		ret &Value{
+		return &Value{
 			Type: &Type{
 				Kind: &comptimeDecl{decl: self.param.Decl},
 			},
@@ -377,19 +377,19 @@ impl comptimeParam {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Type")
 			e.pushSuggestion("call like; Type()")
-			ret nil
+			return nil
 		}
-		ret buildComptimeTypeInfoData(e.s, self.param.Type)
+		return buildComptimeTypeInfoData(e.s, self.param.Type)
 	}
 
 	fn _Recv(mut &self, mut e: &eval, mut fc: &ast::CallExpr): &Value {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Recv")
 			e.pushSuggestion("call like; Recv()")
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewBool(self.param.Decl.IsSelf())
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -403,19 +403,19 @@ impl comptimeParam {
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Decl(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Recv":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Recv(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Type":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Type(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		|:
-			ret nil
+			return nil
 		}
 	}
 }
@@ -426,8 +426,8 @@ struct comptimeParams {
 }
 
 impl Kind for comptimeParams {
-	fn String(*self): string { ret "comptimeParams" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeParams" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 impl comptimeRangeKind for comptimeParams {
@@ -476,7 +476,7 @@ impl comptimeRangeKind for comptimeParams {
 	}
 
 	fn len(*self): int {
-		ret len(self.params)
+		return len(self.params)
 	}
 }
 
@@ -486,8 +486,8 @@ struct comptimeTypeInfos {
 }
 
 impl Kind for comptimeTypeInfos {
-	fn String(*self): string { ret "comptimeTypeInfos" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeTypeInfos" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 impl comptimeRangeKind for comptimeTypeInfos {
@@ -534,7 +534,7 @@ impl comptimeRangeKind for comptimeTypeInfos {
 	}
 
 	fn len(*self): int {
-		ret len(self.types)
+		return len(self.types)
 	}
 }
 
@@ -544,8 +544,8 @@ struct comptimeTypeInfo {
 }
 
 impl Kind for comptimeTypeInfo {
-	fn String(*self): string { ret "comptimeTypeInfo[" + self.base.String() + "]" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeTypeInfo[" + self.base.String() + "]" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 impl comptimeTypeInfo {
@@ -553,11 +553,11 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Hash")
 			e.pushSuggestion("call like; Hash()")
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewU64(u64(uintptr(self)))
 		constant.Kind = types::Uintptr
-		ret &Value{
+		return &Value{
 			untyped:  false,
 			Type:     primUintptr,
 			Constant: constant,
@@ -569,7 +569,7 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Decl")
 			e.pushSuggestion("call like; Decl()")
-			ret nil
+			return nil
 		}
 		mut decl := comptimeDeclType(nil)
 		match {
@@ -586,17 +586,17 @@ impl comptimeTypeInfo {
 			match {
 			| f.IsBuiltin():
 				e.pushErr(fc.Args[0].Token, "type @ is invalid for built-in function", self.base.String())
-				ret nil
+				return nil
 			| f.IsAnon():
 				e.pushErr(fc.Args[0].Token, "type @ is invalid for anonymous function", self.base.String())
-				ret nil
+				return nil
 			}
 			decl = f.Decl
 		|:
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Decl", self.base.String())
-			ret nil
+			return nil
 		}
-		ret &Value{
+		return &Value{
 			Type: &Type{
 				Kind: &comptimeDecl{decl: decl},
 			},
@@ -607,10 +607,10 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to String")
 			e.pushSuggestion("call like; String()")
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewString(self.base.String())
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primString,
 			Constant: constant,
@@ -622,7 +622,7 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Kind")
 			e.pushSuggestion("call like; Kind()")
-			ret nil
+			return nil
 		}
 		let mut c: &constant::Const
 		match {
@@ -700,7 +700,7 @@ impl comptimeTypeInfo {
 		if c == nil {
 			panic("sema: Kind(): unimplemented type for comptime: " + self.base.String())
 		}
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primInt,
 			Constant: c,
@@ -712,20 +712,20 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Bits")
 			e.pushSuggestion("call like; Bits()")
-			ret nil
+			return nil
 		}
 		prim := self.base.Prim()
 		if prim == nil {
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Bits", self.base.String())
-			ret nil
+			return nil
 		}
 		n := types::BitSizeOf(prim.Kind)
 		if n == -1 {
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Bits", self.base.String())
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewI64(i64(n))
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primInt,
 			Constant: constant,
@@ -737,57 +737,57 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Value")
 			e.pushSuggestion("call like; Value()")
-			ret nil
+			return nil
 		}
 		mut ptr := self.base.Ptr()
 		if ptr != nil {
 			if ptr.IsUnsafe() {
 				e.pushErr(fc.Args[0].Token, "type @ is invalid for function Value", self.base.String())
-				ret nil
+				return nil
 			}
-			ret buildComptimeTypeInfoData(e.s, ptr.Value)
+			return buildComptimeTypeInfoData(e.s, ptr.Value)
 		}
 		mut sptr := self.base.Sptr()
 		if sptr != nil {
-			ret buildComptimeTypeInfoData(e.s, sptr.Value)
+			return buildComptimeTypeInfoData(e.s, sptr.Value)
 		}
 		mut slice := self.base.Slice()
 		if slice != nil {
-			ret buildComptimeTypeInfoData(e.s, slice.Value)
+			return buildComptimeTypeInfoData(e.s, slice.Value)
 		}
 		mut array := self.base.Array()
 		if array != nil {
-			ret buildComptimeTypeInfoData(e.s, array.Value)
+			return buildComptimeTypeInfoData(e.s, array.Value)
 		}
 		mut c := self.base.Chan()
 		if c != nil {
-			ret buildComptimeTypeInfoData(e.s, c.Value)
+			return buildComptimeTypeInfoData(e.s, c.Value)
 		}
 		mut enm := self.base.Enum()
 		if enm != nil {
-			ret buildComptimeTypeInfoData(e.s, enm.TypeSym.Type)
+			return buildComptimeTypeInfoData(e.s, enm.TypeSym.Type)
 		}
 		mut m := self.base.Map()
 		if m != nil {
-			ret buildComptimeTypeInfoData(e.s, m.Value)
+			return buildComptimeTypeInfoData(e.s, m.Value)
 		}
 		e.pushErr(fc.Args[0].Token, "type @ is invalid for function Value", self.base.String())
-		ret nil
+		return nil
 	}
 
 	fn _Size(mut &self, mut e: &eval, mut fc: &ast::CallExpr): &Value {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Size")
 			e.pushSuggestion("call like; Size()")
-			ret nil
+			return nil
 		}
 		mut arr := self.base.Array()
 		if arr == nil {
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Size", self.base.String())
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewI64(i64(arr.N))
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primInt,
 			Constant: constant,
@@ -799,25 +799,25 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Key")
 			e.pushSuggestion("call like; Key()")
-			ret nil
+			return nil
 		}
 		mut m := self.base.Map()
 		if m == nil {
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Key", self.base.String())
-			ret nil
+			return nil
 		}
-		ret buildComptimeTypeInfoData(e.s, m.Key)
+		return buildComptimeTypeInfoData(e.s, m.Key)
 	}
 
 	fn _Fields(mut &self, mut e: &eval, mut fc: &ast::CallExpr): &Value {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Fields")
 			e.pushSuggestion("call like; Fields()")
-			ret nil
+			return nil
 		}
 		mut s := self.base.Struct()
 		if s != nil {
-			ret &Value{
+			return &Value{
 				Type: &Type{
 					Kind: &comptimeStructFields{
 						fields: s.Fields,
@@ -827,7 +827,7 @@ impl comptimeTypeInfo {
 		}
 		mut enm := self.base.Enum()
 		if enm != nil {
-			ret &Value{
+			return &Value{
 				Type: &Type{
 					Kind: &comptimeEnumFields{
 						fields: enm.Items,
@@ -836,17 +836,17 @@ impl comptimeTypeInfo {
 			}
 		}
 		e.pushErr(fc.Args[0].Token, "type @ is invalid for function Fields", self.base.String())
-		ret nil
+		return nil
 	}
 
 	fn _Extern(mut &self, mut e: &eval, mut fc: &ast::CallExpr): &Value {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Extern")
 			e.pushSuggestion("call like; Extern()")
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewBool(self.base.Extern())
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -858,10 +858,10 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Ordered")
 			e.pushSuggestion("call like; Ordered()")
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewBool(self.base.Ordered())
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -873,10 +873,10 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Comparable")
 			e.pushSuggestion("call like; Comparable()")
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewBool(self.base.Comparable())
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -888,10 +888,10 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Mutable")
 			e.pushSuggestion("call like; Mutable()")
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewBool(self.base.Mutable())
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -903,12 +903,12 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Types")
 			e.pushSuggestion("call like; Types()")
-			ret nil
+			return nil
 		}
 		mut tup := self.base.Tuple()
 		if tup == nil {
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Types", self.base.String())
-			ret nil
+			return nil
 		}
 		mut infos := &comptimeTypeInfos{
 			types: make([]&comptimeTypeInfo, 0, len(tup.Types)),
@@ -916,7 +916,7 @@ impl comptimeTypeInfo {
 		for (_, mut t) in tup.Types {
 			infos.types = append(infos.types, e.s.meta.pushComptimeTypeInfo(t))
 		}
-		ret &Value{
+		return &Value{
 			Type: &Type{
 				Kind: infos,
 			},
@@ -927,10 +927,10 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to CanNil")
 			e.pushSuggestion("call like; CanNil()")
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewBool(self.base.NilCompatible())
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -942,10 +942,10 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to GC")
 			e.pushSuggestion("call like; GC()")
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewBool(self.base.GC())
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -957,31 +957,31 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Result")
 			e.pushSuggestion("call like; Result()")
-			ret nil
+			return nil
 		}
 		mut f := self.base.Func()
 		if f == nil {
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Result", self.base.String())
-			ret nil
+			return nil
 		}
 		if f.Result == nil {
-			ret buildComptimeTypeInfoData(e.s, primVoid)
+			return buildComptimeTypeInfoData(e.s, primVoid)
 		}
-		ret buildComptimeTypeInfoData(e.s, f.Result)
+		return buildComptimeTypeInfoData(e.s, f.Result)
 	}
 
 	fn _Params(mut &self, mut e: &eval, mut fc: &ast::CallExpr): &Value {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Params")
 			e.pushSuggestion("call like; Params()")
-			ret nil
+			return nil
 		}
 		mut f := self.base.Func()
 		if f == nil {
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Params", self.base.String())
-			ret nil
+			return nil
 		}
-		ret &Value{
+		return &Value{
 			Type: &Type{
 				Kind: &comptimeParams{params: f.Params},
 			},
@@ -992,11 +992,11 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Strict")
 			e.pushSuggestion("call like; Strict()")
-			ret nil
+			return nil
 		}
 		s := self.base.SoftStruct()
 		mut constant := constant::NewBool(s != nil && s.Source != nil)
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -1008,31 +1008,31 @@ impl comptimeTypeInfo {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Source")
 			e.pushSuggestion("call like; Source()")
-			ret nil
+			return nil
 		}
 		mut s := self.base.SoftStruct()
 		isStrict := s != nil && s.Source != nil
 		if !isStrict {
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Source", self.base.String())
-			ret nil
+			return nil
 		}
-		ret buildComptimeTypeInfoData(e.s, s.Source)
+		return buildComptimeTypeInfoData(e.s, s.Source)
 	}
 
 	fn _ActualSource(mut &self, mut e: &eval, mut fc: &ast::CallExpr): &Value {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to ActualSource")
 			e.pushSuggestion("call like; ActualSource()")
-			ret nil
+			return nil
 		}
 		s := self.base.SoftStruct()
 		isStrict := s != nil && s.Source != nil
 		if !isStrict {
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function ActualSource", self.base.String())
-			ret nil
+			return nil
 		}
 		mut t := &Type{Kind: self.base.ActualKind()}
-		ret buildComptimeTypeInfoData(e.s, t)
+		return buildComptimeTypeInfoData(e.s, t)
 	}
 
 	fn subIdent(mut &self, name: string): &Value {
@@ -1041,109 +1041,109 @@ impl comptimeTypeInfo {
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Hash(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Source":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Source(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "ActualSource":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._ActualSource(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Strict":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Strict(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Decl":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Decl(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "String":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._String(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Bits":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Bits(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Size":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Size(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Key":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Key(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Value":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Value(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Fields":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Fields(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Params":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Params(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Types":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Types(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Extern":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Extern(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Ordered":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Ordered(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Comparable":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Comparable(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Mutable":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Mutable(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "CanNil":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._CanNil(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "GC":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._GC(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Result":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Result(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Kind":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Kind(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		|:
-			ret nil
+			return nil
 		}
 	}
 }
@@ -1154,8 +1154,8 @@ struct comptimeValue {
 }
 
 impl Kind for comptimeValue {
-	fn String(*self): string { ret "comptimeValue" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeValue" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 impl comptimeValue {
@@ -1163,28 +1163,28 @@ impl comptimeValue {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Unwrap")
 			e.pushSuggestion("call like; Unwrap()")
-			ret nil
+			return nil
 		}
-		ret self.v
+		return self.v
 	}
 
 	fn _Type(mut &self, mut e: &eval, mut fc: &ast::CallExpr): &Value {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Type")
 			e.pushSuggestion("call like; Type()")
-			ret nil
+			return nil
 		}
-		ret buildComptimeTypeInfoData(e.s, self.v.Type)
+		return buildComptimeTypeInfoData(e.s, self.v.Type)
 	}
 
 	fn _Lvalue(mut &self, mut e: &eval, mut fc: &ast::CallExpr): &Value {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Lvalue")
 			e.pushSuggestion("call like; Lvalue()")
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewBool(self.v.Lvalue)
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -1196,10 +1196,10 @@ impl comptimeValue {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Mutable")
 			e.pushSuggestion("call like; Mutable()")
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewBool(self.v.Mutable)
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -1211,10 +1211,10 @@ impl comptimeValue {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Const")
 			e.pushSuggestion("call like; Const()")
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewBool(self.v.IsConst())
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -1226,79 +1226,79 @@ impl comptimeValue {
 		if len(fc.Args) > 1 {
 			e.pushErr(fc.Token, "passed more argument than expected to Field")
 			e.pushSuggestion("call like; Field(name)")
-			ret nil
+			return nil
 		}
 		mut s := self.v.Type.Struct()
 		if s == nil {
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Field", self.v.Type.String())
-			ret nil
+			return nil
 		}
 		mut arg := fc.Args[0]
 		mut v := e.evalExpr(arg, evalDefault)
 		if v == nil {
-			ret nil
+			return nil
 		}
 		if !v.IsConst() {
 			e.pushErr(arg.Token, "expression must be constant")
-			ret nil
+			return nil
 		}
 		prim := v.Type.Prim()
 		if prim == nil || !prim.IsString() {
 			e.pushErr(arg.Token, "mismatched types: @ and @", string(types::String), v.Type.String())
-			ret nil
+			return nil
 		}
 		name := v.Constant.ReadString()
 		mut f := s.FindField(name)
 		if f == nil {
 			e.pushErr(arg.Token, "type @ has no field or method: @", s.Decl.Name, name)
-			ret nil
+			return nil
 		}
 		v = new(Value, *self.v)
 		v = e.evalStructSelectorField(v, s, arg.Token, f)
-		ret buildComptimeValue(v)
+		return buildComptimeValue(v)
 	}
 
 	fn _FieldByIndex(mut &self, mut e: &eval, mut fc: &ast::CallExpr): &Value {
 		if len(fc.Args) > 1 {
 			e.pushErr(fc.Token, "passed more argument than expected to FieldByIndex")
 			e.pushSuggestion("call like; FieldByIndex(index)")
-			ret nil
+			return nil
 		}
 		mut s := self.v.Type.Struct()
 		if s == nil {
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function FieldByIndex", self.v.Type.String())
-			ret nil
+			return nil
 		}
 		mut arg := fc.Args[0]
 		mut v := e.evalExpr(arg, evalDefault)
 		if v == nil {
-			ret nil
+			return nil
 		}
 		if !v.IsConst() {
 			e.pushErr(arg.Token, "expression must be constant")
-			ret nil
+			return nil
 		}
 		log := checkDataForIntegerIndex(e.s, v, arg.Token, e.getOwnerRefers())
 		if log != "" {
 			e.pushErr(arg.Token, log)
-			ret nil
+			return nil
 		}
 		i := v.Constant.AsU64()
 		if i >= u64(len(s.Fields)) {
 			e.pushErr(arg.Token, "index @ out of range, collection length is @", conv::FormatUint(i, 10), conv::Itoa(len(s.Fields)))
-			ret nil
+			return nil
 		}
 		mut f := s.Fields[i]
 		v = new(Value, *self.v)
 		v = e.evalStructSelectorField(v, s, arg.Token, f)
-		ret buildComptimeValue(v)
+		return buildComptimeValue(v)
 	}
 
 	fn _Method(mut &self, mut e: &eval, mut fc: &ast::CallExpr): &Value {
 		if len(fc.Args) > 1 {
 			e.pushErr(fc.Token, "passed more argument than expected to Method")
 			e.pushSuggestion("call like; Method(name)")
-			ret nil
+			return nil
 		}
 		mut ref := false
 		mut s := (&StructIns)(nil)
@@ -1311,35 +1311,35 @@ impl comptimeValue {
 		}
 		if s == nil {
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Method", self.v.Type.String())
-			ret nil
+			return nil
 		}
 		mut arg := fc.Args[0]
 		mut v := e.evalExpr(arg, evalDefault)
 		if v == nil {
-			ret nil
+			return nil
 		}
 		if !v.IsConst() {
 			e.pushErr(arg.Token, "expression must be constant")
-			ret nil
+			return nil
 		}
 		prim := v.Type.Prim()
 		if prim == nil || !prim.IsString() {
 			e.pushErr(arg.Token, "mismatched types: @ and @", string(types::String), v.Type.String())
-			ret nil
+			return nil
 		}
 		name := v.Constant.ReadString()
 		const Static = false
 		mut m := s.FindMethod(name, Static)
 		if m == nil {
 			e.pushErr(arg.Token, "type @ has no field or method: @", s.Decl.Name, name)
-			ret nil
+			return nil
 		}
 		v = new(Value, *self.v)
 		if ref {
 			makeImplicitDeref(v, fc.Token)
 		}
 		v = e.evalStructSelectorMethod(v, s, arg.Token, m, ref)
-		ret buildComptimeValue(v)
+		return buildComptimeValue(v)
 	}
 
 	fn subIdent(mut &self, name: string): &Value {
@@ -1348,44 +1348,44 @@ impl comptimeValue {
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Unwrap(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Type":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Type(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Lvalue":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Lvalue(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Mutable":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Mutable(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Const":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Const(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Field":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Field(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "FieldByIndex":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._FieldByIndex(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Method":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Method(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		|:
-			ret nil
+			return nil
 		}
 	}
 }
@@ -1396,8 +1396,8 @@ struct comptimeFiles {
 }
 
 impl Kind for comptimeFiles {
-	fn String(*self): string { ret "comptimeFiles" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeFiles" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 impl comptimeRangeKind for comptimeFiles {
@@ -1446,7 +1446,7 @@ impl comptimeRangeKind for comptimeFiles {
 	}
 
 	fn len(*self): int {
-		ret len(self.files)
+		return len(self.files)
 	}
 }
 
@@ -1456,8 +1456,8 @@ struct comptimeFile {
 }
 
 impl Kind for comptimeFile {
-	fn String(*self): string { ret "comptimeFile" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeFile" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 impl comptimeFile {
@@ -1465,10 +1465,10 @@ impl comptimeFile {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Path")
 			e.pushSuggestion("call like; Path()")
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewString(self.file.File.Path)
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primString,
 			Constant: constant,
@@ -1480,10 +1480,10 @@ impl comptimeFile {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Name")
 			e.pushSuggestion("call like; Name()")
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewString(self.file.File.Name())
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primString,
 			Constant: constant,
@@ -1495,10 +1495,10 @@ impl comptimeFile {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Dir")
 			e.pushSuggestion("call like; Dir()")
-			ret nil
+			return nil
 		}
 		mut constant := constant::NewString(self.file.File.Dir())
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primString,
 			Constant: constant,
@@ -1512,19 +1512,19 @@ impl comptimeFile {
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Path(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Name":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Name(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Dir":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Dir(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		|:
-			ret nil
+			return nil
 		}
 	}
 }
@@ -1535,8 +1535,8 @@ struct comptimeDecls {
 }
 
 impl Kind for comptimeDecls {
-	fn String(*self): string { ret "comptimeDecls" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeDecls" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 impl comptimeRangeKind for comptimeDecls {
@@ -1583,7 +1583,7 @@ impl comptimeRangeKind for comptimeDecls {
 	}
 
 	fn len(*self): int {
-		ret len(self.decls)
+		return len(self.decls)
 	}
 }
 
@@ -1607,35 +1607,35 @@ struct comptimeDecl {
 }
 
 impl Kind for comptimeDecl {
-	fn String(*self): string { ret "comptimeDecl" }
-	fn Equal(&self, other: &Type): bool { ret false }
+	fn String(*self): string { return "comptimeDecl" }
+	fn Equal(&self, other: &Type): bool { return false }
 }
 
 impl comptimeDecl {
 	fn declAsStr(*self): string {
 		match type self.decl {
 		| &Struct:
-			ret "<struct>"
+			return "<struct>"
 		| &Func:
-			ret "<func>"
+			return "<func>"
 		| &Enum:
-			ret "<enum>"
+			return "<enum>"
 		| &TypeEnum:
-			ret "<type enum>"
+			return "<type enum>"
 		| &Trait:
-			ret "<trait>"
+			return "<trait>"
 		| &Field:
-			ret "<field>"
+			return "<field>"
 		| &TypeAlias:
-			ret "<type alias>"
+			return "<type alias>"
 		| &Var:
 			v := self.decl.(&Var)
 			if v.IsEnumField() {
-				ret "<enum field>"
+				return "<enum field>"
 			}
-			ret "<var>"
+			return "<var>"
 		| &Param:
-			ret "<param>"
+			return "<param>"
 		|:
 			panic("sema: comptimeDecl.Name: unimplemented declaration kind")
 		}
@@ -1645,7 +1645,7 @@ impl comptimeDecl {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Name")
 			e.pushSuggestion("call like; Name()")
-			ret nil
+			return nil
 		}
 		mut name := ""
 		match type self.decl {
@@ -1671,7 +1671,7 @@ impl comptimeDecl {
 			panic("sema: comptimeDecl.Name: unimplemented declaration kind")
 		}
 		mut constant := constant::NewString(name)
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primString,
 			Constant: constant,
@@ -1683,13 +1683,13 @@ impl comptimeDecl {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Public")
 			e.pushSuggestion("call like; Public()")
-			ret nil
+			return nil
 		}
 		mut public := false
 		match type self.decl {
 		| &Param:
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Public", self.declAsStr())
-			ret nil
+			return nil
 		| &Struct:
 			public = self.decl.(&Struct).Public
 		| &Func:
@@ -1708,14 +1708,14 @@ impl comptimeDecl {
 			v := self.decl.(&Var)
 			if v.IsEnumField() {
 				e.pushErr(fc.Args[0].Token, "type @ is invalid for function Public", self.declAsStr())
-				ret nil
+				return nil
 			}
 			public = v.Public
 		|:
 			panic("sema: comptimeDecl.Public: unimplemented declaration kind")
 		}
 		mut constant := constant::NewBool(public)
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -1727,7 +1727,7 @@ impl comptimeDecl {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Extern")
 			e.pushSuggestion("call like; Extern()")
-			ret nil
+			return nil
 		}
 		mut _extern := false
 		match type self.decl {
@@ -1737,7 +1737,7 @@ impl comptimeDecl {
 		| &Field
 		| &Param:
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Extern", self.declAsStr())
-			ret nil
+			return nil
 		| &Struct:
 			_extern = self.decl.(&Struct).Extern
 		| &Func:
@@ -1748,14 +1748,14 @@ impl comptimeDecl {
 			v := self.decl.(&Var)
 			if v.IsEnumField() {
 				e.pushErr(fc.Args[0].Token, "type @ is invalid for function Extern", self.declAsStr())
-				ret nil
+				return nil
 			}
 			_extern = v.Extern
 		|:
 			panic("sema: comptimeDecl.Extern: unimplemented declaration kind")
 		}
 		mut constant := constant::NewBool(_extern)
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -1767,18 +1767,18 @@ impl comptimeDecl {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Fallible")
 			e.pushSuggestion("call like; Fallible()")
-			ret nil
+			return nil
 		}
 		match type self.decl {
 		| &Func:
 			break
 		|:
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Fallible", self.declAsStr())
-			ret nil
+			return nil
 		}
 		mut f := self.decl.(&Func)
 		mut constant := constant::NewBool(f.Fallible)
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -1790,7 +1790,7 @@ impl comptimeDecl {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Mutable")
 			e.pushSuggestion("call like; Mutable()")
-			ret nil
+			return nil
 		}
 		mut mutable := false
 		match type self.decl {
@@ -1801,7 +1801,7 @@ impl comptimeDecl {
 		| &Trait
 		| &TypeAlias:
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Mutable", self.declAsStr())
-			ret nil
+			return nil
 		| &Param:
 			mutable = self.decl.(&Param).Mutable
 		| &Field:
@@ -1810,14 +1810,14 @@ impl comptimeDecl {
 			v := self.decl.(&Var)
 			if v.IsEnumField() {
 				e.pushErr(fc.Args[0].Token, "type @ is invalid for function Mutable", self.declAsStr())
-				ret nil
+				return nil
 			}
 			mutable = v.Mutable
 		|:
 			panic("sema: comptimeDecl.Mutable: unimplemented declaration kind")
 		}
 		mut constant := constant::NewBool(mutable)
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -1829,7 +1829,7 @@ impl comptimeDecl {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Variadic")
 			e.pushSuggestion("call like; Variadic()")
-			ret nil
+			return nil
 		}
 		mut variadic := false
 		match type self.decl {
@@ -1842,14 +1842,14 @@ impl comptimeDecl {
 		| &Field
 		| &Var:
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Variadic", self.declAsStr())
-			ret nil
+			return nil
 		| &Param:
 			variadic = self.decl.(&Param).Variadic
 		|:
 			panic("sema: comptimeDecl.Variadic: unimplemented declaration kind")
 		}
 		mut constant := constant::NewBool(variadic)
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -1861,7 +1861,7 @@ impl comptimeDecl {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Reference")
 			e.pushSuggestion("call like; Reference()")
-			ret nil
+			return nil
 		}
 		mut ref := false
 		match type self.decl {
@@ -1873,12 +1873,12 @@ impl comptimeDecl {
 		| &TypeAlias
 		| &Field:
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Reference", self.declAsStr())
-			ret nil
+			return nil
 		| &Var:
 			v := self.decl.(&Var)
 			if v.IsEnumField() {
 				e.pushErr(fc.Args[0].Token, "type @ is invalid for function Reference", self.declAsStr())
-				ret nil
+				return nil
 			}
 			ref = v.Reference
 		| &Param:
@@ -1887,7 +1887,7 @@ impl comptimeDecl {
 			panic("sema: comptimeDecl.Reference: unimplemented declaration kind")
 		}
 		mut constant := constant::NewBool(ref)
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -1899,7 +1899,7 @@ impl comptimeDecl {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Params")
 			e.pushSuggestion("call like; Params()")
-			ret nil
+			return nil
 		}
 		match type self.decl {
 		| &Struct
@@ -1911,14 +1911,14 @@ impl comptimeDecl {
 		| &Var
 		| &Param:
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Params", self.declAsStr())
-			ret nil
+			return nil
 		| &Func:
 			mut f := self.decl.(&Func)
 			mut params := make([]&comptimeDecl, len(f.Params))
 			for (i, mut param) in f.Params {
 				params[i] = &comptimeDecl{decl: param}
 			}
-			ret &Value{
+			return &Value{
 				Type: &Type{
 					Kind: &comptimeDecls{
 						decls: params,
@@ -1934,7 +1934,7 @@ impl comptimeDecl {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Fields")
 			e.pushSuggestion("call like; Fields()")
-			ret nil
+			return nil
 		}
 		mut fields := ([]&comptimeDecl)(nil)
 		match type self.decl {
@@ -1946,7 +1946,7 @@ impl comptimeDecl {
 		| &Param
 		| &Func:
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Fields", self.declAsStr())
-			ret nil
+			return nil
 		| &Enum:
 			mut enm := self.decl.(&Enum)
 			fields = make([]&comptimeDecl, len(enm.Items))
@@ -1962,7 +1962,7 @@ impl comptimeDecl {
 		|:
 			panic("sema: comptimeDecl.Fields: unimplemented declaration kind")
 		}
-		ret &Value{
+		return &Value{
 			Type: &Type{
 				Kind: &comptimeDecls{
 					decls: fields,
@@ -1975,7 +1975,7 @@ impl comptimeDecl {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Methods")
 			e.pushSuggestion("call like; Methods()")
-			ret nil
+			return nil
 		}
 		mut methods := ([]&comptimeDecl)(nil)
 		match type self.decl {
@@ -1987,7 +1987,7 @@ impl comptimeDecl {
 		| &Func
 		| &Enum:
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Methods", self.declAsStr())
-			ret nil
+			return nil
 		| &Trait:
 			mut t := self.decl.(&Trait)
 			methods = make([]&comptimeDecl, len(t.Methods))
@@ -2003,7 +2003,7 @@ impl comptimeDecl {
 		|:
 			panic("sema: comptimeDecl.Methods: unimplemented declaration kind")
 		}
-		ret &Value{
+		return &Value{
 			Type: &Type{
 				Kind: &comptimeDecls{
 					decls: methods,
@@ -2016,13 +2016,13 @@ impl comptimeDecl {
 		if len(fc.Args) > 0 {
 			e.pushErr(fc.Token, "passed more argument than expected to Tags")
 			e.pushSuggestion("call like; Tags()")
-			ret nil
+			return nil
 		}
 		match type self.decl {
 		| &Field:
 			f := self.decl.(&Field)
 			mut constant := constant::NewI64(i64(len(f.Tags)))
-			ret &Value{
+			return &Value{
 				untyped:  true,
 				Type:     primInt,
 				Constant: constant,
@@ -2030,7 +2030,7 @@ impl comptimeDecl {
 			}
 		|:
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Tag", self.declAsStr())
-			ret nil
+			return nil
 		}
 	}
 
@@ -2038,31 +2038,31 @@ impl comptimeDecl {
 		if len(fc.Args) > 1 {
 			e.pushErr(fc.Token, "passed more argument than expected to Tag")
 			e.pushSuggestion("call like; Tag(name)")
-			ret nil
+			return nil
 		}
 		f, field := self.decl.(&Field)
 		if !field {
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Tag", self.declAsStr())
-			ret nil
+			return nil
 		}
 		mut arg := fc.Args[0]
 		mut v := e.evalExpr(arg, evalDefault)
 		if v == nil {
-			ret nil
+			return nil
 		}
 		if !v.IsConst() {
 			e.pushErr(arg.Token, "expression must be constant")
-			ret nil
+			return nil
 		}
 		prim := v.Type.Prim()
 		if prim == nil || !prim.IsString() {
 			e.pushErr(arg.Token, "mismatched types: @ and @", string(types::String), v.Type.String())
-			ret nil
+			return nil
 		}
 		key := v.Constant.ReadString()
 		value, _ := f.Tags[key]
 		mut constant := constant::NewString(value)
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primString,
 			Constant: constant,
@@ -2074,31 +2074,31 @@ impl comptimeDecl {
 		if len(fc.Args) > 1 {
 			e.pushErr(fc.Token, "passed more argument than expected to IsTag")
 			e.pushSuggestion("call like; IsTag(name)")
-			ret nil
+			return nil
 		}
 		f, field := self.decl.(&Field)
 		if !field {
 			e.pushErr(fc.Args[0].Token, "type @ is invalid for function IsTag", self.declAsStr())
-			ret nil
+			return nil
 		}
 		mut arg := fc.Args[0]
 		mut v := e.evalExpr(arg, evalDefault)
 		if v == nil {
-			ret nil
+			return nil
 		}
 		if !v.IsConst() {
 			e.pushErr(arg.Token, "expression must be constant")
-			ret nil
+			return nil
 		}
 		prim := v.Type.Prim()
 		if prim == nil || !prim.IsString() {
 			e.pushErr(arg.Token, "mismatched types: @ and @", string(types::String), v.Type.String())
-			ret nil
+			return nil
 		}
 		key := v.Constant.ReadString()
 		_, exist := f.Tags[key]
 		mut constant := constant::NewBool(exist)
-		ret &Value{
+		return &Value{
 			untyped:  true,
 			Type:     primBool,
 			Constant: constant,
@@ -2112,69 +2112,69 @@ impl comptimeDecl {
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Name(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Public":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Public(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Extern":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Extern(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Fallible":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Fallible(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Mutable":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Mutable(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Variadic":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Variadic(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Reference":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Reference(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Params":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Params(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Fields":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Fields(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Methods":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Methods(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Tags":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Tags(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "Tag":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._Tag(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		| "IsTag":
 			mut method := &FuncIns{
 				caller: fn|mut e, mut fc, _| self._IsTag(e, fc),
 			}
-			ret buildAsComptimeMethodData(method)
+			return buildAsComptimeMethodData(method)
 		|:
-			ret nil
+			return nil
 		}
 	}
 }
@@ -2220,12 +2220,12 @@ impl comptimeRangeKind for comptimeSliceRange {
 	}
 
 	fn len(*self): int {
-		ret len(self.s.Elems)
+		return len(self.s.Elems)
 	}
 }
 
 fn buildAsComptimeMethodData(mut f: &FuncIns): &Value {
-	ret &Value{
+	return &Value{
 		Type: &Type{
 			Kind: f,
 		},
@@ -2233,11 +2233,11 @@ fn buildAsComptimeMethodData(mut f: &FuncIns): &Value {
 }
 
 fn findComptimePackage(mut s: &sema): &ImportInfo {
-	ret s.SelectPackage(fn|pkg| pkg.LinkPath == "std/comptime")
+	return s.SelectPackage(fn|pkg| pkg.LinkPath == "std/comptime")
 }
 
 fn buildComptimeTypeInfoData(mut s: &sema, mut t: &Type): &Value {
-	ret &Value{
+	return &Value{
 		Type: &Type{
 			Kind: s.meta.pushComptimeTypeInfo(t),
 		},
@@ -2245,7 +2245,7 @@ fn buildComptimeTypeInfoData(mut s: &sema, mut t: &Type): &Value {
 }
 
 fn buildComptimeValue(mut v: &Value): &Value {
-	ret &Value{
+	return &Value{
 		Type: &Type{
 			Kind: &comptimeValue{
 				v: v,

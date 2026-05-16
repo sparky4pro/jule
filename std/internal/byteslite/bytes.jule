@@ -17,12 +17,12 @@ fn Count(s: []byte, b: byte): int {
 		}
 		i += n
 	}
-	ret t
+	return t
 }
 
 // Same as Count, but takes string as byte stack.
 fn CountString(s: string, b: byte): int {
-	ret Count(unsafe::StringBytes(s), b)
+	return Count(unsafe::StringBytes(s), b)
 }
 
 // Returns index of first matched item with specified byte,
@@ -32,10 +32,10 @@ fn IndexByte(s: []byte, b: byte): int {
 	// Trust optimizations of compiler.
 	for i, se in s {
 		if se == b {
-			ret i
+			return i
 		}
 	}
-	ret -1
+	return -1
 }
 
 fn lastIndexByte(begin: *byte, mut end: *byte, b: byte): int {
@@ -43,11 +43,11 @@ fn lastIndexByte(begin: *byte, mut end: *byte, b: byte): int {
 	for it >= begin; it-- {
 		unsafe {
 			if (*it == b) {
-				ret int(it - begin)
+				return int(it - begin)
 			}
 		}
 	}
-	ret -1
+	return -1
 }
 
 // Returns index of first matched item with specified byte,
@@ -55,22 +55,22 @@ fn lastIndexByte(begin: *byte, mut end: *byte, b: byte): int {
 // of slice to left.
 fn LastIndexByte(s: []byte, b: byte): int {
 	if len(s) == 0 {
-		ret -1
+		return -1
 	}
-	ret lastIndexByte(&s[0], &s[len(s)-1], b)
+	return lastIndexByte(&s[0], &s[len(s)-1], b)
 }
 
 // Same as IndexByte, but takes string as byte stack.
 fn IndexByteString(s: string, b: byte): int {
-	ret IndexByte(unsafe::StringBytes(s), b)
+	return IndexByte(unsafe::StringBytes(s), b)
 }
 
 // Same as LastIndexByte, but takes string as byte stack.
 fn LastIndexByteString(s: string, b: byte): int {
 	if len(s) == 0 {
-		ret -1
+		return -1
 	}
-	ret lastIndexByte(&s[0], &s[len(s)-1], b)
+	return lastIndexByte(&s[0], &s[len(s)-1], b)
 }
 
 // The prime base used in Rabin-Karp algorithm.
@@ -92,7 +92,7 @@ fn HashStr[T: string | []byte](sep: T): (u32, u32) {
 		}
 		sq *= sq
 	}
-	ret hash, pow
+	return hash, pow
 }
 
 // Returns the hash of the reverse of sep and the
@@ -112,7 +112,7 @@ fn HashStrRev[T: string | []byte](sep: T): (u32, u32) {
 		}
 		sq *= sq
 	}
-	ret hash, pow
+	return hash, pow
 }
 
 // Uses the Rabin-Karp search algorithm to return the index of the
@@ -127,7 +127,7 @@ fn IndexRabinKarp[T: string | []byte](s: T, sep: T): int {
 		h = h*PrimeRK + u32(s[i])
 	}
 	if h == hashss && string(s[:n]) == string(sep) {
-		ret 0
+		return 0
 	}
 	for i < len(s) {
 		h *= PrimeRK
@@ -135,10 +135,10 @@ fn IndexRabinKarp[T: string | []byte](s: T, sep: T): int {
 		h -= pow * u32(s[i-n])
 		i++
 		if h == hashss && string(s[i-n:i]) == string(sep) {
-			ret i - n
+			return i - n
 		}
 	}
-	ret -1
+	return -1
 }
 
 // Uses the Rabin-Karp search algorithm to return the last index of the
@@ -154,15 +154,15 @@ fn LastIndexRabinKarp[T: string | []byte](s: T, sep: T): int {
 		h = h*PrimeRK + u32(s[i])
 	}
 	if h == hashss && string(s[last:]) == string(sep) {
-		ret last
+		return last
 	}
 	for i >= 0; i-- {
 		h *= PrimeRK
 		h += u32(s[i])
 		h -= pow * u32(s[i+n])
 		if h == hashss && string(s[i:i+n]) == string(sep) {
-			ret i
+			return i
 		}
 	}
-	ret -1
+	return -1
 }

@@ -3,10 +3,10 @@
 // license that can be found in the LICENSE file.
 
 fn StrFind(pattern: string, text: string): int {
-	ret strFinder.make(pattern).next(text)
+	return strFinder.make(pattern).next(text)
 }
 
 fn DumpTables(pattern: string): ([256]int, []int) {
 	mut finder := strFinder.make(pattern)
-	ret finder.badCharSkip, finder.goodSuffixSkip
+	return finder.badCharSkip, finder.goodSuffixSkip
 }

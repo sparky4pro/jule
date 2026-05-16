@@ -15,27 +15,27 @@ struct buffer {
 
 impl buffer {
 	// Returns the number of bytes of the unread portion of the buffer;
-	fn len(*self): int { ret self.buf.Len() - self.off }
+	fn len(*self): int { return self.buf.Len() - self.off }
 
 	// Cap returns the capacity of the buffer's underlying byte slice, that is, the
 	// total space allocated for the buffer's data.
-	fn cap(*self): int { ret self.buf.Cap() }
+	fn cap(*self): int { return self.buf.Cap() }
 
 	// Returns how many bytes are unused in the buffer.
-	fn available(*self): int { ret self.buf.Cap() - self.buf.Len() }
+	fn available(*self): int { return self.buf.Cap() - self.buf.Len() }
 
 	// Returns a slice of length self.len() holding the unread portion of the buffer.
 	// The slice is valid for use only until the next buffer modification (that is,
 	// only until the next call to a method like [buffer.write] or [buffer.reset].
 	// The slice aliases the buffer content at least until the next buffer modification,
 	// so immediate changes to the slice will affect the result of future reads.
-	fn bytes(mut *self): []byte { ret self.buf.GetData()[self.off:] }
+	fn bytes(mut *self): []byte { return self.buf.GetData()[self.off:] }
 
 	// Returns an empty buffer with self.available() capacity.
 	// This buffer is intended to be appended to and
 	// passed to an immediately succeeding [buffer.write] call.
 	// The buffer is only valid until the next write operation on self.
-	fn availableBuffer(mut *self): []byte { ret self.buf.Slice1(self.buf.Len()) }
+	fn availableBuffer(mut *self): []byte { return self.buf.Slice1(self.buf.Len()) }
 
 	// Resets the buffer to be empty, but it retains
 	// the underlying storage for use by future writes.
@@ -52,7 +52,7 @@ impl buffer {
 		// Try to grow by means of a reslice.
 		if n <= self.buf.Cap()-m {
 			self.buf.SetLen(m + n)
-			ret m
+			return m
 		}
 		// If buffer is empty, reset to recover space.
 		if m == 0 && self.off != 0 {
@@ -60,7 +60,7 @@ impl buffer {
 		}
 		if self.buf.IsNil() && n <= smallBufferSize {
 			self.buf.SetData(make([]byte, n, smallBufferSize))
-			ret 0
+			return 0
 		}
 		c := self.buf.Cap()
 		if n <= c/2-m {
@@ -78,7 +78,7 @@ impl buffer {
 		// Restore self.off and len(self.buf).
 		self.off = 0
 		self.buf.SetLen(m + n)
-		ret m
+		return m
 	}
 
 	// Appends the contents of p to the buffer, growing the buffer as
@@ -111,5 +111,5 @@ fn growSlice(b: []byte, n: int): []byte {
 	}
 	mut b2 := make([]byte, len(b), c)
 	copy(b2, b)
-	ret b2
+	return b2
 }

@@ -10,7 +10,7 @@ use "std/unsafe"
 // Reports whether pointer allocations are points to same address.
 #export "__jule_ptrEqual"
 fn ptrEqual(a: *unsafe, b: *unsafe): bool {
-	ret a == b
+	return a == b
 }
 
 // Returns string based on b, the parameter b means first byte of string.
@@ -24,7 +24,7 @@ unsafe fn stringBytePtr(b: *byte, n: int): string {
 	sb.Buffer.Ref = nil
 	sb.Slice = sb.Buffer.Ptr
 	sb.Len = n
-	ret s
+	return s
 }
 
 // Equals to sliceBytePtr(&s[0], len(s), len(s)) call.
@@ -32,16 +32,16 @@ unsafe fn stringBytePtr(b: *byte, n: int): string {
 #export "__jule_stringAsSlice"
 fn stringAsSlice(s: string): []byte {
 	if len(s) == 0 {
-		ret nil
+		return nil
 	}
-	ret unsafe::Slice(&s[0], len(s), len(s))
+	return unsafe::Slice(&s[0], len(s), len(s))
 }
 
 // Returns slice based on b, the parameter b means first element of slice.
 // Will not perform garbage collection.
 #export "__jule_sliceBytePtr"
 fn sliceBytePtr(mut b: *byte, len: int, cap: int): []byte {
-	ret unsafe::Slice(b, len, cap)
+	return unsafe::Slice(b, len, cap)
 }
 
 // Returns byte slice as string.
@@ -50,15 +50,15 @@ fn sliceBytePtr(mut b: *byte, len: int, cap: int): []byte {
 #export "__jule_sliceAsString"
 fn sliceAsString(b: []byte): string {
 	if len(b) == 0 {
-		ret ""
+		return ""
 	}
-	ret unsafe { stringBytePtr(&b[0], len(b)) }
+	return unsafe { stringBytePtr(&b[0], len(b)) }
 }
 
 // Fills the first n bytes of the pointer p with the constant byte b.
 unsafe fn memset(mut p: *unsafe, b: byte, mut n: uint) {
 	if p == nil {
-		ret
+		return
 	}
 	mut bp := (*byte)(p)
 	for n > 0; n-- {
@@ -69,7 +69,7 @@ unsafe fn memset(mut p: *unsafe, b: byte, mut n: uint) {
 
 // Adds n offset to p in bytes.
 fn add(p: *unsafe, n: uintptr): *unsafe {
-	ret unsafe { (*unsafe)(uintptr(p) + n) }
+	return unsafe { (*unsafe)(uintptr(p) + n) }
 }
 
 // Note: Perform the read with a native endianness.
@@ -77,9 +77,9 @@ fn add(p: *unsafe, n: uintptr): *unsafe {
 unsafe fn readUnaligned32(p: *unsafe): u32 {
 	q := (*byte)(p) // *[4]byte
 	if BigEndian {
-		ret u32(q[3]) | u32(q[2])<<8 | u32(q[1])<<16 | u32(q[0])<<24
+		return u32(q[3]) | u32(q[2])<<8 | u32(q[1])<<16 | u32(q[0])<<24
 	}
-	ret u32(q[0]) | u32(q[1])<<8 | u32(q[2])<<16 | u32(q[3])<<24
+	return u32(q[0]) | u32(q[1])<<8 | u32(q[2])<<16 | u32(q[3])<<24
 }
 
 // Note: Perform the read with a native endianness.
@@ -87,10 +87,10 @@ unsafe fn readUnaligned32(p: *unsafe): u32 {
 unsafe fn readUnaligned64(p: *unsafe): u64 {
 	q := (*byte)(p) // *[8]byte
 	if BigEndian {
-		ret u64(q[7]) | u64(q[6])<<8 | u64(q[5])<<16 | u64(q[4])<<24 |
+		return u64(q[7]) | u64(q[6])<<8 | u64(q[5])<<16 | u64(q[4])<<24 |
 			u64(q[3])<<32 | u64(q[2])<<40 | u64(q[1])<<48 | u64(q[0])<<56
 	}
-	ret u64(q[0]) | u64(q[1])<<8 | u64(q[2])<<16 | u64(q[3])<<24 | u64(q[4])<<32 | u64(q[5])<<40 | u64(q[6])<<48 | u64(q[7])<<56
+	return u64(q[0]) | u64(q[1])<<8 | u64(q[2])<<16 | u64(q[3])<<24 | u64(q[4])<<32 | u64(q[5])<<40 | u64(q[6])<<48 | u64(q[7])<<56
 }
 
 // Implementation of the fastmemcopy, body will be implemented by the compiler.
@@ -108,7 +108,7 @@ unsafe fn fastmemcopy[Dest, Src](mut dest: Dest, mut src: Src): (n: int) {
 		n = len(dest)
 	}
 	if n == 0 {
-		ret
+		return
 	}
 	// fastmemcopy may have string type for Src but it is safe to
 	// handle them as slice. According to Jule memory model,
@@ -118,7 +118,7 @@ unsafe fn fastmemcopy[Dest, Src](mut dest: Dest, mut src: Src): (n: int) {
 	mut d := (*runtime::Slice[E])(&dest).Slice
 	mut s := (*runtime::Slice[E])(&src).Slice
 	fastmemcopy_impl(d, s, uint(n)*mem::SizeOf(E))
-	ret
+	return
 }
 
 // The runtime implementation of the built-in copy function.
@@ -132,7 +132,7 @@ fn memcopy[Dest, Src](mut dest: Dest, mut src: Src): (n: int) {
 		n = len(dest)
 	}
 	if n == 0 {
-		ret
+		return
 	}
 	// Use pointers to skip boundary checking cost and fast access.
 	unsafe {
@@ -170,7 +170,7 @@ fn memcopy[Dest, Src](mut dest: Dest, mut src: Src): (n: int) {
 			}
 		}
 	}
-	ret
+	return
 }
 
 // Returns the next capacity for a growing slice.
@@ -188,16 +188,16 @@ fn nextslicecap(newLen: int, oldCap: int): int {
 	// if newcap overflows to negative, uint(newcap) wraps to a large value,
 	// which still satisfies the comparison since newLen is guaranteed > 0.
 	if uint(newcap) >= uint(newLen) {
-		ret newcap
+		return newcap
 	}
-	ret newLen
+	return newLen
 }
 
 // Prepreation phase of memory append.
 // If the slice s have not enough capacity for newItems, allocates a new slice for s.
 fn prememappend[Slice](mut &s: *Slice, newItems: int) {
 	if cap(*s)-len(*s) >= newItems {
-		ret
+		return
 	}
 	mut ns := make(Slice, len(*s), nextslicecap(len(*s)+newItems, cap(*s)))
 	copy(ns, *s)
@@ -208,13 +208,13 @@ fn prememappend[Slice](mut &s: *Slice, newItems: int) {
 #disable boundary
 fn memappend[Dest, Src](mut dest: Dest, mut src: Src): Dest {
 	if len(src) == 0 {
-		ret dest
+		return dest
 	}
 	prememappend(&dest, len(src))
 	n := len(dest)
 	dest = dest[:len(dest)+len(src)]
 	copy(dest[n:], src)
-	ret dest
+	return dest
 }
 
 // Checks whether the reference pointer is nil, panics if so.
@@ -225,5 +225,5 @@ fn checkNilRef(mut p: *unsafe): *unsafe {
 	if p == nil {
 		panic("runtime: invalid memory address or nil pointer deference")
 	}
-	ret p
+	return p
 }

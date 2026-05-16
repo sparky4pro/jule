@@ -11,7 +11,7 @@ type Errno: uintptr
 
 impl Errno {
 	fn String(*self): string {
-		ret formatError(*self)
+		return formatError(*self)
 	}
 }
 
@@ -23,9 +23,9 @@ impl Signal {
 		if 0 <= *self && int(*self) < len(signals) {
 			st := signals[*self]
 			if st != "" {
-				ret st
+				return st
 			}
 		}
-		ret "signal " + conv::Itoa(int(*self))
+		return "signal " + conv::Itoa(int(*self))
 	}
 }

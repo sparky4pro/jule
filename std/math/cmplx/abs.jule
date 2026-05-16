@@ -9,5 +9,5 @@ use "std/math"
 
 // Returns the absolute value (also called the modulus) of x.
 fn Abs(x: cmplx128): f64 {
-	ret math::Hypot(real(x), imag(x))
+	return math::Hypot(real(x), imag(x))
 }

@@ -100,7 +100,7 @@ fn xatan(x: f64): f64 {
 	mut z := x * x
 	z = z * ((((P0*z+P1)*z+P2)*z+P3)*z + P4) / (((((z+Q0)*z+Q1)*z+Q2)*z+Q3)*z + Q4)
 	z = x*z + x
-	ret z
+	return z
 }
 
 // Reduces its argument (known to be positive)
@@ -112,12 +112,12 @@ fn satan(x: f64): f64 {
 	)
 
 	if x <= 0.66 {
-		ret xatan(x)
+		return xatan(x)
 	}
 	if x > Tan3pio8 {
-		ret Pi/2 - xatan(1/x) + Morebits
+		return Pi/2 - xatan(1/x) + Morebits
 	}
-	ret Pi/4 + xatan((x-1)/(x+1)) + 0.5*Morebits
+	return Pi/4 + xatan((x-1)/(x+1)) + 0.5*Morebits
 }
 
 // Returns the arctangent, in radians, of x.
@@ -127,10 +127,10 @@ fn satan(x: f64): f64 {
 //	Atan(±Inf) = ±Pi/2
 fn Atan(x: f64): f64 {
 	if x == 0 {
-		ret x
+		return x
 	}
 	if x > 0 {
-		ret satan(x)
+		return satan(x)
 	}
-	ret -satan(-x)
+	return -satan(-x)
 }

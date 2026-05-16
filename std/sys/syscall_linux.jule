@@ -3715,7 +3715,7 @@ fn Read(fd: int, mut p: []byte)!: (n: int) {
 	if e != _NO_ERROR {
 		throw e
 	}
-	ret int(r)
+	return int(r)
 }
 
 fn Write(fd: int, p: []byte)!: (n: int) {
@@ -3729,7 +3729,7 @@ fn Write(fd: int, p: []byte)!: (n: int) {
 	if e != _NO_ERROR {
 		throw e
 	}
-	ret int(r)
+	return int(r)
 }
 
 fn Seek(fd: int, offset: i64, whence: int)!: (newoffset: i64) {
@@ -3737,7 +3737,7 @@ fn Seek(fd: int, offset: i64, whence: int)!: (newoffset: i64) {
 	if e != _NO_ERROR {
 		throw e
 	}
-	ret i64(r)
+	return i64(r)
 }
 
 // Path should be NUL-terminated if it is not empty.
@@ -3799,7 +3799,7 @@ fn Getcwd(mut buf: []byte)!: (n: int) {
 	if e != _NO_ERROR {
 		throw e
 	}
-	ret
+	return
 }
 
 fn Chdir(path: string)! {
@@ -3817,7 +3817,7 @@ fn Fcntl(fd: int, cmd: int, arg: int)!: int {
 	if e != _NO_ERROR {
 		throw e
 	}
-	ret int(valptr)
+	return int(valptr)
 }
 
 fn Fsync(fd: int)! {
@@ -3833,7 +3833,7 @@ fn pselect6(nfd: int, &r: *FdSet, &w: *FdSet, &e: *FdSet, &timeout: *Timespec, &
 	if e1 != _NO_ERROR {
 		throw e1
 	}
-	ret
+	return
 }
 
 fn openat(dirfd: int, path: string, flags: int, mode: u32)!: (fd: int) {
@@ -3843,11 +3843,11 @@ fn openat(dirfd: int, path: string, flags: int, mode: u32)!: (fd: int) {
 	if e1 != _NO_ERROR {
 		throw e1
 	}
-	ret
+	return
 }
 
 fn Open(path: string, mode: int, perm: u32)!: (fd: int) {
-	ret openat(AT_FDCWD, path, mode|O_LARGEFILE, perm)?
+	return openat(AT_FDCWD, path, mode|O_LARGEFILE, perm)?
 }
 
 fn Pipe(mut p: []int)! {
@@ -3893,7 +3893,7 @@ fn Faccessat2(dirfd: int, path: string, mode: u32, flags: int)! {
 fn Getgroups()!: (gids: []int) {
 	mut n := getgroups(0, 0)?
 	if n == 0 {
-		ret nil
+		return nil
 	}
 
 	// Sanity check group count. Max is 1<<16 on Linux.
@@ -3907,28 +3907,28 @@ fn Getgroups()!: (gids: []int) {
 	for i, v in a[0:n] {
 		gids[i] = int(v)
 	}
-	ret
+	return
 }
 
 fn isGroupMember(gid: int): bool {
 	groups := Getgroups() else {
-		ret false
+		return false
 	}
 	for _, gid2 in groups {
 		if gid2 == gid {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 fn isCapDacOverrideSet(): bool {
 	hdr := CapUserHeader{Version: LINUX_CAPABILITY_VERSION_3}
 	let mut data: [2]CapUserData
 	Capget(hdr, &data[0]) else {
-		ret false
+		return false
 	}
-	ret data[0].Effective&(1<<CAP_DAC_OVERRIDE) != 0
+	return data[0].Effective&(1<<CAP_DAC_OVERRIDE) != 0
 }
 
 fn Faccessat(dirfd: int, path: string, mut mode: u32, flags: int)! {
@@ -3957,7 +3957,7 @@ fn Faccessat(dirfd: int, path: string, mut mode: u32, flags: int)! {
 
 	mode &= 7
 	if mode == 0 {
-		ret
+		return
 	}
 
 	let mut uid: int
@@ -3976,11 +3976,11 @@ fn Faccessat(dirfd: int, path: string, mut mode: u32, flags: int)! {
 	if uid == 0 {
 		if mode&1 == 0 {
 			// Root can read and write any file.
-			ret
+			return
 		}
 		if st.Mode&0111 != 0 {
 			// Root can execute any file that anybody can execute.
-			ret
+			return
 		}
 		throw EACCES
 	}
@@ -4004,7 +4004,7 @@ fn Faccessat(dirfd: int, path: string, mut mode: u32, flags: int)! {
 	}
 
 	if fmode&mode == mode {
-		ret
+		return
 	}
 
 	throw EACCES
@@ -4026,7 +4026,7 @@ fn stringSliceToCstringSlice(&s: *[]string, mut &args: *[][]byte): []*byte {
 		p_args[i] = &p_arg[0]
 	}
 	p_args[len(p_args)-1] = nil
-	ret p_args
+	return p_args
 }
 
 fn Exec(file: string, args: []string, env: []string)! {
@@ -4074,9 +4074,9 @@ fn Readlinkat(dirfd: int, path: string, mut buf: []byte)!: (n: int) {
 	if e1 != _NO_ERROR {
 		throw e1
 	}
-	ret
+	return
 }
 
 fn Readlink(path: string, mut buf: []byte)!: (n: int) {
-	ret Readlinkat(AT_FDCWD, path, buf)?
+	return Readlinkat(AT_FDCWD, path, buf)?
 }

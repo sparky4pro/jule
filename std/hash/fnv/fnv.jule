@@ -64,9 +64,9 @@ struct fnv32 {
 }
 
 impl hash::Hash32 for fnv32 {
-	fn Sum32(*self): u32 { ret self.s }
-	fn Size(*self): int { ret 4 }
-	fn BlockSize(*self): int { ret 1 }
+	fn Sum32(*self): u32 { return self.s }
+	fn Size(*self): int { return 4 }
+	fn BlockSize(*self): int { return 1 }
 	fn Reset(mut *self) { self.s = offset32 }
 
 	async fn Write(mut *self, d: []byte)!: int {
@@ -74,11 +74,11 @@ impl hash::Hash32 for fnv32 {
 			self.s *= prime32
 			self.s ^= u32(c)
 		}
-		ret len(d)
+		return len(d)
 	}
 
 	fn Sum(*self, mut d: []byte): []byte {
-		ret byteorder::BeAppendU32(d, self.s)
+		return byteorder::BeAppendU32(d, self.s)
 	}
 }
 
@@ -87,9 +87,9 @@ struct fnv32a {
 }
 
 impl hash::Hash32 for fnv32a {
-	fn Sum32(*self): u32 { ret self.s }
-	fn Size(*self): int { ret 4 }
-	fn BlockSize(*self): int { ret 1 }
+	fn Sum32(*self): u32 { return self.s }
+	fn Size(*self): int { return 4 }
+	fn BlockSize(*self): int { return 1 }
 	fn Reset(mut *self) { self.s = offset32 }
 
 	async fn Write(mut *self, d: []byte)!: int {
@@ -97,11 +97,11 @@ impl hash::Hash32 for fnv32a {
 			self.s ^= u32(c)
 			self.s *= prime32
 		}
-		ret len(d)
+		return len(d)
 	}
 
 	fn Sum(*self, mut d: []byte): []byte {
-		ret byteorder::BeAppendU32(d, self.s)
+		return byteorder::BeAppendU32(d, self.s)
 	}
 }
 
@@ -110,9 +110,9 @@ struct fnv64 {
 }
 
 impl hash::Hash64 for fnv64 {
-	fn Sum64(*self): u64 { ret self.s }
-	fn Size(*self): int { ret 8 }
-	fn BlockSize(*self): int { ret 1 }
+	fn Sum64(*self): u64 { return self.s }
+	fn Size(*self): int { return 8 }
+	fn BlockSize(*self): int { return 1 }
 	fn Reset(mut *self) { self.s = offset64 }
 
 	async fn Write(mut *self, d: []byte)!: int {
@@ -120,11 +120,11 @@ impl hash::Hash64 for fnv64 {
 			self.s *= prime64
 			self.s ^= u64(c)
 		}
-		ret len(d)
+		return len(d)
 	}
 
 	fn Sum(*self, mut d: []byte): []byte {
-		ret byteorder::BeAppendU64(d, self.s)
+		return byteorder::BeAppendU64(d, self.s)
 	}
 }
 
@@ -133,9 +133,9 @@ struct fnv64a {
 }
 
 impl hash::Hash64 for fnv64a {
-	fn Sum64(*self): u64 { ret self.s }
-	fn Size(*self): int { ret 8 }
-	fn BlockSize(*self): int { ret 1 }
+	fn Sum64(*self): u64 { return self.s }
+	fn Size(*self): int { return 8 }
+	fn BlockSize(*self): int { return 1 }
 	fn Reset(mut *self) { self.s = offset64 }
 
 	async fn Write(mut *self, d: []byte)!: int {
@@ -143,11 +143,11 @@ impl hash::Hash64 for fnv64a {
 			self.s ^= u64(c)
 			self.s *= prime64
 		}
-		ret len(d)
+		return len(d)
 	}
 
 	fn Sum(*self, mut d: []byte): []byte {
-		ret byteorder::BeAppendU64(d, self.s)
+		return byteorder::BeAppendU64(d, self.s)
 	}
 }
 
@@ -156,8 +156,8 @@ struct fnv128 {
 }
 
 impl hash::Hash for fnv128 {
-	fn Size(*self): int { ret 16 }
-	fn BlockSize(*self): int { ret 1 }
+	fn Size(*self): int { return 16 }
+	fn BlockSize(*self): int { return 1 }
 
 	fn Reset(mut *self) {
 		self.s[0] = offset128Higher
@@ -172,12 +172,12 @@ impl hash::Hash for fnv128 {
 			self.s[0] = s0
 			self.s[1] ^= u64(c)
 		}
-		ret len(d)
+		return len(d)
 	}
 
 	fn Sum(*self, mut d: []byte): []byte {
 		mut r := byteorder::BeAppendU64(d, self.s[0])
-		ret byteorder::BeAppendU64(r, self.s[1])
+		return byteorder::BeAppendU64(r, self.s[1])
 	}
 }
 
@@ -186,8 +186,8 @@ struct fnv128a {
 }
 
 impl hash::Hash for fnv128a {
-	fn Size(*self): int { ret 16 }
-	fn BlockSize(*self): int { ret 1 }
+	fn Size(*self): int { return 16 }
+	fn BlockSize(*self): int { return 1 }
 
 	fn Reset(mut *self) {
 		self.s[0] = offset128Higher
@@ -202,25 +202,25 @@ impl hash::Hash for fnv128a {
 			self.s[1] = s1
 			self.s[0] = s0
 		}
-		ret len(d)
+		return len(d)
 	}
 
 	fn Sum(*self, mut d: []byte): []byte {
 		mut r := byteorder::BeAppendU64(d, self.s[0])
-		ret byteorder::BeAppendU64(r, self.s[1])
+		return byteorder::BeAppendU64(r, self.s[1])
 	}
 }
 
 // Returns a new 32-bit FNV-1 [hash::Hash].
 // Its Sum method will lay the value out in big-endian byte order.
 fn New32(): hash::Hash32 {
-	ret fnv32{s: offset32}
+	return fnv32{s: offset32}
 }
 
 // Returns a new 64-bit FNV-1 [hash::Hash].
 // Its Sum method will lay the value out in big-endian byte order.
 fn New64(): hash::Hash64 {
-	ret fnv64{s: offset64}
+	return fnv64{s: offset64}
 }
 
 // Returns a new 128-bit FNV-1 [hash::Hash].
@@ -229,19 +229,19 @@ fn New128(): hash::Hash {
 	mut h := fnv128{}
 	h.s[0] = offset128Higher
 	h.s[1] = offset128Lower
-	ret h
+	return h
 }
 
 // Returns a new 32-bit FNV-1a [hash::Hash].
 // Its Sum method will lay the value out in big-endian byte order.
 fn New32a(): hash::Hash32 {
-	ret fnv32a{s: offset32}
+	return fnv32a{s: offset32}
 }
 
 // Returns a new 64-bit FNV-1a [hash::Hash].
 // Its Sum method will lay the value out in big-endian byte order.
 fn New64a(): hash::Hash64 {
-	ret fnv64a{s: offset64}
+	return fnv64a{s: offset64}
 }
 
 // Returns a new 128-bit FNV-1a [hash::Hash].
@@ -250,5 +250,5 @@ fn New128a(): hash::Hash {
 	mut h := fnv128a{}
 	h.s[0] = offset128Higher
 	h.s[1] = offset128Lower
-	ret h
+	return h
 }

@@ -84,7 +84,7 @@ fn testReadAfterBigSeek(t: &testing::T) {
 	}
 	if err != io::EOF {
 		t.Errorf("Read = {}, {}; want EOF", n, err)
-		ret
+		return
 	}
 	err = nil
 	z := r.Read(make([]byte, 10)) else {

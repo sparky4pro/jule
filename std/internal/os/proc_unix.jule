@@ -9,7 +9,7 @@ fn Getwd()!: string {
 	let mut buf: [sys::PATH_MAX]byte
 	mut sbuf := unsafe::Slice(&buf[0], len(buf), len(buf))
 	n := ignoringEINTR2(fn|| sys::Getcwd(sbuf)?)?
-	ret unsafe::StringFromBytes(buf[:n])
+	return unsafe::StringFromBytes(buf[:n])
 }
 
 fn Chdir(path: string)! {

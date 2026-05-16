@@ -87,7 +87,7 @@ fn Sinh(mut x: f64): f64 {
 	if sign {
 		temp = -temp
 	}
-	ret temp
+	return temp
 }
 
 // Returns the hyperbolic cosine of x.
@@ -99,8 +99,8 @@ fn Sinh(mut x: f64): f64 {
 fn Cosh(mut x: f64): f64 {
 	x = Abs(x)
 	if x > 21 {
-		ret Exp(x) * 0.5
+		return Exp(x) * 0.5
 	}
 	ex := Exp(x)
-	ret (ex + 1/ex) * 0.5
+	return (ex + 1/ex) * 0.5
 }

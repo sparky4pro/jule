@@ -35,17 +35,17 @@ async fn testMultiReader(t: &testing::T) {
 				} else {
 					t.Errorf("expected no error, found {}", error)
 				}
-				ret
+				return
 			}
 			if eof {
 				t.Errorf("expected EOF, found {} bytes", n)
-				ret
+				return
 			}
 			nwant := len(expected)
 			if n != nwant {
 				t.Errorf("#{}, expected {} bytes; got {}",
 					*_nread, nwant, n)
-				ret
+				return
 			}
 			got := string((*_buf)[0:n])
 			if got != expected {
@@ -80,7 +80,7 @@ async fn testMultiReaderCopy(t: &testing::T) {
 	slice[0] = nil
 	data := io::ReadAll(r).await else {
 		t.Errorf("unexpected error: {}", error)
-		ret
+		return
 	}
 	if string(data) != "hello world" {
 		t.Errorf("ReadAll() = {}, want {}", data, "hello world")
@@ -102,7 +102,7 @@ impl io::Reader for byteAndEOFReader {
 		}
 		p[0] = byte(*self)
 		*self = 0
-		ret 1
+		return 1
 	}
 }
 
@@ -134,7 +134,7 @@ async fn testMultiReaderFinalEOF(t: &testing::T) {
 		if error != io::EOF {
 			t.Errorf("unexpected error: {}, expected EOF", error)
 		}
-		ret
+		return
 	}
 	t.Errorf("expected EOF")
 }

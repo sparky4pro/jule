@@ -51,7 +51,7 @@
 //	Mod(x, NaN) = NaN
 fn Mod(x: f64, mut y: f64): f64 {
 	if y == 0 || IsInf(x, 0) || IsNaN(x) || IsNaN(y) {
-		ret NaN()
+		return NaN()
 	}
 	y = Abs(y)
 
@@ -71,5 +71,5 @@ fn Mod(x: f64, mut y: f64): f64 {
 	if x < 0 {
 		r = -r
 	}
-	ret r
+	return r
 }

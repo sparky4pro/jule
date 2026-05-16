@@ -8,27 +8,27 @@ use "std/os/filepath"
 use "std/strings"
 
 // Reports whether fallible scope s directly forwards error.
-// Example expression: ret foo() else { throw error }
-//                                      ^^^^^^^^^^^^ forwarding
+// Example expression: return foo() else { throw error }
+//                                        ^^^^^^^^^^^^ forwarding
 fn IsForwarded(s: &sema::Scope): bool {
 	last := s.Stmts[len(s.Stmts)-1]
 	t, mut ok := last.(&sema::Throw)
 	if !ok {
-		ret false
+		return false
 	}
 	v, ok := t.Error.Model.(&sema::Var)
-	ret ok && v.Name == "error"
+	return ok && v.Name == "error"
 }
 
 // Reports whether expression comes from external define.
 fn IsExprComesFromExtern(v: &sema::Value): bool {
 	match type v.Model {
 	| &sema::Var:
-		ret v.Model.(&sema::Var).Extern
+		return v.Model.(&sema::Var).Extern
 	| &sema::StructSubIdentExpr:
-		ret IsExternStruct(v.Model.(&sema::StructSubIdentExpr).Owner)
+		return IsExternStruct(v.Model.(&sema::StructSubIdentExpr).Owner)
 	|:
-		ret false
+		return false
 	}
 }
 
@@ -36,23 +36,23 @@ fn IsExprComesFromExtern(v: &sema::Value): bool {
 // Except traits, because traits are not handled pure any type.
 fn IsAny(mut t: &sema::Type): bool {
 	if t.TypeEnum() != nil {
-		ret true
+		return true
 	}
 	prim := t.Prim()
-	ret prim != nil && prim.IsAny()
+	return prim != nil && prim.IsAny()
 }
 
 // Reports whether anonymous function is closure.
-fn IsClosure(m: &sema::AnonFuncExpr): bool { ret len(m.Captured) > 0 }
+fn IsClosure(m: &sema::AnonFuncExpr): bool { return len(m.Captured) > 0 }
 
 // Reports the f function of owner is implements a trait's method.
 fn IsTraitMethod(mut owner: &sema::StructIns, f: &sema::FuncIns): bool {
 	for (_, mut t) in owner.Decl.Implements {
 		if t.FindMethod(f.Decl.Name) != nil {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 // Reports whether f is standard library package p.
@@ -64,28 +64,28 @@ fn IsTraitMethod(mut owner: &sema::StructIns, f: &sema::FuncIns): bool {
 fn IsStdPackage(f: string, p: string): bool {
 	// Do not handle '/' separators of p, because it
 	// valid path separator for all supported platforms.
-	ret strings::HasPrefix(f, filepath::Join(build::PathStdlib(), p))
+	return strings::HasPrefix(f, filepath::Join(build::PathStdlib(), p))
 }
 
 // Reports whether imp is implicitly imported.
 // See "std/jule/sema" developer reference (8).
 fn IsImplicitImport(imp: &sema::ImportInfo): bool {
-	ret imp.Decl.Token == nil
+	return imp.Decl.Token == nil
 }
 
 // Reports whether structure is represents external type.
 // Assumes the source type is struct if exist.
 fn IsExternStruct(s: &sema::StructIns): bool {
 	if s.Decl.Extern {
-		ret true
+		return true
 	}
 	if s.Source != nil {
 		match type s.Source.Kind {
 		| &sema::StructIns:
-			ret IsExternStruct(s.Source.Kind.(&sema::StructIns))
+			return IsExternStruct(s.Source.Kind.(&sema::StructIns))
 		}
 	}
-	ret false
+	return false
 }
 
 // Checks value v and returns nil if it is hard dynamic type.
@@ -95,11 +95,11 @@ fn IsHardDynamicType(mut e: sema::Expr, mut t: &sema::Type): (sema::Expr, &sema:
 	// They handled as <any> type, but not have pure any type implementation,
 	// therefore we have to handle them separately.
 	if t.Trait() == nil && !IsAny(t) {
-		ret e, t
+		return e, t
 	}
 	mut c, ok := e.(&sema::CastingExpr)
 	if ok {
-		ret IsHardDynamicType(c.Expr.Model, c.Expr.Type)
+		return IsHardDynamicType(c.Expr.Model, c.Expr.Type)
 	}
-	ret nil, nil
+	return nil, nil
 }

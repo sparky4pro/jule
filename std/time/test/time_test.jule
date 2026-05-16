@@ -29,7 +29,7 @@ let unixAbsTests = []unixTest([
 ])
 
 fn absEqual(a1: time::AbsTime, a2: time::AbsTime): bool {
-	ret a1.Year == a2.Year &&
+	return a1.Year == a2.Year &&
 		a1.Month == a2.Month &&
 		a1.Day == a2.Day &&
 		a1.Hour == a2.Hour &&

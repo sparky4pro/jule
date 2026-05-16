@@ -27,7 +27,7 @@ const (
 	RUNE   // rune literal
 	IMAG   // imaginary part literal
 
-	RETURN   // ret
+	RETURN   // return
 	CONST    // const
 	TYPE     // type
 	FOR      // for
@@ -133,17 +133,17 @@ impl Token {
 	fn Precedence(*self): int {
 		match self.ID {
 		| MUL | REM | QUO | SHR | SHL | AND:
-			ret 5
+			return 5
 		| ADD | SUB | OR | XOR:
-			ret 4
+			return 4
 		| EQL | NEQ | LSS | LEQ | GTR | GEQ:
-			ret 3
+			return 3
 		| LAND:
-			ret 2
+			return 2
 		| LOR:
-			ret 1
+			return 1
 		|:
-			ret LowestPrec
+			return LowestPrec
 		}
 	}
 }
@@ -151,20 +151,20 @@ impl Token {
 // Reports whether s is keyword.
 fn IsKeyword(s: string): bool {
 	_, exist := keywords[s]
-	ret exist
+	return exist
 }
 
 // Reports whether operator kind is postfix operator.
 fn IsPostfix(id: int): bool {
-	ret id == INC || id == DEC
+	return id == INC || id == DEC
 }
 
 // Reports whether operator kind is assignment operator.
 fn IsAssign(id: int): bool {
 	if IsPostfix(id) {
-		ret true
+		return true
 	}
-	ret id == ASSIGN ||
+	return id == ASSIGN ||
 		id == ADD_ASSIGN ||
 		id == SUB_ASSIGN ||
 		id == QUO_ASSIGN ||

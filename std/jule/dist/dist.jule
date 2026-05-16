@@ -20,28 +20,28 @@ const (
 )
 
 // Reports whether os is windows.
-fn IsWindows(os: string): bool { ret os == Windows }
+fn IsWindows(os: string): bool { return os == Windows }
 
 // Reports whether os is darwin.
-fn IsDarwin(os: string): bool { ret os == Darwin }
+fn IsDarwin(os: string): bool { return os == Darwin }
 
 // Reports whether os is linux.
-fn IsLinux(os: string): bool { ret os == Linux }
+fn IsLinux(os: string): bool { return os == Linux }
 
 // Reports whether architecture is intel 386.
-fn IsI386(arch: string): bool { ret arch == I386 }
+fn IsI386(arch: string): bool { return arch == I386 }
 
 // Reports whether architecture is amd64.
-fn IsAMD64(arch: string): bool { ret arch == AMD64 }
+fn IsAMD64(arch: string): bool { return arch == AMD64 }
 
 // Reports whether architecture is arm64.
-fn IsARM64(arch: string): bool { ret arch == ARM64 }
+fn IsARM64(arch: string): bool { return arch == ARM64 }
 
 // Reports whether os is unix.
-fn IsUnix(os: string): bool { ret IsDarwin(os) || IsLinux(os) }
+fn IsUnix(os: string): bool { return IsDarwin(os) || IsLinux(os) }
 
 // Reports whether architecture is 32-bit.
-fn Is32bit(arch: string): bool { ret IsI386(arch) }
+fn Is32bit(arch: string): bool { return IsI386(arch) }
 
 // Reports whether architecture is 64-bit.
-fn Is64bit(arch: string): bool { ret IsAMD64(arch) || IsARM64(arch) }
+fn Is64bit(arch: string): bool { return IsAMD64(arch) || IsARM64(arch) }

@@ -47,7 +47,7 @@
 
 #include "types.hpp"
 
-#define __jule_AsyncRet co_return  // Equivalent to `ret` in async functions.
+#define __jule_AsyncRet co_return  // Equivalent to `return` in async functions.
 #define __jule_AsyncAwait co_await // Equivalent to `await` in async functions.
 
 #if defined(_MSC_VER)

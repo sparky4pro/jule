@@ -70,7 +70,7 @@ fn siftDown[E: ordered](mut data: []E, lo: int, hi: int, first: int) {
 			child++
 		}
 		if !cmp::Less(data[first+root], data[first+child]) {
-			ret
+			return
 		}
 		data[first+root], data[first+child] = data[first+child], data[first+root]
 		root = child
@@ -122,9 +122,9 @@ fn breakPatterns[E: ordered](mut data: []E, a: int, b: int) {
 fn order2O[E: ordered](data: []E, a: int, b: int, mut &swaps: *int): (int, int) {
 	if cmp::Less(data[b], data[a]) {
 		*swaps++
-		ret b, a
+		return b, a
 	}
-	ret a, b
+	return a, b
 }
 
 // Returns x where data[x] is the median of data[a],data[b],data[c], where x is a, b, or c.
@@ -132,12 +132,12 @@ fn median[E: ordered](data: []E, mut a: int, mut b: int, mut c: int, mut &swaps:
 	a, b = order2O(data, a, b, swaps)
 	b, c = order2O(data, b, c, swaps)
 	a, b = order2O(data, a, b, swaps)
-	ret b
+	return b
 }
 
 // Finds the median of data[a - 1], data[a], data[a + 1] and stores the index into a.
 fn medianAdjacent[E: ordered](data: []E, a: int, mut &swaps: *int): int {
-	ret median(data, a-1, a, a+1, swaps)
+	return median(data, a-1, a, a+1, swaps)
 }
 
 // Chooses a pivot in data[a:b].
@@ -169,11 +169,11 @@ fn choosePivot[E: ordered](mut data: []E, a: int, b: int): (pivot: int, hint: so
 
 	match swaps {
 	| 0:
-		ret j, sortedHint.Increasing
+		return j, sortedHint.Increasing
 	| maxSwaps:
-		ret j, sortedHint.Decreasing
+		return j, sortedHint.Decreasing
 	|:
-		ret j, sortedHint.Unknown
+		return j, sortedHint.Unknown
 	}
 }
 
@@ -201,11 +201,11 @@ fn partialInsertionSort[E: ordered](mut data: []E, a: int, b: int): bool {
 		}
 
 		if i == b {
-			ret true
+			return true
 		}
 
 		if b-a < shortestShifting {
-			ret false
+			return false
 		}
 
 		data[i], data[i-1] = data[i-1], data[i]
@@ -231,7 +231,7 @@ fn partialInsertionSort[E: ordered](mut data: []E, a: int, b: int): bool {
 			}
 		}
 	}
-	ret false
+	return false
 }
 
 // Partitions data[a:b] into elements equal to data[pivot] followed by elements greater than data[pivot].
@@ -255,7 +255,7 @@ fn partitionEqual[E: ordered](mut data: []E, a: int, b: int, pivot: int): (newpi
 		i++
 		j--
 	}
-	ret i
+	return i
 }
 
 // Does one quicksort partition.
@@ -275,7 +275,7 @@ fn partition[E: ordered](mut data: []E, a: int, b: int, pivot: int): (newpivot: 
 	}
 	if i > j {
 		data[j], data[a] = data[a], data[j]
-		ret j, true
+		return j, true
 	}
 	data[i], data[j] = data[j], data[i]
 	i++
@@ -296,7 +296,7 @@ fn partition[E: ordered](mut data: []E, a: int, b: int, pivot: int): (newpivot: 
 		j--
 	}
 	data[j], data[a] = data[a], data[j]
-	ret j, false
+	return j, false
 }
 
 // Sorts data[a:b].
@@ -317,13 +317,13 @@ fn pdqsort[E: ordered](mut data: []E, mut a: int, mut b: int, mut limit: int) {
 
 		if length <= maxInsertion {
 			insertionSort(data, a, b)
-			ret
+			return
 		}
 
 		// Fall back to heapsort if too many bad choices were made.
 		if limit == 0 {
 			heapSort(data, a, b)
-			ret
+			return
 		}
 
 		// If the last partitioning was imbalanced, we need to breaking patterns.
@@ -345,7 +345,7 @@ fn pdqsort[E: ordered](mut data: []E, mut a: int, mut b: int, mut limit: int) {
 		// The slice is likely already sorted.
 		if wasBalanced && wasPartitioned && hint == sortedHint.Increasing {
 			if partialInsertionSort(data, a, b) {
-				ret
+				return
 			}
 		}
 

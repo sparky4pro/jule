@@ -22,7 +22,7 @@ struct UnsupportedTypeError {
 
 impl UnsupportedTypeError {
 	fn String(*self): string {
-		ret "json: unsupported type: " + self.Type
+		return "json: unsupported type: " + self.Type
 	}
 }
 
@@ -34,7 +34,7 @@ struct UnsupportedValueError {
 
 impl UnsupportedValueError {
 	fn String(*self): string {
-		ret "json: unsupported value: " + self.Value
+		return "json: unsupported value: " + self.Value
 	}
 }
 
@@ -47,7 +47,7 @@ struct EncodeError {
 
 impl EncodeError {
 	fn String(*self): string {
-		ret "json: error calling " +
+		return "json: error calling " +
 			self.sourceFunc + " for type " +
 			self.Type + ": " + runtime::toString(self.Err)
 	}
@@ -306,7 +306,7 @@ impl encoder {
 		}
 		if t == nil {
 			self.buf.writeString("{}")
-			ret
+			return
 		}
 		const useIndent = comptime::TypeOf(Flag) == comptime::TypeOf(encodeIndent)
 		const match {
@@ -383,7 +383,7 @@ impl encoder {
 	fn encodeSlice[T, Flag](mut *self, t: T)! {
 		if t == nil {
 			self.buf.writeString("[]")
-			ret
+			return
 		}
 		const match comptime::TypeOf(T).Value().Kind() {
 		| comptime::U8:
@@ -421,7 +421,7 @@ impl encoder {
 								|:
 									panic("std/encoding/json: unimplemented encoding method")
 								}
-								ret
+								return
 							}
 						}
 					}
@@ -432,22 +432,22 @@ impl encoder {
 		const match tt.Kind() {
 		| comptime::Int | comptime::I8 | comptime::I16 | comptime::I32 | comptime::I64:
 			self.encodeInt(i64(t))
-			ret
+			return
 		| comptime::Uint | comptime::U8 | comptime::U16 | comptime::U32 | comptime::U64:
 			self.encodeUint(u64(t))
-			ret
+			return
 		| comptime::F32:
 			self.encodeFloat(f64(t), 32)?
-			ret
+			return
 		| comptime::F64:
 			self.encodeFloat(f64(t), 64)?
-			ret
+			return
 		| comptime::Bool:
 			self.encodeBool(bool(t))
-			ret
+			return
 		| comptime::String:
 			self.encodeString(string(t))
-			ret
+			return
 		| comptime::Smartptr:
 			// Avoid to implement as a function.
 			// Fills call stack faster especially with recursive structures.
@@ -557,7 +557,7 @@ fn Encode[T](t: T)!: []byte {
 	let mut e: encoder
 	e.init()
 	e.encode[T, encodePlain](t)?
-	ret e.buf.bytes()
+	return e.buf.bytes()
 }
 
 // Same as Encode[T] function but enables indentation.
@@ -570,7 +570,7 @@ fn EncodeIndent[T](t: T, indent: string)!: []byte {
 		e.indent = indent
 		e.encode[T, encodeIndent](t)?
 	}
-	ret e.buf.bytes()
+	return e.buf.bytes()
 }
 
 // Cache data for the structure field.
@@ -596,7 +596,7 @@ fn cachedFields[T](): []field {
 	mut cache, mut exist := fieldMap[t.Hash()]
 	fieldMapLock.rUnlock()
 	if exist {
-		ret cache
+		return cache
 	}
 	// There is no cache for type type T, cache it.
 	fieldMapLock.lock()
@@ -604,7 +604,7 @@ fn cachedFields[T](): []field {
 	cache, exist := fieldMap[t.Hash()]
 	if exist {
 		fieldMapLock.unlock()
-		ret cache
+		return cache
 	}
 	// Computing a field offset via a nil (zero) pointer is undefined behavior in C/C++.
 	// The standard does not permit pointer arithmetic or member access relative to a nil pointer,
@@ -656,7 +656,7 @@ fn cachedFields[T](): []field {
 	// Save the cache and return.
 	fieldMap[t.Hash()] = cache
 	fieldMapLock.unlock()
-	ret cache
+	return cache
 }
 
 // Reports whether the JSON tag name is duplicated.
@@ -668,12 +668,12 @@ fn isDuplicateTag[T](tag: string): bool {
 		if ftag != "" && ftag == tag ||
 			f.Public() && f.Name() == tag {
 			if seen {
-				ret true
+				return true
 			}
 			seen = true
 		}
 	}
-	ret false
+	return false
 }
 
 // Returns the JSON key name of structure field.
@@ -684,27 +684,27 @@ fn isDuplicateTag[T](tag: string): bool {
 fn getFieldName[T](pub: bool, name: string, tag: string): string {
 	// If the tag is "-", ignore this field for the JSON encode/decode.
 	if tag == "-" {
-		ret ""
+		return ""
 	}
 	ok := isValidTag(tag)
 	// JSON tag name is not suitable to use, falling back to field name.
 	// If the field is public, use the field's name, otherwise there is no name to use.
 	if !ok && pub {
-		ret name
+		return name
 	}
 	// If the JSON tag name is suitable to use, check for duplicates.
 	// If the key is not duplicate, use the tag name.
 	if ok && !isDuplicateTag[T](tag) {
-		ret tag
+		return tag
 	}
 	// No suitable name to use, return empty.
-	ret ""
+	return ""
 }
 
 // Reports whether the JSON tag name valid.
 fn isValidTag(s: string): bool {
 	if s == "" {
-		ret false
+		return false
 	}
 	for _, c in s {
 		if strings::ContainsRune("!#$%&()*+-./:;<=>?@[]^_{|}~ ", c) {
@@ -712,21 +712,21 @@ fn isValidTag(s: string): bool {
 			// otherwise any punctuation chars are allowed
 			// in a tag name.
 		} else if !unicode::IsLetter(c) && !unicode::IsDigit(c) {
-			ret false
+			return false
 		}
 	}
-	ret true
+	return true
 }
 
 fn resolveKeyName[T](k: T): string {
 	const t = comptime::TypeOf(T)
 	const match t.Kind() {
 	| comptime::String:
-		ret string(k)
+		return string(k)
 	| comptime::Int | comptime::I8 | comptime::I16 | comptime::I32 | comptime::I64:
-		ret conv::FormatInt(i64(k), 10)
+		return conv::FormatInt(i64(k), 10)
 	| comptime::Uintptr | comptime::Uint | comptime::U8 | comptime::U16 | comptime::U32 | comptime::U64:
-		ret conv::FormatUint(u64(k), 10)
+		return conv::FormatUint(u64(k), 10)
 	}
 	panic("unexpected map key type")
 }

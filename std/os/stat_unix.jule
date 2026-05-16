@@ -11,12 +11,12 @@ fn stat(path: string)!: FileInfo {
 	handle := ignoringEINTR2(fn()!: sys::SysStat {
 		mut handle := sys::SysStat{}
 		sys::Stat(path, &handle)?
-		ret handle
+		return handle
 	})?
 	mut stat := FileInfo{}
 	fillFileStatFromSys(&stat, handle)
 	stat.sys = handle
-	ret stat
+	return stat
 }
 
 fn lstat(path: string)!: FileInfo {
@@ -26,10 +26,10 @@ fn lstat(path: string)!: FileInfo {
 	handle := ignoringEINTR2(fn()!: sys::SysStat {
 		mut handle := sys::SysStat{}
 		sys::Lstat(path, &handle)?
-		ret handle
+		return handle
 	})?
 	mut stat := FileInfo{}
 	fillFileStatFromSys(&stat, handle)
 	stat.sys = handle
-	ret stat
+	return stat
 }

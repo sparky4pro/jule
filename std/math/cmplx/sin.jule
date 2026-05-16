@@ -55,20 +55,20 @@ use "std/math"
 fn Sin(x: cmplx128): cmplx128 {
 	match {
 	| imag(x) == 0 && (math::IsInf(real(x), 0) || math::IsNaN(real(x))):
-		ret cmplx(math::NaN(), imag(x))
+		return cmplx(math::NaN(), imag(x))
 	| math::IsInf(imag(x), 0):
 		match {
 		| real(x) == 0:
-			ret x
+			return x
 		| math::IsInf(real(x), 0) | math::IsNaN(real(x)):
-			ret cmplx(math::NaN(), imag(x))
+			return cmplx(math::NaN(), imag(x))
 		}
 	| real(x) == 0 && math::IsNaN(imag(x)):
-		ret x
+		return x
 	}
 	s, c := math::Sincos(real(x))
 	sh, ch := sinhcosh(imag(x))
-	ret cmplx(s*ch, c*sh)
+	return cmplx(s*ch, c*sh)
 }
 
 // Complex hyperbolic sine
@@ -88,20 +88,20 @@ fn Sin(x: cmplx128): cmplx128 {
 fn Sinh(x: cmplx128): cmplx128 {
 	match {
 	| real(x) == 0 && (math::IsInf(imag(x), 0) || math::IsNaN(imag(x))):
-		ret cmplx(real(x), math::NaN())
+		return cmplx(real(x), math::NaN())
 	| math::IsInf(real(x), 0):
 		match {
 		| imag(x) == 0:
-			ret x
+			return x
 		| math::IsInf(imag(x), 0) | math::IsNaN(imag(x)):
-			ret cmplx(real(x), math::NaN())
+			return cmplx(real(x), math::NaN())
 		}
 	| imag(x) == 0 && math::IsNaN(real(x)):
-		ret cmplx(math::NaN(), imag(x))
+		return cmplx(math::NaN(), imag(x))
 	}
 	s, c := math::Sincos(imag(x))
 	sh, ch := sinhcosh(real(x))
-	ret cmplx(c*sh, s*ch)
+	return cmplx(c*sh, s*ch)
 }
 
 // Complex circular cosine
@@ -127,20 +127,20 @@ fn Cos(x: cmplx128): cmplx128 {
 	re, im := real(x), imag(x)
 	match {
 	| im == 0 && (math::IsInf(re, 0) || math::IsNaN(re)):
-		ret cmplx(math::NaN(), -im*math::Copysign(0, re))
+		return cmplx(math::NaN(), -im*math::Copysign(0, re))
 	| math::IsInf(im, 0):
 		match {
 		| re == 0:
-			ret cmplx(math::Inf(1), -re*math::Copysign(0, im))
+			return cmplx(math::Inf(1), -re*math::Copysign(0, im))
 		| math::IsInf(re, 0) || math::IsNaN(re):
-			ret cmplx(math::Inf(1), math::NaN())
+			return cmplx(math::Inf(1), math::NaN())
 		}
 	| re == 0 && math::IsNaN(im):
-		ret cmplx(math::NaN(), 0)
+		return cmplx(math::NaN(), 0)
 	}
 	s, mut c := math::Sincos(real(x))
 	sh, ch := sinhcosh(imag(x))
-	ret cmplx(c*ch, -s*sh)
+	return cmplx(c*ch, -s*sh)
 }
 
 // Complex hyperbolic cosine
@@ -159,29 +159,29 @@ fn Cos(x: cmplx128): cmplx128 {
 fn Cosh(x: cmplx128): cmplx128 {
 	match {
 	| real(x) == 0 && (math::IsInf(imag(x), 0) || math::IsNaN(imag(x))):
-		ret cmplx(math::NaN(), real(x)*math::Copysign(0, imag(x)))
+		return cmplx(math::NaN(), real(x)*math::Copysign(0, imag(x)))
 	| math::IsInf(real(x), 0):
 		match {
 		| imag(x) == 0:
-			ret cmplx(math::Inf(1), imag(x)*math::Copysign(0, real(x)))
+			return cmplx(math::Inf(1), imag(x)*math::Copysign(0, real(x)))
 		| math::IsInf(imag(x), 0) || math::IsNaN(imag(x)):
-			ret cmplx(math::Inf(1), math::NaN())
+			return cmplx(math::Inf(1), math::NaN())
 		}
 	| imag(x) == 0 && math::IsNaN(real(x)):
-		ret cmplx(math::NaN(), imag(x))
+		return cmplx(math::NaN(), imag(x))
 	}
 	s, c := math::Sincos(imag(x))
 	sh, ch := sinhcosh(real(x))
-	ret cmplx(c*ch, s*sh)
+	return cmplx(c*ch, s*sh)
 }
 
 // calculate sinh and cosh.
 fn sinhcosh(x: f64): (sh: f64, ch: f64) {
 	if math::Abs(x) <= 0.5 {
-		ret math::Sinh(x), math::Cosh(x)
+		return math::Sinh(x), math::Cosh(x)
 	}
 	mut e := math::Exp(x)
 	ei := 0.5 / e
 	e *= 0.5
-	ret e - ei, e + ei
+	return e - ei, e + ei
 }

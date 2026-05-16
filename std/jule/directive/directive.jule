@@ -16,6 +16,6 @@ const (
 
 // Reports whether directive is top-directive.
 fn IsTop(directive: string): bool {
-	ret directive == Pass ||
+	return directive == Pass ||
 		directive == Build
 }

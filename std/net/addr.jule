@@ -26,9 +26,9 @@ trait addr {
 fn JoinHostPort(host: string, port: string): string {
 	// We assume that host is a literal IPv6 address if host has colons.
 	if byteslite::IndexByteString(host, ':') >= 0 {
-		ret "[" + host + "]:" + port
+		return "[" + host + "]:" + port
 	}
-	ret host + ":" + port
+	return host + ":" + port
 }
 
 // Splits a network address of the form "host:port",
@@ -85,7 +85,7 @@ fn SplitHostPort(hostport: string)!: (host: string, port: string) {
 		throw &AddrError{Err: "unexpected ']' in address", Addr: hostport}
 	}
 	port = hostport[i+1:]
-	ret
+	return
 }
 
 fn splitHostZone(s: string): (host: string, zone: string) {
@@ -97,17 +97,17 @@ fn splitHostZone(s: string): (host: string, zone: string) {
 	} else {
 		host = s
 	}
-	ret
+	return
 }
 
 fn internetAddr(net: Network, mut ip: IPAddr, port: int): Addr {
 	match net {
 	| TCP | TCP4 | TCP6:
-		ret &TCPAddr{IP: ip.IP, Port: port, Zone: ip.Zone}
+		return &TCPAddr{IP: ip.IP, Port: port, Zone: ip.Zone}
 	| UDP | UDP4 | UDP6:
-		ret &UDPAddr{IP: ip.IP, Port: port, Zone: ip.Zone}
+		return &UDPAddr{IP: ip.IP, Port: port, Zone: ip.Zone}
 	| IP | IP4 | IP6:
-		ret &IPAddr{IP: ip.IP, Zone: ip.Zone}
+		return &IPAddr{IP: ip.IP, Zone: ip.Zone}
 	|:
 		panic("net: unexpected network: " + string(net))
 	}
@@ -120,9 +120,9 @@ fn parseAddr(addr: string)!: IPAddr {
 	for _, r in addr {
 		match r {
 		| '.':
-			ret parseIPv4(addr)?
+			return parseIPv4(addr)?
 		| ':':
-			ret parseIPv6(addr)?
+			return parseIPv6(addr)?
 		| '%':
 			// Assume that this was trying to be an IPv6 address with
 			// a zone specifier, but the address is missing.
@@ -139,18 +139,18 @@ type addrList: []Addr
 fn isIPv4(mut addr: Addr): bool {
 	match type addr {
 	| &TCPAddr:
-		ret addr.(&TCPAddr).IP.To4() != nil
+		return addr.(&TCPAddr).IP.To4() != nil
 	| &UDPAddr:
-		ret addr.(&UDPAddr).IP.To4() != nil
+		return addr.(&UDPAddr).IP.To4() != nil
 	| &IPAddr:
-		ret addr.(&IPAddr).IP.To4() != nil
+		return addr.(&IPAddr).IP.To4() != nil
 	|:
-		ret false
+		return false
 	}
 }
 
 // Reports whether addr does not contain an IPv4 address.
-fn isNotIPv4(mut addr: Addr): bool { ret !isIPv4(addr) }
+fn isNotIPv4(mut addr: Addr): bool { return !isIPv4(addr) }
 
 impl addrList {
 	// Returns all addresses as &IPAddr.
@@ -196,7 +196,7 @@ impl addrList {
 			}
 			i++
 		}
-		ret addrs[:i]
+		return addrs[:i]
 	}
 
 	// Returns the most appropriate address in address for a call to ResolveXAddr variants.
@@ -214,9 +214,9 @@ impl addrList {
 			want6 = false
 		}
 		if want6 {
-			ret self.first(isNotIPv4)
+			return self.first(isNotIPv4)
 		}
-		ret self.first(isIPv4)
+		return self.first(isIPv4)
 	}
 
 	// first returns the first address which satisfies strategy, or if
@@ -224,10 +224,10 @@ impl addrList {
 	fn first(mut *self, strategy: fn(mut Addr): bool): Addr {
 		for (_, mut addr) in *self {
 			if strategy(addr) {
-				ret addr
+				return addr
 			}
 		}
-		ret (*self)[0]
+		return (*self)[0]
 	}
 }
 
@@ -245,7 +245,7 @@ fn filterAddrList(filter: fn(mut IPAddr): bool, net: Network, mut ips: []IPAddr,
 	if len(addrs) == 0 {
 		throw &AddrError{Err: "no suitable address found", Addr: originalAddr}
 	}
-	ret addrs
+	return addrs
 }
 
 // Resolves addr which may be aliteral IP address and
@@ -268,7 +268,7 @@ async fn resolveInternetAddrList(net: Network, addr: string)!: addrList {
 		throw &AddrError{Err: "invalid network: " + string(net)}
 	}
 	if host == "" {
-		ret [internetAddr(net, IPAddr{}, portnum)]
+		return [internetAddr(net, IPAddr{}, portnum)]
 	}
 
 	// Try as a literal IP address, then as a DNS name.
@@ -290,15 +290,15 @@ async fn resolveInternetAddrList(net: Network, addr: string)!: addrList {
 	| TCP6 | UDP6 | IP6:
 		filter = ipv6only
 	}
-	ret filterAddrList(filter, net, ips, portnum, host)?
+	return filterAddrList(filter, net, ips, portnum, host)?
 }
 
 // Reports whether addr is an IPv4 address.
 fn ipv4only(mut addr: IPAddr): bool {
-	ret addr.IP.To4() != nil
+	return addr.IP.To4() != nil
 }
 
 // Reports whether addr is an IPv6 address except IPv4-mapped IPv6 address.
 fn ipv6only(mut addr: IPAddr): bool {
-	ret len(addr.IP) == IPv6Len && addr.IP.To4() == nil
+	return len(addr.IP) == IPv6Len && addr.IP.To4() == nil
 }

@@ -52,24 +52,24 @@ use "std/math"
 fn Pow(x: cmplx128, y: cmplx128): cmplx128 {
 	if x == 0 { // Guaranteed also true for x == -0.
 		if IsNaN(y) {
-			ret NaN()
+			return NaN()
 		}
 		match {
 		| real(y) == 0:
-			ret 1
+			return 1
 		| real(y) < 0:
 			if imag(y) == 0 {
-				ret cmplx(math::Inf(1), 0)
+				return cmplx(math::Inf(1), 0)
 			}
-			ret Inf(1)
+			return Inf(1)
 		| real(y) > 0:
-			ret 0
+			return 0
 		}
 		panic("cmplx: not reached")
 	}
 	modulus := Abs(x)
 	if modulus == 0 {
-		ret 0
+		return 0
 	}
 	mut r := math::Pow(modulus, real(y))
 	arg := Phase(x)
@@ -79,5 +79,5 @@ fn Pow(x: cmplx128, y: cmplx128): cmplx128 {
 		theta += imag(y) * math::Log(modulus)
 	}
 	s, c := math::Sincos(theta)
-	ret cmplx(r*c, r*s)
+	return cmplx(r*c, r*s)
 }

@@ -6,20 +6,20 @@ use "std/testing"
 
 fn isValidIP(network: Network, mut ip: IP): bool {
 	if len(ip) != IPv6Len && len(ip) != IPv4Len {
-		ret false
+		return false
 	}
 	if ip.Equal(IPv6Zero) || ip.Equal(IPv4Zero) {
-		ret false
+		return false
 	}
 	match network {
 	| IP | TCP | UDP:
-		ret true
+		return true
 	| IP4 | TCP4 | UDP4:
-		ret ip.To4() != nil
+		return ip.To4() != nil
 	| IP6 | TCP6 | UDP6:
-		ret ip.To4() == nil
+		return ip.To4() == nil
 	}
-	ret false
+	return false
 }
 
 // Hosts for lookup tests.
@@ -70,7 +70,7 @@ async fn testLookupIPJule(t: &testing::T) {
 #test
 async fn testLookupIPJuleTCP(t: &testing::T) {
 	t.Skip() // Skip TCP tests because it may be fail on CI.
-	ret
+	return
 
 	DefaultResolver.PreferJule = true
 	conf.useTCP = true
@@ -91,7 +91,7 @@ async fn testLookupIPJuleParallel(t: &testing::T) {
 #test
 async fn testLookupIPJuleParallelTCP(t: &testing::T) {
 	t.Skip() // Skip TCP tests because it may be fail on CI.
-	ret
+	return
 
 	DefaultResolver.PreferJule = true
 	DefaultResolver.ForceParallel = true

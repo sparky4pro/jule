@@ -89,24 +89,24 @@ fn Jn(mut n: int, mut x: f64): f64 {
 	// special cases
 	match {
 	| IsNaN(x):
-		ret x
+		return x
 	| IsInf(x, 0):
-		ret 0
+		return 0
 	}
 	// J(-n, x) = (-1)**n * J(n, x), J(n, -x) = (-1)**n * J(n, x)
 	// Thus, J(-n, x) = J(n, -x)
 
 	if n == 0 {
-		ret J0(x)
+		return J0(x)
 	}
 	if x == 0 {
-		ret 0
+		return 0
 	}
 	if n < 0 {
 		n, x = -n, -x
 	}
 	if n == 1 {
-		ret J1(x)
+		return J1(x)
 	}
 	mut sign := false
 	if x < 0 {
@@ -253,9 +253,9 @@ fn Jn(mut n: int, mut x: f64): f64 {
 		}
 	}
 	if sign {
-		ret -b
+		return -b
 	}
-	ret b
+	return b
 }
 
 // Returns the order-n Bessel function of the second kind.
@@ -271,19 +271,19 @@ fn Yn(mut n: int, x: f64): f64 {
 	// special cases
 	match {
 	| x < 0 | IsNaN(x):
-		ret NaN()
+		return NaN()
 	| IsInf(x, 1):
-		ret 0
+		return 0
 	}
 
 	if n == 0 {
-		ret Y0(x)
+		return Y0(x)
 	}
 	if x == 0 {
 		if n < 0 && n&1 == 1 {
-			ret Inf(1)
+			return Inf(1)
 		}
-		ret Inf(-1)
+		return Inf(-1)
 	}
 	mut sign := false
 	if n < 0 {
@@ -294,9 +294,9 @@ fn Yn(mut n: int, x: f64): f64 {
 	}
 	if n == 1 {
 		if sign {
-			ret -Y1(x)
+			return -Y1(x)
 		}
-		ret Y1(x)
+		return Y1(x)
 	}
 	mut b := 0.
 	if x >= Two302 { // x > 2**302
@@ -336,7 +336,7 @@ fn Yn(mut n: int, x: f64): f64 {
 		}
 	}
 	if sign {
-		ret -b
+		return -b
 	}
-	ret b
+	return b
 }

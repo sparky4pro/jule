@@ -15,7 +15,7 @@ impl FdSet {
 
 	// Returns whether fd is in the set fds.
 	fn IsSet(mut *self, fd: int): bool {
-		ret self.Bits[fd/NFDBITS]&(1<<(uintptr(fd)%NFDBITS)) != 0
+		return self.Bits[fd/NFDBITS]&(1<<(uintptr(fd)%NFDBITS)) != 0
 	}
 
 	// Clears the set fds.

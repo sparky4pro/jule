@@ -30,7 +30,7 @@ fn maxPow(b: Word): (p: Word, n: int) {
 		n++
 	}
 	// p == b**n && p <= _M
-	ret
+	return
 }
 
 // Returns x**n for n > 0, and 1 otherwise.
@@ -46,13 +46,13 @@ fn pow(mut x: Word, mut n: int): (p: Word) {
 		x *= x
 		n >>= 1
 	}
-	ret
+	return
 }
 
 // Converts z to an ASCII representation in the given base;
 // base must be between 2 and MaxBase, inclusive.
 fn utoaW(z: []Word, base: int): []byte {
-	ret itoaW(z, false, base)
+	return itoaW(z, false, base)
 }
 
 // Like utoa but it prepends a '-' if neg && z != 0.
@@ -63,7 +63,7 @@ fn itoaW(z: []Word, neg: bool, base: int): []byte {
 
 	// z == 0
 	if len(z) == 0 {
-		ret []byte("0")
+		return []byte("0")
 	}
 	// len(z) > 0
 
@@ -145,7 +145,7 @@ fn itoaW(z: []Word, neg: bool, base: int): []byte {
 		s[i] = '-'
 	}
 
-	ret s[i:]
+	return s[i:]
 }
 
 // Convert words of q to base b digits in s. If q is large, it is recursively "split in half"
@@ -265,7 +265,7 @@ fn expWVV(mut &z: *[]Word, x: Word, y: Word) {
 fn divisors(m: int, b: Word, ndigits: int, bb: Word): []divisor {
 	// only compute table when recursive conversion is enabled and x is large
 	if leafSize == 0 || m <= leafSize {
-		ret nil
+		return nil
 	}
 
 	// determine k where (bb**leafSize)**(2**k) >= sqrt(x)
@@ -320,7 +320,7 @@ fn divisors(m: int, b: Word, ndigits: int, bb: Word): []divisor {
 		cache10.mtx.unlock()
 	}
 
-	ret table
+	return table
 }
 
 struct stringScan {
@@ -330,17 +330,17 @@ struct stringScan {
 
 impl stringScan {
 	fn new(s: string): stringScan {
-		ret stringScan{s: s}
+		return stringScan{s: s}
 	}
 
 	fn read(mut *self): (b: byte, ended: bool) {
 		ended = self.i >= len(self.s)
 		if ended {
-			ret
+			return
 		}
 		b = self.s[self.i]
 		self.i++
-		ret
+		return
 	}
 
 	fn unread(mut *self) {
@@ -517,7 +517,7 @@ fn scanW(mut z: []Word, mut &r: *stringScan, base: int, mut fracOk: bool): ([]Wo
 		if prefix == '0' {
 			// there was only the octal prefix 0 (possibly followed by separators and digits > 7);
 			// interpret as decimal 0
-			ret z[:0], 10, 1, ok
+			return z[:0], 10, 1, ok
 		}
 		ok = false // fall through; result will be 0
 	}
@@ -533,7 +533,7 @@ fn scanW(mut z: []Word, mut &r: *stringScan, base: int, mut fracOk: bool): ([]Wo
 		// 0 <= dp <= count
 		count = dp - count
 	}
-	ret z, b, count, ok
+	return z, b, count, ok
 }
 
 fn fromStringW(s: string): []Word {
@@ -542,5 +542,5 @@ fn fromStringW(s: string): []Word {
 	if !ok {
 		panic("std/math/big: fromStringW failed")
 	}
-	ret x
+	return x
 }

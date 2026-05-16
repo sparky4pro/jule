@@ -34,7 +34,7 @@ fn initLocal() {
 		if ok {
 			localLoc = *z
 			localLoc.name = "Local"
-			ret
+			return
 		}
 	|:
 		if tz[0] == ':' {
@@ -49,13 +49,13 @@ fn initLocal() {
 				} else {
 					localLoc.name = tz
 				}
-				ret
+				return
 			}
 		} else if tz != "" && tz != "UTC" {
 			mut z, ok := loadLocation(tz, platformZoneSources)
 			if ok {
 				localLoc = *z
-				ret
+				return
 			}
 		}
 	}

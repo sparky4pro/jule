@@ -99,11 +99,11 @@ impl float {
 		self.neg = math::Signbit(x) // handle -0, -Inf correctly
 		if x == 0 {
 			self.form = zero
-			ret
+			return
 		}
 		if math::IsInf(x, 0) {
 			self.form = inf
-			ret
+			return
 		}
 		// normalized x != 0
 		self.form = finite
@@ -113,7 +113,7 @@ impl float {
 		if self.prec < 53 {
 			self.round(0)
 		}
-		ret
+		return
 	}
 
 	// debugging support
@@ -130,20 +130,20 @@ impl float {
 
 	fn validate0(*self): string {
 		if self.form != finite {
-			ret ""
+			return ""
 		}
 		m := len(self.mant)
 		if m == 0 {
-			ret "nonzero finite number with empty mantissa"
+			return "nonzero finite number with empty mantissa"
 		}
 		const msb = 1 << (_W - 1)
 		if self.mant[m-1]&msb == 0 {
-			ret fmt::Sprintf("msb not set in last word {} of {}", self.mant[m-1], self.Format('p', 0))
+			return fmt::Sprintf("msb not set in last word {} of {}", self.mant[m-1], self.Format('p', 0))
 		}
 		if self.prec == 0 {
-			ret "zero precision finite number"
+			return "zero precision finite number"
 		}
-		ret ""
+		return ""
 	}
 
 	fn setExpAndRound(mut *self, exp: i64, sbit: uint) {
@@ -151,14 +151,14 @@ impl float {
 			// underflow
 			self.acc = makeAcc(self.neg)
 			self.form = zero
-			ret
+			return
 		}
 
 		if exp > maxExp {
 			// overflow
 			self.acc = makeAcc(!self.neg)
 			self.form = inf
-			ret
+			return
 		}
 
 		self.form = finite
@@ -182,7 +182,7 @@ impl float {
 		self.acc = Exact
 		if self.form != finite {
 			// ±0 or ±Inf => nothing left to do
-			ret
+			return
 		}
 		// self.form == finite && len(zelf.mant) > 0
 		// m > 0 implies self.prec > 0 (checked by validate)
@@ -191,7 +191,7 @@ impl float {
 		bits := m * _W           // present mantissa bits; bits > 0
 		if bits <= self.prec {
 			// mantissa fits => nothing to do
-			ret
+			return
 		}
 		// bits > self.prec
 
@@ -263,7 +263,7 @@ impl float {
 					if self.exp >= maxExp {
 						// exponent overflow
 						self.form = inf
-						ret
+						return
 					}
 					self.exp++
 					// adjust mantissa: divide by 2 to compensate for exponent adjustment
@@ -298,19 +298,19 @@ impl float {
 	// Returns the mantissa precision of self in bits.
 	// The result may be 0 for |self| == 0 and |self| == Inf.
 	fn Prec(*self): uint {
-		ret uint(self.prec)
+		return uint(self.prec)
 	}
 
 	// Returns the rounding mode of self.
 	fn Mode(*self): roundingMode {
-		ret self.mode
+		return self.mode
 	}
 
 	// Returns the accuracy of self produced by the most recent
 	// operation, unless explicitly documented otherwise by that
 	// operation.
 	fn Acc(*self): Accuracy {
-		ret self.acc
+		return self.acc
 	}
 
 	// Sets self's precision to prec.
@@ -329,7 +329,7 @@ impl float {
 				self.acc = makeAcc(self.neg)
 				self.form = zero
 			}
-			ret
+			return
 		}
 
 		// general case
@@ -341,7 +341,7 @@ impl float {
 		if self.prec < old {
 			self.round(0)
 		}
-		ret
+		return
 	}
 
 	// Sets self's rounding mode to mode.
@@ -357,9 +357,9 @@ impl float {
 	// The result is 0 for |self| == 0 and |self| == Inf.
 	fn MinPrec(*self): uint {
 		if self.form != finite {
-			ret 0
+			return 0
 		}
-		ret uint(len(self.mant))*_W - trailingZeroBitsW(self.mant)
+		return uint(len(self.mant))*_W - trailingZeroBitsW(self.mant)
 	}
 
 	// Returns of self:
@@ -371,12 +371,12 @@ impl float {
 			self.validate()
 		}
 		if self.form == zero {
-			ret 0
+			return 0
 		}
 		if self.neg {
-			ret -1
+			return -1
 		}
-		ret 1
+		return 1
 	}
 
 	// Classifies self and returns:
@@ -392,14 +392,14 @@ impl float {
 		| finite:
 			m = 1
 		| zero:
-			ret 0
+			return 0
 		| inf:
 			m = 2
 		}
 		if self.neg {
 			m = -m
 		}
-		ret m
+		return m
 	}
 
 	// Sets self to the (possibly rounded) value of x.
@@ -420,7 +420,7 @@ impl float {
 		self.neg = x.neg
 		if len(x.abs) == 0 {
 			self.form = zero
-			ret
+			return
 		}
 		// x != 0
 		setWW(&self.mant, x.abs)
@@ -498,18 +498,18 @@ impl float {
 					// underflow to ±0
 					if self.neg {
 						let z: f64
-						ret -z, Above
+						return -z, Above
 					}
-					ret 0.0, Below
+					return 0.0, Below
 				}
 				// otherwise, round up
 				// We handle p == 0 explicitly because it's easy and because
 				// Float.round doesn't support rounding to 0 bits of precision.
 				if p == 0 {
 					if self.neg {
-						ret -f64.SmallestNonzero, Below
+						return -f64.SmallestNonzero, Below
 					}
-					ret f64.SmallestNonzero, Above
+					return f64.SmallestNonzero, Above
 				}
 			}
 			// p > 0
@@ -526,9 +526,9 @@ impl float {
 			if r.form == inf || e > emax {
 				// overflow
 				if self.neg {
-					ret math::Inf(-1), Below
+					return math::Inf(-1), Below
 				}
-				ret math::Inf(+1), Above
+				return math::Inf(+1), Above
 			}
 			// e <= emax
 
@@ -555,18 +555,18 @@ impl float {
 				mant = msb64(r.mant) >> ebits & (1<<mbits - 1) // cut off msb (implicit 1 bit)
 			}
 
-			ret math::F64frombits(sign | bexp | mant), r.acc
+			return math::F64frombits(sign | bexp | mant), r.acc
 		| zero:
 			if self.neg {
 				let z: f64
-				ret -z, Exact
+				return -z, Exact
 			}
-			ret 0.0, Exact
+			return 0.0, Exact
 		| inf:
 			if self.neg {
-				ret math::Inf(-1), Exact
+				return math::Inf(-1), Exact
 			}
-			ret math::Inf(+1), Exact
+			return math::Inf(+1), Exact
 		}
 
 		panic("unreachable")
@@ -618,18 +618,18 @@ impl float {
 					// underflow to ±0
 					if self.neg {
 						let mut z: f32
-						ret -z, Above
+						return -z, Above
 					}
-					ret 0.0, Below
+					return 0.0, Below
 				}
 				// otherwise, round up
 				// We handle p == 0 explicitly because it's easy and because
 				// Float.round doesn't support rounding to 0 bits of precision.
 				if p == 0 {
 					if self.neg {
-						ret -f32.SmallestNonzero, Below
+						return -f32.SmallestNonzero, Below
 					}
-					ret f32.SmallestNonzero, Above
+					return f32.SmallestNonzero, Above
 				}
 			}
 			// p > 0
@@ -646,9 +646,9 @@ impl float {
 			if r.form == inf || e > emax {
 				// overflow
 				if self.neg {
-					ret f32(math::Inf(-1)), Below
+					return f32(math::Inf(-1)), Below
 				}
-				ret f32(math::Inf(+1)), Above
+				return f32(math::Inf(+1)), Above
 			}
 			// e <= emax
 
@@ -675,18 +675,18 @@ impl float {
 				mant = msb32(r.mant) >> ebits & (1<<mbits - 1) // cut off msb (implicit 1 bit)
 			}
 
-			ret math::F32frombits(sign | bexp | mant), r.acc
+			return math::F32frombits(sign | bexp | mant), r.acc
 		| zero:
 			if self.neg {
 				let z: f32
-				ret -z, Exact
+				return -z, Exact
 			}
-			ret 0.0, Exact
+			return 0.0, Exact
 		| inf:
 			if self.neg {
-				ret f32(math::Inf(-1)), Exact
+				return f32(math::Inf(-1)), Exact
 			}
-			ret f32(math::Inf(+1)), Exact
+			return f32(math::Inf(+1)), Exact
 		}
 
 		panic("unreachable")
@@ -703,9 +703,9 @@ fn ucmp(&x: *float, &y: *float): int {
 
 	match {
 	| x.exp < y.exp:
-		ret -1
+		return -1
 	| x.exp > y.exp:
-		ret +1
+		return +1
 	}
 	// x.exp == y.exp
 
@@ -725,13 +725,13 @@ fn ucmp(&x: *float, &y: *float): int {
 		}
 		match {
 		| xm < ym:
-			ret -1
+			return -1
 		| xm > ym:
-			ret +1
+			return +1
 		}
 	}
 
-	ret 0
+	return 0
 }
 
 // Compares x and y and returns:
@@ -748,21 +748,21 @@ fn CmpFloat(&x: *float, &y: *float): int {
 	my := y.ord()
 	match {
 	| mx < my:
-		ret -1
+		return -1
 	| mx > my:
-		ret +1
+		return +1
 	}
 	// mx == my
 
 	// only if |mx| == 1 we have to compare the mantissae
 	match mx {
 	| -1:
-		ret ucmp(y, x)
+		return ucmp(y, x)
 	| +1:
-		ret ucmp(x, y)
+		return ucmp(x, y)
 	}
 
-	ret 0
+	return 0
 }
 
 // Normalizes mantissa m by shifting it to the left
@@ -779,30 +779,30 @@ fn fnorm(mut m: []Word): i64 {
 			panic("nlz or shlVU incorrect")
 		}
 	}
-	ret i64(s)
+	return i64(s)
 }
 
 fn makeAcc(above: bool): Accuracy {
 	if above {
-		ret Above
+		return Above
 	}
-	ret Below
+	return Below
 }
 
 // Returns the 32 most significant bits of x.
 fn msb32(x: []Word): u32 {
 	i := len(x) - 1
 	if i < 0 {
-		ret 0
+		return 0
 	}
 	if debugFloat && x[i]&(1<<(_W-1)) == 0 {
 		panic("x not normalized")
 	}
 	match _W {
 	| 32:
-		ret u32(x[i])
+		return u32(x[i])
 	| 64:
-		ret u32(x[i] >> 32)
+		return u32(x[i] >> 32)
 	}
 	panic("unreachable")
 }
@@ -811,7 +811,7 @@ fn msb32(x: []Word): u32 {
 fn msb64(x: []Word): u64 {
 	i := len(x) - 1
 	if i < 0 {
-		ret 0
+		return 0
 	}
 	if debugFloat && x[i]&(1<<(_W-1)) == 0 {
 		panic("x not normalized")
@@ -822,9 +822,9 @@ fn msb64(x: []Word): u64 {
 		if i > 0 {
 			v |= u64(x[i-1])
 		}
-		ret v
+		return v
 	| 64:
-		ret u64(x[i])
+		return u64(x[i])
 	}
 	panic("unreachable")
 }

@@ -10,8 +10,8 @@ use "std/internal/conv"
 // does not match e, false is returned.
 fn xtoi(s: []byte, e: byte): (byte, bool) {
 	if len(s) > 2 && s[2] != e {
-		ret 0, false
+		return 0, false
 	}
 	n, ei, ok := conv::Xbtoi(s)
-	ret byte(n), ok && ei == 2
+	return byte(n), ok && ei == 2
 }

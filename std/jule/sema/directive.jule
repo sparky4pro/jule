@@ -67,7 +67,7 @@ impl directiveChecker {
 
 		if len(d.Args) == 0 {
 			self.s.pushErr(d.Tag, "missing expression")
-			ret
+			return
 		} else if len(d.Args) > 1 {
 			self.s.pushErr(d.Args[1], `passed more argument than expected to directive #namespace`)
 			self.s.pushSuggestion(`use like; #namespace "namespace"`)
@@ -76,7 +76,7 @@ impl directiveChecker {
 		arg := d.Args[0]
 		if arg.ID != token::STRING || arg.Kind[0] != '"' {
 			self.s.pushErr(arg, "invalid syntax")
-			ret
+			return
 		}
 
 		// remove quotes
@@ -122,7 +122,7 @@ impl directiveChecker {
 			f := self.o.(&Func)
 			if f.Extern || f.IsInit() || f.IsEntryPoint() || f.IsMethod() || len(f.Generics) > 0 {
 				self.s.pushErr(d.Tag, "declaration does not supports directive: "+d.Tag.Kind)
-				ret
+				return
 			}
 		| &Var:
 			v := self.o.(&Var)
@@ -136,21 +136,21 @@ impl directiveChecker {
 			}
 		|:
 			self.s.pushErr(d.Tag, "declaration does not supports directive: "+d.Tag.Kind)
-			ret
+			return
 		}
 		if len(d.Args) > 1 {
 			self.s.pushErr(d.Args[1], `passed more argument than expected to directive #export`)
 			self.s.pushSuggestion(`use like; #export "name"`)
-			ret
+			return
 		}
 		if len(d.Args) < 1 {
 			self.s.pushErr(d.Tag, "missing expression")
-			ret
+			return
 		}
 		arg := d.Args[0]
 		if arg.ID != token::STRING || arg.Kind[0] != '"' {
 			self.s.pushErr(arg, "invalid syntax")
-			ret
+			return
 		}
 		// remove quotes
 		d.Args[0].Kind = arg.Kind[1 : len(arg.Kind)-1]
@@ -162,15 +162,15 @@ impl directiveChecker {
 			f := self.o.(&Func)
 			if f.Extern {
 				self.s.pushErr(d.Tag, "declaration does not supports directive: "+d.Tag.Kind)
-				ret
+				return
 			}
 		|:
 			self.s.pushErr(d.Tag, "declaration does not supports directive: "+d.Tag.Kind)
-			ret
+			return
 		}
 		if len(d.Args) == 0 {
 			self.s.pushErr(d.Tag, "the #disable directive requires at least one argument")
-			ret
+			return
 		}
 		mut args := map[string]bool{
 			"boundary": false,

@@ -17,8 +17,8 @@ impl Mod {
 	// Reports true if self and other is nil.
 	fn Equal(&self, other: &Mod): bool {
 		if self == nil || other == nil {
-			ret self == other
+			return self == other
 		}
-		ret self.Path == other.Path
+		return self.Path == other.Path
 	}
 }

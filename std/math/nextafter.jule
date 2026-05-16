@@ -54,7 +54,7 @@ fn Nextafter32(x: f32, y: f32): (r: f32) {
 	|:
 		r = F32frombits(F32bits(x) - 1)
 	}
-	ret
+	return
 }
 
 // Returns the next representable f64 value after x towards y.
@@ -76,5 +76,5 @@ fn Nextafter(x: f64, y: f64): (r: f64) {
 	|:
 		r = F64frombits(F64bits(x) - 1)
 	}
-	ret
+	return
 }

@@ -11,5 +11,5 @@ fn executable(): string {
 		panic("runtime: executable path read error")
 	}
 	buf = buf[:n]
-	ret unsafe::StringFromBytes(buf)
+	return unsafe::StringFromBytes(buf)
 }

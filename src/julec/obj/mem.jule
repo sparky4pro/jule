@@ -14,32 +14,32 @@ fn FastMemcpy(mut t: &sema::Type): (r: bool) {
 	// The memcpy implementation is a kind of the memcpy function of C.
 	// There is no support for constructors, destructors, and other high level things.
 	if t.Extern() {
-		ret false
+		return false
 	}
 
 	mut arr := t.Array()
 	if arr != nil {
-		ret FastMemcpy(arr.Value)
+		return FastMemcpy(arr.Value)
 	}
 	mut s := t.Struct()
 	if s != nil {
-		ret fastMemcpyStruct(s)
+		return fastMemcpyStruct(s)
 	}
 
-	ret t.Prim() != nil
+	return t.Prim() != nil
 }
 
 fn fastMemcpyStruct(mut s: &sema::StructIns): (r: bool) {
 	// If struct type is empty (no fields), report true.
 	// No caching needed.
 	if len(s.Fields) == 0 {
-		ret true
+		return true
 	}
 
 	// Look to cache before analysis.
 	r, ok := memcpyCache[s]
 	if ok {
-		ret r
+		return r
 	}
 
 	for (_, mut field) in s.Fields {
@@ -53,5 +53,5 @@ fn fastMemcpyStruct(mut s: &sema::StructIns): (r: bool) {
 Cache:
 	memcpyCache[s] = r
 
-	ret
+	return
 }

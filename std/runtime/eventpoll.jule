@@ -41,16 +41,16 @@ const (
 
 impl pollInfo {
 	#disable nilptr
-	fn closing(*self): bool { ret *self&pollClosing != 0 }
+	fn closing(*self): bool { return *self&pollClosing != 0 }
 
 	#disable nilptr
-	fn eventErr(*self): bool { ret *self&pollEventErr != 0 }
+	fn eventErr(*self): bool { return *self&pollEventErr != 0 }
 
 	#disable nilptr
-	fn expiredReadDeadline(*self): bool { ret *self&pollExpiredReadDeadline != 0 }
+	fn expiredReadDeadline(*self): bool { return *self&pollExpiredReadDeadline != 0 }
 
 	#disable nilptr
-	fn expiredWriteDeadline(*self): bool { ret *self&pollExpiredWriteDeadline != 0 }
+	fn expiredWriteDeadline(*self): bool { return *self&pollExpiredWriteDeadline != 0 }
 }
 
 // A polldesc linked-list.
@@ -73,7 +73,7 @@ impl polldescq {
 			self.head.prev = qc
 			self.head = qc
 		}
-		ret qc
+		return qc
 	}
 
 	// Removes poll descriptor pd from the queue.
@@ -168,7 +168,7 @@ impl polldesc {
 		self.mu.lock()
 		if self.closing {
 			self.mu.unlock()
-			ret
+			return
 		}
 		// Assign to a timer heap, if needed.
 		if self.theap == nil {
@@ -294,7 +294,7 @@ impl polldesc {
 	// Returns the pollInfo corresponding to polldesc.
 	#disable nilptr
 	fn info(*self): pollInfo {
-		ret pollInfo(atomic::Load(&self.atomicInfo, atomic::Acquire))
+		return pollInfo(atomic::Load(&self.atomicInfo, atomic::Acquire))
 	}
 
 	// Updates atomicInfo (returned by info) using the other values in polldesc.
@@ -331,13 +331,13 @@ impl polldesc {
 		mut x := atomic::Load(&self.atomicInfo, atomic::Acquire)
 		mut xSeq := (x >> pollFDSeq) & pollFDSeqMask
 		if seq != 0 && xSeq != mSeq {
-			ret
+			return
 		}
 		for (x&pollEventErr != 0) != b && !atomic::CompareAndSwap(&self.atomicInfo, x, x^pollEventErr, atomic::AcqRel, atomic::Relaxed) {
 			x = atomic::Load(&self.atomicInfo, atomic::Acquire)
 			xSeq = (x >> pollFDSeq) & pollFDSeqMask
 			if seq != 0 && xSeq != mSeq {
-				ret
+				return
 			}
 		}
 	}
@@ -347,18 +347,18 @@ impl polldesc {
 fn eventpollcheckerr(mut pd: &polldesc, mode: i32): eventpollError {
 	info := pd.info()
 	if info.closing() {
-		ret pollErrClosing
+		return pollErrClosing
 	}
 	if (mode == 'r' && info.expiredReadDeadline()) || (mode == 'w' && info.expiredWriteDeadline()) {
-		ret pollErrTimeout
+		return pollErrTimeout
 	}
 	// Report an event scanning error only on a read event.
 	// An error on a write event will be captured in a subsequent
 	// write call that is able to report a more specific error.
 	if mode == 'r' && info.eventErr() {
-		ret pollErrNotPollable
+		return pollErrNotPollable
 	}
-	ret pollNoError
+	return pollNoError
 }
 
 struct eventpollIOData {
@@ -379,7 +379,7 @@ async fn eventpollblock(mut pd: &polldesc, mode: i32, waitio: bool): bool {
 	for {
 		// Consume notification if already ready.
 		if atomic::CompareAndSwap(pdcp, pdReady, pdNil, atomic::AcqRel, atomic::Relaxed) {
-			ret true
+			return true
 		}
 		if atomic::CompareAndSwap(pdcp, pdNil, pdWait, atomic::AcqRel, atomic::Relaxed) {
 			break
@@ -406,7 +406,7 @@ async fn eventpollblock(mut pd: &polldesc, mode: i32, waitio: bool): bool {
 	if old > pdWait {
 		panic("runtime: corrupted polldesc")
 	}
-	ret old == pdReady
+	return old == pdReady
 }
 
 // Prepares a descriptor for polling in mode, which is 'r' or 'w'.
@@ -461,12 +461,12 @@ fn eventpollunblock(mut &pd: *polldesc, mode: i32, ioready: bool, mut &cp: *c, m
 	for {
 		mut old := atomic::Load(pdcp, atomic::Acquire)
 		if old == pdReady {
-			ret
+			return
 		}
 		if old == pdNil && !ioready {
 			// Only set pdReady for ioready. eventpollwait
 			// will check for timeout/cancel before waiting.
-			ret
+			return
 		}
 		mut new := pdNil
 		if ioready {
@@ -484,7 +484,7 @@ fn eventpollunblock(mut &pd: *polldesc, mode: i32, ioready: bool, mut &cp: *c, m
 				*cp = unsafe { *(*c)(old) }
 				ready(cp)
 			}
-			ret
+			return
 		}
 	}
 }
@@ -513,7 +513,7 @@ fn eventpolldeadlineimpl(mut &pd: *polldesc, seq: uintptr, read: bool, write: bo
 	if seq != currentSeq {
 		// The descriptor was reused or timers were reset.
 		pd.mu.unlock()
-		ret
+		return
 	}
 	mut delta := u32(0)
 	let mut batch: [2]c
@@ -602,7 +602,7 @@ fn eventpollnew(fd: u64)!: &polldesc {
 		pollcache.free(pd)
 		throw error
 	}
-	ret pd
+	return pd
 }
 
 // This function should be called when an fd associated with pd,
@@ -655,7 +655,7 @@ impl pollcachepool {
 		mut pd := self.first
 		self.first = pd.link
 		self.mu.unlock()
-		ret pd
+		return pd
 	}
 
 	#disable nilptr

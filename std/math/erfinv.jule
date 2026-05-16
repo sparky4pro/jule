@@ -114,9 +114,9 @@ fn Erfinv(mut x: f64): f64 {
 	// special cases
 	if IsNaN(x) || x <= -1 || x >= 1 {
 		if x == -1 || x == 1 {
-			ret Inf(int(x))
+			return Inf(int(x))
 		}
-		ret NaN()
+		return NaN()
 	}
 
 	mut sign := false
@@ -148,9 +148,9 @@ fn Erfinv(mut x: f64): f64 {
 	}
 
 	if sign {
-		ret -ans
+		return -ans
 	}
-	ret ans
+	return ans
 }
 
 // Returns the inverse of erfc(x).
@@ -160,4 +160,4 @@ fn Erfinv(mut x: f64): f64 {
 //	Erfcinv(2) = -Inf
 //	Erfcinv(x) = NaN if x < 0 or x > 2
 //	Erfcinv(NaN) = NaN
-fn Erfcinv(x: f64): f64 { ret Erfinv(1 - x) }
+fn Erfcinv(x: f64): f64 { return Erfinv(1 - x) }

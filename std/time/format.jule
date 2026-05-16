@@ -232,11 +232,11 @@ impl Time {
 		// Optimize for RFC3339 as it accounts for over half of all representations.
 		match layout {
 		| RFC3339:
-			ret appendFormatRFC3339(self, b, false)
+			return appendFormatRFC3339(self, b, false)
 		| RFC3339Nano:
-			ret appendFormatRFC3339(self, b, true)
+			return appendFormatRFC3339(self, b, true)
 		|:
-			ret appendFormat(self, b, layout)
+			return appendFormat(self, b, layout)
 		}
 	}
 
@@ -256,14 +256,14 @@ impl Time {
 			b = make([]byte, 0, max)
 		}
 		b = self.AppendFormat(b, layout)
-		ret unsafe::StringFromBytes(b)
+		return unsafe::StringFromBytes(b)
 	}
 
 	// Returns the time formatted using the format string
 	//
 	//	"2006-01-02 15:04:05.999999999 -0700 MST"
 	fn String(*self): string {
-		ret self.Format("2006-01-02 15:04:05.999999999 -0700 MST")
+		return self.Format("2006-01-02 15:04:05.999999999 -0700 MST")
 	}
 }
 
@@ -278,12 +278,12 @@ fn appendInt(mut b: []byte, x: int, width: int): []byte {
 	}
 
 	// 2-digit and 4-digit fields are the most common in time formats.
-	utod := fn(u: uint): byte { ret '0' + byte(u) }
+	utod := fn(u: uint): byte { return '0' + byte(u) }
 	match {
 	| width == 2 && u < 1e2:
-		ret append(b, utod(u/1e1), utod(u%1e1))
+		return append(b, utod(u/1e1), utod(u%1e1))
 	| width == 4 && u < 1e4:
-		ret append(b, utod(u/1e3), utod(u/1e2%1e1), utod(u/1e1%1e1), utod(u%1e1))
+		return append(b, utod(u/1e3), utod(u/1e2%1e1), utod(u/1e1%1e1), utod(u%1e1))
 	}
 
 	// Compute the number of decimal digits.
@@ -318,7 +318,7 @@ fn appendInt(mut b: []byte, x: int, width: int): []byte {
 		i--
 	}
 	b[i] = utod(u)
-	ret b
+	return b
 }
 
 // The "std" value passed to appendNano contains two packed fields: the number of
@@ -327,20 +327,20 @@ fn appendInt(mut b: []byte, x: int, width: int): []byte {
 fn stdFracSecond(code: int, n: int, c: int): int {
 	// Use 0xfff to make the failure case even more absurd.
 	if c == '.' {
-		ret code | ((n & 0xfff) << stdArgShift)
+		return code | ((n & 0xfff) << stdArgShift)
 	}
-	ret code | ((n & 0xfff) << stdArgShift) | 1<<stdSeparatorShift
+	return code | ((n & 0xfff) << stdArgShift) | 1<<stdSeparatorShift
 }
 
 fn digitsLen(std: int): int {
-	ret (std >> stdArgShift) & 0xfff
+	return (std >> stdArgShift) & 0xfff
 }
 
 fn separator(std: int): byte {
 	if (std>>stdSeparatorShift) == 0 {
-		ret '.'
+		return '.'
 	}
-	ret ','
+	return ','
 }
 
 // Appends a fractional second, as nanoseconds, to b
@@ -349,7 +349,7 @@ fn appendNano(mut b: []byte, nanosec: int, std: int): []byte {
 	trim := std&stdMask == stdFracSecond9
 	n := digitsLen(std)
 	if trim && (n == 0 || nanosec == 0) {
-		ret b
+		return b
 	}
 	dot := separator(std)
 	b = append(b, dot)
@@ -365,7 +365,7 @@ fn appendNano(mut b: []byte, nanosec: int, std: int): []byte {
 			b = b[:len(b)-1]
 		}
 	}
-	ret b
+	return b
 }
 
 // Finds the first occurrence of a std string in
@@ -378,99 +378,99 @@ fn nextStdChunk(layout: string): (prefix: string, std: int, suffix: string) {
 		| 'J': // January, Jan
 			if len(layout) >= i+3 && layout[i:i+3] == "Jan" {
 				if len(layout) >= i+7 && layout[i:i+7] == "January" {
-					ret layout[0:i], stdLongMonth, layout[i+7:]
+					return layout[0:i], stdLongMonth, layout[i+7:]
 				}
 				if !startsWithLowerCase(layout[i+3:]) {
-					ret layout[0:i], stdMonth, layout[i+3:]
+					return layout[0:i], stdMonth, layout[i+3:]
 				}
 			}
 		| 'M': // Monday, Mon, MST
 			if len(layout) >= i+3 {
 				if layout[i:i+3] == "Mon" {
 					if len(layout) >= i+6 && layout[i:i+6] == "Monday" {
-						ret layout[0:i], stdLongWeekDay, layout[i+6:]
+						return layout[0:i], stdLongWeekDay, layout[i+6:]
 					}
 					if !startsWithLowerCase(layout[i+3:]) {
-						ret layout[0:i], stdWeekDay, layout[i+3:]
+						return layout[0:i], stdWeekDay, layout[i+3:]
 					}
 				}
 				if layout[i:i+3] == "MST" {
-					ret layout[0:i], stdTZ, layout[i+3:]
+					return layout[0:i], stdTZ, layout[i+3:]
 				}
 			}
 		| '0': // 01, 02, 03, 04, 05, 06, 002
 			if len(layout) >= i+2 && '1' <= layout[i+1] && layout[i+1] <= '6' {
-				ret layout[0:i], std0x[layout[i+1]-'1'], layout[i+2:]
+				return layout[0:i], std0x[layout[i+1]-'1'], layout[i+2:]
 			}
 			if len(layout) >= i+3 && layout[i+1] == '0' && layout[i+2] == '2' {
-				ret layout[0:i], stdZeroYearDay, layout[i+3:]
+				return layout[0:i], stdZeroYearDay, layout[i+3:]
 			}
 		| '1': // 15, 1
 			if len(layout) >= i+2 && layout[i+1] == '5' {
-				ret layout[0:i], stdHour, layout[i+2:]
+				return layout[0:i], stdHour, layout[i+2:]
 			}
-			ret layout[0:i], stdNumMonth, layout[i+1:]
+			return layout[0:i], stdNumMonth, layout[i+1:]
 		| '2': // 2006, 2
 			if len(layout) >= i+4 && layout[i:i+4] == "2006" {
-				ret layout[0:i], stdLongYear, layout[i+4:]
+				return layout[0:i], stdLongYear, layout[i+4:]
 			}
-			ret layout[0:i], stdDay, layout[i+1:]
+			return layout[0:i], stdDay, layout[i+1:]
 		| '_': // _2, _2006, __2
 			if len(layout) >= i+2 && layout[i+1] == '2' {
 				// _2006 is really a literal _, followed by stdLongYear
 				if len(layout) >= i+5 && layout[i+1:i+5] == "2006" {
-					ret layout[0 : i+1], stdLongYear, layout[i+5:]
+					return layout[0 : i+1], stdLongYear, layout[i+5:]
 				}
-				ret layout[0:i], stdUnderDay, layout[i+2:]
+				return layout[0:i], stdUnderDay, layout[i+2:]
 			}
 			if len(layout) >= i+3 && layout[i+1] == '_' && layout[i+2] == '2' {
-				ret layout[0:i], stdUnderYearDay, layout[i+3:]
+				return layout[0:i], stdUnderYearDay, layout[i+3:]
 			}
 		| '3':
-			ret layout[0:i], stdHour12, layout[i+1:]
+			return layout[0:i], stdHour12, layout[i+1:]
 		| '4':
-			ret layout[0:i], stdMinute, layout[i+1:]
+			return layout[0:i], stdMinute, layout[i+1:]
 		| '5':
-			ret layout[0:i], stdSecond, layout[i+1:]
+			return layout[0:i], stdSecond, layout[i+1:]
 		| 'P': // PM
 			if len(layout) >= i+2 && layout[i+1] == 'M' {
-				ret layout[0:i], stdPM, layout[i+2:]
+				return layout[0:i], stdPM, layout[i+2:]
 			}
 		| 'p': // pm
 			if len(layout) >= i+2 && layout[i+1] == 'm' {
-				ret layout[0:i], stdpm, layout[i+2:]
+				return layout[0:i], stdpm, layout[i+2:]
 			}
 		| '-': // -070000, -07:00:00, -0700, -07:00, -07
 			if len(layout) >= i+7 && layout[i:i+7] == "-070000" {
-				ret layout[0:i], stdNumSecondsTz, layout[i+7:]
+				return layout[0:i], stdNumSecondsTz, layout[i+7:]
 			}
 			if len(layout) >= i+9 && layout[i:i+9] == "-07:00:00" {
-				ret layout[0:i], stdNumColonSecondsTZ, layout[i+9:]
+				return layout[0:i], stdNumColonSecondsTZ, layout[i+9:]
 			}
 			if len(layout) >= i+5 && layout[i:i+5] == "-0700" {
-				ret layout[0:i], stdNumTZ, layout[i+5:]
+				return layout[0:i], stdNumTZ, layout[i+5:]
 			}
 			if len(layout) >= i+6 && layout[i:i+6] == "-07:00" {
-				ret layout[0:i], stdNumColonTZ, layout[i+6:]
+				return layout[0:i], stdNumColonTZ, layout[i+6:]
 			}
 			if len(layout) >= i+3 && layout[i:i+3] == "-07" {
-				ret layout[0:i], stdNumShortTZ, layout[i+3:]
+				return layout[0:i], stdNumShortTZ, layout[i+3:]
 			}
 		| 'Z': // Z070000, Z07:00:00, Z0700, Z07:00,
 			if len(layout) >= i+7 && layout[i:i+7] == "Z070000" {
-				ret layout[0:i], stdISO8601SecondsTZ, layout[i+7:]
+				return layout[0:i], stdISO8601SecondsTZ, layout[i+7:]
 			}
 			if len(layout) >= i+9 && layout[i:i+9] == "Z07:00:00" {
-				ret layout[0:i], stdISO8601ColonSecondsTZ, layout[i+9:]
+				return layout[0:i], stdISO8601ColonSecondsTZ, layout[i+9:]
 			}
 			if len(layout) >= i+5 && layout[i:i+5] == "Z0700" {
-				ret layout[0:i], stdISO8601TZ, layout[i+5:]
+				return layout[0:i], stdISO8601TZ, layout[i+5:]
 			}
 			if len(layout) >= i+6 && layout[i:i+6] == "Z07:00" {
-				ret layout[0:i], stdISO8601ColonTZ, layout[i+6:]
+				return layout[0:i], stdISO8601ColonTZ, layout[i+6:]
 			}
 			if len(layout) >= i+3 && layout[i:i+3] == "Z07" {
-				ret layout[0:i], stdISO8601ShortTZ, layout[i+3:]
+				return layout[0:i], stdISO8601ShortTZ, layout[i+3:]
 			}
 		| '.' | ',': // ,000, or .000, or ,999, or .999 - repeated digits for fractional seconds.
 			if i+1 < len(layout) && (layout[i+1] == '0' || layout[i+1] == '9') {
@@ -486,12 +486,12 @@ fn nextStdChunk(layout: string): (prefix: string, std: int, suffix: string) {
 						code = stdFracSecond9
 					}
 					std = stdFracSecond(code, j-(i+1), c)
-					ret layout[0:i], std, layout[j:]
+					return layout[0:i], std, layout[j:]
 				}
 			}
 		}
 	}
-	ret layout, 0, ""
+	return layout, 0, ""
 }
 
 fn appendFormat(&t: *Time, mut b: []byte, mut layout: string): []byte {
@@ -679,26 +679,26 @@ fn appendFormat(&t: *Time, mut b: []byte, mut layout: string): []byte {
 			b = appendNano(b, t.Nanosecond(), std)
 		}
 	}
-	ret b
+	return b
 }
 
 // Reports whether the string has a lower-case letter at the beginning.
 // Its purpose is to prevent matching strings like "Month" when looking for "Mon".
 fn startsWithLowerCase(s: string): bool {
 	if len(s) == 0 {
-		ret false
+		return false
 	}
 	c := s[0]
-	ret 'a' <= c && c <= 'z'
+	return 'a' <= c && c <= 'z'
 }
 
 // Reports whether s[i] is in range and is a decimal digit.
 fn isDigit[bytes: []byte | string](s: bytes, i: int): bool {
 	if len(s) <= i {
-		ret false
+		return false
 	}
 	c := s[i]
-	ret '0' <= c && c <= '9'
+	return '0' <= c && c <= '9'
 }
 
 let mut errBad = errors::New("bad value for field") // placeholder not passed to user
@@ -745,7 +745,7 @@ fn quote(s: string): string {
 		}
 	}
 	buf = append(buf, '"')
-	ret unsafe::StringFromBytes(buf)
+	return unsafe::StringFromBytes(buf)
 }
 
 // Describes a problem parsing a time string.
@@ -760,13 +760,13 @@ struct ParseError {
 impl ParseError {
 	fn String(*self): string {
 		if self.Message == "" {
-			ret "parsing time " +
+			return "parsing time " +
 				quote(self.Value) + " as " +
 				quote(self.Layout) + ": cannot parse " +
 				quote(self.ValueElem) + " as " +
 				quote(self.LayoutElem)
 		}
-		ret "parsing time " +
+		return "parsing time " +
 			quote(self.Value) + self.Message
 	}
 }
@@ -776,7 +776,7 @@ impl ParseError {
 fn newParseError(layout: string, value: string, layoutElem: string, valueElem: string, message: string): &ParseError {
 	valueCopy := stringslite::Clone(value)
 	valueElemCopy := stringslite::Clone(valueElem)
-	ret &ParseError{layout, valueCopy, layoutElem, valueElemCopy, message}
+	return &ParseError{layout, valueCopy, layoutElem, valueElemCopy, message}
 }
 
 // Parses a formatted string and returns the time value it represents.
@@ -826,10 +826,10 @@ fn Parse(layout: string, value: string)!: Time {
 	if layout == RFC3339 || layout == RFC3339Nano {
 		t, ok := parseRFC3339(value, unsafe { *(&Local) })
 		if ok {
-			ret t
+			return t
 		}
 	}
-	ret parse(layout, value, unsafe { *(&UTC) }, unsafe { *(&Local) })?
+	return parse(layout, value, unsafe { *(&UTC) }, unsafe { *(&Local) })?
 }
 
 // Like Parse but differs in two important ways.
@@ -842,10 +842,10 @@ fn ParseInLocation(layout: string, value: string, loc: &Location)!: Time {
 	if layout == RFC3339 || layout == RFC3339Nano {
 		t, ok := parseRFC3339(value, unsafe { *(&loc) })
 		if ok {
-			ret t
+			return t
 		}
 	}
-	ret parse(layout, value, unsafe { *(&loc) }, unsafe { *(&loc) })?
+	return parse(layout, value, unsafe { *(&loc) }, unsafe { *(&loc) })?
 }
 
 fn parse(mut layout: string, mut value: string, defaultLocation: &Location, mut local: &Location)!: Time {
@@ -1154,7 +1154,7 @@ fn parse(mut layout: string, mut value: string, defaultLocation: &Location, mut 
 	}
 
 	if z != nil {
-		ret Date(year, Month(month), day, hour, min, sec, nsec, z)
+		return Date(year, Month(month), day, hour, min, sec, nsec, z)
 	}
 
 	if zoneOffset != -1 {
@@ -1166,14 +1166,14 @@ fn parse(mut layout: string, mut value: string, defaultLocation: &Location, mut 
 		name, offset, _, _, _ := local.lookup(t.sec)
 		if offset == zoneOffset && (zoneName == "" || name == zoneName) {
 			t.setLoc(local)
-			ret t
+			return t
 		}
 
 		// Otherwise create fake zone to record offset.
 		zoneNameCopy := stringslite::Clone(zoneName) // avoid leaking the input value
 		mut l := FixedZone(zoneNameCopy, zoneOffset)
 		t.setLoc(l)
-		ret t
+		return t
 	}
 
 	if zoneName != "" {
@@ -1184,7 +1184,7 @@ fn parse(mut layout: string, mut value: string, defaultLocation: &Location, mut 
 		if ok {
 			t.addSec(-i64(offset))
 			t.setLoc(local)
-			ret t
+			return t
 		}
 
 		// Otherwise, create fake zone with unknown offset.
@@ -1195,15 +1195,15 @@ fn parse(mut layout: string, mut value: string, defaultLocation: &Location, mut 
 		zoneNameCopy := stringslite::Clone(zoneName) // avoid leaking the input value
 		mut l := FixedZone(zoneNameCopy, offset)
 		t.setLoc(l)
-		ret t
+		return t
 	}
 
 	// Otherwise, fall back to default.
-	ret Date(year, Month(month), day, hour, min, sec, nsec, defaultLocation)
+	return Date(year, Month(month), day, hour, min, sec, nsec, defaultLocation)
 }
 
 fn commaOrPeriod(b: byte): bool {
-	ret b == '.' || b == ','
+	return b == '.' || b == ','
 }
 
 fn parseNanoseconds[bytes: []byte | string](value: bytes, mut nbytes: int)!: (ns: int, rangeErrStr: string) {
@@ -1216,7 +1216,7 @@ fn parseNanoseconds[bytes: []byte | string](value: bytes, mut nbytes: int)!: (ns
 	}
 
 	ns = atoi(value[1:nbytes]) else {
-		ret 0, ""
+		return 0, ""
 	}
 	if ns < 0 {
 		rangeErrStr = "fractional second"
@@ -1228,7 +1228,7 @@ fn parseNanoseconds[bytes: []byte | string](value: bytes, mut nbytes: int)!: (ns
 	for i < scaleDigits; i++ {
 		ns *= 10
 	}
-	ret
+	return
 }
 
 // Parses a time zone string and returns its length. Time zones
@@ -1243,22 +1243,22 @@ fn parseNanoseconds[bytes: []byte | string](value: bytes, mut nbytes: int)!: (ns
 // GMT is special because it can have an hour offset.
 fn parseTimeZone(value: string): (length: int, ok: bool) {
 	if len(value) < 3 {
-		ret 0, false
+		return 0, false
 	}
 	// Special case 1: ChST and MeST are the only zones with a lower-case letter.
 	if len(value) >= 4 && (value[:4] == "ChST" || value[:4] == "MeST") {
-		ret 4, true
+		return 4, true
 	}
 	// Special case 2: GMT may have an hour offset; treat it specially.
 	if value[:3] == "GMT" {
 		length = parseGMT(value)
-		ret length, true
+		return length, true
 	}
 	// Special Case 3: Some time zones are not named, but have +/-00 format
 	if value[0] == '+' || value[0] == '-' {
 		length = parseSignedOffset(value)
 		ok = length > 0 // parseSignedOffset returns 0 in case of bad input
-		ret length, ok
+		return length, ok
 	}
 	// How many upper-case letters are there? Need at least three, at most five.
 	mut nUpper := 0
@@ -1273,20 +1273,20 @@ fn parseTimeZone(value: string): (length: int, ok: bool) {
 	}
 	match nUpper {
 	| 0 | 1 | 2 | 6:
-		ret 0, false
+		return 0, false
 	| 5: // Must end in T to match.
 		if value[4] == 'T' {
-			ret 5, true
+			return 5, true
 		}
 	| 4:
 		// Must end in T, except one special case.
 		if value[3] == 'T' || value[:4] == "WITA" {
-			ret 4, true
+			return 4, true
 		}
 	| 3:
-		ret 3, true
+		return 3, true
 	}
-	ret 0, false
+	return 0, false
 }
 
 // Parses a GMT time zone. The input string is known to start "GMT".
@@ -1295,10 +1295,10 @@ fn parseTimeZone(value: string): (length: int, ok: bool) {
 fn parseGMT(mut value: string): int {
 	value = value[3:]
 	if len(value) == 0 {
-		ret 3
+		return 3
 	}
 
-	ret 3 + parseSignedOffset(value)
+	return 3 + parseSignedOffset(value)
 }
 
 // Parses a signed timezone offset (e.g. "+03" or "-04").
@@ -1307,18 +1307,18 @@ fn parseGMT(mut value: string): int {
 fn parseSignedOffset(value: string): int {
 	sign := value[0]
 	if sign != '-' && sign != '+' {
-		ret 0
+		return 0
 	}
-	x, rem := leadingInt(value[1:]) else { ret 0 }
+	x, rem := leadingInt(value[1:]) else { return 0 }
 
 	// fail if nothing consumed by leadingInt
 	if value[1:] == rem {
-		ret 0
+		return 0
 	}
 	if x > 23 {
-		ret 0
+		return 0
 	}
-	ret len(value) - len(rem)
+	return len(value) - len(rem)
 }
 
 // Parses s[0:1] or s[0:2] (fixed forces s[0:2])
@@ -1332,9 +1332,9 @@ fn getnum(s: string, fixed: bool)!: (int, string) {
 		if fixed {
 			throw errBad
 		}
-		ret int(s[0] - '0'), s[1:]
+		return int(s[0] - '0'), s[1:]
 	}
-	ret int(s[0]-'0')*10 + int(s[1]-'0'), s[2:]
+	return int(s[0]-'0')*10 + int(s[1]-'0'), s[2:]
 }
 
 // Parses s[0:1], s[0:2], or s[0:3] (fixed forces s[0:3])
@@ -1349,7 +1349,7 @@ fn getnum3(s: string, fixed: bool)!: (int, string) {
 	if i == 0 || fixed && i != 3 {
 		throw errBad
 	}
-	ret n, s[i:]
+	return n, s[i:]
 }
 
 let mut errLeadingInt = errors::New("time: bad [0-9]*") // never printed
@@ -1372,7 +1372,7 @@ fn leadingInt[bytes: []byte | string](s: bytes)!: (x: u64, rem: bytes) {
 			throw errLeadingInt
 		}
 	}
-	ret x, unsafe { (*(&s))[i:] } // Break immutability for return.
+	return x, unsafe { (*(&s))[i:] } // Break immutability for return.
 }
 
 // Never printed, just needs to be non-nil for return by atoi.
@@ -1393,14 +1393,14 @@ fn atoi[bytes: []byte | string](s: bytes)!: (x: int) {
 	if neg {
 		x = -x
 	}
-	ret x
+	return x
 }
 
 fn cutspace(mut s: string): string {
 	for len(s) > 0 && s[0] == ' ' {
 		s = s[1:]
 	}
-	ret s
+	return s
 }
 
 // Removes the given prefix from value,
@@ -1421,7 +1421,7 @@ fn skip(mut value: string, mut prefix: string)!: string {
 		prefix = prefix[1:]
 		value = value[1:]
 	}
-	ret value
+	return value
 }
 
 // Reports whether s1 and s2 match ignoring case.
@@ -1436,17 +1436,17 @@ fn _match(s1: string, s2: string): bool {
 			c1 |= 'a' - 'A'
 			c2 |= 'a' - 'A'
 			if c1 != c2 || c1 < 'a' || c1 > 'z' {
-				ret false
+				return false
 			}
 		}
 	}
-	ret true
+	return true
 }
 
 fn lookup(tab: []string, val: string)!: (int, string) {
 	for i, v in tab {
 		if len(val) >= len(v) && _match(val[:len(v)], v) {
-			ret i, val[len(v):]
+			return i, val[len(v):]
 		}
 	}
 	throw errBad
@@ -1480,7 +1480,7 @@ fn leadingFraction(s: string): (x: u64, scale: f64, rem: string) {
 		x = y
 		scale *= 10
 	}
-	ret x, scale, s[i:]
+	return x, scale, s[i:]
 }
 
 let unitMap: map[string]u64 = {
@@ -1514,10 +1514,10 @@ fn ParseDuration(mut s: string): (Duration, bool) {
 	}
 	// Special case: if all that is left is "0", this is zero.
 	if s == "0" {
-		ret 0, true
+		return 0, true
 	}
 	if s == "" {
-		ret 0, false
+		return 0, false
 	}
 	for s != "" {
 		mut v, mut f := u64(0), u64(0) // integers before, after decimal point
@@ -1525,11 +1525,11 @@ fn ParseDuration(mut s: string): (Duration, bool) {
 
 		// The next character must be [0-9.]
 		if !(s[0] == '.' || '0' <= s[0] && s[0] <= '9') {
-			ret 0, false
+			return 0, false
 		}
 		// Consume [0-9]*
 		mut pl := len(s)
-		v, s = leadingInt(s) else { ret 0, false }
+		v, s = leadingInt(s) else { return 0, false }
 		pre := pl != len(s) // whether we consumed anything before a period
 
 		// Consume (\.[0-9]*)?
@@ -1542,7 +1542,7 @@ fn ParseDuration(mut s: string): (Duration, bool) {
 		}
 		if !pre && !post {
 			// no digits (e.g. ".s" or "-.s")
-			ret 0, false
+			return 0, false
 		}
 
 		// Consume unit.
@@ -1554,17 +1554,17 @@ fn ParseDuration(mut s: string): (Duration, bool) {
 			}
 		}
 		if i == 0 {
-			ret 0, false
+			return 0, false
 		}
 		u := s[:i]
 		s = s[i:]
 		unit, ok := unitMap[u]
 		if !ok {
-			ret 0, false
+			return 0, false
 		}
 		if v > 1<<63/unit {
 			// overflow
-			ret 0, false
+			return 0, false
 		}
 		v *= unit
 		if f > 0 {
@@ -1573,19 +1573,19 @@ fn ParseDuration(mut s: string): (Duration, bool) {
 			v += u64(f64(f) * (f64(unit) / scale))
 			if v > 1<<63 {
 				// overflow
-				ret 0, false
+				return 0, false
 			}
 		}
 		d += v
 		if d > 1<<63 {
-			ret 0, false
+			return 0, false
 		}
 	}
 	if neg {
-		ret -Duration(d), true
+		return -Duration(d), true
 	}
 	if d > 1<<63-1 {
-		ret 0, false
+		return 0, false
 	}
-	ret Duration(d), true
+	return Duration(d), true
 }

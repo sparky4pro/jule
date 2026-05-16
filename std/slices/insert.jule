@@ -54,13 +54,13 @@ fn rotateRight[E](mut s: []E, r: int) {
 #disable boundary
 fn overlaps[E](a: []E, b: []E): bool {
 	if len(a) == 0 || len(b) == 0 {
-		ret false
+		return false
 	}
 	elemSize := mem::SizeOf(E)
 	if elemSize == 0 {
-		ret false
+		return false
 	}
-	ret &a[0] <= &b[len(b)-1]+(elemSize-1) &&
+	return &a[0] <= &b[len(b)-1]+(elemSize-1) &&
 		&b[0] <= &a[len(a)-1]+(elemSize-1)
 }
 
@@ -76,11 +76,11 @@ fn Insert[S: ~[]E, E](mut s: S, i: int, mut v: ...E): S {
 
 	m := len(v)
 	if m == 0 {
-		ret s
+		return s
 	}
 	n := len(s)
 	if i == n {
-		ret append(s, v...)
+		return append(s, v...)
 	}
 	if n+m > cap(s) {
 		// Use append rather than make so that we bump the size of
@@ -90,7 +90,7 @@ fn Insert[S: ~[]E, E](mut s: S, i: int, mut v: ...E): S {
 		mut s2 := append(s[:i], make(S, n+m-i)...)
 		copy(s2[i:], v)
 		copy(s2[i+m:], s[i:])
-		ret s2
+		return s2
 	}
 	s = s[:n+m]
 
@@ -128,7 +128,7 @@ fn Insert[S: ~[]E, E](mut s: S, i: int, mut v: ...E): S {
 		//            ^   ^       ^   ^
 		//            i  i+m      n  n+m
 		// That's the result we want.
-		ret s
+		return s
 	}
 
 	// The hard case - v overlaps c or d. We can't just shift up
@@ -149,5 +149,5 @@ fn Insert[S: ~[]E, E](mut s: S, i: int, mut v: ...E): S {
 	//            ^   ^       ^   ^
 	//            i  i+m      n  n+m
 	// That's the result we want.
-	ret s
+	return s
 }

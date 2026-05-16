@@ -6,23 +6,23 @@ use "std/sys"
 
 fn open(name: string): (uintptr, ok: bool) {
 	fd := sys::Open(name, sys::O_RDONLY, 0) else {
-		ret 0, false
+		return 0, false
 	}
-	ret uintptr(fd), true
+	return uintptr(fd), true
 }
 
 fn read(fd: uintptr, mut buf: []byte): (n: int, ok: bool) {
 	if len(buf) == 0 {
 		// If the caller wanted a zero byte read, return immediately
 		// without trying to read.
-		ret 0, true
+		return 0, true
 	}
 	ok = true
 	n = sys::Read(int(fd), buf) else {
 		ok = false
 		use 0
 	}
-	ret
+	return
 }
 
 fn preadn(fd: uintptr, mut buf: []byte, off: int): (ok: bool) {
@@ -31,15 +31,15 @@ fn preadn(fd: uintptr, mut buf: []byte, off: int): (ok: bool) {
 		whence = seekEnd
 	}
 	sys::Seek(int(fd), i64(off), whence) else {
-		ret false
+		return false
 	}
 	for len(buf) > 0 {
 		m := sys::Read(int(fd), buf) else {
-			ret false
+			return false
 		}
 		buf = buf[m:]
 	}
-	ret true
+	return true
 }
 
 fn closefd(fd: uintptr) {

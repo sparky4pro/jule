@@ -43,17 +43,17 @@ let localOnce = sync::Once.New()
 impl Location {
 	// Returns a descriptive name for the time zone information.
 	fn String(*self): string {
-		ret unsafe { (&Location)(*(&self)).get().name }
+		return unsafe { (&Location)(*(&self)).get().name }
 	}
 
 	fn get(mut &self): &Location {
 		if self == nil {
-			ret unsafe { *(&UTC) }
+			return unsafe { *(&UTC) }
 		}
 		if uintptr(self) == uintptr(&localLoc) {
 			localOnce.Do(initLocal)
 		}
-		ret self
+		return self
 	}
 
 	// Returns information about the time zone in use at an
@@ -72,7 +72,7 @@ impl Location {
 			start = alpha
 			end = omega
 			isDST = false
-			ret
+			return
 		}
 
 		mut _zone := l.cacheZone
@@ -82,7 +82,7 @@ impl Location {
 			start = l.cacheStart
 			end = l.cacheEnd
 			isDST = _zone.isDST
-			ret
+			return
 		}
 
 		if len(l.tx) == 0 || sec < l.tx[0].when {
@@ -96,7 +96,7 @@ impl Location {
 				end = omega
 			}
 			isDST = _zone.isDST
-			ret
+			return
 		}
 
 		// Binary search for entry with largest time <= sec.
@@ -126,11 +126,11 @@ impl Location {
 		if lo == len(tx)-1 && l.extend != "" {
 			ename, eoffset, estart, eend, eisDST, ok := tzset(l.extend, start, sec)
 			if ok {
-				ret ename, eoffset, estart, eend, eisDST
+				return ename, eoffset, estart, eend, eisDST
 			}
 		}
 
-		ret
+		return
 	}
 
 	// Returns information about the time zone with
@@ -151,7 +151,7 @@ impl Location {
 				mut nam := ""
 				nam, offset, _, _, _ = l.lookup(unix - i64(zone.offset))
 				if nam == zone.name {
-					ret offset, true
+					return offset, true
 				}
 			}
 		}
@@ -160,12 +160,12 @@ impl Location {
 		for i in self.zone {
 			zone := unsafe { (&zone)(&l.zone[i]) }
 			if zone.name == name {
-				ret zone.offset, true
+				return zone.offset, true
 			}
 		}
 
 		// Otherwise, give up.
-		ret
+		return
 	}
 
 	// Returns the index of the time zone to use for times
@@ -186,7 +186,7 @@ impl Location {
 	fn lookupFirstZone(*self): int {
 		// Case 1.
 		if !self.firstZoneUsed() {
-			ret 0
+			return 0
 		}
 
 		// Case 2.
@@ -194,7 +194,7 @@ impl Location {
 			mut zi := int(self.tx[0].index) - 1
 			for zi >= 0; zi-- {
 				if !self.zone[zi].isDST {
-					ret zi
+					return zi
 				}
 			}
 		}
@@ -202,22 +202,22 @@ impl Location {
 		// Case 3.
 		for zi in self.zone {
 			if !self.zone[zi].isDST {
-				ret zi
+				return zi
 			}
 		}
 
 		// Case 4.
-		ret 0
+		return 0
 	}
 
 	// Reports whether the first zone is used by some transition.
 	fn firstZoneUsed(*self): bool {
 		for _, tx in self.tx {
 			if tx.index == 0 {
-				ret true
+				return true
 			}
 		}
-		ret false
+		return false
 	}
 }
 
@@ -270,29 +270,29 @@ let mut localLoc = Location{}
 // and the remainder of s, and reports whether the parsing is OK.
 fn tzsetName(s: string): (string, string, bool) {
 	if len(s) == 0 {
-		ret "", "", false
+		return "", "", false
 	}
 	if s[0] != '<' {
 		for i, r in s {
 			match r {
 			| '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | ',' | '-' | '+':
 				if i < 3 {
-					ret "", "", false
+					return "", "", false
 				}
-				ret s[:i], s[i:], true
+				return s[:i], s[i:], true
 			}
 		}
 		if len(s) < 3 {
-			ret "", "", false
+			return "", "", false
 		}
-		ret s, "", true
+		return s, "", true
 	} else {
 		for i, r in s {
 			if r == '>' {
-				ret s[1:i], s[i+1:], true
+				return s[1:i], s[i+1:], true
 			}
 		}
-		ret "", "", false
+		return "", "", false
 	}
 }
 
@@ -301,7 +301,7 @@ fn tzsetName(s: string): (string, string, bool) {
 // The timezone offset is returned as a number of seconds.
 fn tzsetOffset(mut s: string): (offset: int, rest: string, ok: bool) {
 	if len(s) == 0 {
-		ret 0, "", false
+		return 0, "", false
 	}
 	mut neg := false
 	if s[0] == '+' {
@@ -316,40 +316,40 @@ fn tzsetOffset(mut s: string): (offset: int, rest: string, ok: bool) {
 	let mut hours: int
 	hours, s, ok = tzsetNum(s, 0, 24*7)
 	if !ok {
-		ret 0, "", false
+		return 0, "", false
 	}
 	mut off := hours * secPerHour
 	if len(s) == 0 || s[0] != ':' {
 		if neg {
 			off = -off
 		}
-		ret off, s, true
+		return off, s, true
 	}
 
 	let mut mins: int
 	mins, s, ok = tzsetNum(s[1:], 0, 59)
 	if !ok {
-		ret 0, "", false
+		return 0, "", false
 	}
 	off += mins * secPerMinute
 	if len(s) == 0 || s[0] != ':' {
 		if neg {
 			off = -off
 		}
-		ret off, s, true
+		return off, s, true
 	}
 
 	let mut secs: int
 	secs, s, ok = tzsetNum(s[1:], 0, 59)
 	if !ok {
-		ret 0, "", false
+		return 0, "", false
 	}
 	off += secs
 
 	if neg {
 		off = -off
 	}
-	ret off, s, true
+	return off, s, true
 }
 
 // Parses a number from a tzset string.
@@ -357,26 +357,26 @@ fn tzsetOffset(mut s: string): (offset: int, rest: string, ok: bool) {
 // The number must be between min and max.
 fn tzsetNum(s: string, min: int, max: int): (num: int, rest: string, ok: bool) {
 	if len(s) == 0 {
-		ret 0, "", false
+		return 0, "", false
 	}
 	num = 0
 	for i, r in s {
 		if r < '0' || r > '9' {
 			if i == 0 || num < min {
-				ret 0, "", false
+				return 0, "", false
 			}
-			ret num, s[i:], true
+			return num, s[i:], true
 		}
 		num *= 10
 		num += int(r) - '0'
 		if num > max {
-			ret 0, "", false
+			return 0, "", false
 		}
 	}
 	if num < min {
-		ret 0, "", false
+		return 0, "", false
 	}
-	ret num, "", true
+	return num, "", true
 }
 
 // Takes a year, a rule, and a timezone offset,
@@ -425,7 +425,7 @@ fn tzruleTime(year: int, r: rule, off: int): int {
 		s = d * secPerDay
 	}
 
-	ret s + r.time - off
+	return s + r.time - off
 }
 
 // Parses a rule from a tzset string.
@@ -433,14 +433,14 @@ fn tzruleTime(year: int, r: rule, off: int): int {
 fn tzsetRule(mut s: string): (rule, string, bool) {
 	let mut r: rule
 	if len(s) == 0 {
-		ret rule{}, "", false
+		return rule{}, "", false
 	}
 	mut ok := false
 	if s[0] == 'J' {
 		let mut jday: int
 		jday, s, ok = tzsetNum(s[1:], 1, 365)
 		if !ok {
-			ret rule{}, "", false
+			return rule{}, "", false
 		}
 		r.kind = ruleKind.Julian
 		r.day = jday
@@ -448,17 +448,17 @@ fn tzsetRule(mut s: string): (rule, string, bool) {
 		let mut mon: int
 		mon, s, ok = tzsetNum(s[1:], 1, 12)
 		if !ok || len(s) == 0 || s[0] != '.' {
-			ret rule{}, "", false
+			return rule{}, "", false
 		}
 		let mut week: int
 		week, s, ok = tzsetNum(s[1:], 1, 5)
 		if !ok || len(s) == 0 || s[0] != '.' {
-			ret rule{}, "", false
+			return rule{}, "", false
 		}
 		let mut day: int
 		day, s, ok = tzsetNum(s[1:], 0, 6)
 		if !ok {
-			ret rule{}, "", false
+			return rule{}, "", false
 		}
 		r.kind = ruleKind.MonthWeekDay
 		r.day = day
@@ -468,7 +468,7 @@ fn tzsetRule(mut s: string): (rule, string, bool) {
 		let mut day: int
 		day, s, ok = tzsetNum(s, 0, 365)
 		if !ok {
-			ret rule{}, "", false
+			return rule{}, "", false
 		}
 		r.kind = ruleKind.DOY
 		r.day = day
@@ -476,16 +476,16 @@ fn tzsetRule(mut s: string): (rule, string, bool) {
 
 	if len(s) == 0 || s[0] != '/' {
 		r.time = 2 * secPerHour // 2am is the default
-		ret r, s, true
+		return r, s, true
 	}
 
 	offset, s, ok := tzsetOffset(s[1:])
 	if !ok {
-		ret rule{}, "", false
+		return rule{}, "", false
 	}
 	r.time = offset
 
-	ret r, s, true
+	return r, s, true
 }
 
 // alpha and omega are the beginning and end of time for zone transitions.
@@ -511,7 +511,7 @@ fn tzset(mut s: string, lastTxSec: i64, sec: i64): (name: string, offset: int, s
 		stdOffset, s, ok = tzsetOffset(s)
 	}
 	if !ok {
-		ret "", 0, 0, 0, false, false
+		return "", 0, 0, 0, false, false
 	}
 
 	// The numbers in the tzset string are added to local time to get UTC,
@@ -521,7 +521,7 @@ fn tzset(mut s: string, lastTxSec: i64, sec: i64): (name: string, offset: int, s
 
 	if len(s) == 0 || s[0] == ',' {
 		// No daylight savings time.
-		ret stdName, stdOffset, lastTxSec, omega, false, true
+		return stdName, stdOffset, lastTxSec, omega, false, true
 	}
 
 	dstName, s, ok = tzsetName(s)
@@ -534,7 +534,7 @@ fn tzset(mut s: string, lastTxSec: i64, sec: i64): (name: string, offset: int, s
 		}
 	}
 	if !ok {
-		ret "", 0, 0, 0, false, false
+		return "", 0, 0, 0, false, false
 	}
 
 	if len(s) == 0 {
@@ -543,7 +543,7 @@ fn tzset(mut s: string, lastTxSec: i64, sec: i64): (name: string, offset: int, s
 	}
 	// The TZ definition does not mention ';' here but tzcode accepts it.
 	if s[0] != ',' && s[0] != ';' {
-		ret "", 0, 0, 0, false, false
+		return "", 0, 0, 0, false, false
 	}
 	s = s[1:]
 
@@ -551,12 +551,12 @@ fn tzset(mut s: string, lastTxSec: i64, sec: i64): (name: string, offset: int, s
 	let mut endRule: rule
 	startRule, s, ok = tzsetRule(s)
 	if !ok || len(s) == 0 || s[0] != ',' {
-		ret "", 0, 0, 0, false, false
+		return "", 0, 0, 0, false, false
 	}
 	s = s[1:]
 	endRule, s, ok = tzsetRule(s)
 	if !ok || len(s) > 0 {
-		ret "", 0, 0, 0, false, false
+		return "", 0, 0, 0, false, false
 	}
 
 	// Compute start of year in seconds since Unix epoch,
@@ -583,11 +583,11 @@ fn tzset(mut s: string, lastTxSec: i64, sec: i64): (name: string, offset: int, s
 	// just the start and end of the year. That suffices for
 	// the only caller that cares, which is Date.
 	if ysec < startSec {
-		ret stdName, stdOffset, ystart, startSec + ystart, stdIsDST, true
+		return stdName, stdOffset, ystart, startSec + ystart, stdIsDST, true
 	} else if ysec >= endSec {
-		ret stdName, stdOffset, endSec + ystart, ystart + 365*secPerDay, stdIsDST, true
+		return stdName, stdOffset, endSec + ystart, ystart + 365*secPerDay, stdIsDST, true
 	} else {
-		ret dstName, dstOffset, startSec + ystart, endSec + ystart, dstIsDST, true
+		return dstName, dstOffset, startSec + ystart, endSec + ystart, dstIsDST, true
 	}
 }
 
@@ -612,9 +612,9 @@ fn FixedZone(name: string, offset: int): &Location {
 				unnamedFixedZones[hr+hoursBeforeUTC] = fixedZone("", hr*60*60)
 			}
 		})
-		ret unnamedFixedZones[hour+hoursBeforeUTC]
+		return unnamedFixedZones[hour+hoursBeforeUTC]
 	}
-	ret fixedZone(name, offset)
+	return fixedZone(name, offset)
 }
 
 fn fixedZone(name: string, offset: int): &Location {
@@ -626,5 +626,5 @@ fn fixedZone(name: string, offset: int): &Location {
 		cacheEnd:   omega,
 	}
 	l.cacheZone = unsafe { (&zone)(&l.zone[0]) }
-	ret l
+	return l
 }

@@ -19,28 +19,28 @@ impl file {
 
 	async fn readLine(mut *self): (string, ok: bool) {
 		ok = self.scan.Scan().await else {
-			ret "", false
+			return "", false
 		}
-		ret self.scan.Text(), ok
+		return self.scan.Text(), ok
 	}
 }
 
 fn open(name: string): (file, ok: bool) {
 	mut fd := os::Open(name) else {
-		ret file{}, false
+		return file{}, false
 	}
 	let mut f: file
 	f.fd = fd
 	f.scan = bufio::Scanner.New(fd)
 	f.scan.Buffer(make([]byte, 0, 64*1024), 64*1024)
-	ret f, true
+	return f, true
 }
 
 fn stat(name: string): (mtime: time::Time, size: i64, ok: bool) {
 	st := os::Stat(name) else {
-		ret time::Time{}, 0, false
+		return time::Time{}, 0, false
 	}
-	ret st.ModTime(), st.Size(), true
+	return st.ModTime(), st.Size(), true
 }
 
 // Count occurrences in s of any bytes in t.
@@ -53,7 +53,7 @@ fn countAnyByte(s: string, t: string): int {
 			n++
 		}
 	}
-	ret n
+	return n
 }
 
 // Split s at any bytes in t.
@@ -76,20 +76,20 @@ fn splitAtBytes(s: string, t: string): []string {
 		a[n] = s[last:]
 		n++
 	}
-	ret a[0:n]
+	return a[0:n]
 }
 
-fn getFields(s: string): []string { ret splitAtBytes(s, " \r\t\n") }
+fn getFields(s: string): []string { return splitAtBytes(s, " \r\t\n") }
 
 // Reports whether the given string contains at least one upper-case.
 #disable boundary
 fn hasUpperCase(s: string): bool {
 	for i in s {
 		if 'A' <= s[i] && s[i] <= 'Z' {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 // Makes x ASCII lowercase in-place.
@@ -105,7 +105,7 @@ fn lowerASCIIBytes(mut x: []byte) {
 // Returns the ASCII lowercase version of b.
 fn lowerASCII(b: byte): byte {
 	if 'A' <= b && b <= 'Z' {
-		ret b + ('a' - 'A')
+		return b + ('a' - 'A')
 	}
-	ret b
+	return b
 }

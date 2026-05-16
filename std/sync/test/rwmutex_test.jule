@@ -69,17 +69,17 @@ async fn testRWMutex(t: &testing::T) {
 	m.Lock().await
 	if m.TryLock() {
 		t.Errorf("TryLock succeeded with mutex locked")
-		ret
+		return
 	}
 	if m.TryRLock() {
 		t.Errorf("TryRLock succeeded with mutex locked")
-		ret
+		return
 	}
 	m.Unlock()
 
 	if !m.TryLock() {
 		t.Errorf("TryLock failed with mutex unlocked")
-		ret
+		return
 	}
 	m.Unlock()
 
@@ -88,11 +88,11 @@ async fn testRWMutex(t: &testing::T) {
 	}
 	if !m.TryRLock() {
 		t.Errorf("TryRLock failed with mutex rlocked")
-		ret
+		return
 	}
 	if m.TryLock() {
 		t.Errorf("TryLock succeeded with mutex rlocked")
-		ret
+		return
 	}
 	m.RUnlock()
 	m.RUnlock()

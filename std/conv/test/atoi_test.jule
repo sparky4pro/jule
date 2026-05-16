@@ -554,15 +554,15 @@ fn testAtoi(t: &testing::T) {
 }
 
 fn bitSizeErrStub(name: string, bitSize: int): any {
-	ret conv::BitSizeError(name, "0", bitSize)
+	return conv::BitSizeError(name, "0", bitSize)
 }
 
 fn baseErrStub(name: string, base: int): any {
-	ret conv::BaseError(name, "0", base)
+	return conv::BaseError(name, "0", base)
 }
 
 fn noErrStub(name: string, arg: int): any {
-	ret nil
+	return nil
 }
 
 struct parseErrorTest {
@@ -667,28 +667,28 @@ fn testNumError(t: &testing::T) {
 
 fn equalErr(e1: any, e2: any): bool {
 	if e1 == nil {
-		ret e2 == nil
+		return e2 == nil
 	}
 	if e2 == nil {
-		ret e1 == nil
+		return e1 == nil
 	}
 	e1n, mut ok := e1.(&conv::NumError)
 	if !ok {
-		ret false
+		return false
 	}
 	e2n, ok := e2.(&conv::NumError)
 	if !ok {
-		ret false
+		return false
 	}
-	ret cmp::DeepEqual(e1n, e2n)
+	return cmp::DeepEqual(e1n, e2n)
 }
 
 fn equalErr2(a: any, b: any): bool {
 	if a == nil {
-		ret b == nil
+		return b == nil
 	}
 	if b == nil {
-		ret a == nil
+		return a == nil
 	}
-	ret runtime::toString(a) == runtime::toString(b)
+	return runtime::toString(a) == runtime::toString(b)
 }

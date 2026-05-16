@@ -20,5 +20,5 @@ fn Syscall(num: uintptr, arg1: uintptr, arg2: uintptr, arg3: uintptr, arg4: uint
 	if r0 < 0 {
 		err = uintptr(extern.errno)
 	}
-	ret
+	return
 }

@@ -22,22 +22,22 @@ struct NumError {
 
 impl NumError {
 	fn String(*self): string {
-		ret "conv::" + self.Func + ": " + "parsing " + Quote(self.Num) + ": " + runtime::toString(self.Err)
+		return "conv::" + self.Func + ": " + "parsing " + Quote(self.Num) + ": " + runtime::toString(self.Err)
 	}
 }
 
 fn syntaxError(f: string, s: string): &NumError {
-	ret &NumError{f, s, ErrSyntax}
+	return &NumError{f, s, ErrSyntax}
 }
 
 fn rangeError(f: string, s: string): &NumError {
-	ret &NumError{f, s, ErrRange}
+	return &NumError{f, s, ErrRange}
 }
 
 fn baseError(f: string, s: string, base: int): &NumError {
-	ret &NumError{f, s, errors::New("invalid base " + Itoa(base))}
+	return &NumError{f, s, errors::New("invalid base " + Itoa(base))}
 }
 
 fn bitSizeError(f: string, s: string, bitSize: int): &NumError {
-	ret &NumError{f, s, errors::New("invalid bit size " + Itoa(bitSize))}
+	return &NumError{f, s, errors::New("invalid bit size " + Itoa(bitSize))}
 }

@@ -9,13 +9,13 @@ trait Trait {
 struct Foo2{}
 
 impl Trait for Foo2 {
-	fn test(*self): string { ret "Foo" }
+	fn test(*self): string { return "Foo" }
 }
 
 type Bar2: Foo2
 
 impl Trait for Bar2 {
-	fn test(*self): string { ret "Bar" }
+	fn test(*self): string { return "Bar" }
 }
 
 fn init() {

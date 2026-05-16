@@ -67,7 +67,7 @@ struct constraintChecker {
 
 impl constraintChecker {
 	fn readyFunc(mut &self): fn(mut sema: &sema, mut generics: []&TypeAlias): bool {
-		ret fn|mut sema, mut generics| {
+		return fn|mut sema, mut generics| {
 			mut ok := true
 			for (i, mut g) in self.genericsD {
 				mut generic := self.generics[i]
@@ -84,7 +84,7 @@ impl constraintChecker {
 							typ = &Type{Kind: buildPrimType(itd.Name)}
 							sema.errors = sema.errors[:n]
 						} else {
-							ret false
+							return false
 						}
 					} else if mask.Deep {
 						if !canTilde(typ) {
@@ -92,7 +92,7 @@ impl constraintChecker {
 							if typ.Struct() == nil {
 								sema.pushSuggestion("use the underlying type as mask: " + typ.ActualKind().String())
 							}
-							ret false
+							return false
 						}
 					}
 					generic.Constraint = append(generic.Constraint, ConstraintMask{
@@ -101,7 +101,7 @@ impl constraintChecker {
 					})
 				}
 			}
-			ret ok
+			return ok
 		}
 	}
 
@@ -109,26 +109,26 @@ impl constraintChecker {
 	fn readyFi(mut &self): bool {
 		self.genericsD = self.fi.Decl.Generics
 		self.generics = self.fi.Generics
-		ret !self.uniq || self.s.funcEnvironment(self.fi, self.readyFunc())
+		return !self.uniq || self.s.funcEnvironment(self.fi, self.readyFunc())
 	}
 
 	// Structure will be checked in current environment, because environment should be guaranteed.
 	fn readySi(mut &self): bool {
 		self.genericsD = self.si.Decl.Generics
 		self.generics = self.si.Generics
-		ret !self.uniq || self.readyFunc()(self.s, self.genericsA)
+		return !self.uniq || self.readyFunc()(self.s, self.genericsA)
 	}
 
 	fn ready(mut &self): bool {
 		if self.fi != nil {
-			ret self.readyFi()
+			return self.readyFi()
 		}
-		ret self.readySi()
+		return self.readySi()
 	}
 
 	fn check(mut &self): bool {
 		if !self.ready() {
-			ret false
+			return false
 		}
 	lookup:
 		for (i, mut g) in self.generics {
@@ -149,9 +149,9 @@ impl constraintChecker {
 				}
 			}
 			self.s.pushErr(self.et, "type @ does not match constraint of @: @", g.Type.String(), self.genericsD[i].Name, toStrConstraints(g))
-			ret false
+			return false
 		}
-		ret true
+		return true
 	}
 }
 
@@ -164,7 +164,7 @@ fn toStrConstraints(g: &InsGeneric): string {
 			sb.WriteString(" | ")!
 		}
 	}
-	ret sb.String()
+	return sb.String()
 }
 
 fn matchConstraint(c: string, mut g: &Type): bool {
@@ -172,67 +172,67 @@ fn matchConstraint(c: string, mut g: &Type): bool {
 	| constraintSigned:
 		prim := g.Prim()
 		if prim == nil {
-			ret false
+			return false
 		}
-		ret types::IsSigNum(prim.Kind)
+		return types::IsSigNum(prim.Kind)
 	| constraintUnsigned:
 		prim := g.Prim()
 		if prim == nil {
-			ret false
+			return false
 		}
-		ret types::IsUnsigInt(prim.Kind)
+		return types::IsUnsigInt(prim.Kind)
 	| constraintInteger:
 		prim := g.Prim()
 		if prim == nil {
-			ret false
+			return false
 		}
-		ret types::IsInt(prim.Kind)
+		return types::IsInt(prim.Kind)
 	| constraintFloat:
 		prim := g.Prim()
 		if prim == nil {
-			ret false
+			return false
 		}
-		ret types::IsFloat(prim.Kind)
+		return types::IsFloat(prim.Kind)
 	| constraintCmplx:
 		prim := g.Prim()
 		if prim == nil {
-			ret false
+			return false
 		}
-		ret types::IsCmplx(prim.Kind)
+		return types::IsCmplx(prim.Kind)
 	| constraintNumeric:
 		prim := g.Prim()
 		if prim == nil {
-			ret false
+			return false
 		}
-		ret types::IsNum(prim.Kind)
+		return types::IsNum(prim.Kind)
 	| constraintMutable:
-		ret g.Mutable()
+		return g.Mutable()
 	| constraintImmutable:
-		ret !g.Mutable()
+		return !g.Mutable()
 	| constraintComparable:
-		ret g.Comparable()
+		return g.Comparable()
 	| constraintOrdered:
-		ret g.Ordered()
+		return g.Ordered()
 	|:
-		ret false
+		return false
 	}
 }
 
 fn isBuiltinConstraint(name: string): bool {
 	for _, bc in builtinConstraints {
 		if name == bc {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 fn canTilde(mut typ: &Type): bool {
 	// Ignore strict type aliases.
 	if typ.SoftStruct() != nil {
-		ret false
+		return false
 	}
-	ret typ.Prim() != nil ||
+	return typ.Prim() != nil ||
 		typ.Slice() != nil ||
 		typ.Array() != nil ||
 		typ.Map() != nil ||

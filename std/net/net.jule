@@ -16,19 +16,19 @@ struct DNSError {
 impl DNSError {
 	fn String(*self): string {
 		if self == nil {
-			ret "<nil>"
+			return "<nil>"
 		}
 		mut s := "lookup " + self.Name
 		if self.Server != "" {
 			s += " on " + self.Server
 		}
 		s += ": " + self.Err
-		ret s
+		return s
 	}
 }
 
 fn newDNSError(err: string, name: string, server: string): &DNSError {
-	ret &DNSError{
+	return &DNSError{
 		Err:    err,
 		Name:   name,
 		Server: server,
@@ -51,23 +51,23 @@ enum Network: string {
 fn networkToStr(net: Network): string {
 	match net {
 	| IP:
-		ret "ip"
+		return "ip"
 	| IP4:
-		ret "ip4"
+		return "ip4"
 	| IP6:
-		ret "ip6"
+		return "ip6"
 	| TCP:
-		ret "tcp"
+		return "tcp"
 	| TCP4:
-		ret "tcp4"
+		return "tcp4"
 	| TCP6:
-		ret "tcp6"
+		return "tcp6"
 	| UDP:
-		ret "udp"
+		return "udp"
 	| UDP4:
-		ret "udp4"
+		return "udp4"
 	| UDP6:
-		ret "udp6"
+		return "udp6"
 	}
 	panic("unreachable")
 }
@@ -100,5 +100,5 @@ async fn listenerBacklog(): int {
 	maxListenerBacklogCacheInit.Do(async fn() {
 		maxListenerBacklogCache = maxListenerBacklog().await
 	}).await
-	ret maxListenerBacklogCache
+	return maxListenerBacklogCache
 }

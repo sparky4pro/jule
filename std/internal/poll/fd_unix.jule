@@ -77,7 +77,7 @@ impl FD {
 		if len(buf) == 0 {
 			// If the caller wanted a zero byte write, return immediately
 			// without trying to write.
-			ret 0
+			return 0
 		}
 		if self.pollable {
 			self.PrepareWrite()?
@@ -92,14 +92,14 @@ impl FD {
 				if error == sys::EAGAIN && self.pollable {
 					self.WaitWrite().await else {
 						if n > 0 {
-							ret n
+							return n
 						}
 						throw error
 					}
 					continue
 				}
 				if n > 0 {
-					ret n
+					return n
 				}
 				throw error
 			}
@@ -117,7 +117,7 @@ impl FD {
 				}
 				n += nn
 				if n == len(buf) {
-					ret
+					return
 				}
 			}
 		}
@@ -135,7 +135,7 @@ impl FD {
 		if len(buf) == 0 {
 			// If the caller wanted a zero byte write, return immediately
 			// without trying to write.
-			ret 0
+			return 0
 		}
 		for {
 			mut max := len(buf)
@@ -145,7 +145,7 @@ impl FD {
 			part := buf[n:max]
 			nn := ignoringEINTRIO2(sys::Write, int(self.File), part) else {
 				if n > 0 {
-					ret n
+					return n
 				}
 				throw error
 			}
@@ -163,7 +163,7 @@ impl FD {
 				}
 				n += nn
 				if n == len(buf) {
-					ret
+					return
 				}
 			}
 		}
@@ -183,7 +183,7 @@ impl FD {
 		if len(buf) == 0 {
 			// If the caller wanted a zero byte read, return immediately
 			// without trying to read.
-			ret 0
+			return 0
 		}
 		if self.pollable {
 			self.PrepareWrite()?
@@ -199,7 +199,7 @@ impl FD {
 				}
 				throw error
 			}
-			ret len(buf)
+			return len(buf)
 		}
 	}
 
@@ -212,7 +212,7 @@ impl FD {
 		if len(buf) == 0 {
 			// If the caller wanted a zero byte read, return immediately
 			// without trying to read.
-			ret 0
+			return 0
 		}
 		for {
 			sys::Sendto(int(self.File), buf, 0, addr, addrLen) else {
@@ -221,7 +221,7 @@ impl FD {
 				}
 				throw error
 			}
-			ret len(buf)
+			return len(buf)
 		}
 	}
 
@@ -245,7 +245,7 @@ impl FD {
 		if len(buf) == 0 {
 			// If the caller wanted a zero byte read, return immediately
 			// without trying to read.
-			ret 0
+			return 0
 		}
 		if self.pollable {
 			self.PrepareRead()?
@@ -264,7 +264,7 @@ impl FD {
 			if self.isEOF(n) {
 				throw io::EOF
 			}
-			ret n
+			return n
 		}
 	}
 
@@ -283,7 +283,7 @@ impl FD {
 		if len(buf) == 0 {
 			// If the caller wanted a zero byte read, return immediately
 			// without trying to read.
-			ret 0
+			return 0
 		}
 		if self.IsStream && len(buf) > maxRW {
 			buf = buf[:maxRW]
@@ -293,7 +293,7 @@ impl FD {
 		if self.isEOF(n) {
 			throw io::EOF
 		}
-		ret n
+		return n
 	}
 
 	// Like Read, but wraps recvfrom syscall.
@@ -310,7 +310,7 @@ impl FD {
 		if len(buf) == 0 {
 			// If the caller wanted a zero byte read, return immediately
 			// without trying to read.
-			ret 0
+			return 0
 		}
 		if self.pollable {
 			self.PrepareRead()?
@@ -329,7 +329,7 @@ impl FD {
 			if self.isEOF(n) {
 				throw io::EOF
 			}
-			ret n
+			return n
 		}
 	}
 
@@ -342,7 +342,7 @@ impl FD {
 		if len(buf) == 0 {
 			// If the caller wanted a zero byte read, return immediately
 			// without trying to read.
-			ret 0
+			return 0
 		}
 		for {
 			n = sys::Recvfrom(int(self.File), buf, 0, addr, addrLen) else {
@@ -354,7 +354,7 @@ impl FD {
 			if self.isEOF(n) {
 				throw io::EOF
 			}
-			ret n
+			return n
 		}
 	}
 
@@ -367,7 +367,7 @@ impl FD {
 		}
 		self.incref()?
 		defer { self.decref() else {} }
-		ret sys::Seek(int(self.File), offset, whence)?
+		return sys::Seek(int(self.File), offset, whence)?
 	}
 
 	// Wraps sys::Ftruncate.
@@ -416,7 +416,7 @@ impl FD {
 				sys::Close(h) else {}
 				throw error
 			}
-			ret h
+			return h
 		}
 	}
 
@@ -471,7 +471,7 @@ impl FD {
 // It is like ignoringEINTR, but just for IO calls.
 fn ignoringEINTRIO(f: fn(fd: int, mut p: []byte)!: int, fd: int, mut p: []byte)!: int {
 	for {
-		ret f(fd, p) else {
+		return f(fd, p) else {
 			if error != sys::EINTR {
 				throw error
 			}
@@ -483,7 +483,7 @@ fn ignoringEINTRIO(f: fn(fd: int, mut p: []byte)!: int, fd: int, mut p: []byte)!
 // It is like ignoringEINTRIO, but immutable.
 fn ignoringEINTRIO2(f: fn(fd: int, p: []byte)!: int, fd: int, p: []byte)!: int {
 	for {
-		ret f(fd, p) else {
+		return f(fd, p) else {
 			if error != sys::EINTR {
 				throw error
 			}

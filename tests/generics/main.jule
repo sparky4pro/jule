@@ -7,15 +7,15 @@
 fn find[T](s: []T, x: T): int {
 	for i, y in s {
 		if y == x {
-			ret i
+			return i
 		}
 	}
-	ret -1
+	return -1
 }
 
 // Reports whether x exist in s.
 fn exist[T](s: []T, x: T): bool {
-	ret find[T](s, x) != -1
+	return find[T](s, x) != -1
 }
 
 // Utils for slices.
@@ -24,12 +24,12 @@ struct Slice[T]{}
 impl Slice {
 	// Forwards to exist function.
 	fn exist(s: []T, x: T): bool {
-		ret exist[T](s, x)
+		return exist[T](s, x)
 	}
 
 	// Forwats to find function.
 	fn find(s: []T, x: T): int {
-		ret find[T](s, x)
+		return find[T](s, x)
 	}
 }
 
@@ -46,7 +46,7 @@ impl MyStruct {
 }
 
 fn NewMyStruct[T1, T2](x: T1, y: T2): MyStruct[T1, T2] {
-	ret MyStruct[T1, T2]{x, y}
+	return MyStruct[T1, T2]{x, y}
 }
 
 fn Inference[T](f: fn(x: int, y: int): T) {
@@ -65,7 +65,7 @@ struct Foo[E: comparable, T]{}
 impl Foo {
 	// Returns maximum value of the groups by result of f.
 	fn Infer[M: numeric](*self, f: fn(T): M): map[E]M {
-		ret nil
+		return nil
 	}
 }
 
@@ -73,7 +73,7 @@ type Nums[E: numeric]: []E
 
 impl Nums {
 	fn foo(*self): E {
-		ret 10
+		return 10
 	}
 }
 
@@ -100,9 +100,9 @@ fn main() {
 	mc := NewMyStruct(123, 789)
 	mc.Foo(fn|| i64(10))
 	println(mc)
-	Inference(fn(x: int, y: int): int { ret x * y })
+	Inference(fn(x: int, y: int): int { return x * y })
 	Inference(fn|x, y| x * y)
-	Inference2(fn(x: int, y: int): (int, int) { ret x * y, y })
+	Inference2(fn(x: int, y: int): (int, int) { return x * y, y })
 	Inference2(fn|x, y| (x * y, y))
 	f := Foo[string, string]{}
 	f.Infer(fn|s| len(s))

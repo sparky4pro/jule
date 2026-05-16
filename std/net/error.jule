@@ -22,6 +22,6 @@ impl AddrError {
 		if self.Addr != "" {
 			s = "address " + self.Addr + ": " + s
 		}
-		ret s
+		return s
 	}
 }

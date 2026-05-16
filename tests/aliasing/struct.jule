@@ -9,13 +9,13 @@ struct Foo {
 }
 
 impl Foo {
-	fn test(*self): string { ret "Foo" }
+	fn test(*self): string { return "Foo" }
 }
 
 type Bar: Foo
 
 impl Bar {
-	fn test(*self): string { ret "Bar" }
+	fn test(*self): string { return "Bar" }
 }
 
 fn init() {

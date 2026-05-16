@@ -49,7 +49,7 @@
 //	Asin(x) = NaN if x < -1 or x > 1
 fn Asin(mut x: f64): f64 {
 	if x == 0 {
-		ret x // special case
+		return x // special case
 	}
 	mut sign := false
 	if x < 0 {
@@ -57,7 +57,7 @@ fn Asin(mut x: f64): f64 {
 		sign = true
 	}
 	if x > 1 {
-		ret NaN() // special case
+		return NaN() // special case
 	}
 
 	mut temp := Sqrt(1 - x*x)
@@ -70,11 +70,11 @@ fn Asin(mut x: f64): f64 {
 	if sign {
 		temp = -temp
 	}
-	ret temp
+	return temp
 }
 
 // Returns the arccosine, in radians, of x.
 //
 // Special case is:
 //	Acos(x) = NaN if x < -1 or x > 1
-fn Acos(x: f64): f64 { ret Pi/2 - Asin(x) }
+fn Acos(x: f64): f64 { return Pi/2 - Asin(x) }

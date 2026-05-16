@@ -5,5 +5,5 @@
 use "std/sys"
 
 fn HasNonblockFlag(flag: int): bool {
-	ret flag&sys::O_NONBLOCK != 0
+	return flag&sys::O_NONBLOCK != 0
 }

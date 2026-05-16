@@ -33,7 +33,7 @@ impl pchan {
 			ch.queue = mpmcQueue[T].new(u64(cap))
 			ch.cap = int(ch.queue.cap)
 		}
-		ret ch
+		return ch
 	}
 
 	// Closes the channel.
@@ -113,7 +113,7 @@ impl pchan {
 					if recvp != nil {
 						unsafe { unpark(&(*recvp.cp)) }
 					}
-					ret
+					return
 				}
 				if closed {
 					panic("runtime: send on closed channel")
@@ -139,7 +139,7 @@ impl pchan {
 					if recvp != nil {
 						unsafe { unpark(&(*recvp.cp)) }
 					}
-					ret
+					return
 				}
 			}
 
@@ -159,7 +159,7 @@ impl pchan {
 				}
 				recvp.ticket = 0 // Set ticket to zero, marked as sent for select statements.
 				unsafe { unpark(&(*recvp.cp)) }
-				ret
+				return
 			}
 
 			// We have to park the coroutine.
@@ -177,7 +177,7 @@ impl pchan {
 				}
 				panic("runtime: send on closed channel")
 			}
-			ret
+			return
 		}
 	}
 
@@ -222,7 +222,7 @@ impl pchan {
 				unsafe { unpark(&(*recvp.cp)) }
 			}
 			*ok = true
-			ret
+			return
 		}
 		*ok = false
 	}
@@ -294,7 +294,7 @@ impl pchan {
 					if ok != nil {
 						*ok = true
 					}
-					ret
+					return
 				}
 				// Not dequeued and MPMC queue is closed.
 				// This means channel is closed and buffer is empty.
@@ -302,7 +302,7 @@ impl pchan {
 					if ok != nil {
 						*ok = false
 					}
-					ret
+					return
 				}
 			}
 
@@ -314,7 +314,7 @@ impl pchan {
 				if ok != nil {
 					*ok = false
 				}
-				ret
+				return
 			}
 
 			if self.cap > 0 {
@@ -327,7 +327,7 @@ impl pchan {
 					if ok != nil {
 						*ok = true
 					}
-					ret
+					return
 				}
 			}
 
@@ -343,7 +343,7 @@ impl pchan {
 				if ok != nil {
 					*ok = true
 				}
-				ret
+				return
 			}
 
 			// We have to park the coroutine.
@@ -362,7 +362,7 @@ impl pchan {
 			if ok != nil {
 				*ok = !spurious
 			}
-			ret
+			return
 		}
 	}
 
@@ -399,7 +399,7 @@ impl pchan {
 		deq, (*closed) := self.queue.dequeue(data)
 		if deq {
 			*ok = true
-			ret
+			return
 		}
 		*ok = false
 		if data != nil {
@@ -457,9 +457,9 @@ impl pchan {
 	#disable nilptr
 	fn stdcap(mut *self): int {
 		if self == nil {
-			ret 0
+			return 0
 		}
-		ret self.cap
+		return self.cap
 	}
 }
 
@@ -496,10 +496,10 @@ impl waitq {
 		mut i := self.head
 		for i != nil; i = i.link {
 			if i == p {
-				ret true
+				return true
 			}
 		}
-		ret false
+		return false
 	}
 
 	#disable nilptr
@@ -523,7 +523,7 @@ impl waitq {
 	fn dequeue(mut *self): &chanlist {
 		for {
 			if self.head == nil {
-				ret nil
+				return nil
 			}
 			mut p := self.head
 			self.head = p.link
@@ -547,7 +547,7 @@ impl waitq {
 					}
 				}
 			}
-			ret p
+			return p
 		}
 	}
 }
@@ -577,5 +577,5 @@ fn isSpuriousWake(&p: *chanlist): bool {
 	// But select statement may pass zero stack pointer for no receiver memory cases.
 	// Check for the ticket, if ticket is parkerSelect, it is not consumed.
 	// Appropriate consumption will set them to zero.
-	ret p.ticket != 0 || p.stack != 0
+	return p.ticket != 0 || p.stack != 0
 }

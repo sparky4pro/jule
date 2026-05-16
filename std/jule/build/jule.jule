@@ -12,4 +12,4 @@ const Api = "api"
 const Stdlib = "std"
 
 // Reports whether file path is Jule source code.
-fn IsJule(path: string): bool { ret filepath::Ext(path) == jule::Ext }
+fn IsJule(path: string): bool { return filepath::Ext(path) == jule::Ext }

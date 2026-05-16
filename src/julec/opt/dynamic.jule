@@ -24,14 +24,14 @@ impl dynamic {
 	fn pushVar(mut &self, var: uintptr, mut kind: &sema::Type) {
 		if !Dynamic || var == invalidDynamic {
 			// Ignore it, because this optimizations within scope of the --opt-access flag.
-			ret
+			return
 		}
 		kind = isTypeGuaranteedDynamicValue(self, kind, nil) // Just accept guaranteed types as kind.
 		for i in self.vars {
 			mut &v := unsafe { &(*(&self.vars[i])) }
 			if v.var == var {
 				v.kind = kind
-				ret
+				return
 			}
 		}
 		// Not exist, append new one.
@@ -40,7 +40,7 @@ impl dynamic {
 			if v.var == invalidDynamic {
 				// Empty place, use here instead of append.
 				v.var, v.kind = var, kind
-				ret
+				return
 			}
 		}
 		self.vars = append(self.vars, dynamicVar{var: var, kind: kind})
@@ -53,11 +53,11 @@ impl dynamic {
 				if v.var == var {
 					v.var = invalidDynamic
 					v.kind = nil
-					ret true
+					return true
 				}
 			}
 		}
-		ret false
+		return false
 	}
 
 	// Reports whether variable is fits with kind.
@@ -65,11 +65,11 @@ impl dynamic {
 		if var != invalidDynamic {
 			for _, v in self.vars {
 				if v.var == var {
-					ret v.kind != nil && v.kind.Equal(kind)
+					return v.kind != nil && v.kind.Equal(kind)
 				}
 			}
 		}
-		ret false
+		return false
 	}
 }
 
@@ -79,45 +79,45 @@ fn possibleDynamicRemove(mut d: &dynamic, mut m: sema::Expr) {
 	}
 }
 
-fn isDynamicValidType(mut t: &sema::Type): bool { ret obj::IsAny(t) }
+fn isDynamicValidType(mut t: &sema::Type): bool { return obj::IsAny(t) }
 
 fn isTypeGuaranteedDynamicValue(mut dy: &dynamic, mut t: &sema::Type, mut m: sema::Expr): &sema::Type {
 	if t.IsNil() {
-		ret nil
+		return nil
 	}
 	isAny := obj::IsAny(t)
 	if !isAny && t.Trait() == nil {
-		ret t
+		return t
 	}
 	if !isAny {
-		ret nil
+		return nil
 	}
 	mut cem, casting := m.(&sema::CastingExpr)
 	if casting {
-		ret isTypeGuaranteedDynamicValue(dy, cem.Expr.Type, cem.Expr.Model)
+		return isTypeGuaranteedDynamicValue(dy, cem.Expr.Type, cem.Expr.Model)
 	}
 	var := getDynamicVar(m)
 	if var == invalidDynamic {
-		ret nil
+		return nil
 	}
 	for (_, mut v) in dy.vars {
 		if v.var == var {
-			ret v.kind
+			return v.kind
 		}
 	}
-	ret nil
+	return nil
 }
 
 fn getDynamicVar(mut m: sema::Expr): uintptr {
 	if !Dynamic {
-		ret invalidDynamic
+		return invalidDynamic
 	}
 
 	// Special case: if expression is reference pointer, return invalid address.
 	// Otherwise it might be dereferenced, investigate deeper.
 	mut v, _ := m.(&sema::Var)
 	if v != nil && v.Reference {
-		ret invalidDynamic
+		return invalidDynamic
 	}
 
 	for {
@@ -126,23 +126,23 @@ fn getDynamicVar(mut m: sema::Expr): uintptr {
 			v = m.(&sema::Var)
 			if !v.Reference || v.ValueSym == nil || v.ValueSym.Value == nil {
 				// Variable is not reference (or points to unknown such as parameters), return address of it.
-				ret uintptr(m.(&sema::Var))
+				return uintptr(m.(&sema::Var))
 			}
 			// Variable is reference, it should be initialized at source code.
 			// Investigate the initial expression for variable address.
 			m = v.ValueSym.Value.Model
 			continue
 		| &sema::StructSubIdentExpr:
-			ret uintptr(m.(&sema::StructSubIdentExpr).Field)
+			return uintptr(m.(&sema::StructSubIdentExpr).Field)
 		| &sema::UnaryExpr:
 			mut uem := m.(&sema::UnaryExpr)
 			if uem.Op.ID == token::MUL { // Dereferencing.
 				m = uem.Expr.Model
 				continue
 			}
-			ret invalidDynamic
+			return invalidDynamic
 		|:
-			ret invalidDynamic
+			return invalidDynamic
 		}
 	}
 }

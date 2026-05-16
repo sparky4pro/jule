@@ -9,7 +9,7 @@ use "std/unicode/utf8"
 fn testEntityLength(t: &testing::T) {
 	if len(entity) == 0 || len(entity2) == 0 {
 		panic("maps not loaded")
-		ret
+		return
 	}
 
 	// We verify that the length of UTF-8 encoding of each value is <= 1 + len(key).

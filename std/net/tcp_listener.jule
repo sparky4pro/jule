@@ -25,7 +25,7 @@ impl TCPListener {
 	//
 	// See the [Dial] function for a description of the addr parameter.
 	async fn Bind(addr: string)!: &TCPListener {
-		ret tcpBind(Network.TCP, addr).await?
+		return tcpBind(Network.TCP, addr).await?
 	}
 
 	// Accepts incoming connection, returns &TCPConn.
@@ -35,7 +35,7 @@ impl TCPListener {
 			panic("net: TCPListener.Accept: connection is not open")
 		}
 		mut fd, mut addr := self.fd.accept(self.ipv).await?
-		ret newTCPConn(&TCPConn{fd: fd, Addr: addr})
+		return newTCPConn(&TCPConn{fd: fd, Addr: addr})
 	}
 
 	// Returns network name which is listening.
@@ -43,20 +43,20 @@ impl TCPListener {
 	fn Network(*self): Network {
 		match {
 		| self.fd == nil:
-			ret Network.TCP
+			return Network.TCP
 		| self.ipv == 4:
-			ret Network.TCP4
+			return Network.TCP4
 		| self.ipv == 6:
-			ret Network.TCP6
+			return Network.TCP6
 		|:
-			ret Network.TCP
+			return Network.TCP
 		}
 	}
 
 	// Closes connection.
 	async fn Close(mut *self)! {
 		if self.fd == nil {
-			ret
+			return
 		}
 		self.fd.Close().await?
 		self.fd = nil
@@ -100,7 +100,7 @@ async fn tcpBind(network: Network, addr: string)!: &TCPListener {
 			fd = socketipv4(false, uintptr(&sockaddr), tcpAddr, sys::SOCK_STREAM, 0).await?
 		}
 	}
-	ret &TCPListener{
+	return &TCPListener{
 		ipv:  ipv,
 		addr: tcpAddr,
 		fd:   fd,

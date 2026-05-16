@@ -66,7 +66,7 @@ impl mutex {
 	fn lock(*self) {
 		// Fast path: grab unlocked mutex.
 		if atomic::CompareAndSwap(&self.state, 0, mutexLocked, atomic::Acquire, atomic::Relaxed) {
-			ret
+			return
 		}
 		// Slow path (outlined so that the fast path may be inlined).
 		self.lockSlow()
@@ -163,13 +163,13 @@ impl mutex {
 	fn tryLock(*self): bool {
 		old := self.state
 		if old&(mutexLocked|mutexStarving) != 0 {
-			ret false
+			return false
 		}
 
 		// There may be a thread waiting for the mutex, but we are
 		// running now and can try to grab the mutex before that
 		// thread wakes up.
-		ret atomic::CompareAndSwap(&self.state, old, old|mutexLocked, atomic::Acquire, atomic::Relaxed)
+		return atomic::CompareAndSwap(&self.state, old, old|mutexLocked, atomic::Acquire, atomic::Relaxed)
 	}
 
 	// Unlocks mutex.
@@ -197,14 +197,14 @@ impl mutex {
 				// since we did not observe mutexStarving when we unlocked the mutex above.
 				// So get off the way.
 				if old>>mutexWaiterShift == 0 || old&(mutexLocked|mutexWoken|mutexStarving) != 0 {
-					ret
+					return
 				}
 				// Grab the right to wake someone.
 				new = (old - 1<<mutexWaiterShift) | mutexWoken
 				{
 					if atomic::CompareAndSwap(&self.state, old, new, atomic::AcqRel, atomic::Relaxed) {
 						tsemrelease(&self.sema, false)
-						ret
+						return
 					}
 				}
 				old = self.state
@@ -247,7 +247,7 @@ impl qmutex {
 
 	#disable nilptr
 	fn tryLock(*self): bool {
-		ret atomic::CompareAndSwap(&self.state, 0, 1, atomic::Acquire, atomic::Relaxed)
+		return atomic::CompareAndSwap(&self.state, 0, 1, atomic::Acquire, atomic::Relaxed)
 	}
 }
 
@@ -270,11 +270,11 @@ fn mutexunlock(mu: u64): bool {
 	| mutexunlockSelect:
 		mut &c := unsafe { &(*(*c)(tp.pointer())) }
 		atomic::Store(&c.race, 0, atomic::Release)
-		ret true
+		return true
 	| mutexunlockJobAdd:
 		blocking.wakew()
 		blocking.mu.unlock()
-		ret true
+		return true
 	| mutexunlockIOWait:
 		mut &iod := unsafe { &(*(*eventpollIOData)(tp.pointer())) }
 		r := atomic::CompareAndSwap(iod.pdcp, pdWait, iod.c, atomic::AcqRel, atomic::Relaxed)
@@ -284,11 +284,11 @@ fn mutexunlock(mu: u64): bool {
 			// waiting for the poller if there is nothing else to do.
 			eventpollAdjustWaiters(1)
 		}
-		ret r
+		return r
 	| mutexunlockYield:
 		mut m := gett()
 		runqput(m.pp, &m.c, false)
-		ret true
+		return true
 	}
 
 	// Ordinary address.
@@ -297,5 +297,5 @@ fn mutexunlock(mu: u64): bool {
 		// implementation for unlock.
 		unsafe { (*mutex)(mu).unlock() }
 	}
-	ret true
+	return true
 }

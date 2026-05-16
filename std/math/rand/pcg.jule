@@ -49,7 +49,7 @@ struct PCG {
 
 // Returns a new PCG seeded with the given values.
 fn NewPCG(seed1: u64, seed2: u64): &PCG {
-	ret &PCG{seed1, seed2}
+	return &PCG{seed1, seed2}
 }
 
 impl PCG {
@@ -82,7 +82,7 @@ impl PCG {
 		hi, _ = bits::Add64(hi, incHi, c)
 		self.lo = lo
 		self.hi = hi
-		ret hi, lo
+		return hi, lo
 	}
 }
 
@@ -107,6 +107,6 @@ impl Source for PCG {
 		hi *= cheapMul
 		hi ^= hi >> 48
 		hi *= (lo | 1)
-		ret hi
+		return hi
 	}
 }

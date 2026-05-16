@@ -50,7 +50,7 @@ fn openOutput(path: string): &os::File {
 		}
 	}
 
-	ret os::Create(path) else {
+	return os::Create(path) else {
 		handle::Throw("a problem occurs when code generation")
 		use nil
 	}
@@ -60,7 +60,7 @@ fn openOutput(path: string): &os::File {
 fn clearObjects() {
 	os::Remove(getCompilePath()) else {
 		println("a problem occurs when object cleaning")
-		ret
+		return
 	}
 
 	// All created objects are cleaned.
@@ -94,10 +94,10 @@ fn compileIR(compiler: string, mut compilerArgs: []string) {
 fn isExternSourceFile(path: string): bool {
 	offset := strings::LastIndexByte(path, '.')
 	if offset == -1 {
-		ret false
+		return false
 	}
 	ext := path[offset:]
-	ret build::IsValidCppExt(ext) ||
+	return build::IsValidCppExt(ext) ||
 		build::IsValidAssemblyExt(ext)
 }
 
@@ -203,7 +203,7 @@ fn pushCompCmdClang(mut args: []string): []string {
 	// issues on runtime such as crash, segfault, or undefined behavior.
 	args = append(args, "-fno-strict-aliasing")
 
-	ret args
+	return args
 }
 
 fn pushCompCmdGcc(mut args: []string): []string {
@@ -299,7 +299,7 @@ fn pushCompCmdGcc(mut args: []string): []string {
 	// issues on runtime such as crash, segfault, or undefined behavior.
 	args = append(args, "-fno-strict-aliasing")
 
-	ret args
+	return args
 }
 
 // Generate compile command for backend-compiler.
@@ -340,7 +340,7 @@ fn genCompileCmd(sourcePath: string, mut ir: &obj::IR): (compiler: string, args:
 		args = pushPassArguments(args, pass)
 	}
 
-	ret
+	return
 }
 
 fn pushPassArguments(mut args: []string, pass: []string): []string {
@@ -351,13 +351,13 @@ fn pushPassArguments(mut args: []string, pass: []string): []string {
 		}
 		args = append(args, arg)
 	}
-	ret args
+	return args
 }
 
 fn getCompilePath(): string {
 	// Return command-line argument form
 	// instead of absolute path.
-	ret filepath::Join(OutDir, OutName)
+	return filepath::Join(OutDir, OutName)
 }
 
 fn applyTargetIndependentOptimizations(mut ir: &obj::IR) {
@@ -397,7 +397,7 @@ fn checkTargetOs(os: string) {
 fn checkTargetPair(os: string, arch: string) {
 	for _, a in targets[os] {
 		if arch == a {
-			ret
+			return
 		}
 	}
 	handle::Throw("invalid target: " + os + "-" + arch)
@@ -453,11 +453,11 @@ fn checkOptFlag(opt: string) {
 fn checkCOMAXPROCS() {
 	if COMAXPROCS == "default" {
 		env::COMAXPROCS = 0
-		ret
+		return
 	}
 	n := conv::ParseUint(COMAXPROCS, 10, 64) else {
 		handle::Throw("--COMAXPROCS: value is not a valid number: " + COMAXPROCS)
-		ret // Avoid error.
+		return // Avoid error.
 	}
 	if n < 1 {
 		handle::Throw("--COMAXPROCS: invalid value: " + COMAXPROCS)
@@ -471,7 +471,7 @@ fn checkCOMAXPROCS() {
 fn checkTags() {
 	if len(RawTags) == 0 {
 		env::Tags = nil
-		ret
+		return
 	}
 	tags := strings::Split(RawTags, " ")
 	env::Tags = make([]string, 0, len(tags))
@@ -544,7 +544,7 @@ fn checkFlags(args: []string): []string {
 	checkCOMAXPROCS()
 	checkTags()
 
-	ret content
+	return content
 }
 
 fn setupSemaFlags(mut &flags: *int) {
@@ -572,7 +572,7 @@ fn buildIR(args: []string): &obj::IR {
 	// Check standard library.
 	inf := os::Stat(build::PathStdlib()) else {
 		handle::Throw("standard library is not exist")
-		ret nil // Avoid error.
+		return nil // Avoid error.
 	}
 	if !inf.IsDir() {
 		handle::Throw("standard library is not exist")
@@ -589,7 +589,7 @@ fn buildIR(args: []string): &obj::IR {
 		handle::Throw("")
 	}
 
-	ret ir
+	return ir
 }
 
 // Process build command by "ARGS" global.

@@ -33,17 +33,17 @@ impl scopeOptimizer {
 				dynamic:  new(dynamic),
 			},
 		}
-		ret sc
+		return sc
 	}
 
 	fn getOwner(mut &self): &sema::FuncIns {
 		mut s := self
 		for s != nil; s = s.parent {
 			if s.owner != nil {
-				ret s.owner
+				return s.owner
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	fn setCurrentStmt(mut &self, mut stmt: any) {
@@ -59,10 +59,10 @@ impl scopeOptimizer {
 		mut r := self
 		for r != nil; r = r.parent {
 			if len(r.scope.Stmts)-r.i != 1 {
-				ret false
+				return false
 			}
 		}
-		ret true
+		return true
 	}
 
 	fn optimizeValue(mut &self, mut val: &sema::Value) {
@@ -117,7 +117,7 @@ impl scopeOptimizer {
 		self.data.loadCheckpoint(alive.getMutCheckpoint())
 
 		if !Cond {
-			ret
+			return
 		}
 
 		mut constCase := false // Has constant true case.
@@ -136,7 +136,7 @@ impl scopeOptimizer {
 		}
 
 		if len(c.Elifs) == 0 {
-			ret
+			return
 		}
 
 		// Remove unreachable cases.
@@ -151,12 +151,12 @@ impl scopeOptimizer {
 		}
 
 		if len(c.Elifs) == 0 {
-			ret
+			return
 		}
 
 		// Skip one-case checking if const-case is not exist.
 		if !constCase {
-			ret
+			return
 		}
 
 		mut only := -1
@@ -164,7 +164,7 @@ impl scopeOptimizer {
 			if elif != nil {
 				if only != -1 {
 					// Break checking, there is more than one case.
-					ret
+					return
 				}
 				only = j
 			}
@@ -229,11 +229,11 @@ impl scopeOptimizer {
 			//   Then optimization is not possible because we do not know the actual type.
 			isFell := fn(case: &sema::Case): bool {
 				if len(case.Scope.Stmts) == 0 {
-					ret false
+					return false
 				}
 				last := case.Scope.Stmts[len(case.Scope.Stmts)-1]
 				_, ok := last.(&sema::Fall)
-				ret ok
+				return ok
 			}
 			if len(case.Exprs) == 1 && self.data.dynamic != nil &&
 				(i == 0 || !isFell(m.Cases[i-1])) {
@@ -259,7 +259,7 @@ impl scopeOptimizer {
 		self.data.loadCheckpoint(alive.getMutCheckpoint())
 
 		if !Cond {
-			ret
+			return
 		}
 
 		mut constCase := false // Has constant true case.
@@ -275,7 +275,7 @@ impl scopeOptimizer {
 		}
 
 		if len(m.Cases) == 0 {
-			ret
+			return
 		}
 
 		// Remove unreachable cases.
@@ -291,7 +291,7 @@ impl scopeOptimizer {
 
 		// Skip one-case checking if const-case is not exist.
 		if !constCase {
-			ret
+			return
 		}
 
 		mut only := -1
@@ -299,7 +299,7 @@ impl scopeOptimizer {
 			if case != nil {
 				if only != -1 {
 					// Break checking, there is more than one case.
-					ret
+					return
 				}
 				only = j
 			}
@@ -389,7 +389,7 @@ impl scopeOptimizer {
 						Expr: cem.Expr,
 						Base: it,
 					})
-					ret
+					return
 				}
 			| &sema::SliceExpr:
 				// make slice expression model iteration as array iteration
@@ -418,7 +418,7 @@ impl scopeOptimizer {
 
 	fn substr(mut &self, mut a: &sema::Assign): bool {
 		if a.Op.ID != token::ASSIGN {
-			ret false
+			return false
 		}
 		mut sem, ok := a.Right.Model.(&sema::SlicingExpr)
 		if ok && obj::EqualModels(a.Left.Model, sem.Expr.Model) {
@@ -429,28 +429,28 @@ impl scopeOptimizer {
 				Right: sem.Right,
 				Cap:   sem.Cap,
 			})
-			ret true
+			return true
 		}
-		ret false
+		return false
 	}
 
 	fn strAssign(mut &self, mut a: &sema::Assign): bool {
 		if !String {
-			ret false
+			return false
 		}
 		lp := a.Left.Type.Prim()
 		if lp == nil || !lp.IsString() {
-			ret false
+			return false
 		}
-		ret self.substr(a)
+		return self.substr(a)
 	}
 
 	fn sliceAssign(mut &self, mut a: &sema::Assign): bool {
 		if !Slice || a.Left.Type.Slice() == nil {
-			ret false
+			return false
 		}
 		// [self.substr] applies this optimization without type dependence.
-		ret self.substr(a)
+		return self.substr(a)
 	}
 
 	fn optimizePostfix(mut &self, mut postfix: &sema::Postfix) {
@@ -465,7 +465,7 @@ impl scopeOptimizer {
 			obj::EqualModels(assign.Left.Model, assign.Right.Model) {
 			self.removeCurrent()
 			self.i-- // In next iteration, point to the correct statement.
-			ret
+			return
 		}
 
 		if self.data.boundary != nil {
@@ -501,7 +501,7 @@ impl scopeOptimizer {
 		match {
 		| self.strAssign(assign)
 		| self.sliceAssign(assign):
-			ret
+			return
 		}
 
 		exprOptimizer.optimizeValue(&assign.Left.Model, self.data, self)
@@ -555,25 +555,25 @@ impl scopeOptimizer {
 					// Remove this unnecessary statement.
 					self.removeCurrent()
 					self.i-- // In next iteration, point to the correct statement.
-					ret
+					return
 				}
 				assign.Right = new(sema::OperandExpr, *assign.Right)
 				b.Op = new(token::Token, *b.Op) // Unsafe model wraps original model. Save token.
 				assign.Op.ID = token::ASSIGN
 				assign.Op.Kind = "="
 				assign.Right.Model = model
-				ret
+				return
 			}
 			assign.Op.ID = oldId
 			assign.Op.Kind = oldKind
-			ret
+			return
 		}
 
 		if Append {
 			mut m, append := assign.Right.Model.(&sema::BuiltinAppendCallExpr)
 			if append {
 				if !areSameLvalueExpr(assign.Left.Model, m.Dest.Model) {
-					ret
+					return
 				}
 				_, slice := m.Elements.Model.(&sema::SliceExpr)
 				if slice {
@@ -664,12 +664,12 @@ impl scopeOptimizer {
 	fn tryOptimizeSwap(mut &self, mut assign: &sema::MultiAssign, mut tup: &sema::TupleExpr): (applied: bool) {
 		if len(tup.Values) != 2 || len(assign.Left) != 2 ||
 			assign.Left[0] == nil || assign.Left[1] == nil {
-			ret false
+			return false
 		}
 		// Catch swaps.
 		if !obj::EqualModels(assign.Left[0].Model, tup.Values[1].Model) ||
 			!obj::EqualModels(assign.Left[1].Model, tup.Values[0].Model) {
-			ret false
+			return false
 		}
 		mut model := &SwapExpr{
 			Left:  assign.Left[0],
@@ -678,7 +678,7 @@ impl scopeOptimizer {
 		self.setCurrentStmt(model)
 		// Do not optimize the operands.
 		// The additional analysis will do it.
-		ret true
+		return true
 	}
 
 	// Tries to split multi-assign into single assign statements.
@@ -697,7 +697,7 @@ impl scopeOptimizer {
 				| &sema::Var:
 					break
 				|:
-					ret
+					return
 				}
 			}
 			if r != nil {
@@ -705,7 +705,7 @@ impl scopeOptimizer {
 				| &sema::Var:
 					break
 				|:
-					ret
+					return
 				}
 			}
 		}
@@ -716,17 +716,17 @@ impl scopeOptimizer {
 			// check whether variable used in different operand in left or right
 			for (j, mut jl) in unsafe { assign.Left } {
 				for j != i && jl != nil && obj::EqualModels(jl.Model, m) {
-					ret true
+					return true
 				}
 			}
 			if checkTup {
 				for (j, mut jl) in unsafe { tup.Values } {
 					for j != i && jl != nil && obj::EqualModels(jl.Model, m) {
-						ret true
+						return true
 					}
 				}
 			}
-			ret false
+			return false
 		}
 
 		z := self.i
@@ -817,7 +817,7 @@ impl scopeOptimizer {
 			if len(assign.Left) == 0 {
 				self.removeCurrent()
 				self.i-- // In next iteration, point to the correct statement.
-				ret // Assignment removed, following analysis is not necessary.
+				return // Assignment removed, following analysis is not necessary.
 			}
 			// There is single operand.
 			// We can simplify to single assignment statement.
@@ -836,7 +836,7 @@ impl scopeOptimizer {
 					})
 				}
 				self.i-- // to handle simplified form of this assignment in analysis
-				ret
+				return
 			}
 		}
 
@@ -922,20 +922,20 @@ impl scopeOptimizer {
 		// Break algorithm if fallible-specific optimizations are not enabled.
 		// The following algorithms tries to apply specific optimizations for fallibles.
 		if !Fallible {
-			ret
+			return
 		}
 		match type r.Expr {
 		| &sema::FuncCallExpr:
 			break
 		|:
-			ret
+			return
 		}
 		mut fc := r.Expr.(&sema::FuncCallExpr)
 		if !fc.Func.Decl.Fallible ||
 			fc.Handler == nil ||
 			len(fc.Handler.Stmts) != 1 ||
 			!obj::IsForwarded(fc.Handler) {
-			ret
+			return
 		}
 		mut owner := self.getOwner()
 		if owner == nil {
@@ -953,7 +953,7 @@ impl scopeOptimizer {
 	fn optimizeStmtChild(mut &self, mut &stmt: *sema::Stmt) {
 		// Early return for nil statement.
 		if *stmt == nil {
-			ret
+			return
 		}
 		// Create new unique scope and optimize statement in it.
 		// Because statement optimizer may convert single statement to multiple statements.
@@ -1067,44 +1067,44 @@ impl scopeOptimizer {
 
 fn isConstantValidConditionalCase(i: &sema::If): bool {
 	c, ok := i.Expr.(&constant::Const)
-	ret ok && c.IsBool() && c.ReadBool()
+	return ok && c.IsBool() && c.ReadBool()
 }
 
 fn isUnreachableExpr(expr: sema::Expr): bool {
 	match type expr {
 	| &constant::Const:
 		c := expr.(&constant::Const)
-		ret c.IsBool() && !c.ReadBool()
+		return c.IsBool() && !c.ReadBool()
 	| &sema::BinaryExpr:
 		m := expr.(&sema::BinaryExpr)
 		if m.Op.ID == token::LAND {
-			ret isUnreachableExpr(m.Left.Model) ||
+			return isUnreachableExpr(m.Left.Model) ||
 				isUnreachableExpr(m.Right.Model)
 		}
-		ret false
+		return false
 	|:
-		ret false
+		return false
 	}
 }
 
 fn isConstantValidMatchCase(case: &sema::Case): bool {
 	for _, expr in case.Exprs {
 		if expr.IsConst() && expr.Constant.IsBool() && expr.Constant.ReadBool() {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 fn isUnreachableConditionalCase(i: &sema::If): bool {
-	ret isUnreachableExpr(i.Expr)
+	return isUnreachableExpr(i.Expr)
 }
 
 fn isUnreachableMatchCase(case: &sema::Case): bool {
 	for _, expr in case.Exprs {
 		if !isUnreachableExpr(expr.Model) {
-			ret false
+			return false
 		}
 	}
-	ret true
+	return true
 }

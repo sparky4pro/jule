@@ -41,7 +41,7 @@ impl T {
 
 	// Reports whether test is failed.
 	fn Failed(*self): bool {
-		ret self.s == statFail
+		return self.s == statFail
 	}
 
 	// Skip test.
@@ -55,7 +55,7 @@ impl T {
 
 	// Reports whether test is skipped.
 	fn Skipped(*self): bool {
-		ret self.s == statSkip
+		return self.s == statSkip
 	}
 
 	// Set status of test as failure if expression is evaluated false at runtime.
@@ -64,7 +64,7 @@ impl T {
 			self.println(message)
 			self.Fail()
 		}
-		ret expr
+		return expr
 	}
 
 	// Set status of test as failure and print message by formatting.

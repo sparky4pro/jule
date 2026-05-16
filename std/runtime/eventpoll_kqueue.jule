@@ -62,7 +62,7 @@ fn eventpollopen(fd: u64, mut &pd: *polldesc)! {
 fn eventpollclose(fd: u64): sys::Errno {
 	// Don't need to unregister because calling close()
 	// on fd will remove any kevents that reference the descriptor.
-	ret 0
+	return 0
 }
 
 // delay < 0: blocks indefinitely
@@ -71,7 +71,7 @@ fn eventpollclose(fd: u64): sys::Errno {
 #disable nilptr boundary
 fn eventpoll(delay: i64, mut &toRun: *[prunqsize]c): u32 {
 	if kq == -1 {
-		ret 0
+		return 0
 	}
 	let mut tsp: *sys::Timespec
 	let mut ts: sys::Timespec
@@ -101,7 +101,7 @@ retry:
 		// If a timed sleep was interrupted, just return to
 		// recalculate how long we should sleep now.
 		if delay > 0 {
-			ret 0
+			return 0
 		}
 		goto retry
 	}
@@ -151,7 +151,7 @@ retry:
 		pd.setEventErr(ev.flags == sys::EV_ERROR, tag)
 		eventpollready(pd, mode, toRun, &b)
 	}
-	ret b
+	return b
 }
 
 fn setNsec(mut &ts: *sys::Timespec, ns: i64) {
@@ -164,5 +164,5 @@ fn kevent(kq: i32, &ev: *keventt, evn: i32, &ev2: *keventt, ev2n: i32, tm: *sys:
 	if n < 0 {
 		e = sys::GetLastErrno()
 	}
-	ret n, e
+	return n, e
 }

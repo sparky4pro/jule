@@ -6,14 +6,14 @@ use "std/internal/conv"
 
 extern let errno: int
 
-fn GetLastErrno(): Errno { ret Errno(extern.errno) }
+fn GetLastErrno(): Errno { return Errno(extern.errno) }
 
 fn formatError(e: Errno): string {
 	if 0 <= int(e) && int(e) < len(errors) {
 		s := errors[e]
 		if s != "" {
-			ret s
+			return s
 		}
 	}
-	ret "errno " + conv::Itoa(int(e))
+	return "errno " + conv::Itoa(int(e))
 }

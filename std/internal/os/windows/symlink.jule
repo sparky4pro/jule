@@ -22,5 +22,5 @@ struct FILE_ATTRIBUTE_TAG_INFO {
 }
 
 unsafe fn GetFileInformationByHandleEx(h: sys::Handle, infoClass: int, fileInfo: *unsafe, bufferSize: u32): bool {
-	ret extern.GetFileInformationByHandleEx(extern.HANDLE(h), extern.FILE_INFO_BY_HANDLE_CLASS(infoClass), fileInfo, extern.DWORD(bufferSize))
+	return extern.GetFileInformationByHandleEx(extern.HANDLE(h), extern.FILE_INFO_BY_HANDLE_CLASS(infoClass), fileInfo, extern.DWORD(bufferSize))
 }

@@ -39,7 +39,7 @@ async fn recvOnly() {
 	c := fn(): <-chan int {
 		c := make(chan int)
 		close(c)
-		ret c
+		return c
 	}()
 	_, ok := <-c
 	if ok {

@@ -29,7 +29,7 @@ struct lookpathError {
 
 impl lookpathError {
 	fn String(*self): string {
-		ret "std/os: Cmd: " + conv::Quote(self.Name) + ": " + runtime::toString(self.Err)
+		return "std/os: Cmd: " + conv::Quote(self.Name) + ": " + runtime::toString(self.Err)
 	}
 }
 
@@ -96,7 +96,7 @@ impl Cmd {
 		cmd.Args = make([]string, 0, len(args)+1)
 		cmd.Args = append(cmd.Args, path)
 		cmd.Args = append(cmd.Args, args...)
-		ret cmd
+		return cmd
 	}
 
 	// Sets reader that will be connected to the command's
@@ -155,7 +155,7 @@ impl Cmd {
 		self.stdin = r
 		self.childIOFiles = append(self.childIOFiles, r)
 		self.parentIOFiles = append(self.parentIOFiles, w)
-		ret w
+		return w
 	}
 
 	// Returns a pipe that will be connected to the command's
@@ -176,7 +176,7 @@ impl Cmd {
 		self.stdout = w
 		self.childIOFiles = append(self.childIOFiles, w)
 		self.parentIOFiles = append(self.parentIOFiles, r)
-		ret r
+		return r
 	}
 
 	// Returns a pipe that will be connected to the command's
@@ -197,36 +197,36 @@ impl Cmd {
 		self.stderr = w
 		self.childIOFiles = append(self.childIOFiles, w)
 		self.parentIOFiles = append(self.parentIOFiles, r)
-		ret r
+		return r
 	}
 
 	fn childStdin(*self)!: &File {
 		if self.stdin == nil {
 			mut f := Open(DevNull)?
 			self.childIOFiles = append(self.childIOFiles, f)
-			ret f
+			return f
 		}
-		ret self.stdin
+		return self.stdin
 	}
 
 	fn childStdout(*self)!: &File {
-		ret self.writerDescriptor(self.stdout)?
+		return self.writerDescriptor(self.stdout)?
 	}
 
 	fn childStderr(*self)!: &File {
 		if self.stdout != nil && self.stderr != nil && self.stdout.fd.File == self.stderr.fd.File {
-			ret self.stdout
+			return self.stdout
 		}
-		ret self.writerDescriptor(self.stderr)?
+		return self.writerDescriptor(self.stderr)?
 	}
 
 	fn writerDescriptor(*self, mut f: &File)!: &File {
 		if f == nil {
 			f = OpenFile(DevNull, O_WRONLY, 0)?
 			self.childIOFiles = append(self.childIOFiles, f)
-			ret f
+			return f
 		}
-		ret f
+		return f
 	}
 
 	// Starts the specified command but does not wait for it to complete.
@@ -305,7 +305,7 @@ impl Cmd {
 		}
 		c := self.wait()?
 		self.clean()?
-		ret c
+		return c
 	}
 
 	// Kills the command.
@@ -320,9 +320,9 @@ impl Cmd {
 	// Returns command-line arguments to start command.
 	fn args(*self): []string {
 		if len(self.Args) == 0 {
-			ret [self.Path]
+			return [self.Path]
 		}
-		ret unsafe { *(&self.Args) } // do not mutate content
+		return unsafe { *(&self.Args) } // do not mutate content
 	}
 
 	// Returns environment variables to start command.
@@ -351,14 +351,14 @@ impl Cmd {
 		}
 		env = dedupEnv(env)?
 		env = addCriticalEnv(env)
-		ret env
+		return env
 	}
 }
 
 // Returns a copy of env with any duplicates removed, in favor of later values.
 // Items not of the normal environment "key=value" form are preserved unchanged.
 fn dedupEnv(mut env: []string)!: []string {
-	ret dedupEnvCase(runtime::OS == "windows", false, env)?
+	return dedupEnvCase(runtime::OS == "windows", false, env)?
 }
 
 // This is dedupEnv with a case option.
@@ -414,7 +414,7 @@ fn dedupEnvCase(caseInsensitive: bool, nulOK: bool, env: []string)!: []string {
 		out[i], out[j] = out[j], out[i]
 	}
 
-	ret out
+	return out
 }
 
 // Adds any critical environment variables that are required
@@ -422,7 +422,7 @@ fn dedupEnvCase(caseInsensitive: bool, nulOK: bool, env: []string)!: []string {
 // Currently this is only used for Windows.
 fn addCriticalEnv(mut env: []string): []string {
 	if runtime::OS != "windows" {
-		ret env
+		return env
 	}
 	for _, kv in env {
 		k, _, ok := strings::Cut(kv, "=")
@@ -431,8 +431,8 @@ fn addCriticalEnv(mut env: []string): []string {
 		}
 		if strings::EqualFold(k, "SYSTEMROOT") {
 			// We already have it.
-			ret env
+			return env
 		}
 	}
-	ret append(env, "SYSTEMROOT="+Getenv("SYSTEMROOT"))
+	return append(env, "SYSTEMROOT="+Getenv("SYSTEMROOT"))
 }

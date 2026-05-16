@@ -84,20 +84,20 @@ impl Reader {
 		// Is it already a Reader?
 		mut b, ok := rd.(&Reader)
 		if ok && len(b.buf) >= size {
-			ret b
+			return b
 		}
 		mut r := new(Reader)
 		r.reset(make([]byte, max(size, minReadBufferSize)), rd)
-		ret r
+		return r
 	}
 
 	// Returns a new [Reader] whose buffer has the default size.
 	fn New(mut rd: io::Reader): &Reader {
-		ret Reader.NewSize(rd, defaultBufSize)
+		return Reader.NewSize(rd, defaultBufSize)
 	}
 
 	// Returns the size of the underlying buffer in bytes.
-	fn Size(*self): int { ret len(self.buf) }
+	fn Size(*self): int { return len(self.buf) }
 
 	// Discards any buffered data, resets all state, and switches
 	// the buffered reader to read from r.
@@ -110,7 +110,7 @@ impl Reader {
 		// to Reset. Avoid infinite recursion in that case.
 		rr, ok := r.(&Reader)
 		if ok && uintptr(self) == uintptr(rr) {
-			ret
+			return
 		}
 		if self.buf == nil {
 			self.buf = make([]byte, defaultBufSize)
@@ -145,14 +145,14 @@ impl Reader {
 		for i > 0; i-- {
 			n := self.rd.Read(self.buf[self.w:]).await else {
 				self.err = error
-				ret
+				return
 			}
 			if n < 0 {
 				panic("bufio: reader returned negative count from Read")
 			}
 			self.w += n
 			if n > 0 {
-				ret
+				return
 			}
 		}
 		self.err = io::ErrNoProgress
@@ -161,7 +161,7 @@ impl Reader {
 	fn readErr(mut *self): any {
 		mut err := self.err
 		self.err = nil
-		ret err
+		return err
 	}
 
 	// Returns the next n bytes without advancing the reader. The bytes stop
@@ -188,7 +188,7 @@ impl Reader {
 		if n > len(self.buf) {
 			full = true
 			data = self.buf[self.r:self.w]
-			ret
+			return
 		}
 
 		// 0 <= n <= len(self.buf)
@@ -205,7 +205,7 @@ impl Reader {
 			}
 		}
 		data = self.buf[self.r : self.r+n]
-		ret
+		return
 	}
 
 	// Skips the next n bytes, returning the number of bytes discarded.
@@ -218,7 +218,7 @@ impl Reader {
 			throw ErrNegativeCount
 		}
 		if n == 0 {
-			ret
+			return
 		}
 
 		self.lastByte = -1
@@ -237,12 +237,12 @@ impl Reader {
 			self.r += skip
 			remain -= skip
 			if remain == 0 {
-				ret n
+				return n
 			}
 			if self.err != nil {
 				discarded = n - remain
 				if discarded > 0 {
-					ret discarded
+					return discarded
 				}
 				unsafe throw self.readErr()
 			}
@@ -260,12 +260,12 @@ impl Reader {
 		n = len(p)
 		if n == 0 {
 			if self.Buffered() > 0 {
-				ret 0
+				return 0
 			}
 			if self.err != nil {
 				unsafe throw self.readErr()
 			}
-			ret 0
+			return 0
 		}
 		if self.r == self.w {
 			if self.err != nil {
@@ -285,7 +285,7 @@ impl Reader {
 					self.lastByte = int(p[n-1])
 					self.lastRuneSize = -1
 				}
-				ret n
+				return n
 			}
 			// One read.
 			// Do not use self.fill, which will loop.
@@ -308,7 +308,7 @@ impl Reader {
 		self.r += n
 		self.lastByte = int(self.buf[self.r-1])
 		self.lastRuneSize = -1
-		ret n
+		return n
 	}
 
 	// Reads and returns a single byte.
@@ -324,7 +324,7 @@ impl Reader {
 		c := self.buf[self.r]
 		self.r++
 		self.lastByte = int(c)
-		ret c, 1
+		return c, 1
 	}
 
 	// Unreads the last byte. Only the most recently read byte can be unread.
@@ -366,7 +366,7 @@ impl Reader {
 		self.r += size
 		self.lastByte = int(self.buf[self.r-1])
 		self.lastRuneSize = size
-		ret r, size
+		return r, size
 	}
 
 	// Unreads the last rune. If the most recent method called on
@@ -380,11 +380,11 @@ impl Reader {
 		self.r -= self.lastRuneSize
 		self.lastByte = -1
 		self.lastRuneSize = -1
-		ret
+		return
 	}
 
 	// Returns the number of bytes that can be read from the current buffer.
-	fn Buffered(*self): int { ret self.w - self.r }
+	fn Buffered(*self): int { return self.w - self.r }
 
 	// Reads until the first occurrence of delim in the input,
 	// returning a slice pointing at the bytes in the buffer.
@@ -441,7 +441,7 @@ impl Reader {
 			self.lastRuneSize = -1
 		}
 
-		ret
+		return
 	}
 
 	// Low-level line-reading primitive. Most callers should use
@@ -473,11 +473,11 @@ impl Reader {
 				self.r--
 				line = line[:len(line)-1]
 			}
-			ret line, true
+			return line, true
 		}
 
 		if len(line) == 0 {
-			ret
+			return
 		}
 
 		if line[len(line)-1] == '\n' {
@@ -487,7 +487,7 @@ impl Reader {
 			}
 			line = line[:len(line)-drop]
 		}
-		ret
+		return
 	}
 
 	// Reads until the first occurrence of delim in the input. It
@@ -504,7 +504,7 @@ impl Reader {
 			finalFragment, full = self.ReadSlice(delim).await?
 			if !full && self.err == nil { // got final fragment
 				totalLen += len(finalFragment)
-				ret
+				return
 			}
 			// Make a copy of the buffer.
 			mut buf := bytes::Clone(finalFragment)
@@ -526,7 +526,7 @@ impl Reader {
 		// Allocate new buffer to hold the full pieces and the fragment.
 		buf = make([]byte, n)
 		if n == 0 {
-			ret
+			return
 		}
 		n = 0
 		// Copy full pieces and fragment in.
@@ -534,7 +534,7 @@ impl Reader {
 			n += copy(buf[n:], full[i])
 		}
 		copy(buf[n:], frag)
-		ret buf
+		return buf
 	}
 
 	// Reads until the first occurrence of delim in the input,
@@ -548,7 +548,7 @@ impl Reader {
 	async fn ReadString(mut *self, delim: byte)!: string {
 		full, frag, n := self.collectFragments(delim).await?
 		if n == 0 {
-			ret ""
+			return ""
 		}
 		// Allocate new buffer to hold the full pieces and the fragment.
 		let mut buf: strings::Builder
@@ -558,7 +558,7 @@ impl Reader {
 			buf.Write(fb)?
 		}
 		buf.Write(frag)?
-		ret buf.String()
+		return buf.String()
 	}
 
 	// Implements io::WriterTo.
@@ -579,7 +579,7 @@ impl Reader {
 			// self.r < self.w => buffer is not empty
 			m := self.writeBuf(w).await else {
 				if n > 0 {
-					ret n
+					return n
 				}
 				throw error
 			}
@@ -591,7 +591,7 @@ impl Reader {
 			unsafe throw self.readErr()
 		}
 
-		ret n
+		return n
 	}
 
 	// Writes the [Reader]'s buffer to the writer.
@@ -601,7 +601,7 @@ impl Reader {
 			panic("bufio: reader returned negative count from Read")
 		}
 		self.r += n
-		ret i64(n)
+		return i64(n)
 	}
 }
 
@@ -634,12 +634,12 @@ impl Writer {
 		// Is it already a Writer?
 		mut b, ok := w.(&Writer)
 		if ok && len(b.buf) >= size {
-			ret b
+			return b
 		}
 		if size <= 0 {
 			size = defaultBufSize
 		}
-		ret &Writer{
+		return &Writer{
 			buf: make([]byte, size),
 			wr:  w,
 		}
@@ -649,11 +649,11 @@ impl Writer {
 	// If the argument io::Writer is already a [Writer] with large enough buffer size,
 	// it returns the underlying [Writer].
 	fn New(mut w: io::Writer): &Writer {
-		ret Writer.NewSize(w, defaultBufSize)
+		return Writer.NewSize(w, defaultBufSize)
 	}
 
 	// Returns the size of the underlying buffer in bytes.
-	fn Size(*self): int { ret len(self.buf) }
+	fn Size(*self): int { return len(self.buf) }
 
 	// Discards any unflushed buffered data, clears any error, and
 	// resets writer to write its output to w.
@@ -666,7 +666,7 @@ impl Writer {
 		// to Reset. Avoid infinite recursion in that case.
 		mut ww, ok := w.(&Writer)
 		if ok && uintptr(self) == uintptr(ww) {
-			ret
+			return
 		}
 		if self.buf == nil {
 			self.buf = make([]byte, defaultBufSize)
@@ -682,7 +682,7 @@ impl Writer {
 			unsafe throw self.err
 		}
 		if self.n == 0 {
-			ret
+			return
 		}
 		n := self.wr.Write(self.buf[0:self.n]).await else {
 			self.err = error
@@ -696,18 +696,18 @@ impl Writer {
 	}
 
 	// Returns how many bytes are unused in the buffer.
-	fn Available(*self): int { ret len(self.buf) - self.n }
+	fn Available(*self): int { return len(self.buf) - self.n }
 
 	// Returns an empty buffer with Reader.Available() capacity.
 	// This buffer is intended to be appended to and
 	// passed to an immediately succeeding [Writer.Write] call.
 	// The buffer is mutable and it is only valid until the next write operation.
 	fn AvailableBuffer(mut *self): []byte {
-		ret self.buf[self.n:][:0]
+		return self.buf[self.n:][:0]
 	}
 
 	// Returns the number of bytes that have been written into the current buffer.
-	fn Buffered(*self): int { ret self.n }
+	fn Buffered(*self): int { return self.n }
 
 	// Writes the contents of p into the buffer.
 	// It returns the number of bytes written.
@@ -736,7 +736,7 @@ impl Writer {
 		n := copy(self.buf[self.n:], p)
 		self.n += n
 		nn += n
-		ret nn
+		return nn
 	}
 
 	// Writes a single byte.
@@ -757,7 +757,7 @@ impl Writer {
 		// Compare as u32 to correctly handle negative runes.
 		if u32(r) < utf8::RuneSelf {
 			self.WriteByte(byte(r)).await?
-			ret 1
+			return 1
 		}
 		if self.err != nil {
 			unsafe throw self.err
@@ -768,12 +768,12 @@ impl Writer {
 			n = self.Available()
 			if n < utf8::UTFMax {
 				// Can only happen if buffer is silly small.
-				ret self.WriteString(string(r)).await?
+				return self.WriteString(string(r)).await?
 			}
 		}
 		size = utf8::EncodeRune(self.buf[self.n:], r)
 		self.n += size
-		ret size
+		return size
 	}
 
 	// Writes a string.
@@ -796,7 +796,7 @@ impl Writer {
 		n := copy(self.buf[self.n:], s)
 		self.n += n
 		nn += n
-		ret nn
+		return nn
 	}
 
 	// Implements [io::ReaderFrom].
@@ -818,7 +818,7 @@ impl Writer {
 							self.Flush().await?
 						}
 						if n > 0 {
-							ret n
+							return n
 						}
 					}
 					throw error
@@ -834,13 +834,13 @@ impl Writer {
 			self.n += m
 			n += i64(m)
 		}
-		ret n
+		return n
 	}
 }
 
 fn max(a: int, b: int): int {
 	if a > b {
-		ret a
+		return a
 	}
-	ret b
+	return b
 }

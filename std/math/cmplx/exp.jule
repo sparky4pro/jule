@@ -55,19 +55,19 @@ fn Exp(x: cmplx128): cmplx128 {
 	| math::IsInf(real(x), 0):
 		match {
 		| real(x) > 0 && imag(x) == 0:
-			ret x
+			return x
 		| math::IsInf(imag(x), 0) | math::IsNaN(imag(x)):
 			if real(x) < 0 {
-				ret cmplx(0, math::Copysign(0, imag(x)))
+				return cmplx(0, math::Copysign(0, imag(x)))
 			}
-			ret cmplx(math::Inf(1.0), math::NaN())
+			return cmplx(math::Inf(1.0), math::NaN())
 		}
 	| math::IsNaN(real(x)):
 		if imag(x) == 0 {
-			ret cmplx(math::NaN(), imag(x))
+			return cmplx(math::NaN(), imag(x))
 		}
 	}
 	r := math::Exp(real(x))
 	s, c := math::Sincos(imag(x))
-	ret cmplx(r*c, r*s)
+	return cmplx(r*c, r*s)
 }

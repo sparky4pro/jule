@@ -38,21 +38,21 @@
 // Returns the IEEE 754 binary representation of f,
 // with the sign bit of f and the result in the same bit position.
 // F32bits(F32frombits(x)) == x.
-fn F32bits(f: f32): u32 { ret unsafe { *((*u32)(&f)) } }
+fn F32bits(f: f32): u32 { return unsafe { *((*u32)(&f)) } }
 
 // Returns the floating-point number corresponding
 // to the IEEE 754 binary representation b, with the sign bit of b
 // and the result in the same bit position.
 // F32frombits(F32bits(x)) == x.
-fn F32frombits(b: u32): f32 { ret unsafe { *((*f32)(&b)) } }
+fn F32frombits(b: u32): f32 { return unsafe { *((*f32)(&b)) } }
 
 // Returns the IEEE 754 binary representation of f,
 // with the sign bit of f and the result in the same bit position,
 // and F64bits(F64frombits(x)) == x.
-fn F64bits(f: f64): u64 { ret unsafe { *((*u64)(&f)) } }
+fn F64bits(f: f64): u64 { return unsafe { *((*u64)(&f)) } }
 
 // Returns the floating-point number corresponding
 // to the IEEE 754 binary representation b, with the sign bit of b
 // and the result in the same bit position.
 // F64frombits(F64bits(x)) == x.
-fn F64frombits(b: u64): f64 { ret unsafe { *((*f64)(&b)) } }
+fn F64frombits(b: u64): f64 { return unsafe { *((*f64)(&b)) } }

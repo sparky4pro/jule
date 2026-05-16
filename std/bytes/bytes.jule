@@ -63,16 +63,16 @@ impl asciiSet {
 	fn make(chars: string): (as: asciiSet, ok: bool) {
 		for _, c in chars {
 			if c >= utf8::RuneSelf {
-				ret as, false
+				return as, false
 			}
 			as[c/32] |= 1 << (c % 32)
 		}
-		ret as, true
+		return as, true
 	}
 
 	// Reports whether c is inside the set.
 	fn contains(*self, c: byte): bool {
-		ret ((*self)[c/32]&(1<<(c%32))) != 0
+		return ((*self)[c/32]&(1<<(c%32))) != 0
 	}
 }
 
@@ -82,7 +82,7 @@ impl asciiSet {
 fn Equal(a: []byte, b: []byte): bool {
 	// If the required optimization flags passed,
 	// this comparison will not use allocated strings.
-	ret string(a) == string(b)
+	return string(a) == string(b)
 }
 
 // Returns an integer comparing two byte slices lexicographically.
@@ -90,7 +90,7 @@ fn Equal(a: []byte, b: []byte): bool {
 // A nil argument is equivalent to an empty slice.
 fn Compare(a: []byte, b: []byte): int {
 	as, bs := unsafe::BytesString(a), unsafe::BytesString(b)
-	ret runtime::compareString(&as, &bs)
+	return runtime::compareString(&as, &bs)
 }
 
 // Counts the number of non-overlapping instances of sep in s.
@@ -98,17 +98,17 @@ fn Compare(a: []byte, b: []byte): int {
 fn Count(s: []byte, sep: []byte): int {
 	// special case
 	if len(sep) == 0 {
-		ret utf8::RuneCount(s) + 1
+		return utf8::RuneCount(s) + 1
 	}
 	if len(sep) == 1 {
-		ret byteslite::Count(s, sep[0])
+		return byteslite::Count(s, sep[0])
 	}
 	mut n := 0
 	mut i := 0
 	for {
 		j := Index(s[i:], sep)
 		if j == -1 {
-			ret n
+			return n
 		}
 		n++
 		i += j + len(sep)
@@ -117,50 +117,50 @@ fn Count(s: []byte, sep: []byte): int {
 
 // Reports whether subslice is within b.
 fn Contains(b: []byte, subslice: []byte): bool {
-	ret Index(b, subslice) != -1
+	return Index(b, subslice) != -1
 }
 
 // Reports whether any of the UTF-8-encoded code points in chars are within b.
 fn ContainsAny(b: []byte, chars: string): bool {
-	ret IndexAny(b, chars) >= 0
+	return IndexAny(b, chars) >= 0
 }
 
 // Reports whether the rune is contained in the UTF-8-encoded byte slice b.
 fn ContainsRune(b: []byte, r: rune): bool {
-	ret IndexRune(b, r) >= 0
+	return IndexRune(b, r) >= 0
 }
 
 // Reports whether any of the UTF-8-encoded code points r within b satisfy f(r).
 fn ContainsFunc(b: []byte, f: fn(rune): bool): bool {
-	ret IndexFunc(b, f) >= 0
+	return IndexFunc(b, f) >= 0
 }
 
 // Returns the index of the first instance of c in b, or -1 if c is not present in b.
 fn IndexByte(b: []byte, c: byte): int {
-	ret byteslite::IndexByte(b, c)
+	return byteslite::IndexByte(b, c)
 }
 
 // Returns the index of the last instance of sep in s, or -1 if sep is not present in s.
 fn LastIndex(s: []byte, sep: []byte): int {
 	match {
 	| len(sep) == 0:
-		ret len(s)
+		return len(s)
 	| len(sep) == 1:
-		ret byteslite::LastIndexByte(s, sep[0])
+		return byteslite::LastIndexByte(s, sep[0])
 	| len(sep) == len(s):
 		if Equal(s, sep) {
-			ret 0
+			return 0
 		}
-		ret -1
+		return -1
 	| len(sep) > len(s):
-		ret -1
+		return -1
 	}
-	ret byteslite::LastIndexRabinKarp(s, sep)
+	return byteslite::LastIndexRabinKarp(s, sep)
 }
 
 // Returns the index of the last instance of c in s, or -1 if c is not present in s.
 fn LastIndexByte(s: []byte, c: byte): int {
-	ret byteslite::LastIndexByte(s, c)
+	return byteslite::LastIndexByte(s, c)
 }
 
 // Interprets s as a sequence of UTF-8-encoded code points.
@@ -171,19 +171,19 @@ fn LastIndexByte(s: []byte, c: byte): int {
 fn IndexRune(s: []byte, r: rune): int {
 	match {
 	| 0 <= r && r < utf8::RuneSelf:
-		ret IndexByte(s, byte(r))
+		return IndexByte(s, byte(r))
 	| r == utf8::RuneError:
 		mut i := 0
 		for i < len(s) {
 			r1, n := utf8::DecodeRune(s[i:])
 			if r1 == utf8::RuneError {
-				ret i
+				return i
 			}
 			i += n
 		}
-		ret -1
+		return -1
 	| !utf8::ValidRune(r):
-		ret -1
+		return -1
 	|:
 		// Search for rune r using the last byte of its UTF-8 encoded form.
 		// The distribution of the last byte is more uniform compared to the
@@ -197,7 +197,7 @@ fn IndexRune(s: []byte, r: rune): int {
 			if s[i] != b[last] {
 				o := IndexByte(s[i+1:], b[last])
 				if o < 0 {
-					ret -1
+					return -1
 				}
 				i += o + 1
 			}
@@ -208,7 +208,7 @@ fn IndexRune(s: []byte, r: rune): int {
 					goto next
 				}
 			}
-			ret i - last
+			return i - last
 		next:
 			fails++
 			i++
@@ -216,7 +216,7 @@ fn IndexRune(s: []byte, r: rune): int {
 				goto fallback
 			}
 		}
-		ret -1
+		return -1
 
 	fallback:
 		c0 := b[last]
@@ -230,10 +230,10 @@ fn IndexRune(s: []byte, r: rune): int {
 						continue loop
 					}
 				}
-				ret i - last
+				return i - last
 			}
 		}
-		ret -1
+		return -1
 	}
 }
 
@@ -244,7 +244,7 @@ fn IndexRune(s: []byte, r: rune): int {
 fn IndexAny(s: []byte, chars: string): int {
 	if chars == "" {
 		// Avoid scanning all of s.
-		ret -1
+		return -1
 	}
 	if len(s) == 1 {
 		r := rune(s[0])
@@ -252,32 +252,32 @@ fn IndexAny(s: []byte, chars: string): int {
 			// search utf8::RuneError.
 			for _, r2 in chars {
 				if r2 == utf8::RuneError {
-					ret 0
+					return 0
 				}
 			}
-			ret -1
+			return -1
 		}
 		if byteslite::IndexByteString(chars, s[0]) >= 0 {
-			ret 0
+			return 0
 		}
-		ret -1
+		return -1
 	}
 	if len(chars) == 1 {
 		mut r := rune(chars[0])
 		if r >= utf8::RuneSelf {
 			r = utf8::RuneError
 		}
-		ret IndexRune(s, r)
+		return IndexRune(s, r)
 	}
 	if len(s) > 8 {
 		as, isASCII := asciiSet.make(chars)
 		if isASCII {
 			for i, c in s {
 				if as.contains(c) {
-					ret i
+					return i
 				}
 			}
-			ret -1
+			return -1
 		}
 	}
 	let mut width: int
@@ -286,7 +286,7 @@ fn IndexAny(s: []byte, chars: string): int {
 		mut r := rune(s[i])
 		if r < utf8::RuneSelf {
 			if byteslite::IndexByteString(chars, s[i]) >= 0 {
-				ret i
+				return i
 			}
 			width = 1
 			continue
@@ -296,18 +296,18 @@ fn IndexAny(s: []byte, chars: string): int {
 			// r is 2 to 4 bytes
 			if len(chars) == width {
 				if chars == string(r) {
-					ret i
+					return i
 				}
 				continue
 			}
 		}
 		for _, ch in chars {
 			if r == ch {
-				ret i
+				return i
 			}
 		}
 	}
-	ret -1
+	return -1
 }
 
 // Interprets s as a sequence of UTF-8-encoded Unicode code
@@ -317,7 +317,7 @@ fn IndexAny(s: []byte, chars: string): int {
 fn LastIndexAny(s: []byte, chars: string): int {
 	if chars == "" {
 		// Avoid scanning all of s.
-		ret -1
+		return -1
 	}
 	if len(s) > 8 {
 		as, isASCII := asciiSet.make(chars)
@@ -325,10 +325,10 @@ fn LastIndexAny(s: []byte, chars: string): int {
 			mut i := len(s) - 1
 			for i >= 0; i-- {
 				if as.contains(s[i]) {
-					ret i
+					return i
 				}
 			}
-			ret -1
+			return -1
 		}
 	}
 	if len(s) == 1 {
@@ -336,15 +336,15 @@ fn LastIndexAny(s: []byte, chars: string): int {
 		if r >= utf8::RuneSelf {
 			for _, r2 in chars {
 				if r2 == utf8::RuneError {
-					ret 0
+					return 0
 				}
 			}
-			ret -1
+			return -1
 		}
 		if byteslite::IndexByteString(chars, s[0]) >= 0 {
-			ret 0
+			return 0
 		}
-		ret -1
+		return -1
 	}
 	if len(chars) == 1 {
 		mut cr := rune(chars[0])
@@ -356,17 +356,17 @@ fn LastIndexAny(s: []byte, chars: string): int {
 			r, size := utf8::DecodeLastRune(s[:i])
 			i -= size
 			if r == cr {
-				ret i
+				return i
 			}
 		}
-		ret -1
+		return -1
 	}
 	mut i := len(s)
 	for i > 0 {
 		mut r := rune(s[i-1])
 		if r < utf8::RuneSelf {
 			if byteslite::IndexByteString(chars, s[i-1]) >= 0 {
-				ret i - 1
+				return i - 1
 			}
 			i--
 			continue
@@ -377,18 +377,18 @@ fn LastIndexAny(s: []byte, chars: string): int {
 			// r is 2 to 4 bytes
 			if len(chars) == size {
 				if chars == string(r) {
-					ret i
+					return i
 				}
 				continue
 			}
 		}
 		for _, ch in chars {
 			if r == ch {
-				ret i
+				return i
 			}
 		}
 	}
-	ret -1
+	return -1
 }
 
 // Splits s into a slice of UTF-8 sequences, one per Unicode code point (still slices of bytes),
@@ -411,17 +411,17 @@ fn explode(mut s: []byte, mut n: int): [][]byte {
 		s = s[size:]
 		na++
 	}
-	ret a[0:na]
+	return a[0:na]
 }
 
 // Generic split: splits after each instance of sep,
 // including sepSave bytes of sep in the subslices.
 fn genSplit(mut s: []byte, sep: []byte, sepSave: int, mut n: int): [][]byte {
 	if n == 0 {
-		ret nil
+		return nil
 	}
 	if len(sep) == 0 {
-		ret explode(s, n)
+		return explode(s, n)
 	}
 	if n < 0 {
 		n = Count(s, sep) + 1
@@ -443,7 +443,7 @@ fn genSplit(mut s: []byte, sep: []byte, sepSave: int, mut n: int): [][]byte {
 		i++
 	}
 	a[i] = s
-	ret a[:i+1]
+	return a[:i+1]
 }
 
 // Slices s into subslices separated by sep and returns a slice of
@@ -455,7 +455,7 @@ fn genSplit(mut s: []byte, sep: []byte, sepSave: int, mut n: int): [][]byte {
 //	- n < 0: all subslices.
 //
 // To split around the first instance of a separator, see [Cut].
-fn SplitN(mut s: []byte, sep: []byte, n: int): [][]byte { ret genSplit(s, sep, 0, n) }
+fn SplitN(mut s: []byte, sep: []byte, n: int): [][]byte { return genSplit(s, sep, 0, n) }
 
 // Slices s into subslices after each instance of sep and
 // returns a slice of those subslices.
@@ -465,7 +465,7 @@ fn SplitN(mut s: []byte, sep: []byte, n: int): [][]byte { ret genSplit(s, sep, 0
 //	- n == 0: the result is nil (zero subslices);
 //	- n < 0: all subslices.
 fn SplitAfterN(mut s: []byte, sep: []byte, n: int): [][]byte {
-	ret genSplit(s, sep, len(sep), n)
+	return genSplit(s, sep, len(sep), n)
 }
 
 // Slices s into all subslices separated by sep and returns a slice of
@@ -474,25 +474,25 @@ fn SplitAfterN(mut s: []byte, sep: []byte, n: int): [][]byte {
 // It is equivalent to SplitN with a count of -1.
 //
 // To split around the first instance of a separator, see [Cut].
-fn Split(mut s: []byte, sep: []byte): [][]byte { ret genSplit(s, sep, 0, -1) }
+fn Split(mut s: []byte, sep: []byte): [][]byte { return genSplit(s, sep, 0, -1) }
 
 // Slices s into all subslices after each instance of sep and
 // returns a slice of those subslices.
 // If sep is empty, SplitAfter splits after each UTF-8 sequence.
 // It is equivalent to SplitAfterN with a count of -1.
 fn SplitAfter(mut s: []byte, sep: []byte): [][]byte {
-	ret genSplit(s, sep, len(sep), -1)
+	return genSplit(s, sep, len(sep), -1)
 }
 
 // Concatenates the elements of s to create a new byte slice. The separator
 // sep is placed between elements in the resulting slice.
 fn Join(s: [][]byte, sep: []byte): []byte {
 	if len(s) == 0 {
-		ret []
+		return []
 	}
 	if len(s) == 1 {
 		// Just return a copy.
-		ret append([]byte(nil), s[0]...)
+		return append([]byte(nil), s[0]...)
 	}
 
 	mut n := 0
@@ -515,17 +515,17 @@ fn Join(s: [][]byte, sep: []byte): []byte {
 		bp += copy(b[bp:], sep)
 		bp += copy(b[bp:], v)
 	}
-	ret b
+	return b
 }
 
 // Reports whether the byte slice s begins with prefix.
 fn HasPrefix(s: []byte, prefix: []byte): bool {
-	ret len(s) >= len(prefix) && Equal(s[:len(prefix)], prefix)
+	return len(s) >= len(prefix) && Equal(s[:len(prefix)], prefix)
 }
 
 // Reports whether the byte slice s ends with suffix.
 fn HasSuffix(s: []byte, suffix: []byte): bool {
-	ret len(s) >= len(suffix) && Equal(s[len(s)-len(suffix):], suffix)
+	return len(s) >= len(suffix) && Equal(s[len(s)-len(suffix):], suffix)
 }
 
 // Returns a copy of the byte slice s with all its characters modified
@@ -550,7 +550,7 @@ fn Map(mapping: fn(rune): rune, s: []byte): []byte {
 		}
 		i += wid
 	}
-	ret b
+	return b
 }
 
 // Returns a new byte slice consisting of count copies of b.
@@ -559,7 +559,7 @@ fn Map(mapping: fn(rune): rune, s: []byte): []byte {
 // overflows.
 fn Repeat(b: []byte, count: int): []byte {
 	if count == 0 {
-		ret []
+		return []
 	}
 
 	// Since we cannot return an error on overflow,
@@ -575,7 +575,7 @@ fn Repeat(b: []byte, count: int): []byte {
 	n := int(lo) // lo = len(b) * count
 
 	if len(b) == 0 {
-		ret []
+		return []
 	}
 
 	// Past a certain chunk size it is counterproductive to use
@@ -605,21 +605,21 @@ fn Repeat(b: []byte, count: int): []byte {
 		}
 		bp += copy(nb[bp:], nb[:chunk])
 	}
-	ret nb
+	return nb
 }
 
 // Interprets s as a sequence of UTF-8-encoded code points.
 // It returns the byte index in s of the first Unicode
 // code point satisfying f(c), or -1 if none do.
 fn IndexFunc(s: []byte, f: fn(rune): bool): int {
-	ret indexFunc(s, f, true)
+	return indexFunc(s, f, true)
 }
 
 // Interprets s as a sequence of UTF-8-encoded code points.
 // It returns the byte index in s of the last Unicode
 // code point satisfying f(c), or -1 if none do.
 fn LastIndexFunc(s: []byte, f: fn(rune): bool): int {
-	ret lastIndexFunc(s, f, true)
+	return lastIndexFunc(s, f, true)
 }
 
 // Same as IndexFunc except that if truth==false,
@@ -633,11 +633,11 @@ fn indexFunc(s: []byte, f: fn(rune): bool, truth: bool): int {
 			r, wid = utf8::DecodeRune(s[start:])
 		}
 		if f(r) == truth {
-			ret start
+			return start
 		}
 		start += wid
 	}
-	ret -1
+	return -1
 }
 
 // Same as LastIndexFunc except that if truth==false,
@@ -651,10 +651,10 @@ fn lastIndexFunc(s: []byte, f: fn(rune): bool, truth: bool): int {
 		}
 		i -= size
 		if f(r) == truth {
-			ret i
+			return i
 		}
 	}
-	ret -1
+	return -1
 }
 
 // Simplified version of strings::ContainsRune to avoid dependation.
@@ -662,10 +662,10 @@ fn lastIndexFunc(s: []byte, f: fn(rune): bool, truth: bool): int {
 fn containsRune(s: string, r: rune): bool {
 	for _, c in s {
 		if c == r {
-			ret true
+			return true
 		}
 	}
-	ret false
+	return false
 }
 
 // Treats s as UTF-8-encoded bytes and returns a subslice of s by slicing off
@@ -673,25 +673,25 @@ fn containsRune(s: string, r: rune): bool {
 fn TrimLeftFunc(mut s: []byte, f: fn(rune): bool): []byte {
 	i := indexFunc(s, f, false)
 	if i == -1 {
-		ret nil
+		return nil
 	}
-	ret s[i:]
+	return s[i:]
 }
 
 // Returns a subslice of s by slicing off all trailing
 // UTF-8-encoded code points that are contained in cutset.
 fn TrimRight(mut s: []byte, cutset: string): []byte {
 	if len(s) == 0 || cutset == "" {
-		ret s
+		return s
 	}
 	if len(cutset) == 1 && cutset[0] < utf8::RuneSelf {
-		ret trimRightByte(s, cutset[0])
+		return trimRightByte(s, cutset[0])
 	}
 	as, ok := asciiSet.make(cutset)
 	if ok {
-		ret trimRightASCII(s, &as)
+		return trimRightASCII(s, &as)
 	}
-	ret trimRightUnicode(s, cutset)
+	return trimRightUnicode(s, cutset)
 }
 
 // Returns a subslice of s by slicing off all trailing
@@ -704,31 +704,31 @@ fn TrimRightFunc(mut s: []byte, f: fn(rune): bool): []byte {
 	} else {
 		i++
 	}
-	ret s[0:i]
+	return s[0:i]
 }
 
 // Returns a subslice of s by slicing off all leading and trailing
 // UTF-8-encoded code points c that satisfy f(c).
 fn TrimFunc(mut s: []byte, f: fn(rune): bool): []byte {
-	ret TrimRightFunc(TrimLeftFunc(s, f), f)
+	return TrimRightFunc(TrimLeftFunc(s, f), f)
 }
 
 // Returns s without the provided leading prefix string.
 // If s doesn't start with prefix, s is returned unchanged.
 fn TrimPrefix(mut s: []byte, prefix: []byte): []byte {
 	if HasPrefix(s, prefix) {
-		ret s[len(prefix):]
+		return s[len(prefix):]
 	}
-	ret s
+	return s
 }
 
 // Returns s without the provided trailing suffix string.
 // If s doesn't end with suffix, s is returned unchanged.
 fn TrimSuffix(mut s: []byte, suffix: []byte): []byte {
 	if HasSuffix(s, suffix) {
-		ret s[:len(s)-len(suffix)]
+		return s[:len(s)-len(suffix)]
 	}
-	ret s
+	return s
 }
 
 // Returns a subslice of s by slicing off all leading and
@@ -736,19 +736,19 @@ fn TrimSuffix(mut s: []byte, suffix: []byte): []byte {
 fn Trim(mut s: []byte, cutset: string): []byte {
 	if len(s) == 0 {
 		// This is what we've historically done.
-		ret nil
+		return nil
 	}
 	if cutset == "" {
-		ret s
+		return s
 	}
 	if len(cutset) == 1 && cutset[0] < utf8::RuneSelf {
-		ret trimLeftByte(trimRightByte(s, cutset[0]), cutset[0])
+		return trimLeftByte(trimRightByte(s, cutset[0]), cutset[0])
 	}
 	as, ok := asciiSet.make(cutset)
 	if ok {
-		ret trimLeftASCII(trimRightASCII(s, &as), &as)
+		return trimLeftASCII(trimRightASCII(s, &as), &as)
 	}
-	ret trimLeftUnicode(trimRightUnicode(s, cutset), cutset)
+	return trimLeftUnicode(trimRightUnicode(s, cutset), cutset)
 }
 
 // Returns a subslice of s by slicing off all leading
@@ -756,19 +756,19 @@ fn Trim(mut s: []byte, cutset: string): []byte {
 fn TrimLeft(mut s: []byte, cutset: string): []byte {
 	if len(s) == 0 {
 		// This is what we've historically done.
-		ret nil
+		return nil
 	}
 	if cutset == "" {
-		ret s
+		return s
 	}
 	if len(cutset) == 1 && cutset[0] < utf8::RuneSelf {
-		ret trimLeftByte(s, cutset[0])
+		return trimLeftByte(s, cutset[0])
 	}
 	as, ok := asciiSet.make(cutset)
 	if ok {
-		ret trimLeftASCII(s, &as)
+		return trimLeftASCII(s, &as)
 	}
-	ret trimLeftUnicode(s, cutset)
+	return trimLeftUnicode(s, cutset)
 }
 
 fn trimLeftByte(mut s: []byte, c: byte): []byte {
@@ -777,9 +777,9 @@ fn trimLeftByte(mut s: []byte, c: byte): []byte {
 	}
 	if len(s) == 0 {
 		// This is what we've historically done.
-		ret nil
+		return nil
 	}
-	ret s
+	return s
 }
 
 fn trimLeftASCII(mut s: []byte, &as: *asciiSet): []byte {
@@ -791,9 +791,9 @@ fn trimLeftASCII(mut s: []byte, &as: *asciiSet): []byte {
 	}
 	if len(s) == 0 {
 		// This is what we've historically done.
-		ret nil
+		return nil
 	}
-	ret s
+	return s
 }
 
 fn trimLeftUnicode(mut s: []byte, cutset: string): []byte {
@@ -809,16 +809,16 @@ fn trimLeftUnicode(mut s: []byte, cutset: string): []byte {
 	}
 	if len(s) == 0 {
 		// This is what we've historically done.
-		ret nil
+		return nil
 	}
-	ret s
+	return s
 }
 
 fn trimRightByte(mut s: []byte, c: byte): []byte {
 	for len(s) > 0 && s[len(s)-1] == c {
 		s = s[:len(s)-1]
 	}
-	ret s
+	return s
 }
 
 fn trimRightASCII(mut s: []byte, &as: *asciiSet): []byte {
@@ -828,7 +828,7 @@ fn trimRightASCII(mut s: []byte, &as: *asciiSet): []byte {
 		}
 		s = s[:len(s)-1]
 	}
-	ret s
+	return s
 }
 
 fn trimRightUnicode(mut s: []byte, cutset: string): []byte {
@@ -842,11 +842,11 @@ fn trimRightUnicode(mut s: []byte, cutset: string): []byte {
 		}
 		s = s[:len(s)-n]
 	}
-	ret s
+	return s
 }
 
 fn isSpaceASCII(c: byte): bool {
-	ret c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r' || c == ' '
+	return c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r' || c == ' '
 }
 
 // Returns a subslice of s by slicing off all leading and
@@ -859,7 +859,7 @@ fn TrimSpace(mut s: []byte): []byte {
 		if c >= utf8::RuneSelf {
 			// If we run into a non-ASCII byte, fall back to the
 			// slower unicode-aware method on the remaining bytes
-			ret TrimFunc(s[start:], unicode::IsSpace)
+			return TrimFunc(s[start:], unicode::IsSpace)
 		}
 		if !isSpaceASCII(c) {
 			break
@@ -871,7 +871,7 @@ fn TrimSpace(mut s: []byte): []byte {
 	for stop > start; stop-- {
 		c := s[stop-1]
 		if c >= utf8::RuneSelf {
-			ret TrimFunc(s[start:stop], unicode::IsSpace)
+			return TrimFunc(s[start:stop], unicode::IsSpace)
 		}
 		if !isSpaceASCII(c) {
 			break
@@ -884,9 +884,9 @@ fn TrimSpace(mut s: []byte): []byte {
 	if start == stop {
 		// Special case to preserve previous TrimLeftFunc behavior,
 		// returning nil instead of empty slice if all spaces.
-		ret nil
+		return nil
 	}
-	ret s[start:stop]
+	return s[start:stop]
 }
 
 // Interprets s as a sequence of UTF-8-encoded code points.
@@ -901,7 +901,7 @@ fn Runes(s: []byte): []rune {
 		i++
 		j += l
 	}
-	ret t
+	return t
 }
 
 // Returns a copy of the slice s with the first n
@@ -918,7 +918,7 @@ fn Replace(s: []byte, old: []byte, new: []byte, mut n: int): []byte {
 	}
 	if m == 0 {
 		// Just return a copy.
-		ret append([]byte(nil), s...)
+		return append([]byte(nil), s...)
 	}
 	if n < 0 || m < n {
 		n = m
@@ -944,7 +944,7 @@ fn Replace(s: []byte, old: []byte, new: []byte, mut n: int): []byte {
 		start = j + len(old)
 	}
 	w += copy(t[w:], s[start:])
-	ret t[0:w]
+	return t[0:w]
 }
 
 // Returns a copy of the slice s with all
@@ -953,7 +953,7 @@ fn Replace(s: []byte, old: []byte, new: []byte, mut n: int): []byte {
 // and after each UTF-8 sequence, yielding up to k+1 replacements
 // for a k-rune slice.
 fn ReplaceAll(s: []byte, old: []byte, new: []byte): []byte {
-	ret Replace(s, old, new, -1)
+	return Replace(s, old, new, -1)
 }
 
 // Reports whether s and t, interpreted as UTF-8 strings,
@@ -982,10 +982,10 @@ fn EqualFold(s: []byte, t: []byte): bool {
 		if 'A' <= sr && sr <= 'Z' && tr == sr+'a'-'A' {
 			continue
 		}
-		ret false
+		return false
 	}
 	// Check if we've exhausted both strings.
-	ret len(s) == len(t)
+	return len(s) == len(t)
 
 hasUnicode:
 	unsafe {
@@ -1030,7 +1030,7 @@ hasUnicode:
 			if 'A' <= sr && sr <= 'Z' && tr == sr+'a'-'A' {
 				continue
 			}
-			ret false
+			return false
 		}
 
 		// General case. SimpleFold(x) returns the next equivalent rune > x
@@ -1042,27 +1042,27 @@ hasUnicode:
 		if r == tr {
 			continue
 		}
-		ret false
+		return false
 	}
 
 	// One string is empty. Are both?
-	ret len(s) == len(t)
+	return len(s) == len(t)
 }
 
 // Returns the index of the first instance of sep in s, or -1 if sep is not present in s.
 fn Index(s: []byte, sep: []byte): int {
 	match {
 	| len(sep) == 0:
-		ret 0
+		return 0
 	| len(sep) == 1:
-		ret IndexByte(s, sep[0])
+		return IndexByte(s, sep[0])
 	| len(sep) == len(s):
 		if Equal(sep, s) {
-			ret 0
+			return 0
 		}
-		ret -1
+		return -1
 	| len(sep) > len(s):
-		ret -1
+		return -1
 	}
 	c0 := sep[0]
 	c1 := sep[1]
@@ -1078,7 +1078,7 @@ fn Index(s: []byte, sep: []byte): int {
 			i += o + 1
 		}
 		if s[i+1] == c1 && Equal(s[i:i+len(sep)], sep) {
-			ret i
+			return i
 		}
 		i++
 		fails++
@@ -1093,12 +1093,12 @@ fn Index(s: []byte, sep: []byte): int {
 			// This code does not take that effect into account.
 			j := byteslite::IndexRabinKarp(s[i:], sep)
 			if j < 0 {
-				ret -1
+				return -1
 			}
-			ret i + j
+			return i + j
 		}
 	}
-	ret -1
+	return -1
 }
 
 // Slices s around the first instance of sep,
@@ -1110,9 +1110,9 @@ fn Index(s: []byte, sep: []byte): int {
 fn Cut(mut s: []byte, sep: []byte): (before: []byte, after: []byte, found: bool) {
 	i := Index(s, sep)
 	if i >= 0 {
-		ret s[:i], s[i+len(sep):], true
+		return s[:i], s[i+len(sep):], true
 	}
-	ret s, nil, false
+	return s, nil, false
 }
 
 // Returns a copy of b[:len(b)].
@@ -1120,9 +1120,9 @@ fn Cut(mut s: []byte, sep: []byte): (before: []byte, after: []byte, found: bool)
 // Clone(nil) returns nil.
 fn Clone(b: []byte): []byte {
 	if b == nil {
-		ret nil
+		return nil
 	}
-	ret append([]byte([]), b...)
+	return append([]byte([]), b...)
 }
 
 // Returns s without the provided leading prefix byte slice
@@ -1133,9 +1133,9 @@ fn Clone(b: []byte): []byte {
 // Returns slices of the original slice s, not copies.
 fn CutPrefix(mut s: []byte, prefix: []byte): (after: []byte, found: bool) {
 	if !HasPrefix(s, prefix) {
-		ret s, false
+		return s, false
 	}
-	ret s[len(prefix):], true
+	return s[len(prefix):], true
 }
 
 // Returns s without the provided ending suffix byte slice
@@ -1146,9 +1146,9 @@ fn CutPrefix(mut s: []byte, prefix: []byte): (after: []byte, found: bool) {
 // Returns slices of the original slice s, not copies.
 fn CutSuffix(mut s: []byte, suffix: []byte): (before: []byte, found: bool) {
 	if !HasSuffix(s, suffix) {
-		ret s, false
+		return s, false
 	}
-	ret s[:len(s)-len(suffix)], true
+	return s[:len(s)-len(suffix)], true
 }
 
 // Returns a copy of the byte slice s with all Unicode letters mapped to
@@ -1168,7 +1168,7 @@ fn ToUpper(s: []byte): []byte {
 	if isASCII { // optimize for ASCII-only byte slices.
 		if !hasLower {
 			// Just return a copy.
-			ret append([]byte(""), s...)
+			return append([]byte(""), s...)
 		}
 		mut b := make([]byte, len(s))
 		i = 0
@@ -1179,9 +1179,9 @@ fn ToUpper(s: []byte): []byte {
 			}
 			b[i] = c
 		}
-		ret b
+		return b
 	}
-	ret Map(unicode::ToUpper, s)
+	return Map(unicode::ToUpper, s)
 }
 
 // Returns a copy of the byte slice s with all Unicode letters mapped to
@@ -1200,7 +1200,7 @@ fn ToLower(s: []byte): []byte {
 
 	if isASCII { // optimize for ASCII-only byte slices.
 		if !hasUpper {
-			ret append([]byte(""), s...)
+			return append([]byte(""), s...)
 		}
 		mut b := make([]byte, len(s))
 		i = 0
@@ -1211,7 +1211,7 @@ fn ToLower(s: []byte): []byte {
 			}
 			b[i] = c
 		}
-		ret b
+		return b
 	}
-	ret Map(unicode::ToLower, s)
+	return Map(unicode::ToLower, s)
 }

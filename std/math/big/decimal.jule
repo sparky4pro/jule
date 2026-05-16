@@ -48,7 +48,7 @@ impl decimal {
 		if len(m) == 0 {
 			self.mant = self.mant[:0]
 			self.exp = 0
-			ret
+			return
 		}
 
 		// Optimization: If we need to shift right, first remove any trailing
@@ -98,9 +98,9 @@ impl decimal {
 	// Returns the i'th mantissa digit, starting with the most significant digit at 0.
 	fn at(*self, i: int): byte {
 		if 0 <= i && i < len(self.mant) {
-			ret self.mant[i]
+			return self.mant[i]
 		}
-		ret '0'
+		return '0'
 	}
 
 	// Sets x(self) to (at most) n mantissa digits by rounding it
@@ -108,7 +108,7 @@ impl decimal {
 	// If n < 0, x remains unchanged.
 	fn round(mut *self, n: int) {
 		if n < 0 || n >= len(self.mant) {
-			ret // nothing to do
+			return // nothing to do
 		}
 
 		if shouldRoundUp(self, n) {
@@ -120,7 +120,7 @@ impl decimal {
 
 	fn roundUp(mut *self, mut n: int) {
 		if n < 0 || n >= len(self.mant) {
-			ret // nothing to do
+			return // nothing to do
 		}
 		// 0 <= n < len(self.mant)
 
@@ -134,7 +134,7 @@ impl decimal {
 			self.mant[0] = '1' // ok since len(self.mant) > n
 			self.mant = self.mant[:1]
 			self.exp++
-			ret
+			return
 		}
 
 		// n > 0 && self.mant[n-1] < '9'
@@ -145,7 +145,7 @@ impl decimal {
 
 	fn roundDown(mut *self, n: int) {
 		if n < 0 || n >= len(self.mant) {
-			ret // nothing to do
+			return // nothing to do
 		}
 		self.mant = self.mant[:n]
 		trim(self)
@@ -167,7 +167,7 @@ fn shr(mut &x: *decimal, s: uint) {
 	if n == 0 {
 		// x == 0; shouldn't get here, but handle anyway
 		x.mant = x.mant[:0]
-		ret
+		return
 	}
 	for n>>s == 0 {
 		r++
@@ -228,8 +228,8 @@ fn trim(mut &x: *decimal) {
 fn shouldRoundUp(&x: *decimal, n: int): bool {
 	if x.mant[n] == '5' && n+1 == len(x.mant) {
 		// exactly halfway - round to even
-		ret n > 0 && (x.mant[n-1]-'0')&1 != 0
+		return n > 0 && (x.mant[n-1]-'0')&1 != 0
 	}
 	// not halfway - digit tells all (x.mant has no trailing zeros)
-	ret x.mant[n] >= '5'
+	return x.mant[n] >= '5'
 }

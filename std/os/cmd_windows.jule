@@ -127,7 +127,7 @@ impl Cmd {
 		if unsafe { extern.TerminateProcess(extern.HANDLE(self.attrs.hProcess), 0) } {
 			sys::CloseHandle(sys::Handle(self.attrs.hProcess))?
 			self.attrs.hProcess = 0
-			ret
+			return
 		}
 		throw sys::GetLastErrno()
 	}
@@ -140,7 +140,7 @@ impl Cmd {
 			sys::CloseHandle(sys::Handle(self.attrs.hProcess))?
 		}
 		self.attrs.hProcess = 0
-		ret unsafe { int(exitCode) }
+		return unsafe { int(exitCode) }
 	}
 }
 
@@ -148,7 +148,7 @@ impl Cmd {
 fn appendEscapeArg(mut &s: *strings::Builder, arg: string) {
 	if len(arg) == 0 {
 		s.WriteString(`""`)!
-		ret
+		return
 	}
 
 	mut needsBackslash := false
@@ -166,14 +166,14 @@ fn appendEscapeArg(mut &s: *strings::Builder, arg: string) {
 	if !needsBackslash && !hasSpace {
 		// No special handling required; normal case.
 		s.WriteString(arg)!
-		ret
+		return
 	}
 	if !needsBackslash {
 		// hasSpace is true, so we need to quote the string.
 		s.WriteByte('"')!
 		s.WriteString(arg)!
 		s.WriteByte('"')!
-		ret
+		return
 	}
 
 	if hasSpace {
@@ -215,7 +215,7 @@ fn makeCmdLine(args: []string): string {
 		}
 		appendEscapeArg(&s, arg)
 	}
-	ret s.String()
+	return s.String()
 }
 
 // Converts an array of environment strings into
@@ -225,7 +225,7 @@ fn makeCmdLine(args: []string): string {
 // If any string contains a NULL, it returns (nil, EINVAL).
 fn createEnvBlock(env: []string)!: []u16 {
 	if len(env) == 0 {
-		ret utf16::Encode([]rune("\x00\x00"))
+		return utf16::Encode([]rune("\x00\x00"))
 	}
 	mut n := 0
 	for _, s in env {
@@ -243,7 +243,7 @@ fn createEnvBlock(env: []string)!: []u16 {
 		b = utf16::AppendRune(b, 0)
 	}
 	b = utf16::AppendRune(b, 0)
-	ret b
+	return b
 }
 
 fn chkStat(file: string)! {
@@ -256,19 +256,19 @@ fn chkStat(file: string)! {
 fn hasExt(file: string): bool {
 	i := strings::LastIndex(file, ".")
 	if i < 0 {
-		ret false
+		return false
 	}
-	ret strings::LastIndexAny(file, `:\/`) < i
+	return strings::LastIndexAny(file, `:\/`) < i
 }
 
 fn findExecutable(file: string, exts: []string)!: string {
 	if len(exts) == 0 {
 		chkStat(file)?
-		ret file
+		return file
 	}
 	if hasExt(file) {
 		chkStat(file) else { goto Keep }
-		ret file
+		return file
 	Keep:
 		// Keep checking exts below, so that programs with weird names
 		// like "foo.bat.exe" will resolve instead of failing.
@@ -276,7 +276,7 @@ fn findExecutable(file: string, exts: []string)!: string {
 	for _, e in exts {
 		f := file + e
 		chkStat(f) else { continue }
-		ret f
+		return f
 	}
 	if hasExt(file) {
 		throw sys::Errno(sys::ERROR_FILE_NOT_FOUND)
@@ -299,7 +299,7 @@ fn pathExt(): (exts: []string) {
 	} else {
 		exts = [".com", ".exe", ".bat", ".cmd"]
 	}
-	ret exts
+	return exts
 }
 
 // Finds windows executable by its dir and path.
@@ -321,34 +321,34 @@ fn lookExtensions(mut path: string, dir: string)!: string {
 		for _, e in exts {
 			if strings::EqualFold(ext, e) {
 				// Assume that path has already been resolved.
-				ret path
+				return path
 			}
 		}
 	}
 	if dir == "" {
-		ret _lookPath(path, exts)?
+		return _lookPath(path, exts)?
 	}
 	if filepathlite::VolumeName(path) != "" {
-		ret _lookPath(path, exts)?
+		return _lookPath(path, exts)?
 	}
 	if len(path) > 1 && filepathlite::IsPathSeparator(path[0]) {
-		ret _lookPath(path, exts)?
+		return _lookPath(path, exts)?
 	}
 	dirandpath := filepathlite::Join(dir, path)
 	// We assume that LookPath will only add file extension.
 	lp := _lookPath(dirandpath, exts)?
 	ext = strings::TrimPrefix(lp, dirandpath)
-	ret path + ext
+	return path + ext
 }
 
 fn lookPath(file: string)!: string {
-	ret _lookPath(file, pathExt())?
+	return _lookPath(file, pathExt())?
 }
 
 // Implements lookPath for the given PATHEXT list.
 fn _lookPath(file: string, exts: []string)!: string {
 	if strings::ContainsAny(file, `:\/`) {
-		ret findExecutable(file, exts) else { throw &lookpathError{file, error} }
+		return findExecutable(file, exts) else { throw &lookpathError{file, error} }
 	}
 
 	// On Windows, creating the NoDefaultCurrentDirectoryInExePath
@@ -364,7 +364,7 @@ fn _lookPath(file: string, exts: []string)!: string {
 	if !found {
 		f := findExecutable(filepathlite::Join(".", file), exts) else { use "><" }
 		if f != "><" {
-			ret f
+			return f
 		}
 	}
 
@@ -391,19 +391,19 @@ fn _lookPath(file: string, exts: []string)!: string {
 				if dotErr != nil {
 					unsafe throw dotErr
 				}
-				ret dotf
+				return dotf
 			}
 			fi := Lstat(f) else {
 				if dotErr != nil {
 					unsafe throw dotErr
 				}
-				ret dotf
+				return dotf
 			}
 			if !dotfi.SameFile(fi) {
 				if dotErr != nil {
 					unsafe throw dotErr
 				}
-				ret dotf
+				return dotf
 			}
 		}
 
@@ -417,7 +417,7 @@ fn _lookPath(file: string, exts: []string)!: string {
 			}
 			continue
 		}
-		ret f
+		return f
 	}
 
 	if dotErr != nil {

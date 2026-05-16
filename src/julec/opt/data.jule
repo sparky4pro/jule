@@ -70,12 +70,12 @@ impl data {
 			c.dynamic = new(dynamic)
 			c.dynamic.vars = append(make([]dynamicVar, 0), self.dynamic.vars...)
 		}
-		ret c
+		return c
 	}
 
 	// Like the getCheckpoint(), but uses immutable copy of the internal data.
 	fn getMutCheckpoint(mut *self): dataCheckpoint {
-		ret dataCheckpoint{
+		return dataCheckpoint{
 			boundary: self.boundary,
 			nils:     self.nils,
 			dynamic:  self.dynamic,

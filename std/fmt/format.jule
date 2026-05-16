@@ -13,11 +13,11 @@ fn findFormatPrefix(&bytes: *[]byte, mut i: int): int {
 	for i < len(*bytes) {
 		r, size := utf8::DecodeRune((*bytes)[i:])
 		if r == '{' {
-			ret i
+			return i
 		}
 		i += size
 	}
-	ret -1
+	return -1
 }
 
 // Returns range of {...}, included braces.
@@ -37,18 +37,18 @@ fn getFormatRange(mut &i: *int, mut &bytes: *[]byte): []byte {
 		| '}':
 			braces--
 			if braces == 0 {
-				ret (*bytes)[start:*i]
+				return (*bytes)[start:*i]
 			}
 		}
 	}
-	ret nil
+	return nil
 }
 
 // Formats arg by default format and appends to buf.
 fn formatByDefault(mut &buf: *strings::Builder, arg: any) {
 	if arg == nil {
 		buf.WriteString("<nil>")!
-		ret
+		return
 	}
 	match type arg {
 	| f32:
@@ -107,7 +107,7 @@ fn applyFormat(mut &fmt: *[]byte, mut &buf: *strings::Builder, mut &j: *int, arg
 	// {}
 	if len(*fmt) == 2 {
 		applyFormatByDefault(buf, j, args...)
-		ret
+		return
 	}
 	// {{}} = {}
 	if len(*fmt) == 4 &&
@@ -116,7 +116,7 @@ fn applyFormat(mut &fmt: *[]byte, mut &buf: *strings::Builder, mut &j: *int, arg
 		(*fmt)[2] == '}' &&
 		(*fmt)[3] == '}' {
 		buf.WriteString("{}")!
-		ret
+		return
 	}
 	buf.Write(*fmt)!
 }
@@ -127,11 +127,11 @@ fn applyFormat(mut &fmt: *[]byte, mut &buf: *strings::Builder, mut &j: *int, arg
 fn bprintf(fmt: string, args: ...any): []byte {
 	mut fmtBytes := unsafe::StringBytes(fmt)
 	if len(args) == 0 {
-		ret fmtBytes
+		return fmtBytes
 	}
 	mut i := findFormatPrefix(&fmtBytes, 0)
 	if i == -1 {
-		ret fmtBytes
+		return fmtBytes
 	}
 	mut j := 0
 	mut last := 0
@@ -155,7 +155,7 @@ fn bprintf(fmt: string, args: ...any): []byte {
 	if last < len(fmtBytes) {
 		buf.Write(fmtBytes[last:])!
 	}
-	ret unsafe { buf.Buf() }
+	return unsafe { buf.Buf() }
 }
 
 // Tries to call reserved String method for type.
@@ -173,12 +173,12 @@ fn tryToCallStr[T](mut &sb: *strings::Builder, t: T): (ok: bool) {
 				const match {
 				| len(params) == 1 && !params[0].Mutable():
 					sb.WriteString(methodv.Unwrap()())!
-					ret true
+					return true
 				}
 			}
 		}
 	}
-	ret false
+	return false
 }
 
 fn bprintgw[T](mut &sb: *strings::Builder, t: T) {
@@ -191,12 +191,12 @@ fn bprintgw[T](mut &sb: *strings::Builder, t: T) {
 		| tt.CanNil():
 			if t == nil {
 				sb.WriteString("<nil>")!
-				ret
+				return
 			}
 		| tt.Strict():
 			ok := tryToCallStr(sb, t)
 			if ok {
-				ret
+				return
 			}
 		}
 		const match tt.Kind() {
@@ -246,7 +246,7 @@ fn bprintgw[T](mut &sb: *strings::Builder, t: T) {
 		| comptime::Struct:
 			ok := tryToCallStr(sb, t)
 			if ok {
-				ret
+				return
 			}
 			const v = comptime::ValueOf(t)
 			sb.WriteByte('{')!
@@ -270,7 +270,7 @@ fn bprintgw[T](mut &sb: *strings::Builder, t: T) {
 			| elem.Strict() | elem.Kind() == comptime::Struct:
 				ok := tryToCallStr(sb, *t)
 				if ok {
-					ret
+					return
 				}
 			}
 			sb.WriteString(conv::FormatUint(u64(uintptr(t)), 16))!
@@ -295,5 +295,5 @@ fn bprintgw[T](mut &sb: *strings::Builder, t: T) {
 fn bprintg[T](t: T): []byte {
 	mut sb := strings::Builder{}
 	bprintgw(&sb, t)
-	ret unsafe { sb.Buf() }
+	return unsafe { sb.Buf() }
 }

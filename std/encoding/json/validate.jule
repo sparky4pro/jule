@@ -10,8 +10,8 @@ fn Valid(data: []byte): bool {
 	for _, c in data {
 		scan.bytes++
 		if scan.step(&scan, c) == scanError {
-			ret false
+			return false
 		}
 	}
-	ret scan.eof() != scanError
+	return scan.eof() != scanError
 }

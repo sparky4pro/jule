@@ -59,9 +59,9 @@ impl dnsConfig {
 	// Otherwise it is always 0.
 	fn serverOffset(mut *self): u32 {
 		if self.rotate {
-			ret self.soffset.Add(1, atomic::SeqCst) - 1 // return 0 to start
+			return self.soffset.Add(1, atomic::SeqCst) - 1 // return 0 to start
 		}
-		ret 0
+		return 0
 	}
 }
 
@@ -84,12 +84,12 @@ async fn resolveConfig() {
 	if conf.mtime == zero {
 		osResolveConfig().await
 		conf.lastChecked = time::Now()
-		ret
+		return
 	}
 
 	now := time::Now()
 	if conf.lastChecked.After(now.Add(-5 * time::Second)) {
-		ret
+		return
 	}
 	conf.lastChecked = now
 
@@ -105,7 +105,7 @@ async fn resolveConfig() {
 		fi := os::Stat(osConfigPath) else { break }
 		mtime = fi.ModTime()
 		if mtime.Equal(conf.mtime) {
-			ret
+			return
 		}
 	}
 

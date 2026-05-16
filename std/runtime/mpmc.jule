@@ -43,7 +43,7 @@ impl mpmcQueue {
 		for i < q.cap; i++ {
 			q.buf[i].seq = i
 		}
-		ret
+		return
 	}
 
 	#disable boundary nilptr
@@ -62,12 +62,12 @@ impl mpmcQueue {
 					if closed {
 						// Roll back publication by marking slot empty again
 						atomic::Store(&c.seq, pos, atomic::Release)
-						ret false, true
+						return false, true
 					}
 
 					c.val = *val
 					atomic::Store(&c.seq, pos+1, atomic::Release)
-					ret true, false
+					return true, false
 				}
 				continue
 			}
@@ -76,7 +76,7 @@ impl mpmcQueue {
 				// Slot not ready — MAY be full, confirm via cursors
 				deq := atomic::Load(&self.dequeuePos, atomic::Acquire)
 				if pos-deq >= self.cap {
-					ret false, false // FULL
+					return false, false // FULL
 				}
 				// Not guaranteed full → retry
 				osyield()
@@ -111,12 +111,12 @@ impl mpmcQueue {
 					c.val = zero
 					// mark EMPTY for the next wrap-around pass
 					atomic::Store(&c.seq, pos+self.cap, atomic::Release)
-					ret true, closed
+					return true, closed
 				}
 				// lost race → retry
 			} else if dif < 0 {
 				// seq < pos+1 ⇒ producer hasn't published yet; queue appears EMPTY
-				ret false, closed
+				return false, closed
 			} else {
 				// another consumer is ahead / not our turn yet → polite backoff
 				osyield()

@@ -10,5 +10,5 @@ use "std/math"
 // Returns the complex number with polar coordinates r, θ.
 fn Rect(r: f64, theta: f64): cmplx128 {
 	s, c := math::Sincos(theta)
-	ret cmplx(r*c, r*s)
+	return cmplx(r*c, r*s)
 }

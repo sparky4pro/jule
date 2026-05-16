@@ -31,7 +31,7 @@ struct ReferenceStack {
 impl ReferenceStack {
 	// Returns new reference stack instance.
 	fn new(): &ReferenceStack {
-		ret &ReferenceStack{
+		return &ReferenceStack{
 			buffer: make([]any, 0, 10),
 		}
 	}
@@ -40,12 +40,12 @@ impl ReferenceStack {
 impl ReferenceStack {
 	// Returns count of references.
 	fn Len(*self): int {
-		ret len(self.buffer)
+		return len(self.buffer)
 	}
 
 	// Returns reference by index.
 	fn At(mut *self, i: int): any {
-		ret self.buffer[i]
+		return self.buffer[i]
 	}
 
 	// Push new reference to stack.
@@ -61,10 +61,10 @@ impl ReferenceStack {
 	fn Exist[T](*self, t: T): bool {
 		for _, ref in self.buffer {
 			if ref == t {
-				ret true
+				return true
 			}
 		}
-		ret false
+		return false
 	}
 }
 
@@ -76,24 +76,24 @@ struct Pass {
 
 fn buildType(mut t: &ast::Expr): &TypeSym {
 	if t == nil {
-		ret nil
+		return nil
 	}
-	ret &TypeSym{
+	return &TypeSym{
 		Decl: t,
 	}
 }
 
 fn buildExpr(mut expr: &ast::Expr): &ValueSym {
 	if expr == nil {
-		ret nil
+		return nil
 	}
-	ret &ValueSym{
+	return &ValueSym{
 		Expr: expr,
 	}
 }
 
 fn buildTypeAlias(mut decl: &ast::TypeAlias): &TypeAlias {
-	ret &TypeAlias{
+	return &TypeAlias{
 		Scope:    decl.Scope,
 		Strict:   decl.Strict,
 		Public:   decl.Public,
@@ -106,7 +106,7 @@ fn buildTypeAlias(mut decl: &ast::TypeAlias): &TypeAlias {
 }
 
 fn buildField(mut decl: &ast::Field): &Field {
-	ret &Field{
+	return &Field{
 		Token:   decl.Token,
 		Public:  decl.Public,
 		Mutable: decl.Mutable,
@@ -121,11 +121,11 @@ fn buildFields(mut decls: []&ast::Field): []&Field {
 	for (_, mut decl) in decls {
 		fields = append(fields, buildField(decl))
 	}
-	ret fields
+	return fields
 }
 
 fn buildStruct(mut decl: &ast::Struct): &Struct {
-	ret &Struct{
+	return &Struct{
 		Token:      decl.Token,
 		Name:       decl.Name,
 		Fields:     buildFields(decl.Fields),
@@ -137,7 +137,7 @@ fn buildStruct(mut decl: &ast::Struct): &Struct {
 }
 
 fn buildParam(mut decl: &ast::Param): &Param {
-	ret &Param{
+	return &Param{
 		Token:     decl.Token,
 		Mutable:   decl.Mutable,
 		Variadic:  decl.Variadic,
@@ -152,21 +152,21 @@ fn buildParams(mut decls: []&ast::Param): []&Param {
 	for (_, mut decl) in decls {
 		params = append(params, buildParam(decl))
 	}
-	ret params
+	return params
 }
 
 fn buildReturnType(mut decl: &ast::ReturnType): &ReturnType {
 	if decl.Names == nil && decl.Type == nil {
-		ret nil // Void type.
+		return nil // Void type.
 	}
-	ret &ReturnType{
+	return &ReturnType{
 		TypeSym: buildType(decl.Type),
 		Names:   decl.Names,
 	}
 }
 
 fn buildFunc(mut decl: &ast::Func): &Func {
-	ret &Func{
+	return &Func{
 		Token:      decl.Token,
 		Global:     decl.Global,
 		Async:      decl.Async,
@@ -189,7 +189,7 @@ fn buildMethods(mut decls: []&ast::Func): []&Func {
 	for (_, mut decl) in decls {
 		methods = append(methods, buildFunc(decl))
 	}
-	ret methods
+	return methods
 }
 
 fn buildTraitInherits(mut inherits: []&ast::Expr): []&TypeSym {
@@ -197,11 +197,11 @@ fn buildTraitInherits(mut inherits: []&ast::Expr): []&TypeSym {
 	for (_, mut it) in inherits {
 		symbols = append(symbols, buildType(it))
 	}
-	ret symbols
+	return symbols
 }
 
 fn buildTrait(mut decl: &ast::Trait): &Trait {
-	ret &Trait{
+	return &Trait{
 		Token:    decl.Token,
 		Name:     decl.Name,
 		Public:   decl.Public,
@@ -227,11 +227,11 @@ fn buildEnumItems(mut decls: []&ast::EnumItem): []&Var {
 	// Set the last element to nil.
 	// See developer reference (14).
 	items[len(decls)] = nil
-	ret items[: len(items)-1 : len(items)-1] // return with no trailing nil variable
+	return items[: len(items)-1 : len(items)-1] // return with no trailing nil variable
 }
 
 fn buildEnum(mut decl: &ast::Enum): &Enum {
-	ret &Enum{
+	return &Enum{
 		Token:   decl.Token,
 		Public:  decl.Public,
 		Name:    decl.Name,
@@ -241,7 +241,7 @@ fn buildEnum(mut decl: &ast::Enum): &Enum {
 }
 
 fn buildTypeEnumItem(mut decl: &ast::TypeEnumItem): &TypeEnumItem {
-	ret &TypeEnumItem{
+	return &TypeEnumItem{
 		Token:   decl.Token,
 		TypeSym: buildType(decl.Type),
 	}
@@ -252,11 +252,11 @@ fn buildTypeEnumItems(mut decls: []&ast::TypeEnumItem): []&TypeEnumItem {
 	for (_, mut decl) in decls {
 		items = append(items, buildTypeEnumItem(decl))
 	}
-	ret items
+	return items
 }
 
 fn buildTypeEnum(mut decl: &ast::TypeEnum): &TypeEnum {
-	ret &TypeEnum{
+	return &TypeEnum{
 		Token:  decl.Token,
 		Public: decl.Public,
 		Name:   decl.Name,
@@ -265,7 +265,7 @@ fn buildTypeEnum(mut decl: &ast::TypeEnum): &TypeEnum {
 }
 
 fn buildVar(mut decl: &ast::Var): &Var {
-	ret &Var{
+	return &Var{
 		Token:      decl.Token,
 		Name:       decl.Name,
 		Extern:     decl.Extern,
@@ -282,7 +282,7 @@ fn buildVar(mut decl: &ast::Var): &Var {
 }
 
 fn buildImpl(mut decl: &ast::Impl): &Impl {
-	ret &Impl{
+	return &Impl{
 		Base:    decl.Base,
 		Dest:    decl.Dest,
 		Methods: buildMethods(decl.Methods),
@@ -307,7 +307,7 @@ impl symBuilder {
 		for root.owner != nil {
 			root = root.owner
 		}
-		ret root
+		return root
 	}
 
 	fn pushErr(mut *self, token: &token::Token, fmt: string, args: ...any) {
@@ -332,32 +332,32 @@ impl symBuilder {
 		filepath = filepath::Join(mod.Path, filepath)
 		filepath = filepath::Abs(filepath) else {
 			self.pushErr(decl.Path, "path not found or cannot be accessed: "+decl.Path.Kind)
-			ret ""
+			return ""
 		}
 
-		ret filepath
+		return filepath
 	}
 
 	// Same as the [checkAbsPath] method but designed for std package paths.
 	fn checkStdAbsPath(mut &self, mut filepath: string, mut decl: &ast::Use): string {
 		if filepath == "" {
 			self.pushErr(decl.Path, "invalid import path: "+decl.Path.Kind)
-			ret ""
+			return ""
 		}
 		filepath = filepath::Join(build::PathStdlib(), filepath)
 		filepath = filepath::Abs(filepath) else {
 			self.pushErr(decl.Path, "path not found or cannot be accessed: "+decl.Path.Kind)
-			ret ""
+			return ""
 		}
 
-		ret filepath
+		return filepath
 	}
 
 	// Checks import path and returns as filepath if no error exist.
 	fn checkImpPath(mut &self, mut decl: &ast::Use): (std: bool, filepath: string) {
 		path := decl.Path.Kind[1 : len(decl.Path.Kind)-1] // remove quotes
 		if decl.Extern && build::IsStdHeaderPath(path) {
-			ret false, path
+			return false, path
 		}
 
 		// Take module name and submodule path from the import path.
@@ -369,7 +369,7 @@ impl symBuilder {
 			filepath = checkImportPathValidity(submodulePath)
 			if filepath == "" {
 				self.pushErr(decl.Path, "invalid import path: "+decl.Path.Kind)
-				ret false, ""
+				return false, ""
 			}
 		}
 
@@ -383,14 +383,14 @@ impl symBuilder {
 			if mod == nil {
 				self.pushErr(decl.Path, "module not found")
 				self.pushSuggestion(`run "julec mod init <modulename>" to initialize a module in the current directory`)
-				ret false, ""
+				return false, ""
 			}
 
 			// All import filepaths are must be start with module name.
 			if mod.Name != pathModName {
 				self.pushErr(decl.Path, "import path must use the root name of the module")
 				self.pushSuggestion("module name of this package is: " + conv::Quote(mod.Name))
-				ret false, ""
+				return false, ""
 			}
 
 			filepath = self.checkAbsPath(filepath, decl, mod)
@@ -402,23 +402,23 @@ impl symBuilder {
 				!build::IsValidCppExt(ext) &&
 				!build::IsValidAssemblyExt(ext) {
 				self.pushErr(decl.Token, "invalid C/C++/Assembly extension: "+conv::Quote(ext))
-				ret false, ""
+				return false, ""
 			}
 		}
 
 		// Exist?
 		info := os::Stat(filepath) else {
 			self.pushErr(decl.Token, "path not found or cannot be accessed: "+decl.Path.Kind)
-			ret false, ""
+			return false, ""
 		}
 		exist := !decl.Extern && info.IsDir() ||
 			decl.Extern && info.Mode().IsRegular()
 		if !exist {
 			self.pushErr(decl.Token, "path not found or cannot be accessed: "+decl.Path.Kind)
-			ret false, ""
+			return false, ""
 		}
 
-		ret
+		return
 	}
 
 	// Assigns an alias to import.
@@ -432,7 +432,7 @@ impl symBuilder {
 	fn buildImport(mut &self, mut decl: &ast::Use): &ImportInfo {
 		std, filepath := self.checkImpPath(decl)
 		if filepath == "" { // error occurred
-			ret nil
+			return nil
 		}
 
 		mut imp := &ImportInfo{
@@ -445,7 +445,7 @@ impl symBuilder {
 		if decl.Extern {
 			imp.Extern = true
 			imp.Package = nil // Cpp headers haven't symbol table.
-			ret imp
+			return imp
 		}
 
 		imp.Package = &Package{
@@ -456,23 +456,23 @@ impl symBuilder {
 		} else if !isImplicitImport(imp) {
 			self.assignAlias(imp)
 		}
-		ret imp
+		return imp
 	}
 
 	fn findUseDecl(mut *self, pkg: &ImportInfo): &ImportInfo {
 		// Find package by path to detect external header imports.
 		// Ignore implicit imports, see developer reference (6).
-		ret self.table.SelectPackage(fn|spkg| !isImplicitImport(spkg) && unsafe { pkg.Path == spkg.Path })
+		return self.table.SelectPackage(fn|spkg| !isImplicitImport(spkg) && unsafe { pkg.Path == spkg.Path })
 	}
 
 	fn checkDuplicateUseDecl(mut *self, mut pkg: &ImportInfo): (ok: bool) {
 		mut lpkg := self.findUseDecl(pkg)
 		if lpkg == nil {
-			ret true
+			return true
 		}
 		self.pushErr(pkg.Decl.Token, "package @ is already imported", pkg.LinkPath)
 		self.pushSuggestion("remove duplicate use declarations for to the same package")
-		ret false
+		return false
 	}
 
 	fn pushCycleError(mut &self, sb: &symBuilder, path: string, mut &message: *strings::Builder) {
@@ -499,19 +499,19 @@ impl symBuilder {
 	fn checkImportCycles(mut &self, imp: &ImportInfo, decl: &ast::Use): bool {
 		if imp.Path == self.table.File.Dir() {
 			self.pushErr(decl.Token, "package @ cannot refer to itself", imp.LinkPath)
-			ret false
+			return false
 		}
 		if self.owner == nil {
-			ret true
+			return true
 		}
 		mut owner := self
 		for owner != nil; owner = owner.owner {
 			if owner.table.File.Dir() == imp.Path {
 				self.pushCrossCycleError(owner, imp, decl.Token)
-				ret false
+				return false
 			}
 		}
-		ret true
+		return true
 	}
 
 	// Checks internal packages or etc. for accessibility.
@@ -522,12 +522,12 @@ impl symBuilder {
 	//	- path: path of package that importing.
 	fn checkPackageAccessibility(mut *self, decl: &ast::Use, mod: &mod::Mod, path: string) {
 		if self.importer.GetMod().Equal(mod) {
-			ret
+			return
 		}
 		const InternalName = "internal"
 		i := strings::Index(path, InternalName)
 		if i == -1 {
-			ret
+			return
 		}
 		if i == 0 {
 			// "internal" or "internal/" ?
@@ -535,24 +535,24 @@ impl symBuilder {
 				strings::HasPrefix(path, InternalName+jule::ImportPathSep) {
 				self.pushErr(decl.Token, "internal packages cannot be accessed")
 			}
-			ret
+			return
 		}
 		// "/internal" ?
 		if path[i-1:] == jule::ImportPathSep+InternalName {
 			self.pushErr(decl.Token, "internal packages cannot be accessed")
-			ret
+			return
 		}
 		// "/internal/" ?
 		n := i + len(InternalName) + 1
 		if n < len(path) && path[i-1:n] == jule::ImportPathSep+InternalName+jule::ImportPathSep {
 			self.pushErr(decl.Token, "internal packages cannot be accessed")
-			ret
+			return
 		}
 	}
 
 	fn importPackage(mut &self, mut imp: &ImportInfo, mut decl: &ast::Use): (ok: bool) {
 		if imp.Extern {
-			ret true
+			return true
 		}
 
 		mut port := self.importer.GetImport(imp.Path)
@@ -568,7 +568,7 @@ impl symBuilder {
 			self.importer.SetMod(oldMod)
 		} else {
 			if !self.checkImportCycles(imp, decl) {
-				ret false
+				return false
 			}
 
 			mut oldMod := self.importer.GetMod()
@@ -579,7 +579,7 @@ impl symBuilder {
 			mut asts, mut errors := self.importer.ImportPackage(imp.Path, !imp.Std)
 			if len(errors) > 0 {
 				self.errors = append(self.errors, errors...)
-				ret false
+				return false
 			}
 
 			if !isImplicitImport(imp) && !isRuntimeInternal(imp) {
@@ -592,31 +592,31 @@ impl symBuilder {
 				// Break import if file has error(s).
 				if len(errors) > 0 {
 					self.errors = append(self.errors, errors...)
-					ret false
+					return false
 				}
 				imp.Package.Files = append(imp.Package.Files, table)
 			}
 		}
-		ret true
+		return true
 	}
 
 	fn importUseDecl(mut &self, mut decl: &ast::Use): &ImportInfo {
 		mut imp := self.buildImport(decl)
 		// Break analysis if error occurs.
 		if imp == nil {
-			ret nil
+			return nil
 		}
 		mut ok := self.checkDuplicateUseDecl(imp)
 		if !ok {
-			ret nil
+			return nil
 		}
 		ok = self.importPackage(imp, decl)
 		self.table.Imports = append(self.table.Imports, imp)
 		if ok {
 			self.importer.Imported(imp)
-			ret imp
+			return imp
 		}
-		ret nil
+		return nil
 	}
 
 	fn importUseDecls(mut &self) {
@@ -686,14 +686,14 @@ impl symBuilder {
 		if len(d.Args) == 0 {
 			self.pushErr(d.Tag, "missing expression")
 			self.pushSuggestion(`use like; #pass "-arg"`)
-			ret
+			return
 		}
 
 		mut args := make([]string, len(d.Args))
 		for i, arg in d.Args {
 			if arg.ID != token::STRING || arg.Kind[0] != '"' {
 				self.pushErr(arg, "invalid syntax")
-				ret
+				return
 			}
 			args[i] = arg.Kind[1 : len(arg.Kind)-1] // Remove literal quotes.
 		}
@@ -723,13 +723,13 @@ impl symBuilder {
 		self.importUseDecls()
 		// Break analysis if use declarations has error.
 		if len(self.errors) > 0 {
-			ret
+			return
 		}
 
 		self.appendNodes()
 		// Break analysis if declarations has error.
 		if len(self.errors) > 0 {
-			ret
+			return
 		}
 	}
 }
@@ -737,12 +737,12 @@ impl symBuilder {
 // Reports whether imp is implicitly imported.
 // See developer reference (6).
 fn isImplicitImport(imp: &ImportInfo): bool {
-	ret imp.Decl.Token == nil
+	return imp.Decl.Token == nil
 }
 
 // Reports whether imp is runtime internal package.
 fn isRuntimeInternal(imp: &ImportInfo): bool {
-	ret strings::HasPrefix(imp.LinkPath, "std/internal/runtime")
+	return strings::HasPrefix(imp.LinkPath, "std/internal/runtime")
 }
 
 // Takes filepath and returns module name from the path and submodule path if exist.
@@ -763,24 +763,24 @@ fn splitModuleNameFromFilepath(filepath: string): (modName: string, submodulePat
 		modName = filepath
 		submodulePath = ""
 	}
-	ret
+	return
 }
 
 // Checks validity of the import path and returns it as filepath.
 // Returns empty string if path is invalid.
 fn checkImportPathValidity(path: string): (filepath: string) {
 	if strings::HasSuffix(path, jule::ImportPathSep) {
-		ret ""
+		return ""
 	}
 	parts := strings::Split(path, jule::ImportPathSep)
 	if len(parts) == 0 {
-		ret ""
+		return ""
 	}
 	for _, part in parts {
 		if part == "" || jule::IsBlank(part) || strings::ContainsAny(part, "\\") {
-			ret ""
+			return ""
 		}
 		filepath = filepath::Join(filepath, part)
 	}
-	ret filepath
+	return filepath
 }

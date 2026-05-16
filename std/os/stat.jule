@@ -4,7 +4,7 @@
 
 // Returns a [FileInfo] describing the named file.
 fn Stat(path: string)!: FileInfo {
-	ret stat(path)?
+	return stat(path)?
 }
 
 // Returns a [FileInfo] describing the named file.
@@ -15,5 +15,5 @@ fn Stat(path: string)!: FileInfo {
 // named entity (such as a symbolic link or mounted folder), the returned
 // FileInfo describes the reparse point, and makes no attempt to resolve it.
 fn Lstat(path: string)!: FileInfo {
-	ret lstat(path)?
+	return lstat(path)?
 }

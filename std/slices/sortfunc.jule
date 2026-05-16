@@ -61,7 +61,7 @@ fn siftDownFunc[S: ~[]E, E](mut data: S, lo: int, hi: int, first: int, cmp: fn(a
 			child++
 		}
 		if !(cmp(data[first+root], data[first+child]) < 0) {
-			ret
+			return
 		}
 		data[first+root], data[first+child] = data[first+child], data[first+root]
 		root = child
@@ -113,9 +113,9 @@ fn breakPatternsFunc[S: ~[]E, E](mut data: S, a: int, b: int, cmp: fn(a: E, b: E
 fn order2Func[S: ~[]E, E](data: S, a: int, b: int, mut &swaps: *int, cmp: fn(a: E, b: E): int): (int, int) {
 	if cmp(data[b], data[a]) < 0 {
 		*swaps++
-		ret b, a
+		return b, a
 	}
-	ret a, b
+	return a, b
 }
 
 // Returns x where data[x] is the median of data[a],data[b],data[c], where x is a, b, or c.
@@ -123,12 +123,12 @@ fn medianFunc[S: ~[]E, E](data: S, mut a: int, mut b: int, mut c: int, mut &swap
 	a, b = order2Func(data, a, b, swaps, cmp)
 	b, c = order2Func(data, b, c, swaps, cmp)
 	a, b = order2Func(data, a, b, swaps, cmp)
-	ret b
+	return b
 }
 
 // Finds the median of data[a - 1], data[a], data[a + 1] and stores the index into a.
 fn medianAdjacentFunc[S: ~[]E, E](mut data: S, a: int, mut &swaps: *int, cmp: fn(a: E, b: E): int): int {
-	ret medianFunc(data, a-1, a, a+1, swaps, cmp)
+	return medianFunc(data, a-1, a, a+1, swaps, cmp)
 }
 
 // Chooses a pivot in data[a:b].
@@ -160,11 +160,11 @@ fn choosePivotFunc[S: ~[]E, E](mut data: S, a: int, b: int, cmp: fn(a: E, b: E):
 
 	match swaps {
 	| 0:
-		ret j, sortedHint.Increasing
+		return j, sortedHint.Increasing
 	| maxSwaps:
-		ret j, sortedHint.Decreasing
+		return j, sortedHint.Decreasing
 	|:
-		ret j, sortedHint.Unknown
+		return j, sortedHint.Unknown
 	}
 }
 
@@ -193,11 +193,11 @@ fn partialInsertionSortFunc[S: ~[]E, E](mut data: S, a: int, b: int, cmp: fn(a: 
 		}
 
 		if i == b {
-			ret true
+			return true
 		}
 
 		if b-a < shortestShifting {
-			ret false
+			return false
 		}
 
 		data[i], data[i-1] = data[i-1], data[i]
@@ -223,7 +223,7 @@ fn partialInsertionSortFunc[S: ~[]E, E](mut data: S, a: int, b: int, cmp: fn(a: 
 			}
 		}
 	}
-	ret false
+	return false
 }
 
 // Partitions data[a:b] into elements equal to data[pivot] followed by elements greater than data[pivot].
@@ -247,7 +247,7 @@ fn partitionEqualFunc[S: ~[]E, E](mut data: S, a: int, b: int, pivot: int, cmp: 
 		i++
 		j--
 	}
-	ret i
+	return i
 }
 
 // Does one quicksort partition.
@@ -267,7 +267,7 @@ fn partitionFunc[S: ~[]E, E](mut data: S, a: int, b: int, pivot: int, cmp: fn(a:
 	}
 	if i > j {
 		data[j], data[a] = data[a], data[j]
-		ret j, true
+		return j, true
 	}
 	data[i], data[j] = data[j], data[i]
 	i++
@@ -288,7 +288,7 @@ fn partitionFunc[S: ~[]E, E](mut data: S, a: int, b: int, pivot: int, cmp: fn(a:
 		j--
 	}
 	data[j], data[a] = data[a], data[j]
-	ret j, false
+	return j, false
 }
 
 // Sorts data[a:b].
@@ -309,13 +309,13 @@ fn pdqsortFunc[S: ~[]E, E](mut data: S, mut a: int, mut b: int, mut limit: int, 
 
 		if length <= maxInsertion {
 			insertionSortFunc(data, a, b, cmp)
-			ret
+			return
 		}
 
 		// Fall back to heapsort if too many bad choices were made.
 		if limit == 0 {
 			heapSortFunc(data, a, b, cmp)
-			ret
+			return
 		}
 
 		// If the last partitioning was imbalanced, we need to breaking patterns.
@@ -337,7 +337,7 @@ fn pdqsortFunc[S: ~[]E, E](mut data: S, mut a: int, mut b: int, mut limit: int, 
 		// The slice is likely already sorted.
 		if wasBalanced && wasPartitioned && hint == sortedHint.Increasing {
 			if partialInsertionSortFunc(data, a, b, cmp) {
-				ret
+				return
 			}
 		}
 
@@ -438,7 +438,7 @@ fn symMergeFunc[E](mut data: []E, a: int, m: int, b: int, cmp: fn(a: E, b: E): i
 		for k < i-1; k++ {
 			data[k], data[k+1] = data[k+1], data[k]
 		}
-		ret
+		return
 	}
 
 	// Avoid unnecessary recursions of symMerge
@@ -463,7 +463,7 @@ fn symMergeFunc[E](mut data: []E, a: int, m: int, b: int, cmp: fn(a: E, b: E): i
 		for k > i; k-- {
 			data[k], data[k-1] = data[k-1], data[k]
 		}
-		ret
+		return
 	}
 
 	mid := int(uint(a+b) >> 1)

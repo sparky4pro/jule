@@ -9,27 +9,27 @@ struct _cmplx64 {
 }
 
 fn cmplx64eq(m: cmplx64, n: cmplx64): bool {
-	ret real(m) == real(n) && imag(m) == imag(n)
+	return real(m) == real(n) && imag(m) == imag(n)
 }
 
 fn cmplx64neg(c: cmplx64): cmplx64 {
-	ret cmplx(-real(c), -imag(c))
+	return cmplx(-real(c), -imag(c))
 }
 
 fn cmplx64add(m: cmplx64, n: cmplx64): cmplx64 {
-	ret cmplx(real(m)+real(n), imag(m)+imag(n))
+	return cmplx(real(m)+real(n), imag(m)+imag(n))
 }
 
 fn cmplx64sub(m: cmplx64, n: cmplx64): cmplx64 {
-	ret cmplx(real(m)-real(n), imag(m)-imag(n))
+	return cmplx(real(m)-real(n), imag(m)-imag(n))
 }
 
 fn cmplx64mul(m: cmplx64, n: cmplx64): cmplx64 {
-	ret cmplx(real(m)*real(n)-imag(m)*imag(n), real(m)*imag(n)+imag(m)*real(n))
+	return cmplx(real(m)*real(n)-imag(m)*imag(n), real(m)*imag(n)+imag(m)*real(n))
 }
 
 fn cmplx64div(m: cmplx64, n: cmplx64): cmplx64 {
-	ret cmplx64(cmplx128div(cmplx128(m), cmplx128(n)))
+	return cmplx64(cmplx128div(cmplx128(m), cmplx128(n)))
 }
 
 // Built-in cmplx128 type.
@@ -39,23 +39,23 @@ struct _cmplx128 {
 }
 
 fn cmplx128eq(m: cmplx128, n: cmplx128): bool {
-	ret real(m) == real(n) && imag(m) == imag(n)
+	return real(m) == real(n) && imag(m) == imag(n)
 }
 
 fn cmplx128neg(c: cmplx128): cmplx128 {
-	ret cmplx(-real(c), -imag(c))
+	return cmplx(-real(c), -imag(c))
 }
 
 fn cmplx128add(m: cmplx128, n: cmplx128): cmplx128 {
-	ret cmplx(real(m)+real(n), imag(m)+imag(n))
+	return cmplx(real(m)+real(n), imag(m)+imag(n))
 }
 
 fn cmplx128sub(m: cmplx128, n: cmplx128): cmplx128 {
-	ret cmplx(real(m)-real(n), imag(m)-imag(n))
+	return cmplx(real(m)-real(n), imag(m)-imag(n))
 }
 
 fn cmplx128mul(m: cmplx128, n: cmplx128): cmplx128 {
-	ret cmplx(real(m)*real(n)-imag(m)*imag(n), real(m)*imag(n)+imag(m)*real(n))
+	return cmplx(real(m)*real(n)-imag(m)*imag(n), real(m)*imag(n)+imag(m)*real(n))
 }
 
 fn cmplx128div(n: cmplx128, m: cmplx128): cmplx128 {
@@ -101,7 +101,7 @@ fn cmplx128div(n: cmplx128, m: cmplx128): cmplx128 {
 		}
 	}
 
-	ret cmplx(e, f)
+	return cmplx(e, f)
 }
 
 // Returns a signed 1 if f is an infinity and a signed 0 otherwise.
@@ -111,13 +111,13 @@ fn inf2one(f: f64): f64 {
 	if isInf(f) {
 		g = 1.0
 	}
-	ret copysign(g, f)
+	return copysign(g, f)
 }
 
 fn cmplx64cmplx128(c: cmplx64): cmplx128 {
-	ret cmplx(f64(real(c)), f64(imag(c)))
+	return cmplx(f64(real(c)), f64(imag(c)))
 }
 
 fn cmplx128cmplx64(c: cmplx128): cmplx64 {
-	ret cmplx(f32(real(c)), f32(imag(c)))
+	return cmplx(f32(real(c)), f32(imag(c)))
 }

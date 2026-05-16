@@ -17,19 +17,19 @@ fn compareString(&a: *string, &b: *string): int {
 	for i < l; i++ {
 		c1, c2 := (*a)[i], (*b)[i]
 		if c1 < c2 {
-			ret -1
+			return -1
 		}
 		if c1 > c2 {
-			ret +1
+			return +1
 		}
 	}
 	if len(*a) < len(*b) {
-		ret -1
+		return -1
 	}
 	if len(*a) > len(*b) {
-		ret +1
+		return +1
 	}
-	ret 0
+	return 0
 }
 
 // Converts []byte to string.
@@ -37,7 +37,7 @@ fn compareString(&a: *string, &b: *string): int {
 fn bytesToString(bytes: []byte): string {
 	mut buf := make([]byte, len(bytes))
 	copy(buf, bytes)
-	ret unsafe::StringFromBytes(buf)
+	return unsafe::StringFromBytes(buf)
 }
 
 // Converts []rune to string.
@@ -47,7 +47,7 @@ fn runesToString(runes: []rune): string {
 	for _, r in runes {
 		buf = utf8::AppendRune(buf, r)
 	}
-	ret unsafe::StringFromBytes(buf)
+	return unsafe::StringFromBytes(buf)
 }
 
 // Converts string to []rune.
@@ -60,7 +60,7 @@ fn stringToRunes(s: string): []rune {
 		n += len
 		buf = append(buf, r)
 	}
-	ret buf
+	return buf
 }
 
 // Converts string to []byte.
@@ -68,7 +68,7 @@ fn stringToRunes(s: string): []rune {
 fn stringToBytes(s: string): []byte {
 	mut buf := make([]byte, len(s))
 	copy(buf, s)
-	ret buf
+	return buf
 }
 
 // Converts byte to string.
@@ -76,7 +76,7 @@ fn stringToBytes(s: string): []byte {
 fn stringFromByte(b: byte): string {
 	mut buf := make([]byte, 1)
 	buf[0] = b
-	ret unsafe::StringFromBytes(buf)
+	return unsafe::StringFromBytes(buf)
 }
 
 // Converts rune to string.
@@ -84,7 +84,7 @@ fn stringFromByte(b: byte): string {
 fn stringFromRune(r: rune): string {
 	mut buf := make([]byte, 0, utf8::UTFMax)
 	buf = utf8::AppendRune(buf, r)
-	ret unsafe::StringFromBytes(buf)
+	return unsafe::StringFromBytes(buf)
 }
 
 // Designed for []rune(s) iterations.
@@ -104,5 +104,5 @@ unsafe fn runeStep(s: *byte, n: int, mut r: *rune, mut outLen: *int) {
 // Returns rune count of the string.
 #export "__jule_runeCount"
 fn runeCount(s: string): int {
-	ret utf8::RuneCountString(s)
+	return utf8::RuneCountString(s)
 }

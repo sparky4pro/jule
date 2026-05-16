@@ -11,5 +11,5 @@ const (
 
 // Reports whether c is a directory separator character.
 fn IsPathSeparator(c: byte): bool {
-	ret PathSeparator == c
+	return PathSeparator == c
 }

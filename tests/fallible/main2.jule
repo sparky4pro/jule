@@ -6,37 +6,37 @@ fn single(x: int)!: int {
 	if x < 0 {
 		throw "foo"
 	}
-	ret x
+	return x
 }
 
 fn singleRetTest()!: int {
-	ret single(89)!
+	return single(89)!
 }
 
 fn singleRetTest1()!: int {
-	ret single(89) else { throw error }
+	return single(89) else { throw error }
 }
 fn singleRetTest1F()!: int {
-	ret single(89)?
+	return single(89)?
 }
 
 fn singleRetTest2()!: int {
-	ret single(-1) else { throw error }
+	return single(-1) else { throw error }
 }
 fn singleRetTest2F()!: int {
-	ret single(-1)?
+	return single(-1)?
 }
 
 fn singleRetTest3()!: int {
-	ret single(-1) else { use 90 }
+	return single(-1) else { use 90 }
 }
 
 fn singleRetTest4()!: int {
-	ret single(-1) else { ret 34 }
+	return single(-1) else { return 34 }
 }
 
 fn singleRetTest5()!: int {
-	ret single(-1) else {
+	return single(-1) else {
 		use single(-1) else {
 			use single(28)!
 		}
@@ -44,9 +44,9 @@ fn singleRetTest5()!: int {
 }
 
 fn singleRetTest6()!: int {
-	ret single(-1) else {
-		ret single(-1) else {
-			ret single(28)!
+	return single(-1) else {
+		return single(-1) else {
+			return single(28)!
 		}
 	}
 }
@@ -180,31 +180,31 @@ fn multi(x: int, y: int)!: (int, int) {
 	if x < 0 || y < 0 {
 		throw "foo"
 	}
-	ret x, y
+	return x, y
 }
 
 fn multiRetTest()!: (int, int) {
-	ret multi(98, 89)!
+	return multi(98, 89)!
 }
 
 fn multiRetTest1()!: (int, int) {
-	ret multi(98, 89) else { throw error }
+	return multi(98, 89) else { throw error }
 }
 
 fn multiRetTest2()!: (int, int) {
-	ret multi(-1, -1) else { throw error }
+	return multi(-1, -1) else { throw error }
 }
 
 fn multiRetTest3()!: (int, int) {
-	ret multi(-1, -1) else { use 90, 20 }
+	return multi(-1, -1) else { use 90, 20 }
 }
 
 fn multiRetTest4()!: (int, int) {
-	ret multi(-1, -1) else { ret 34, 43 }
+	return multi(-1, -1) else { return 34, 43 }
 }
 
 fn multiRetTest5()!: (int, int) {
-	ret multi(-1, -1) else {
+	return multi(-1, -1) else {
 		use multi(-1, -1) else {
 			use multi(82, 28)!
 		}
@@ -212,9 +212,9 @@ fn multiRetTest5()!: (int, int) {
 }
 
 fn multiRetTest6()!: (int, int) {
-	ret multi(-1, -1) else {
-		ret multi(-1, -1) else {
-			ret multi(82, 28)!
+	return multi(-1, -1) else {
+		return multi(-1, -1) else {
+			return multi(82, 28)!
 		}
 	}
 }

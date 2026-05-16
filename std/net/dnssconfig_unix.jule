@@ -23,13 +23,13 @@ async fn osResolveConfig() {
 		conf.servers = defaultNS
 		conf.search = dnsDefaultSearch()
 		conf.mtime = time::Time{}
-		ret
+		return
 	}
 	fi := os::Stat(osConfigPath) else {
 		conf.servers = defaultNS
 		conf.search = dnsDefaultSearch()
 		conf.mtime = time::Time{}
-		ret
+		return
 	}
 	conf.mtime = fi.ModTime()
 	mut line, ok := file.readLine().await
@@ -128,19 +128,19 @@ async fn osResolveConfig() {
 fn dnsDefaultSearch(): []string {
 	hn := os::Hostname() else {
 		// best effort
-		ret nil
+		return nil
 	}
 
 	i := byteslite::IndexByteString(hn, '.')
 	if i >= 0 && i < len(hn)-1 {
-		ret [ensureRooted(hn[i+1:])]
+		return [ensureRooted(hn[i+1:])]
 	}
-	ret nil
+	return nil
 }
 
 fn ensureRooted(s: string): string {
 	if len(s) > 0 && s[len(s)-1] == '.' {
-		ret s
+		return s
 	}
-	ret s + "."
+	return s + "."
 }

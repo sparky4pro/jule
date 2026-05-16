@@ -52,7 +52,7 @@ impl scopeDeadCode {
 
 	fn eliminateFollowed(mut *self) {
 		if len(*self.gotos) != 0 {
-			ret
+			return
 		}
 		unsafe {
 			self.s.Stmts = self.s.Stmts[:self.i+1]
@@ -70,7 +70,7 @@ impl scopeDeadCode {
 		mut i := 0
 		for i < len(*self.labels); i++ {
 			if gt.Name == (*self.labels)[i].Name {
-				ret
+				return
 			}
 		}
 		*self.gotos = append(*self.gotos, gt)

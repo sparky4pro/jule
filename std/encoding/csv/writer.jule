@@ -65,7 +65,7 @@ struct Writer {
 impl Writer {
 	// Returns new Writer instance that writes w.
 	fn New(mut w: io::Writer): &Writer {
-		ret &Writer{
+		return &Writer{
 			Comma: ',',
 			w:     bufio::Writer.New(w),
 		}
@@ -85,25 +85,25 @@ impl Writer {
 	// For Postgres, quote the data terminating string `\.`.
 	fn fieldNeedsQuotes(*self, field: string): bool {
 		if len(field) == 0 {
-			ret false
+			return false
 		}
 		if field == `\.` {
-			ret true
+			return true
 		}
 		if self.Comma < utf8::RuneSelf {
 			mut i := 0
 			for i < len(field); i++ {
 				c := field[i]
 				if c == '\n' || c == '\r' || c == '"' || c == byte(self.Comma) {
-					ret true
+					return true
 				}
 			}
 		} else if strings::ContainsRune(field, self.Comma) ||
 			strings::ContainsAny(field, "\"\r\n") {
-			ret true
+			return true
 		}
 		r1, _ := utf8::DecodeRuneString(field)
-		ret unicode::IsSpace(r1)
+		return unicode::IsSpace(r1)
 	}
 
 	// Writes a single CSV record along with any necessary quoting.

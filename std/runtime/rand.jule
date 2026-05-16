@@ -54,7 +54,7 @@ impl randmach {
 		self.mu.unlock()
 
 		// XSL-RR would be
-		//	ret bits::RotateLeft64(lo^hi, -int(hi>>58))
+		//	return bits::RotateLeft64(lo^hi, -int(hi>>58))
 		// but Numpy uses DXSM and O'Neill suggests doing the same.
 		// See https://github.com/golang/go/issues/21835#issuecomment-739065688
 		// and following comments.
@@ -68,7 +68,7 @@ impl randmach {
 		hi *= cheapMul
 		hi ^= hi >> 48
 		hi *= (lo | 1)
-		ret hi
+		return hi
 	}
 
 	// Same as next (stay sync), but not concurrency-safe.
@@ -91,7 +91,7 @@ impl randmach {
 		hi *= cheapMul
 		hi ^= hi >> 48
 		hi *= (lo | 1)
-		ret hi
+		return hi
 	}
 }
 
@@ -109,19 +109,19 @@ fn randinit() {
 // Returns pseudo-random number from the global random state.
 // It is safe for concurrent use by multiple coroutines.
 fn randg(): u64 {
-	ret __rand.next()
+	return __rand.next()
 }
 
 // Returns pseudo-random number from the thread local random state.
 #disable nilptr
 fn rand(): u64 {
-	ret gett().rand.nextl()
+	return gett().rand.nextl()
 }
 
 // Like rand() % n but faster.
 fn randn(n: u32): u32 {
 	// See https://lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction
-	ret u32((u64(u32(rand())) * u64(n)) >> 32)
+	return u32((u64(u32(rand())) * u64(n)) >> 32)
 }
 
 #disable nilptr
@@ -146,7 +146,7 @@ fn cheaprand(): u32 {
 		s1 ^= s1 << 17
 		s1 = s1 ^ s0 ^ s1>>7 ^ s0>>16
 		(*t)[0], (*t)[1] = s0, s1
-		ret s0 + s1
+		return s0 + s1
 	}
 }
 
@@ -154,11 +154,11 @@ fn cheaprand(): u32 {
 // suitable for calling at very high frequency.
 // it is "cheap" in the sense of both expense and quality.
 fn cheaprand64(): i64 {
-	ret i64(cheaprand())<<31 ^ i64(cheaprand())
+	return i64(cheaprand())<<31 ^ i64(cheaprand())
 }
 
 // Like cheaprand() % n but faster.
 fn cheaprandn(n: u32): u32 {
 	// See https://lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/
-	ret u32((u64(cheaprand()) * u64(n)) >> 32)
+	return u32((u64(cheaprand()) * u64(n)) >> 32)
 }

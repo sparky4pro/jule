@@ -56,14 +56,14 @@ impl directiveEval {
 		} else {
 			// Missing operand.
 			self.pushErr(tokens[last-1], "expected operand")
-			ret nil
+			return nil
 		}
-		ret parts
+		return parts
 	}
 
 	// Eval directive tag.
 	fn evalDirectiveName(*self, name: string): bool {
-		ret findTag(self.tags, name) >= 0
+		return findTag(self.tags, name) >= 0
 	}
 
 	// Eval directive expression part.
@@ -76,34 +76,34 @@ impl directiveEval {
 
 		if len(part) > 1 {
 			self.pushErr(part[1], "invalid syntax")
-			ret false
+			return false
 		}
 
 		mut result := self.evalDirectiveName(part[0].Kind)
 		if logicalNot {
 			result = !result
 		}
-		ret result
+		return result
 	}
 
 	fn eval(mut *self): bool {
 		if len(self.d.Args) == 0 {
 			self.pushErr(self.d.Tag, "missing expression")
-			ret false
+			return false
 		}
 
 		mut result := false
 
 		mut logicalOrParts := self.splitOperans(token::LOR, self.d.Args)
 		if logicalOrParts == nil {
-			ret false
+			return false
 		}
 
 		for (_, mut part) in logicalOrParts {
 			mut and := true
 			mut logicalAndParts := self.splitOperans(token::LAND, part)
 			if logicalAndParts == nil {
-				ret false
+				return false
 			}
 
 			for (_, mut andPart) in logicalAndParts {
@@ -114,7 +114,7 @@ impl directiveEval {
 					// Missing close.
 					if end.ID != token::RPAREN {
 						self.pushErr(first, "parentheses open but not closed, expected )")
-						ret false
+						return false
 					}
 
 					andPart = andPart[1 : len(andPart)-1] // Remove parentheses.
@@ -125,6 +125,6 @@ impl directiveEval {
 			result = result || and
 		}
 
-		ret result
+		return result
 	}
 }

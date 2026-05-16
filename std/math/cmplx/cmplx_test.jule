@@ -21,13 +21,13 @@ let divTests: []arithTest = [
 
 fn eqf(a: f64, b: f64): bool {
 	if math::IsNaN(a) {
-		ret math::IsNaN(b)
+		return math::IsNaN(b)
 	}
-	ret a == b
+	return a == b
 }
 
 fn eq(a: cmplx128, b: cmplx128): bool {
-	ret eqf(real(a), real(b)) && eqf(imag(a), imag(b))
+	return eqf(real(a), real(b)) && eqf(imag(a), imag(b))
 }
 
 #test

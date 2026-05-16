@@ -11,19 +11,19 @@ struct IPAddr {
 impl Addr for IPAddr {
 	// Returns the address's network name, "ip".
 	fn Network(*self): string {
-		ret "ip"
+		return "ip"
 	}
 
 	// Returns string form of address.
 	fn String(*self): string {
 		if self == nil {
-			ret "<nil>"
+			return "<nil>"
 		}
 		ip := self.IP.ipEmptyString()
 		if self.Zone != "" {
-			ret ip + "%" + self.Zone
+			return ip + "%" + self.Zone
 		}
-		ret ip
+		return ip
 	}
 }
 
@@ -45,7 +45,7 @@ impl IPAddr {
 		match network {
 		| IP | IP4 | IP6:
 			mut addrs := resolveInternetAddrList(network, address).await?
-			ret addrs.forResolve(network, address).(&IPAddr)
+			return addrs.forResolve(network, address).(&IPAddr)
 		|:
 			throw &AddrError{Err: "invalid network: " + string(network)}
 		}

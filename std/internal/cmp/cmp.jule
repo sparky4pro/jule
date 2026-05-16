@@ -9,10 +9,10 @@ fn Less[T: ordered](x: T, y: T): bool {
 	const match type T {
 	| f32 | f64:
 		if isNaN(x) && !isNaN(y) {
-			ret true
+			return true
 		}
 	}
-	ret x < y
+	return x < y
 }
 
 // Returns
@@ -28,24 +28,24 @@ fn Compare[T: ordered](x: T, y: T): int {
 	yNaN := isNaN(y)
 	if xNaN {
 		if yNaN {
-			ret 0
+			return 0
 		}
-		ret -1
+		return -1
 	}
 	if yNaN {
-		ret +1
+		return +1
 	}
 	if x < y {
-		ret -1
+		return -1
 	}
 	if x > y {
-		ret +1
+		return +1
 	}
-	ret 0
+	return 0
 }
 
 // isNaN reports whether x is a NaN without requiring the math package.
 // This will always return false if T is not floating-point.
 fn isNaN[T](x: T): bool {
-	ret x != x
+	return x != x
 }

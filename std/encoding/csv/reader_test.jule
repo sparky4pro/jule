@@ -485,7 +485,7 @@ async fn testRead(t: &testing::T) {
 		r.LazyQuotes = tt.LazyQuotes
 		r.TrimLeadingSpace = tt.TrimLeadingSpace
 		r.ReuseRecord = tt.ReuseRecord
-		ret r, positions, errPositions, input
+		return r, positions, errPositions, input
 	}
 	for (_, mut tt) in readTests {
 		mut r, positions, errPositions, input := newReader(tt)
@@ -573,16 +573,16 @@ async fn testRead(t: &testing::T) {
 fn firstError(mut errs: []any, positions: [][][2]int, errPositions: map[int][2]int): any {
 	for (i, mut err) in errs {
 		if err != nil {
-			ret errorWithPosition(err, i, positions, errPositions)
+			return errorWithPosition(err, i, positions, errPositions)
 		}
 	}
-	ret nil
+	return nil
 }
 
 fn errorWithPosition(mut err: any, recNum: int, positions: [][][2]int, errPositions: map[int][2]int): any {
 	mut parseErr, mut ok := err.(&ParseError)
 	if !ok {
-		ret err
+		return err
 	}
 	if recNum >= len(positions) {
 		panic("no positions found for error at record " + fmt::Sprint(recNum))
@@ -595,7 +595,7 @@ fn errorWithPosition(mut err: any, recNum: int, positions: [][][2]int, errPositi
 	parseErr1.StartLine = positions[recNum][0][0]
 	parseErr1.Line = errPos[0]
 	parseErr1.Column = errPos[1]
-	ret parseErr1
+	return parseErr1
 }
 
 // Returns the expected field positions of all
@@ -635,5 +635,5 @@ fn makePositions(mut text: string): ([][][2]int, map[int][2]int, string) {
 		}
 		text = text[size:]
 	}
-	ret positions, errPositions, string(buf)
+	return positions, errPositions, string(buf)
 }

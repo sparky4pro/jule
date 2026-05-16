@@ -133,15 +133,15 @@ fn Exp(x: f64): f64 {
 	// special cases
 	match {
 	| IsNaN(x) | IsInf(x, 1):
-		ret x
+		return x
 	| IsInf(x, -1):
-		ret 0
+		return 0
 	| x > Overflow:
-		ret Inf(1)
+		return Inf(1)
 	| x < Underflow:
-		ret 0
+		return 0
 	| -NearZero < x && x < NearZero:
-		ret 1 + x
+		return 1 + x
 	}
 
 	// reduce; computed as r = hi - lo for extra precision.
@@ -156,7 +156,7 @@ fn Exp(x: f64): f64 {
 	lo := f64(k) * Ln2Lo
 
 	// compute
-	ret expmulti(hi, lo, k)
+	return expmulti(hi, lo, k)
 }
 
 // Returns 2**x, the base-2 exponential of x.
@@ -173,13 +173,13 @@ fn Exp2(x: f64): f64 {
 	// special cases
 	match {
 	| IsNaN(x) | IsInf(x, 1):
-		ret x
+		return x
 	| IsInf(x, -1):
-		ret 0
+		return 0
 	| x > Overflow:
-		ret Inf(1)
+		return Inf(1)
 	| x < Underflow:
-		ret 0
+		return 0
 	}
 
 	// argument reduction; x = r×lg(e) + k with |r| ≤ ln(2)/2.
@@ -196,7 +196,7 @@ fn Exp2(x: f64): f64 {
 	lo := -t * Ln2Lo
 
 	// compute
-	ret expmulti(hi, lo, k)
+	return expmulti(hi, lo, k)
 }
 
 // Returns e**r × 2**k where r = hi - lo and |r| ≤ ln(2)/2.
@@ -214,5 +214,5 @@ fn expmulti(hi: f64, lo: f64, k: int): f64 {
 	c := r - t*(p1+t*(p2+t*(p3+t*(p4+t*p5))))
 	y := 1 - ((lo - (r*c)/(2-c)) - hi)
 	// TODO: make sure ldexp can handle boundary k
-	ret Ldexp(y, k)
+	return Ldexp(y, k)
 }

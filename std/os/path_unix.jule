@@ -4,5 +4,5 @@
 
 // This is a noop on non-Windows platforms.
 fn fixLongPath(path: string): string {
-	ret path
+	return path
 }

@@ -9,8 +9,8 @@ use "std/unicode/utf8"
 fn IsPub(name: string): bool {
 	if name[0] < utf8::RuneSelf { // ASCII, fast way.
 		b := name[0]
-		ret 'A' <= b && b <= 'Z'
+		return 'A' <= b && b <= 'Z'
 	}
 	r, _ := utf8::DecodeRuneString(name)
-	ret unicode::IsUpper(r)
+	return unicode::IsUpper(r)
 }

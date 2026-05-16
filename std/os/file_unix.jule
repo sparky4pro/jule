@@ -18,7 +18,7 @@ fn openFile(path: string, flag: int, perm: FileMode)!: &File {
 	ignoringEINTR(fn|| {
 		unsafe { *_fd = sys::Open(path, flag|sys::O_CLOEXEC, syscallMode(perm))? }
 	})?
-	ret newFile(fd, poll::File, unix::HasNonblockFlag(flag))?
+	return newFile(fd, poll::File, unix::HasNonblockFlag(flag))?
 }
 
 fn newFile(fd: int, mut flags: int, nonBlocking: bool)!: &File {
@@ -130,7 +130,7 @@ fn newFile(fd: int, mut flags: int, nonBlocking: bool)!: &File {
 			sys::SetNonblock(fd, false) else {}
 		}
 	}
-	ret &File{fd: pfd}
+	return &File{fd: pfd}
 }
 
 fn remove(path: string)! {

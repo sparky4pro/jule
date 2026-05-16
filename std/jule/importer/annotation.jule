@@ -23,7 +23,7 @@ fn checkOS(arg: string): (ok: bool, exist: bool) {
 		ok = true
 		exist = false
 	}
-	ret
+	return
 }
 
 fn checkArch(arg: string): (ok: bool, exist: bool) {
@@ -44,7 +44,7 @@ fn checkArch(arg: string): (ok: bool, exist: bool) {
 		ok = true
 		exist = false
 	}
-	ret
+	return
 }
 
 impl importer {
@@ -58,7 +58,7 @@ impl importer {
 			if findTag(self.tags, "test") == -1 {
 				// file have _test suffix and test compilation is not enabled
 				// so this file should be ignored
-				ret false
+				return false
 			}
 			p = p[:len(p)-len("_test")]
 		}
@@ -77,13 +77,13 @@ impl importer {
 			// Check file name directly if not exist any _ character.
 			mut ok, mut exist := checkOS(p)
 			if exist {
-				ret ok
+				return ok
 			}
 			ok, exist = checkArch(p)
-			ret !exist || ok
+			return !exist || ok
 		}
 		if i+1 >= n {
-			ret true
+			return true
 		}
 		a1 = p[i+1:]
 
@@ -98,24 +98,24 @@ impl importer {
 		if a2 == "" {
 			mut ok, mut exist := checkOS(a1)
 			if exist {
-				ret ok
+				return ok
 			}
 			ok, exist = checkArch(a1)
-			ret !exist || ok
+			return !exist || ok
 		}
 
 		mut ok, mut exist := checkArch(a1)
 		if exist {
 			if !ok {
-				ret false
+				return false
 			}
 			ok, exist = checkOS(a2)
-			ret !exist || ok
+			return !exist || ok
 		}
 
 		// a1 is not architecture, for this reason bad couple pattern.
 		// Accept as one pattern, so a1 can be platform.
 		ok, exist = checkOS(a1)
-		ret !exist || ok
+		return !exist || ok
 	}
 }

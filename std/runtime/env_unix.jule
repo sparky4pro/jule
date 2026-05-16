@@ -13,7 +13,7 @@ fn args(): []string {
 			args[i] = unsafe::String(arg, strlen(arg))
 		}
 	}
-	ret args
+	return args
 }
 
 fn env(): []string {
@@ -26,12 +26,12 @@ fn env(): []string {
 			env = append(env, unsafe::String(p, strlen(p)))
 		}
 	}
-	ret env
+	return env
 }
 
 unsafe fn strlen(mut p: *byte): (n: int) {
 	for *p != 0; p++ {
 		n++
 	}
-	ret
+	return
 }

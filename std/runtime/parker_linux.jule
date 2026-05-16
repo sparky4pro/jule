@@ -51,14 +51,14 @@ impl parker {
 		// Change NOTIFIED=>EMPTY or EMPTY=>PARKED, and directly return in the
 		// first case.
 		if atomic::Add(&self.state, ^linux::FutexState(0), atomic::Acquire) == _PARK_EMPTY {
-			ret
+			return
 		}
 		for {
 			// Wait for something to happen, assuming it's still set to PARKED.
 			linux::FutexWait(&self.state, _PARK_PARKED, -1)
 			// Change NOTIFIED=>EMPTY and return in that case.
 			if atomic::CompareAndSwap(&self.state, _PARK_NOTIFIED, _PARK_EMPTY, atomic::Acquire, atomic::Acquire) {
-				ret
+				return
 			} else {
 				// Spurious wake up. We loop to try again.
 			}

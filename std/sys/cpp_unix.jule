@@ -16,10 +16,10 @@ extern unsafe fn readdir(mut dir: *extern.DIR): *unsafe
 extern struct DIR{}
 
 // Calls C's opendir function.
-unsafe fn Opendir(path: *byte): *unsafe { ret extern.opendir((*c::Char)(path)) }
+unsafe fn Opendir(path: *byte): *unsafe { return extern.opendir((*c::Char)(path)) }
 
 // Calls C's readdir function.
-unsafe fn Readdir(mut dir: *unsafe): *Dirent { ret (*Dirent)(extern.readdir((*extern.DIR)(dir))) }
+unsafe fn Readdir(mut dir: *unsafe): *Dirent { return (*Dirent)(extern.readdir((*extern.DIR)(dir))) }
 
 // Calls C's closedir function.
-unsafe fn Closedir(mut dir: *unsafe): int { ret extern.closedir((*extern.DIR)(dir)) }
+unsafe fn Closedir(mut dir: *unsafe): int { return extern.closedir((*extern.DIR)(dir)) }

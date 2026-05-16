@@ -24,7 +24,7 @@ fn readDir(path: string)!: (dirents: []DirEntry) {
 		}
 	}
 	sys::FindClose(handle)
-	ret
+	return
 }
 
 fn mkdir(path: string)! {

@@ -42,7 +42,7 @@ impl float {
 		if prec > 0 {
 			cap += prec
 		}
-		ret unsafe::StringFromBytes(self.Append(make([]byte, 0, cap), format, prec))
+		return unsafe::StringFromBytes(self.Append(make([]byte, 0, cap), format, prec))
 	}
 
 	// Appends to buf the string form of the floating-point number x(self),
@@ -58,17 +58,17 @@ impl float {
 			if !self.neg {
 				buf = append(buf, '+')
 			}
-			ret append(buf, "Inf"...)
+			return append(buf, "Inf"...)
 		}
 
 		// pick off easy formats
 		match fmt {
 		| 'b':
-			ret self.fmtB(buf)
+			return self.fmtB(buf)
 		| 'p':
-			ret self.fmtP(buf)
+			return self.fmtP(buf)
 		| 'x':
-			ret self.fmtX(buf, prec)
+			return self.fmtX(buf, prec)
 		}
 
 		// Algorithm:
@@ -117,9 +117,9 @@ impl float {
 		// 3) read digits out and format
 		match fmt {
 		| 'e' | 'E':
-			ret fmtE(buf, fmt, prec, d)
+			return fmtE(buf, fmt, prec, d)
 		| 'f':
-			ret fmtF(buf, prec, d)
+			return fmtF(buf, prec, d)
 		| 'g' | 'G':
 			// trim trailing fractional zeros in %e format
 			mut eprec := prec
@@ -138,19 +138,19 @@ impl float {
 				if prec > len(d.mant) {
 					prec = len(d.mant)
 				}
-				ret fmtE(buf, fmt+'e'-'g', prec-1, d)
+				return fmtE(buf, fmt+'e'-'g', prec-1, d)
 			}
 			if prec > d.exp {
 				prec = len(d.mant)
 			}
-			ret fmtF(buf, max(prec-d.exp, 0), d)
+			return fmtF(buf, max(prec-d.exp, 0), d)
 		}
 
 		// unknown format
 		if self.neg {
 			buf = buf[:len(buf)-1] // sign was added prematurely - remove it again
 		}
-		ret append(buf, '%', fmt)
+		return append(buf, '%', fmt)
 	}
 
 	// Appends the string of x(self) in the format mantissa "p" exponent
@@ -162,7 +162,7 @@ impl float {
 	// (The caller handles Inf before invoking fmtB.)
 	fn fmtB(*self, mut buf: []byte): []byte {
 		if self.form == zero {
-			ret append(buf, '0')
+			return append(buf, '0')
 		}
 
 		if debugFloat && self.form != finite {
@@ -190,7 +190,7 @@ impl float {
 		if e >= 0 {
 			buf = append(buf, '+')
 		}
-		ret conv::AppendInt(buf, e, 10)
+		return conv::AppendInt(buf, e, 10)
 	}
 
 	// fmtX appends the string of x in the format "0x1." mantissa "p" exponent
@@ -210,7 +210,7 @@ impl float {
 				}
 			}
 			buf = append(buf, "p+00"...)
-			ret buf
+			return buf
 		}
 
 		if debugFloat && self.form != finite {
@@ -266,7 +266,7 @@ impl float {
 		if exp64 < 10 {
 			buf = append(buf, '0')
 		}
-		ret conv::AppendInt(buf, exp64, 10)
+		return conv::AppendInt(buf, exp64, 10)
 	}
 
 	// Appends the string of x(self) in the format "0x." mantissa "p" exponent
@@ -277,7 +277,7 @@ impl float {
 	// (The caller handles Inf before invoking fmtP.)
 	fn fmtP(*self, mut buf: []byte): []byte {
 		if self.form == zero {
-			ret append(buf, '0')
+			return append(buf, '0')
 		}
 
 		if debugFloat && self.form != finite {
@@ -300,7 +300,7 @@ impl float {
 		if self.exp >= 0 {
 			buf = append(buf, '+')
 		}
-		ret conv::AppendInt(buf, i64(self.exp), 10)
+		return conv::AppendInt(buf, i64(self.exp), 10)
 	}
 }
 
@@ -345,7 +345,7 @@ fn fmtE(mut buf: []byte, fmt: byte, prec: int, d: decimal): []byte {
 	if exp < 10 {
 		buf = append(buf, '0') // at least 2 exponent digits
 	}
-	ret conv::AppendInt(buf, exp, 10)
+	return conv::AppendInt(buf, exp, 10)
 }
 
 // %f: ddddddd.ddddd
@@ -370,13 +370,13 @@ fn fmtF(mut buf: []byte, prec: int, d: decimal): []byte {
 		}
 	}
 
-	ret buf
+	return buf
 }
 
 fn roundShortest(mut &d: *decimal, &x: *float) {
 	// if the mantissa is zero, the number is zero - stop now
 	if len(d.mant) == 0 {
-		ret
+		return
 	}
 
 	// Approach: All numbers in the interval [x - 1/2ulp, x + 1/2ulp]
@@ -439,13 +439,13 @@ fn roundShortest(mut &d: *decimal, &x: *float) {
 		match {
 		| okdown && okup:
 			d.round(i + 1)
-			ret
+			return
 		| okdown:
 			d.roundDown(i + 1)
-			ret
+			return
 		| okup:
 			d.roundUp(i + 1)
-			ret
+			return
 		}
 	}
 }

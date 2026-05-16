@@ -28,7 +28,7 @@ const FutexStateMax = u32.Max
 // FutexWait and FutexWake must be used in most case.
 fn Futex(addr: *unsafe, op: i32, val: FutexState, ts: *unsafe, addr2: *unsafe, val3: FutexState): uintptr {
 	_, err := syscall::Syscall(sys::SYS_FUTEX, uintptr(addr), uintptr(op), uintptr(val), uintptr(ts), uintptr(addr2), uintptr(val3))
-	ret err
+	return err
 }
 
 // Atomically,
@@ -45,7 +45,7 @@ fn FutexWait(&addr: *FutexState, val: FutexState, ns: i64) {
 	// spurious wakeups are allowed.
 	if ns < 0 {
 		Futex(addr, _FUTEX_WAIT_PRIVATE, val, nil, nil, 0)
-		ret
+		return
 	}
 
 	let mut ts: timespec
@@ -57,7 +57,7 @@ fn FutexWait(&addr: *FutexState, val: FutexState, ns: i64) {
 fn FutexWake(&addr: *FutexState, cnt: FutexState) {
 	err := Futex(addr, _FUTEX_WAKE_PRIVATE, cnt, nil, nil, 0)
 	if err == syscall::NO_ERROR {
-		ret
+		return
 	}
 
 	// We don't know that futex wakeup can return

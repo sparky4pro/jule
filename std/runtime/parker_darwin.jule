@@ -51,7 +51,7 @@ struct parker {
 impl parker {
 	fn init(mut *self) {
 		if self.sema != nil {
-			ret
+			return
 		}
 		self.sema = sys::Addrcall[*unsafe](uintptr(extern.dispatch_semaphore_create), 0)
 		if self.sema == nil {
@@ -66,7 +66,7 @@ impl parker {
 
 		// Change NOTIFIED to EMPTY and EMPTY to PARKED.
 		if atomic::Add(&self.state, -1, atomic::Acquire) == _PARK_EMPTY {
-			ret
+			return
 		}
 
 		// Another thread may increase the semaphore counter from this point on.

@@ -13,7 +13,7 @@ fn failVoid()! {
 }
 
 fn successRet()!: int {
-	ret 20
+	return 20
 }
 
 fn failRet()!: int {
@@ -22,7 +22,7 @@ fn failRet()!: int {
 
 fn successRet1()!: (a: int) {
 	a = 40
-	ret
+	return
 }
 
 fn failRet1()!: (a: f64) {
@@ -32,7 +32,7 @@ fn failRet1()!: (a: f64) {
 fn successRet2()!: (a: int, b: int) {
 	a = 40
 	b = 50
-	ret
+	return
 }
 
 fn failRet2()!: (a: int, b: int) {
@@ -91,7 +91,7 @@ fn deferTestForwarding()!: (x: int) {
 	defer {
 		deferWorks = true
 	}
-	ret fn()!: int {
+	return fn()!: int {
 		throw "arbitrary error"
 	}() else {
 		throw error

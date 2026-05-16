@@ -9,9 +9,9 @@ use "std/sys"
 // Boolean to int.
 fn boolint(b: bool): int {
 	if b {
-		ret 1
+		return 1
 	}
-	ret 0
+	return 0
 }
 
 fn setNoDelay(mut fd: &netFD, noDelay: bool)! {
@@ -22,5 +22,5 @@ fn setNoDelay(mut fd: &netFD, noDelay: bool)! {
 // Takes conn and applies default behavior of the Jule runtime.
 fn newTCPConn(mut conn: &TCPConn): &TCPConn {
 	setNoDelay(conn.fd, true)!
-	ret conn
+	return conn
 }

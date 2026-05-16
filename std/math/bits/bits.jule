@@ -44,19 +44,19 @@ const UintSize = 32 << (^uint(0) >> 63) // 32 or 64
 // --- leading_zeros ---
 
 // Returns the number of leading zero bits in x; the result is UintSize for x == 0.
-fn LeadingZeros(x: uint): int { ret UintSize - Len(x) }
+fn LeadingZeros(x: uint): int { return UintSize - Len(x) }
 
 // Returns the number of leading zero bits in x; the result is 8 for x == 0.
-fn LeadingZeros8(x: u8): int { ret 8 - Len8(x) }
+fn LeadingZeros8(x: u8): int { return 8 - Len8(x) }
 
 // Returns the number of leading zero bits in x; the result is 16 for x == 0.
-fn LeadingZeros16(x: u16): int { ret 16 - Len16(x) }
+fn LeadingZeros16(x: u16): int { return 16 - Len16(x) }
 
 // Returns the number of leading zero bits in x; the result is 32 for x == 0.
-fn LeadingZeros32(x: u32): int { ret 32 - Len32(x) }
+fn LeadingZeros32(x: u32): int { return 32 - Len32(x) }
 
 // Returns the number of leading zero bits in x; the result is 64 for x == 0.
-fn LeadingZeros64(x: u64): int { ret 64 - Len64(x) }
+fn LeadingZeros64(x: u64): int { return 64 - Len64(x) }
 
 // --- trailing_zeros ---
 
@@ -80,38 +80,38 @@ let deBruijn64Tab: [64]byte = [
 // Returns the number of trailing zero bits in x; the result is UintSize for x == 0.
 fn TrailingZeros(x: uint): int {
 	if UintSize == 32 {
-		ret TrailingZeros32(u32(x))
+		return TrailingZeros32(u32(x))
 	}
-	ret TrailingZeros64(u64(x))
+	return TrailingZeros64(u64(x))
 }
 
 // Returns the number of trailing zero bits in x; the result is 8 for x == 0.
 fn TrailingZeros8(x: u8): int {
-	ret int(ntz8tab[x])
+	return int(ntz8tab[x])
 }
 
 // Returns the number of trailing zero bits in x; the result is 16 for x == 0.
 fn TrailingZeros16(x: u16): int {
 	if x == 0 {
-		ret 16
+		return 16
 	}
 	// see comment in TrailingZeros64
-	ret int(deBruijn32Tab[u32(x&-x)*deBruijn32>>(32-5)])
+	return int(deBruijn32Tab[u32(x&-x)*deBruijn32>>(32-5)])
 }
 
 // Returns the number of trailing zero bits in x; the result is 32 for x == 0.
 fn TrailingZeros32(x: u32): int {
 	if x == 0 {
-		ret 32
+		return 32
 	}
 	// see comment in TrailingZeros64
-	ret int(deBruijn32Tab[(x&-x)*deBruijn32>>(32-5)])
+	return int(deBruijn32Tab[(x&-x)*deBruijn32>>(32-5)])
 }
 
 // Returns the number of trailing zero bits in x; the result is 64 for x == 0.
 fn TrailingZeros64(x: u64): int {
 	if x == 0 {
-		ret 64
+		return 64
 	}
 	// If popcount is fast, replace code below with return popcount(^x & (x - 1)).
 	//
@@ -124,7 +124,7 @@ fn TrailingZeros64(x: u64): int {
 	// find by how many bits it was shifted by looking at which six bit
 	// substring ended up at the top of the word.
 	// (Knuth, volume 4, section 7.3.1)
-	ret int(deBruijn64Tab[(x&-x)*deBruijn64>>(64-6)])
+	return int(deBruijn64Tab[(x&-x)*deBruijn64>>(64-6)])
 }
 
 // --- ones_count ---
@@ -140,24 +140,24 @@ const (
 // Returns the number of one bits ("population count") in x.
 fn OnesCount(x: uint): int {
 	if UintSize == 32 {
-		ret OnesCount32(u32(x))
+		return OnesCount32(u32(x))
 	}
-	ret OnesCount64(u64(x))
+	return OnesCount64(u64(x))
 }
 
 // Returns the number of one bits ("population count") in x.
 fn OnesCount8(x: u8): int {
-	ret int(pop8tab[x])
+	return int(pop8tab[x])
 }
 
 // Returns the number of one bits ("population count") in x.
 fn OnesCount16(x: u16): int {
-	ret int(pop8tab[x>>8] + pop8tab[x&0xff])
+	return int(pop8tab[x>>8] + pop8tab[x&0xff])
 }
 
 // Returns the number of one bits ("population count") in x.
 fn OnesCount32(x: u32): int {
-	ret int(pop8tab[x>>24] + pop8tab[x>>16&0xff] + pop8tab[x>>8&0xff] + pop8tab[x&0xff])
+	return int(pop8tab[x>>24] + pop8tab[x>>16&0xff] + pop8tab[x>>8&0xff] + pop8tab[x&0xff])
 }
 
 // Returns the number of one bits ("population count") in x.
@@ -172,7 +172,7 @@ fn OnesCount64(mut x: u64): int {
 	//	x = x>>8&(m3&m) + x&(m3&m)
 	//	x = x>>16&(m4&m) + x&(m4&m)
 	//	x = x>>32&(m5&m) + x&(m5&m)
-	//	ret int(x)
+	//	return unint(x)
 	//
 	// Masking (& operations) can be left away when there's no
 	// danger that a field's sum will carry over into the next
@@ -188,7 +188,7 @@ fn OnesCount64(mut x: u64): int {
 	x += x >> 8
 	x += x >> 16
 	x += x >> 32
-	ret int(x) & (1<<7 - 1)
+	return int(x) & (1<<7 - 1)
 }
 
 // --- rotate_left ---
@@ -199,9 +199,9 @@ fn OnesCount64(mut x: u64): int {
 // This function's execution time does not depend on the inputs.
 fn RotateLeft(x: uint, k: int): uint {
 	if UintSize == 32 {
-		ret uint(RotateLeft32(u32(x), k))
+		return uint(RotateLeft32(u32(x), k))
 	}
-	ret uint(RotateLeft64(u64(x), k))
+	return uint(RotateLeft64(u64(x), k))
 }
 
 // Returns the value of x rotated left by (k mod 8) bits.
@@ -211,7 +211,7 @@ fn RotateLeft(x: uint, k: int): uint {
 fn RotateLeft8(x: u8, k: int): u8 {
 	const n = 8
 	s := uint(k) & (n - 1)
-	ret x<<s | x>>(n-s)
+	return x<<s | x>>(n-s)
 }
 
 // Returns the value of x rotated left by (k mod 16) bits.
@@ -221,7 +221,7 @@ fn RotateLeft8(x: u8, k: int): u8 {
 fn RotateLeft16(x: u16, k: int): u16 {
 	const n = 16
 	s := uint(k) & (n - 1)
-	ret x<<s | x>>(n-s)
+	return x<<s | x>>(n-s)
 }
 
 // Returns the value of x rotated left by (k mod 32) bits.
@@ -231,7 +231,7 @@ fn RotateLeft16(x: u16, k: int): u16 {
 fn RotateLeft32(x: u32, k: int): u32 {
 	const n = 32
 	s := uint(k) & (n - 1)
-	ret x<<s | x>>(n-s)
+	return x<<s | x>>(n-s)
 }
 
 // Returns the value of x rotated left by (k mod 64) bits.
@@ -241,7 +241,7 @@ fn RotateLeft32(x: u32, k: int): u32 {
 fn RotateLeft64(x: u64, k: int): u64 {
 	const n = 64
 	s := uint(k) & (n - 1)
-	ret x<<s | x>>(n-s)
+	return x<<s | x>>(n-s)
 }
 
 // --- reverse ---
@@ -249,19 +249,19 @@ fn RotateLeft64(x: u64, k: int): u64 {
 // Returns the value of x with its bits in reversed order.
 fn Reverse(x: uint): uint {
 	if UintSize == 32 {
-		ret uint(Reverse32(u32(x)))
+		return uint(Reverse32(u32(x)))
 	}
-	ret uint(Reverse64(u64(x)))
+	return uint(Reverse64(u64(x)))
 }
 
 // Returns the value of x with its bits in reversed order.
 fn Reverse8(x: u8): u8 {
-	ret u8(rev8tab[x])
+	return u8(rev8tab[x])
 }
 
 // Returns the value of x with its bits in reversed order.
 fn Reverse16(x: u16): u16 {
-	ret u16(rev8tab[x>>8]) | u16(rev8tab[x&0xff])<<8
+	return u16(rev8tab[x>>8]) | u16(rev8tab[x&0xff])<<8
 }
 
 // Returns the value of x with its bits in reversed order.
@@ -270,7 +270,7 @@ fn Reverse32(mut x: u32): u32 {
 	x = x>>1&(m0&m) | x&(m0&m)<<1
 	x = x>>2&(m1&m) | x&(m1&m)<<2
 	x = x>>4&(m2&m) | x&(m2&m)<<4
-	ret ReverseBytes32(x)
+	return ReverseBytes32(x)
 }
 
 // Returns the value of x with its bits in reversed order.
@@ -279,7 +279,7 @@ fn Reverse64(mut x: u64): u64 {
 	x = x>>1&(m0&m) | x&(m0&m)<<1
 	x = x>>2&(m1&m) | x&(m1&m)<<2
 	x = x>>4&(m2&m) | x&(m2&m)<<4
-	ret ReverseBytes64(x)
+	return ReverseBytes64(x)
 }
 
 // --- reverse_bytes ---
@@ -289,16 +289,16 @@ fn Reverse64(mut x: u64): u64 {
 // This function's execution time does not depend on the inputs.
 fn ReverseBytes(x: uint): uint {
 	if UintSize == 32 {
-		ret uint(ReverseBytes32(u32(x)))
+		return uint(ReverseBytes32(u32(x)))
 	}
-	ret uint(ReverseBytes64(u64(x)))
+	return uint(ReverseBytes64(u64(x)))
 }
 
 // Returns the value of x with its bytes in reversed order.
 //
 // This function's execution time does not depend on the inputs.
 fn ReverseBytes16(x: u16): u16 {
-	ret x>>8 | x<<8
+	return x>>8 | x<<8
 }
 
 // Returns the value of x with its bytes in reversed order.
@@ -307,7 +307,7 @@ fn ReverseBytes16(x: u16): u16 {
 fn ReverseBytes32(mut x: u32): u32 {
 	const m = 1<<32 - 1
 	x = x>>8&(m3&m) | x&(m3&m)<<8
-	ret x>>16 | x<<16
+	return x>>16 | x<<16
 }
 
 // Returns the value of x with its bytes in reversed order.
@@ -317,7 +317,7 @@ fn ReverseBytes64(mut x: u64): u64 {
 	const m = 18446744073709551615 // 1<<64 - 1
 	x = x>>8&(m3&m) | x&(m3&m)<<8
 	x = x>>16&(m4&m) | x&(m4&m)<<16
-	ret x>>32 | x<<32
+	return x>>32 | x<<32
 }
 
 // --- len ---
@@ -326,15 +326,15 @@ fn ReverseBytes64(mut x: u64): u64 {
 // the result is 0 for x == 0.
 fn Len(x: uint): int {
 	if UintSize == 32 {
-		ret Len32(u32(x))
+		return Len32(u32(x))
 	}
-	ret Len64(u64(x))
+	return Len64(u64(x))
 }
 
 // Returns the minimum number of bits required to represent x;
 // the result is 0 for x == 0.
 fn Len8(x: u8): int {
-	ret int(len8tab[x])
+	return int(len8tab[x])
 }
 
 // Returns the minimum number of bits required to represent x;
@@ -344,7 +344,7 @@ fn Len16(mut x: u16): (n: int) {
 		x >>= 8
 		n = 8
 	}
-	ret n + int(len8tab[x])
+	return n + int(len8tab[x])
 }
 
 // Returns the minimum number of bits required to represent x;
@@ -358,7 +358,7 @@ fn Len32(mut x: u32): (n: int) {
 		x >>= 8
 		n += 8
 	}
-	ret n + int(len8tab[x])
+	return n + int(len8tab[x])
 }
 
 // Returns the minimum number of bits required to represent x;
@@ -376,7 +376,7 @@ fn Len64(mut x: u64): (n: int) {
 		x >>= 8
 		n += 8
 	}
-	ret n + int(len8tab[x])
+	return n + int(len8tab[x])
 }
 
 // --- Add with carry ---
@@ -389,10 +389,10 @@ fn Len64(mut x: u64): (n: int) {
 fn Add(x: uint, y: uint, carry: uint): (sum: uint, carryOut: uint) {
 	if UintSize == 32 {
 		s32, c32 := Add32(u32(x), u32(y), u32(carry))
-		ret uint(s32), uint(c32)
+		return uint(s32), uint(c32)
 	}
 	s64, c64 := Add64(u64(x), u64(y), u64(carry))
-	ret uint(s64), uint(c64)
+	return uint(s64), uint(c64)
 }
 
 // Returns the sum with carry of x, y and carry: sum = x + y + carry.
@@ -404,7 +404,7 @@ fn Add32(x: u32, y: u32, carry: u32): (sum: u32, carryOut: u32) {
 	sum64 := u64(x) + u64(y) + u64(carry)
 	sum = u32(sum64)
 	carryOut = u32(sum64 >> 32)
-	ret
+	return
 }
 
 // Returns the sum with carry of x, y and carry: sum = x + y + carry.
@@ -418,7 +418,7 @@ fn Add64(x: u64, y: u64, carry: u64): (sum: u64, carryOut: u64) {
 	// is (x | y), and a carry from the lower place happened. If such a carry
 	// happens, the top bit will be 1 + 0 + 1 = 0 (& ^sum).
 	carryOut = ((x & y) | ((x | y) & ^sum)) >> 63
-	ret
+	return
 }
 
 // --- Subtract with borrow ---
@@ -431,10 +431,10 @@ fn Add64(x: u64, y: u64, carry: u64): (sum: u64, carryOut: u64) {
 fn Sub(x: uint, y: uint, borrow: uint): (diff: uint, borrowOut: uint) {
 	if UintSize == 32 {
 		d32, b32 := Sub32(u32(x), u32(y), u32(borrow))
-		ret uint(d32), uint(b32)
+		return uint(d32), uint(b32)
 	}
 	d64, b64 := Sub64(u64(x), u64(y), u64(borrow))
-	ret uint(d64), uint(b64)
+	return uint(d64), uint(b64)
 }
 
 // Returns the difference of x, y and borrow, diff = x - y - borrow.
@@ -449,7 +449,7 @@ fn Sub32(x: u32, y: u32, borrow: u32): (diff: u32, borrowOut: u32) {
 	// from the lower place happens. If that borrow happens, the result will be
 	// 1 - 1 - 1 = 0 - 0 - 1 = 1 (& diff).
 	borrowOut = ((^x & y) | (^(x ^ y) & diff)) >> 31
-	ret
+	return
 }
 
 // Returns the difference of x, y and borrow: diff = x - y - borrow.
@@ -461,7 +461,7 @@ fn Sub64(x: u64, y: u64, borrow: u64): (diff: u64, borrowOut: u64) {
 	diff = x - y - borrow
 	// See sub32 for the bit logic.
 	borrowOut = ((^x & y) | (^(x ^ y) & diff)) >> 63
-	ret
+	return
 }
 
 // --- Full-width multiply ---
@@ -474,10 +474,10 @@ fn Sub64(x: u64, y: u64, borrow: u64): (diff: u64, borrowOut: u64) {
 fn Mul(x: uint, y: uint): (hi: uint, lo: uint) {
 	if UintSize == 32 {
 		h, l := Mul32(u32(x), u32(y))
-		ret uint(h), uint(l)
+		return uint(h), uint(l)
 	}
 	h, l := Mul64(u64(x), u64(y))
-	ret uint(h), uint(l)
+	return uint(h), uint(l)
 }
 
 // Returns the 64-bit product of x and y: (hi, lo) = x * y
@@ -488,7 +488,7 @@ fn Mul(x: uint, y: uint): (hi: uint, lo: uint) {
 fn Mul32(x: u32, y: u32): (hi: u32, lo: u32) {
 	tmp := u64(x) * u64(y)
 	hi, lo = u32(tmp>>32), u32(tmp)
-	ret
+	return
 }
 
 // Returns the 128-bit product of x and y: (hi, lo) = x * y
@@ -509,7 +509,7 @@ fn Mul64(x: u64, y: u64): (hi: u64, lo: u64) {
 	w1 += x0 * y1
 	hi = x1*y1 + w2 + w1>>32
 	lo = x * y
-	ret
+	return
 }
 
 // --- Full-width divide ---
@@ -521,10 +521,10 @@ fn Mul64(x: u64, y: u64): (hi: u64, lo: u64) {
 fn Div(hi: uint, lo: uint, y: uint): (quo: uint, rem: uint) {
 	if UintSize == 32 {
 		q, r := Div32(u32(hi), u32(lo), u32(y))
-		ret uint(q), uint(r)
+		return uint(q), uint(r)
 	}
 	q, r := Div64(u64(hi), u64(lo), u64(y))
-	ret uint(q), uint(r)
+	return uint(q), uint(r)
 }
 
 // Returns the quotient and remainder of (hi, lo) divided by y:
@@ -540,7 +540,7 @@ fn Div32(hi: u32, lo: u32, y: u32): (quo: u32, rem: u32) {
 	}
 	z := u64(hi)<<32 | u64(lo)
 	quo, rem = u32(z/u64(y)), u32(z%u64(y))
-	ret
+	return
 }
 
 // Returns the quotient and remainder of (hi, lo) divided by y:
@@ -589,7 +589,7 @@ fn Div64(hi: u64, lo: u64, mut y: u64): (quo: u64, rem: u64) {
 		}
 	}
 
-	ret q1*two32 + q0, (un21*two32+un0-q0*y)>>s
+	return q1*two32 + q0, (un21*two32+un0-q0*y)>>s
 }
 
 // Returns the remainder of (hi, lo) divided by y. rem panics for
@@ -597,16 +597,16 @@ fn Div64(hi: u64, lo: u64, mut y: u64): (quo: u64, rem: u64) {
 // quotient overflow.
 fn Rem(hi: uint, lo: uint, y: uint): uint {
 	if UintSize == 32 {
-		ret uint(Rem32(u32(hi), u32(lo), u32(y)))
+		return uint(Rem32(u32(hi), u32(lo), u32(y)))
 	}
-	ret uint(Rem64(u64(hi), u64(lo), u64(y)))
+	return uint(Rem64(u64(hi), u64(lo), u64(y)))
 }
 
 // Returns the remainder of (hi, lo) divided by y. rem32 panics
 // for y == 0 (division by zero) but, unlike div32, it doesn't panic
 // on a quotient overflow.
 fn Rem32(hi: u32, lo: u32, y: u32): u32 {
-	ret u32((u64(hi)<<32 | u64(lo)) % u64(y))
+	return u32((u64(hi)<<32 | u64(lo)) % u64(y))
 }
 
 // Returns the remainder of (hi, lo) divided by y. rem64 panics
@@ -620,5 +620,5 @@ fn Rem64(hi: u64, lo: u64, y: u64): u64 {
 	// we have
 	//	hi<<64 + lo ≡ (hi%y)<<64 + lo    (mod y)
 	_, rem := Div64(hi%y, lo, y)
-	ret rem
+	return rem
 }

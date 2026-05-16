@@ -186,7 +186,7 @@ fn removePad(b: []byte, padByte: byte): []byte {
 	mut i := len(b) - 1
 	for i >= 0 && b[i] == padByte; i-- {
 	}
-	ret bm[:i+1]
+	return bm[:i+1]
 }
 
 #test

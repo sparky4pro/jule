@@ -226,7 +226,7 @@ fn testDecodeSurrogateRune(t: &testing::T) {
 }
 
 fn runtimeRuneCount(s: string): int {
-	ret len([]rune(s))
+	return len([]rune(s))
 }
 
 // Check that a range loop, len([]rune(string)) optimization and
@@ -408,23 +408,23 @@ fn testSequence(t: &testing::T, s: string) {
 	for i, r in s {
 		if si != i {
 			t.Errorf("Sequence({}) mismatched index {}, want {}", s, si, i)
-			ret
+			return
 		}
 		index[j] = info{i, r}
 		j++
 		r1, size1 := utf8::DecodeRune(b[i:])
 		if r != r1 {
 			t.Errorf("DecodeRune({}) = {}, want {}", s[i:], r1, r)
-			ret
+			return
 		}
 		r2, size2 := utf8::DecodeRuneString(s[i:])
 		if r != r2 {
 			t.Errorf("DecodeRuneString({}) = {}, want {}", s[i:], r2, r)
-			ret
+			return
 		}
 		if size1 != size2 {
 			t.Errorf("DecodeRune/DecodeRuneString({}) size mismatch {}/{}", s[i:], size1, size2)
-			ret
+			return
 		}
 		si += size1
 	}
@@ -435,20 +435,20 @@ fn testSequence(t: &testing::T, s: string) {
 		r2, size2 := utf8::DecodeLastRuneString(s[0:si])
 		if size1 != size2 {
 			t.Errorf("DecodeLastRune/DecodeLastRuneString({}, {}) size mismatch {}/{}", s, si, size1, size2)
-			ret
+			return
 		}
 		if r1 != index[j].r {
 			t.Errorf("DecodeLastRune({}, {}) = {}, want {}", s, si, r1, index[j].r)
-			ret
+			return
 		}
 		if r2 != index[j].r {
 			t.Errorf("DecodeLastRuneString({}, {}) = {}, want {}", s, si, r2, index[j].r)
-			ret
+			return
 		}
 		si -= size1
 		if si != index[j].index {
 			t.Errorf("DecodeLastRune({}) index mismatch at {}, want {}", s, si, index[j].index)
-			ret
+			return
 		}
 		j--
 	}

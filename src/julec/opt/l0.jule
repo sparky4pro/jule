@@ -7,11 +7,11 @@ use "std/jule/sema"
 // Reports whether the expression e is optimizable array for the built-in copy function.
 fn IsZCopyArray(mut e: sema::Expr): bool {
 	mut s, ok := e.(&sema::SlicingExpr)
-	ret ok && s.Expr.Type.Array() != nil
+	return ok && s.Expr.Type.Array() != nil
 }
 
 // Reports whether the expression e is optimizable array for the built-in append function.
 fn IsZAppendArray(mut e: sema::Expr): bool {
 	mut s, ok := e.(&sema::SlicingExpr)
-	ret ok && s.Expr.Type.Array() != nil
+	return ok && s.Expr.Type.Array() != nil
 }

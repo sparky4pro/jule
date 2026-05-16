@@ -60,7 +60,7 @@ fn testDecodeString(t: &testing::T) {
 		mut s := ""
 		Decode(case.output, &s) else {
 			t.Errorf("Decode(case.output, \"{}\") failed", s)
-			ret
+			return
 		}
 		if s != case.input {
 			t.Errorf("expected \"{}\" for {}, found \"{}\"", string(case.input), string(case.output), s)
@@ -70,7 +70,7 @@ fn testDecodeString(t: &testing::T) {
 		mut s2 := String("")
 		Decode(case.output, &s2) else {
 			t.Errorf("Decode(case.output, \"{}\") failed", s2)
-			ret
+			return
 		}
 		if s2 != String(case.input) {
 			t.Errorf("expected \"{}\" for {}, found \"{}\"", string(case.input), string(case.output), s2)
@@ -84,7 +84,7 @@ fn testDecodeMapStringKey(t: &testing::T) {
 	let mut m: map[string]string = nil
 	Decode([]byte(json), &m) else {
 		t.Errorf("Decode({}, map[string]string) failed", json)
-		ret
+		return
 	}
 	_, mut ok := m["foo"]
 	t.Assert(ok, `m["foo"] is not exist`)
@@ -97,7 +97,7 @@ fn testDecodeMapStringKey(t: &testing::T) {
 	let mut m2: map[String]String = nil
 	Decode([]byte(json), &m2) else {
 		t.Errorf("Decode({}, map[String]String) failed", json)
-		ret
+		return
 	}
 	_, ok = m2["foo"]
 	t.Assert(ok, `m2["foo"] is not exist`)
@@ -113,7 +113,7 @@ fn testDecodeMapNumKey(t: &testing::T) {
 	let mut m: map[int]string = nil
 	Decode([]byte(json), &m) else {
 		t.Errorf("Decode({}, map[int]string) failed", json)
-		ret
+		return
 	}
 	_, mut ok := m[234]
 	t.Assert(ok, `m[234] is not exist`)
@@ -126,7 +126,7 @@ fn testDecodeMapNumKey(t: &testing::T) {
 	let mut m2: map[Int]string = nil
 	Decode([]byte(json), &m2) else {
 		t.Errorf("Decode({}, map[Int]string) failed", json)
-		ret
+		return
 	}
 	_, ok = m2[234]
 	t.Assert(ok, `m2[234] is not exist`)
@@ -142,7 +142,7 @@ fn testDecodeArray(t: &testing::T) {
 	let mut a: [3]string
 	Decode([]byte(json), &a) else {
 		t.Errorf("Decode({}, a) failed", json)
-		ret
+		return
 	}
 	t.Assert(a[0] == "foo", `a[0] != "foo"`)
 	t.Assert(a[1] == "bar", `a[1] != "bar"`)
@@ -152,7 +152,7 @@ fn testDecodeArray(t: &testing::T) {
 	let mut a2: [3]String
 	Decode([]byte(json), &a2) else {
 		t.Errorf("Decode({}, a2) failed", json)
-		ret
+		return
 	}
 	t.Assert(a2[0] == "foo", `a2[0] != "foo"`)
 	t.Assert(a2[1] == "bar", `a2[1] != "bar"`)
@@ -165,7 +165,7 @@ fn testDecodeArrayWithRemainder(t: &testing::T) {
 	let mut a: [5]string = ["foo", "foo", "foo", "foo", "foo"]
 	Decode([]byte(json), &a) else {
 		t.Errorf("Decode({}) failed", json)
-		ret
+		return
 	}
 	t.Assert(a[0] == "foo", `a[0] != "foo"`)
 	t.Assert(a[1] == "bar", `a[1] != "bar"`)
@@ -180,7 +180,7 @@ fn testDecodeSlice(t: &testing::T) {
 	mut s := []string(nil)
 	Decode([]byte(json), &s) else {
 		t.Errorf("Decode({}, s) failed", json)
-		ret
+		return
 	}
 	t.Assert(len(s) == 3, `len(s) != 3`)
 	t.Assert(s[0] == "foo", `s[0] != "foo"`)
@@ -191,7 +191,7 @@ fn testDecodeSlice(t: &testing::T) {
 	mut s2 := []String(nil)
 	Decode([]byte(json), &s2) else {
 		t.Errorf("Decode({}, s) failed", json)
-		ret
+		return
 	}
 	t.Assert(len(s2) == 3, `len(s2) != 3`)
 	t.Assert(s2[0] == "foo", `s2[0] != "foo"`)
@@ -205,7 +205,7 @@ fn testDecodeSliceWithRemainder(t: &testing::T) {
 	mut s := ["foo", "foo", "foo", "foo", "foo"]
 	Decode([]byte(json), &s) else {
 		t.Errorf("Decode({}) failed", json)
-		ret
+		return
 	}
 	t.Assert(len(s) == 3, `len(s) != 3`)
 	t.Assert(s[0] == "foo", `s[0] != "foo"`)
@@ -221,7 +221,7 @@ fn testDecodeByteSlice(t: &testing::T) {
 		mut bytes := []byte(nil)
 		Decode(case.output, &bytes) else {
 			t.Errorf("Decode({}) failed", case.output)
-			ret
+			return
 		}
 		if len(bytes) != len(case.input) {
 			t.Errorf("expected {} for {}, found {}", case.input, case.output, bytes)
@@ -238,7 +238,7 @@ fn testDecodeByteSlice(t: &testing::T) {
 		mut bytes := byteSlice(nil)
 		Decode(case.output, &bytes) else {
 			t.Errorf("Decode({}) failed", case.output)
-			ret
+			return
 		}
 		if len(bytes) != len(case.input) {
 			t.Errorf("expected {} for {}, found {}", case.input, case.output, bytes)
@@ -352,7 +352,7 @@ impl encoding::TextEncoder for objectfoo {
 			"bar": self.bar,
 			"baz": self.baz,
 		}
-		ret Encode(mapJSON)?
+		return Encode(mapJSON)?
 	}
 }
 
@@ -370,12 +370,12 @@ fn testObjectCustomDecode(t: &testing::T) {
 	mut f := objectfoo{bar: "hello", baz: "custom json"}
 	bytes := Encode(f) else {
 		t.Errorf("encode failed")
-		ret
+		return
 	}
 	f = objectfoo{}
 	Decode(bytes, &f) else {
 		t.Errorf("decode failed")
-		ret
+		return
 	}
 	if f.bar != "hello" {
 		t.Errorf("objectfoo.bar != \"hello\", found \"{}\"", f.bar)
@@ -388,7 +388,7 @@ fn testObjectCustomDecode(t: &testing::T) {
 fn printArray(mut &s: *strings::Builder, a: Value) {
 	if a == nil {
 		s.WriteString("nil")!
-		ret
+		return
 	}
 	match type a {
 	| String:
@@ -439,13 +439,13 @@ fn testDynDecode(t: &testing::T) {
 `)
 	Decode(data, &v) else {
 		t.Errorf("unexpected error: {}", error)
-		ret
+		return
 	}
 	mut ok := false
 	mut m, ok := (*v).(Object)
 	if !ok {
 		t.Errorf("value is not object")
-		ret
+		return
 	}
 	*v, ok = m["foo"]
 	if !ok {

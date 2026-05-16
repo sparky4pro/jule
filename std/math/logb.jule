@@ -45,13 +45,13 @@ fn Logb(x: f64): f64 {
 	// special cases
 	match {
 	| x == 0:
-		ret Inf(-1)
+		return Inf(-1)
 	| IsInf(x, 0):
-		ret Inf(1)
+		return Inf(1)
 	| IsNaN(x):
-		ret x
+		return x
 	}
-	ret f64(ilogb(x))
+	return f64(ilogb(x))
 }
 
 // Returns the binary exponent of x as an integer.
@@ -64,17 +64,17 @@ fn Ilogb(x: f64): int {
 	// special cases
 	match {
 	| x == 0:
-		ret i32.Min
+		return i32.Min
 	| IsNaN(x):
-		ret i32.Max
+		return i32.Max
 	| IsInf(x, 0):
-		ret i32.Max
+		return i32.Max
 	}
-	ret ilogb(x)
+	return ilogb(x)
 }
 
 // Returns the binary exponent of x. It assumes x is finite and non-zero.
 fn ilogb(mut x: f64): int {
 	x, exp := normalize(x)
-	ret int((F64bits(x)>>shift)&mask) - bias + exp
+	return int((F64bits(x)>>shift)&mask) - bias + exp
 }

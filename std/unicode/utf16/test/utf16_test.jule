@@ -55,14 +55,14 @@ let encodeCases: []encodeTest = [
 
 fn eq[S: []E, E](a: S, b: S): bool {
 	if len(a) != len(b) {
-		ret false
+		return false
 	}
 	for i in a {
 		if a[i] != b[i] {
-			ret false
+			return false
 		}
 	}
-	ret true
+	return true
 }
 
 #test

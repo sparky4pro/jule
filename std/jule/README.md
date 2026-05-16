@@ -115,7 +115,7 @@ An example of a faulty analysis scenario:
   }
 
   fn NewMyStruct[T1, T2](x: T1, y: T2): MyStruct[T1, T2] {
-  	ret MyStruct[T1, T2]{x, y}
+  	return MyStruct[T1, T2]{x, y}
   }
 
   fn main() {

@@ -463,18 +463,18 @@ fn testTrim(t: &testing::T) {
 	toFn := fn(name: string): (fn(string, string): string, fn(string, string): string) {
 		match name {
 		| "Trim":
-			ret strings::Trim, nil
+			return strings::Trim, nil
 		| "TrimLeft":
-			ret strings::TrimLeft, nil
+			return strings::TrimLeft, nil
 		| "TrimRight":
-			ret strings::TrimRight, nil
+			return strings::TrimRight, nil
 		| "TrimPrefix":
-			ret nil, strings::TrimPrefix
+			return nil, strings::TrimPrefix
 		| "TrimSuffix":
-			ret nil, strings::TrimSuffix
+			return nil, strings::TrimSuffix
 		|:
 			t.Errorf("Undefined trim function {}", name)
-			ret nil, nil
+			return nil, nil
 		}
 	}
 
@@ -593,15 +593,15 @@ let isDigit = predicate{unicode::IsDigit, "IsDigit"}
 let isUpper = predicate{unicode::IsUpper, "IsUpper"}
 let isValidRune = predicate{
 	fn(r: rune): bool {
-		ret r != utf8::RuneError
+		return r != utf8::RuneError
 	},
 	"IsValidRune",
 }
 
 fn not(p: predicate): predicate {
-	ret predicate{
+	return predicate{
 		fn(r: rune): bool {
-			ret !p.f(r)
+			return !p.f(r)
 		},
 		"not " + p.name,
 	}

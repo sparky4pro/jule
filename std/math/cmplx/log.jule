@@ -57,11 +57,11 @@ use "std/math"
 
 // Returns the natural logarithm of complex number.
 fn Log(x: cmplx128): cmplx128 {
-	ret cmplx(math::Log(Abs(x)), Phase(x))
+	return cmplx(math::Log(Abs(x)), Phase(x))
 }
 
 // Returns the decimal logarithm of complex number.
 fn Log10(x: cmplx128): cmplx128 {
 	z := Log(x)
-	ret cmplx(math::Log10E*real(z), math::Log10E*imag(z))
+	return cmplx(math::Log10E*real(z), math::Log10E*imag(z))
 }

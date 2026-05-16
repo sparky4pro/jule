@@ -74,9 +74,9 @@ fn Remainder(mut x: f64, mut y: f64): f64 {
 	// special cases
 	match {
 	| IsNaN(x) | IsNaN(y) | IsInf(x, 0) | y == 0:
-		ret NaN()
+		return NaN()
 	| IsInf(y, 0):
-		ret x
+		return x
 	}
 	mut sign := false
 	if x < 0 {
@@ -89,9 +89,9 @@ fn Remainder(mut x: f64, mut y: f64): f64 {
 	if x == y {
 		if sign {
 			zero := 0.0
-			ret -zero
+			return -zero
 		}
-		ret 0
+		return 0
 	}
 	if y <= HalfMax {
 		x = Mod(x, y+y) // now x < 2y
@@ -115,5 +115,5 @@ fn Remainder(mut x: f64, mut y: f64): f64 {
 	if sign {
 		x = -x
 	}
-	ret x
+	return x
 }

@@ -32,10 +32,10 @@ struct Flag[T] {
 }
 
 impl CommonFlag for Flag {
-	fn Name(*self): string { ret self.name }
-	fn What(*self): string { ret self.what }
+	fn Name(*self): string { return self.name }
+	fn What(*self): string { return self.what }
 	fn Reset(mut *self) { *self.data = self.default }
-	fn Short(*self): rune { ret self.short }
+	fn Short(*self): rune { return self.short }
 }
 
 // Flag for i64 type.
@@ -78,7 +78,7 @@ struct FlagSet {
 impl FlagSet {
 	// Returns new flagset.
 	fn New(): &FlagSet {
-		ret &FlagSet{
+		return &FlagSet{
 			flags: make([]CommonFlag, 0, 20),
 		}
 	}
@@ -89,25 +89,25 @@ impl FlagSet {
 	fn FindFlag(mut *self, name: string): CommonFlag {
 		for (_, mut flag) in self.flags {
 			if flag.Name() == name {
-				ret flag
+				return flag
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	// Returns flag by short name, returns nil if not exist.
 	fn FindFlagShort(mut *self, name: rune): CommonFlag {
 		for (_, mut flag) in self.flags {
 			if flag.Short() == name {
-				ret flag
+				return flag
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	// Returns all flags.
 	fn Flags(mut *self): []CommonFlag {
-		ret self.flags
+		return self.flags
 	}
 
 	// Parse arguments and process flags.
@@ -119,7 +119,7 @@ impl FlagSet {
 			args: unsafe { *(&args) },
 		}
 		ap.parse()?
-		ret ap.content
+		return ap.content
 	}
 
 	// Resets all flags to default value.
@@ -144,7 +144,7 @@ impl FlagSet {
 			what:  what,
 		}
 		self.flags = append(self.flags, flag)
-		ret flag
+		return flag
 	}
 
 	// Adds new flag and returns allocated reference variable.
@@ -154,7 +154,7 @@ impl FlagSet {
 	fn Add[T: ~i64 | ~u64 | ~f64 | ~bool | ~string](mut *self, name: string, short: rune, default: T, what: string): &T {
 		mut flag := self.addFlagCommon[T](name, short, what)
 		flag.data = new(T, default)
-		ret flag.data
+		return flag.data
 	}
 
 	// Same with the Add method but do not allocates new reference, uses existing.
@@ -179,7 +179,7 @@ impl argParser {
 	fn parseInteger[T](*self, s: string, parser: fn(s: string, base: int): (T, bool)): (x: T, ok: bool) {
 		match {
 		| s == "":
-			ret 0, false
+			return 0, false
 		| strings::HasPrefix(s, "0x"): // Hexadecimal
 			x, ok = parser(s[2:], 0b00010000)
 		| strings::HasPrefix(s, "0b"): // Binary
@@ -192,15 +192,15 @@ impl argParser {
 			// Decimal
 			x, ok = parser(s, 0b1010)
 		}
-		ret
+		return
 	}
 
 	fn getData(mut *self): string {
 		if self.i+1 >= len(self.args) {
-			ret ""
+			return ""
 		}
 		self.i++
-		ret self.args[self.i]
+		return self.args[self.i]
 	}
 
 	fn processFlag(mut *self, mut flag: CommonFlag)! {
@@ -208,7 +208,7 @@ impl argParser {
 		| BoolFlag:
 			mut bf := flag.(BoolFlag)
 			*bf.data = !bf.default
-			ret
+			return
 		}
 
 		data := self.getData()
@@ -220,8 +220,8 @@ impl argParser {
 		| IntFlag:
 			mut intf := flag.(IntFlag)
 			(*intf.data), ok := self.parseInteger[i64](data, fn|s, base| {
-				i := conv::ParseInt(s, base, bitSize) else { ret 0, false }
-				ret i, true
+				i := conv::ParseInt(s, base, bitSize) else { return 0, false }
+				return i, true
 			})
 			if !ok {
 				throw "--" + flag.Name() + ": expression must be valid signed integer"
@@ -229,8 +229,8 @@ impl argParser {
 		| UintFlag:
 			mut uintf := flag.(UintFlag)
 			(*uintf.data), ok := self.parseInteger[u64](data, fn|s, base| {
-				i := conv::ParseUint(s, base, bitSize) else { ret 0, false }
-				ret i, true
+				i := conv::ParseUint(s, base, bitSize) else { return 0, false }
+				return i, true
 			})
 			if !ok {
 				throw "--" + flag.Name() + ": expression must be valid unsigned integer"
@@ -273,15 +273,15 @@ impl argParser {
 	fn tryArg(mut *self)! {
 		arg := self.args[self.i]
 		if len(self.args) == 0 {
-			ret
+			return
 		}
 		if arg[0] == '-' {
 			if len(arg) > 1 && arg[1] == '-' {
 				self.doubleDash(arg)?
-				ret
+				return
 			}
 			self.singleDash(arg)?
-			ret
+			return
 		}
 		self.content = append(self.content, arg)
 	}

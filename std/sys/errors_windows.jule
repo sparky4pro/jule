@@ -376,15 +376,15 @@ let signals: [...]string = [
 	"terminated",
 ]
 
-fn GetLastErrno(): Errno { ret Errno(GetLastError()) }
+fn GetLastErrno(): Errno { return Errno(GetLastError()) }
 
-fn langid(pri: u16, sub: u16): u32 { ret u32(sub)<<10 | u32(pri) }
+fn langid(pri: u16, sub: u16): u32 { return u32(sub)<<10 | u32(pri) }
 
 fn formatError(e: Errno): string {
 	// deal with special jule errors
 	idx := int(e - APPLICATION_ERROR)
 	if 0 <= idx && idx < len(errors) {
-		ret errors[idx]
+		return errors[idx]
 	}
 	let flags: u32 = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY | FORMAT_MESSAGE_IGNORE_INSERTS
 	mut b := make([]u16, 300)
@@ -392,11 +392,11 @@ fn formatError(e: Errno): string {
 	if n == 0 {
 		n = unsafe { extern.FormatMessageW(extern.DWORD(flags), nil, extern.DWORD(e), extern.DWORD(0), (*c::Wchar)(&b[0]), extern.DWORD(len(b)), nil) }
 		if n == 0 {
-			ret "winapi error #" + conv::Itoa(int(e))
+			return "winapi error #" + conv::Itoa(int(e))
 		}
 	}
 	// trim terminating \r and \n
 	for n > 0 && (b[n-1] == '\n' || b[n-1] == '\r'); n-- {
 	}
-	ret integ::UTF16ToString(b[:n])
+	return integ::UTF16ToString(b[:n])
 }

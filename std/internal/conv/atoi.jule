@@ -8,7 +8,7 @@ unsafe fn AtoiBp(mut b: *byte, mut n: int): (i: int, ok: bool) {
 	mut neg := *b == '-'
 	if neg {
 		if n == 1 {
-			ret
+			return
 		}
 		n--
 		b++
@@ -18,7 +18,7 @@ unsafe fn AtoiBp(mut b: *byte, mut n: int): (i: int, ok: bool) {
 			i *= 10
 			i += int(*b - '0')
 		} else {
-			ret
+			return
 		}
 		b++
 	}
@@ -26,13 +26,13 @@ unsafe fn AtoiBp(mut b: *byte, mut n: int): (i: int, ok: bool) {
 	if neg {
 		i = -i
 	}
-	ret
+	return
 }
 
 // Same as AtoiBp.
 fn Atoi(s: string): (i: int, ok: bool) {
 	i, ok = unsafe { AtoiBp(&s[0], len(s)) }
-	ret
+	return
 }
 
 // Decimal to integer.
@@ -46,13 +46,13 @@ fn Dtoi(s: string): (n: int, i: int, ok: bool) {
 	for i < len(s) && '0' <= s[i] && s[i] <= '9'; i++ {
 		n = n*10 + int(s[i]-'0')
 		if n >= big {
-			ret big, i, false
+			return big, i, false
 		}
 	}
 	if i == 0 {
-		ret 0, 0, false
+		return 0, 0, false
 	}
-	ret n, i, true
+	return n, i, true
 }
 
 // Converts hexadecimal bytes of string to int.
@@ -74,7 +74,7 @@ fn Xbtoi(s: []byte): (n: int, i: int, ok: bool) {
 		}
 	}
 	if i == 0 {
-		ret 0, i, false
+		return 0, i, false
 	}
-	ret n, i, true
+	return n, i, true
 }

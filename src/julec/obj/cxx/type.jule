@@ -21,11 +21,11 @@ struct customType {
 
 impl sema::Kind for customType {
 	fn String(*self): string {
-		ret self.kind
+		return self.kind
 	}
 
 	fn Equal(&self, k: &sema::Type): bool {
-		ret false
+		return false
 	}
 }
 
@@ -54,7 +54,7 @@ impl typeCoder {
 	fn new(mut oc: &ObjectCoder): &typeCoder {
 		mut tc := &typeCoder{oc: oc}
 		tc.rc = resultCoder.new(tc)
-		ret tc
+		return tc
 	}
 
 	// Writes given identifier as Jule type identifier.
@@ -62,10 +62,10 @@ impl typeCoder {
 		match id {
 		| types::Cmplx128:
 			self.structureIns(buf, meta::Program.Runtime.Cmplx128)
-			ret
+			return
 		| types::Cmplx64:
 			self.structureIns(buf, meta::Program.Runtime.Cmplx64)
-			ret
+			return
 		}
 		if id != types::Uintptr {
 			id = types::RealKindOf(id)
@@ -157,7 +157,7 @@ impl typeCoder {
 			} else {
 				self.oc.ic.structureIns(buf, s)
 			}
-			ret
+			return
 		}
 		d := obj::FindDirective(s.Decl.Directives, directive::Namespace)
 		if d != nil {
@@ -213,7 +213,7 @@ impl typeCoder {
 		if f.IsVoid() {
 			if f.Fallible {
 				buf.WriteString("__jule_VoidFallible")!
-				ret
+				return
 			}
 			buf.WriteString("void")!
 		}
@@ -221,7 +221,7 @@ impl typeCoder {
 			buf.WriteString("__jule_Fallible<")!
 			self.kind(buf, f.Result.TypeSym.Type)
 			buf.WriteByte('>')!
-			ret
+			return
 		}
 		self.kind(buf, f.Result.TypeSym.Type)
 	}
@@ -234,13 +234,13 @@ impl typeCoder {
 			} else {
 				s.WriteString("void")!
 			}
-			ret
+			return
 		}
 		if f.Decl.Fallible {
 			s.WriteString("__jule_Fallible<")!
 			self.rc.codeMut1(s, f.Result)
 			s.WriteByte('>')!
-			ret
+			return
 		}
 		self.rc.codeMut1(s, f.Result)
 	}
@@ -261,7 +261,7 @@ impl typeCoder {
 			self.funcInsResult(buf, f)
 		}
 		if len(f.Params) == 0 {
-			ret
+			return
 		}
 		buf.WriteByte(',')!
 		for (i, mut param) in f.Params {
@@ -294,46 +294,46 @@ impl typeCoder {
 		match {
 		| k.Struct() != nil:
 			self.structureIns(buf, k.Struct())
-			ret
+			return
 		| k.Extern():
 			// As we can see here, external defines use pure identifiers directly.
 			// So, if you hesitate about a type that causes wrong code generation,
 			// write relevant algorithms above this case.
 			buf.WriteString(obj::GetExternName(k))!
-			ret
+			return
 		| k.Prim() != nil:
 			self.prim(buf, k.Prim())
-			ret
+			return
 		| k.Sptr() != nil:
 			self.sptr(buf, k.Sptr())
-			ret
+			return
 		| k.Ptr() != nil:
 			self.ptr(buf, k.Ptr())
-			ret
+			return
 		| k.Enum() != nil:
 			self.enumDecl(buf, k.Enum())
-			ret
+			return
 		| k.TypeEnum() != nil:
 			self.typeEnumDecl(buf, k.TypeEnum())
-			ret
+			return
 		| k.Slice() != nil:
 			self.slice(buf, k.Slice())
-			ret
+			return
 		| k.Map() != nil:
 			self.mapType(buf, k.Map())
-			ret
+			return
 		| k.Trait() != nil:
 			buf.WriteString(typeTrait)!
-			ret
+			return
 		| k.Array() != nil:
 			self.array(buf, k.Array())
-			ret
+			return
 		| k.Func() != nil:
 			self.func(buf, k.Func())
-			ret
+			return
 		| k.Chan() != nil:
 			self.channel(buf, k.Chan())
-			ret
+			return
 		}
 		match type k.Kind {
 		| &customType:
@@ -361,7 +361,7 @@ struct resultCoder {
 
 impl resultCoder {
 	fn new(mut tc: &typeCoder): &resultCoder {
-		ret &resultCoder{tc: tc}
+		return &resultCoder{tc: tc}
 	}
 
 	fn ptr(mut *self, mut &s: *strings::Builder, mut p: &sema::Ptr) {
@@ -424,7 +424,7 @@ impl resultCoder {
 			//	fix this conflict issues
 			s.WriteString(resultExternPrefix)!
 			s.WriteString(obj::GetExternName(t))!
-			ret
+			return
 		}
 		match type t.Kind {
 		| &sema::Ptr:
@@ -475,13 +475,13 @@ impl resultCoder {
 		mut s := strings::Builder{}
 		s.Grow(20)
 		self.codeMut(&s, t)
-		ret unsafe { s.Buf() }
+		return unsafe { s.Buf() }
 	}
 }
 
 // Reports whether type supports initialization.
 fn ableToInit(mut t: &sema::Type): bool {
-	ret !t.Extern()
+	return !t.Extern()
 }
 
 // Reports whether type should initialized.
@@ -489,35 +489,35 @@ fn ableToInit(mut t: &sema::Type): bool {
 // Let the constructor do it's job.
 fn shouldInitialized(mut t: &sema::Type): bool {
 	if !ableToInit(t) {
-		ret false
+		return false
 	}
 	prim := t.Prim()
 	if prim != nil {
-		ret !prim.IsAny() && !prim.IsString()
+		return !prim.IsAny() && !prim.IsString()
 	}
 	match {
 	| t.Sptr() != nil:
-		ret false
+		return false
 	| t.Map() != nil:
-		ret false
+		return false
 	| t.Chan() != nil:
-		ret false
+		return false
 	| t.Slice() != nil:
-		ret false
+		return false
 	| t.Trait() != nil:
-		ret false
+		return false
 	| t.Func() != nil:
-		ret false
+		return false
 	| t.Array() != nil:
 		mut arr := t.Array()
-		ret ableToInit(arr.Value)
+		return ableToInit(arr.Value)
 	| t.Struct() != nil:
-		ret true
+		return true
 	|:
-		ret true
+		return true
 	}
 }
 
 fn toStringArraySize(n: i64, base: int): string {
-	ret conv::FormatInt(n, base)
+	return conv::FormatInt(n, base)
 }

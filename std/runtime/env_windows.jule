@@ -22,7 +22,7 @@ fn args(): []string {
 		args[i] = unsafe { integ::UTF16PtrToString((*u16)(argvw[i])) }
 	}
 	unsafe { extern.LocalFree(argvw) }
-	ret args
+	return args
 }
 
 fn env(): []string {
@@ -42,7 +42,7 @@ fn env(): []string {
 		}
 	}
 	unsafe { extern.FreeEnvironmentStringsW(envS) }
-	ret env
+	return env
 }
 
 fn executable(): string {
@@ -51,7 +51,7 @@ fn executable(): string {
 	n := unsafe { extern.GetModuleFileNameW(nil, (*c::Wchar)(&buf[0]), sys::MAX_PATH) }
 	if n > 0 {
 		buf[n] = NULL
-		ret unsafe { integ::UTF16PtrToString(&buf[0]) }
+		return unsafe { integ::UTF16PtrToString(&buf[0]) }
 	}
 	panic("runtime: executable path read error")
 }

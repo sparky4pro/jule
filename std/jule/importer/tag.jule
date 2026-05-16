@@ -87,12 +87,12 @@ fn initTags(mut &tags: *[]string, info: CompileInfo) {
 
 fn findTag(tags: []string, name: string): int {
 	if name == "" {
-		ret -1
+		return -1
 	}
 	for i, tag in tags {
 		if tag == name {
-			ret i
+			return i
 		}
 	}
-	ret -1
+	return -1
 }

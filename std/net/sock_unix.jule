@@ -6,7 +6,7 @@ use "std/internal/poll"
 use "std/sys"
 
 fn syssocket(domain: int, typ: int, proto: int)!: poll::NetHandle {
-	ret sys::Socket(domain, typ, proto)?
+	return sys::Socket(domain, typ, proto)?
 }
 
 fn setDefaultSockopts(handle: poll::NetHandle)! {

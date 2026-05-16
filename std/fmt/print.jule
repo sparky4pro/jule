@@ -76,14 +76,14 @@ fn sprint(mut &sb: *strings::Builder, args: ...any) {
 fn Sprint(args: ...any): string {
 	mut sb := strings::Builder{}
 	sprint(&sb, args...)
-	ret sb.String()
+	return sb.String()
 }
 
 // Returns string result of argument with default formatting.
 // It uses comptime to analysis type T. If type T is a dynamic or unsupported type,
 // it jumps back to the [Sprint] algorithm.
 fn Sprintg[T](t: T): string {
-	ret unsafe::StringFromBytes(bprintg(t))
+	return unsafe::StringFromBytes(bprintg(t))
 }
 
 // It places the passes arguments in the string relative to the corresponding
@@ -110,5 +110,5 @@ fn Sprintg[T](t: T): string {
 //	Sprintf("{} {}") = "{} {}"
 //	Sprintf("{} is the {}", "Pi Number") = "Pi Number is the {}"
 fn Sprintf(fmt: string, args: ...any): string {
-	ret unsafe::StringFromBytes(bprintf(fmt, args...))
+	return unsafe::StringFromBytes(bprintf(fmt, args...))
 }

@@ -276,13 +276,13 @@ struct discard{}
 
 impl Writer for discard {
 	async fn Write(mut *self, buf: []byte)!: (n: int) {
-		ret len(buf)
+		return len(buf)
 	}
 }
 
 impl StringWriter for discard {
 	async fn WriteString(mut *self, s: string)!: (n: int) {
-		ret len(s)
+		return len(s)
 	}
 }
 
@@ -301,7 +301,7 @@ struct LimitedReader {
 impl LimitedReader {
 	// Returns a LimitedReader that reads from r
 	// but stops like EOF after n bytes.
-	fn New(mut r: Reader, n: i64): Reader { ret &LimitedReader{r, n} }
+	fn New(mut r: Reader, n: i64): Reader { return &LimitedReader{r, n} }
 }
 
 impl Reader for LimitedReader {
@@ -314,14 +314,14 @@ impl Reader for LimitedReader {
 		}
 		n = self.R.Read(p).await?
 		self.N -= i64(n)
-		ret
+		return
 	}
 }
 
 // Returns a [ReadCloser] with a no-op Close method wrapping
 // the provided [Reader] r.
 async fn NopCloser(mut r: Reader): ReadCloser {
-	ret nopCloser{r}
+	return nopCloser{r}
 }
 
 struct nopCloser {
@@ -330,7 +330,7 @@ struct nopCloser {
 
 impl ReadCloser for nopCloser {
 	async fn Read(mut *self, mut p: []byte)!: int {
-		ret self.r.Read(p).await?
+		return self.r.Read(p).await?
 	}
 
 	async fn Close(mut *self)! {}
@@ -343,16 +343,16 @@ impl ReadCloser for nopCloser {
 async fn CopyN(mut dst: Writer, mut src: Reader, n: i64)!: (written: i64) {
 	written = Copy(dst, LimitedReader.New(src, n)).await?
 	if written == n {
-		ret n
+		return n
 	}
-	ret
+	return
 }
 
 // Copies from src to dst until either EOF is reached
 // on src or an error occurs. It returns the number of bytes
 // copied, if any. Otherwise, if throws the error, if any.
 async fn Copy(mut dst: Writer, mut src: Reader)!: (written: i64) {
-	ret copyBuffer(dst, src, nil).await?
+	return copyBuffer(dst, src, nil).await?
 }
 
 // Identical to Copy except that it stages through the
@@ -363,7 +363,7 @@ async fn CopyBuffer(mut dst: Writer, mut src: Reader, mut buf: []byte)!: (writte
 	if buf != nil && len(buf) == 0 {
 		panic("std/io: empty buffer in CopyBuffer")
 	}
-	ret copyBuffer(dst, src, buf).await?
+	return copyBuffer(dst, src, buf).await?
 }
 
 // Actual implementation of Copy and CopyBuffer.
@@ -395,19 +395,19 @@ async fn copyBuffer(mut dst: Writer, mut src: Reader, mut buf: []byte)!: (writte
 			}
 		}
 	}
-	ret written
+	return written
 }
 
 // Writes the contents of the string s to w efficiently.
 // Guarantees a slice will not be allocated.
 async fn WriteString(mut w: Writer, s: string)!: (n: int) {
-	ret w.Write(unsafe::StringBytes(s)).await?
+	return w.Write(unsafe::StringBytes(s)).await?
 }
 
 // Writes a single byte to w efficiently.
 // Guarantees a slice will not be allocated.
 async fn WriteByte(mut w: Writer, b: byte)!: (n: int) {
-	ret w.Write(unsafe::Slice(&b, 1, 1)).await?
+	return w.Write(unsafe::Slice(&b, 1, 1)).await?
 }
 
 // Reads from r until an error or EOF and returns the data it read.
@@ -447,7 +447,7 @@ async fn ReadAll(mut r: Reader)!: []byte {
 	// On error this condition must be true: len(chunks) > 0 || len(b) > 0
 	// On EOF, len(chunks) and len(b) may be zero.
 	if len(chunks) == 0 {
-		ret b
+		return b
 	}
 	// Build our final right-sized slice.
 	finalSize += len(b)
@@ -456,7 +456,7 @@ async fn ReadAll(mut r: Reader)!: []byte {
 		final = append(final, chunk...)
 	}
 	final = append(final, b...)
-	ret final
+	return final
 }
 
 // Reads from r into buf until it has read at least min bytes.
@@ -473,7 +473,7 @@ async fn ReadAtLeast(mut r: Reader, mut buf: []byte, min: int)!: (n: int) {
 	for n < min {
 		n += r.Read(buf[n:]).await else {
 			if n >= min {
-				ret n
+				return n
 			}
 			if n > 0 && error == EOF {
 				throw ErrUnexpectedEOF
@@ -481,7 +481,7 @@ async fn ReadAtLeast(mut r: Reader, mut buf: []byte, min: int)!: (n: int) {
 			throw error
 		}
 	}
-	ret
+	return
 }
 
 // Reads exactly len(buf) bytes from r into buf.
@@ -491,5 +491,5 @@ async fn ReadAtLeast(mut r: Reader, mut buf: []byte, min: int)!: (n: int) {
 // On return, n == len(buf) if and only if err == nil.
 // If r returns an error having read at least len(buf) bytes, the error is dropped.
 async fn ReadFull(mut r: Reader, mut buf: []byte)!: (n: int) {
-	ret ReadAtLeast(r, buf, len(buf)).await?
+	return ReadAtLeast(r, buf, len(buf)).await?
 }

@@ -7,28 +7,28 @@ use "std/unsafe"
 // Returns x in decimal string format.
 fn Itoa(x: int): string {
 	if x < 0 {
-		ret "-" + Utoa(uint(-x))
+		return "-" + Utoa(uint(-x))
 	}
-	ret Utoa(uint(x))
+	return Utoa(uint(x))
 }
 
 // Returns x in decimal string format.
 fn Utoa(mut x: uint): string {
-	ret Utoa64(u64(x))
+	return Utoa64(u64(x))
 }
 
 // Returns x in decimal string format.
 fn Itoa64(x: i64): string {
 	if x < 0 {
-		ret "-" + Utoa64(u64(-x))
+		return "-" + Utoa64(u64(-x))
 	}
-	ret Utoa64(u64(x))
+	return Utoa64(u64(x))
 }
 
 // Returns x in decimal string format.
 fn Utoa64(mut x: u64): string {
 	if x == 0 {
-		ret "0"
+		return "0"
 	}
 	mut buf := make([]byte, 20) // big enough for 64bit value base 10
 	mut i := 0
@@ -42,7 +42,7 @@ fn Utoa64(mut x: u64): string {
 	buf[i] = byte('0' + x)
 	buf = buf[:i+1]
 	rev(&buf)
-	ret unsafe::StringFromBytes(buf)
+	return unsafe::StringFromBytes(buf)
 }
 
 fn rev(mut &b: *[]byte) {

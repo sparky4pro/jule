@@ -21,7 +21,7 @@ fn nanotime(): i64 {
 	if unsafe { extern.clock_gettime(extern.clockid_t(_CLOCK_MONOTONIC), (*extern.timespec)(&ts)) } == -1 {
 		panic("runtime: nanotime failed")
 	}
-	ret i64(ts.Sec)*1e9 + i64(ts.Nsec)
+	return i64(ts.Sec)*1e9 + i64(ts.Nsec)
 }
 
 fn timeinit() {}

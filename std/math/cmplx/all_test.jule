@@ -654,17 +654,17 @@ fn tolerance(a: f64, b: f64, mut e: f64): bool {
 			e = -e
 		}
 	}
-	ret d < e
+	return d < e
 }
-fn veryclose(a: f64, b: f64): bool { ret tolerance(a, b, 4e-16) }
+fn veryclose(a: f64, b: f64): bool { return tolerance(a, b, 4e-16) }
 fn alike(a: f64, b: f64): bool {
 	match {
 	| a != a && b != b: // math::IsNaN(a) && math::IsNaN(b):
-		ret true
+		return true
 	| a == b:
-		ret math::Signbit(a) == math::Signbit(b)
+		return math::Signbit(a) == math::Signbit(b)
 	}
-	ret false
+	return false
 }
 
 fn cTolerance(a: cmplx128, b: cmplx128, mut e: f64): bool {
@@ -675,10 +675,10 @@ fn cTolerance(a: cmplx128, b: cmplx128, mut e: f64): bool {
 			e = -e
 		}
 	}
-	ret d < e
+	return d < e
 }
-fn cSoclose(a: cmplx128, b: cmplx128, e: f64): bool { ret cTolerance(a, b, e) }
-fn cVeryclose(a: cmplx128, b: cmplx128): bool { ret cTolerance(a, b, 4e-16) }
+fn cSoclose(a: cmplx128, b: cmplx128, e: f64): bool { return cTolerance(a, b, e) }
+fn cVeryclose(a: cmplx128, b: cmplx128): bool { return cTolerance(a, b, 4e-16) }
 fn cAlike(a: cmplx128, b: cmplx128): bool {
 	let mut realAlike: bool
 	let mut imagAlike: bool
@@ -694,12 +694,12 @@ fn cAlike(a: cmplx128, b: cmplx128): bool {
 		// Allow non-exact special cases to have errors in ULP.
 		imagAlike = veryclose(imag(a), imag(b))
 	}
-	ret realAlike && imagAlike
+	return realAlike && imagAlike
 }
 fn isExact(x: f64): bool {
 	// Special cases that should match exactly.  Other cases are multiples
 	// of Pi that may not be last bit identical on all platforms.
-	ret math::IsNaN(x) || math::IsInf(x, 0) || x == 0 || x == 1 || x == -1
+	return math::IsNaN(x) || math::IsInf(x, 0) || x == 0 || x == 1 || x == -1
 }
 
 #test

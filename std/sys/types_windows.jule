@@ -37,7 +37,7 @@ impl Filetime {
 		nsec -= 116444736000000000
 		// convert into nanoseconds
 		nsec *= 100
-		ret nsec
+		return nsec
 	}
 }
 
@@ -217,10 +217,10 @@ impl FdSet {
 		let mut i: u32
 		for i < self.Count; i++ {
 			if self.Array[i] == fd {
-				ret true
+				return true
 			}
 		}
-		ret false
+		return false
 	}
 
 	// Clears the set fds.

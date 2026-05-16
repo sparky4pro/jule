@@ -69,7 +69,7 @@ fn testAnonymousFunction() {
 	}
 	myFunc()
 	let rf = fn(): i32 {
-		ret 90
+		return 90
 	}()
 	_ = rf
 	fn() {
@@ -82,9 +82,9 @@ fn testAnonymousFunction() {
 fn testAnonymousFunction2(): (int, ok: bool) {
 	f := fn(): bool {
 		ok = true
-		ret ok
+		return ok
 	}
-	ret 0, f()
+	return 0, f()
 }
 
 fn testMultipleVariable() {
@@ -97,7 +97,7 @@ fn testMultipleVariable() {
 	a, b, _ = testMultipleReturn()
 }
 
-fn testMultipleReturn(): (int, int, bool) { ret 5, 5, false }
+fn testMultipleReturn(): (int, int, bool) { return 5, 5, false }
 
 fn testIter() {
 	// Infinity iteration
@@ -267,9 +267,9 @@ impl testStruct {
 	}
 }
 
-fn testGenericFunc[T](a: T, b: T): T { ret a + b }
+fn testGenericFunc[T](a: T, b: T): T { return a + b }
 
-fn testRetVars(): (x: int) { ret }
+fn testRetVars(): (x: int) { return }
 
 fn testPostfix() {
 	let mut a = 10
@@ -318,10 +318,10 @@ fn testShortFunc() {
 	let f6: fn(mut &x: *int, mut &y: *int): int = fn|x, y| *x * *y
 	let f7: fn() = fn|| { println("hello world") }
 	let f8: fn()! = fn|| { println("hello world") }
-	let f9: fn()!: int = fn|| { ret 10 }
-	let f10: fn(x: int, y: int): int = fn|x, y| { ret x * y }
-	let f11: fn(&x: *int, &y: *int): int = fn|x, y| { ret *x * *y }
-	let f12: fn(mut &x: *int, mut &y: *int): int = fn|x, y| { ret *x * *y }
+	let f9: fn()!: int = fn|| { return 10 }
+	let f10: fn(x: int, y: int): int = fn|x, y| { return x * y }
+	let f11: fn(&x: *int, &y: *int): int = fn|x, y| { return *x * *y }
+	let f12: fn(mut &x: *int, mut &y: *int): int = fn|x, y| { return *x * *y }
 	f1()
 	f2()!
 	f3()!

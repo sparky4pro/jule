@@ -9,18 +9,18 @@ use "std/mem"
 use "std/sys"
 
 fn lastErrorCode(): sys::Errno {
-	ret sys::Errno(sys::WSAGetLastError())
+	return sys::Errno(sys::WSAGetLastError())
 }
 
 fn syssocket(domain: int, typ: int, proto: int)!: poll::NetHandle {
-	ret sys::WSASocket(domain, typ, proto, nil, 0, windows::WSA_FLAG_OVERLAPPED|windows::WSA_FLAG_NO_HANDLE_INHERIT)?
+	return sys::WSASocket(domain, typ, proto, nil, 0, windows::WSA_FLAG_OVERLAPPED|windows::WSA_FLAG_NO_HANDLE_INHERIT)?
 }
 
 async fn maxListenerBacklog(): int {
 	// When the socket backlog is SOMAXCONN, Windows will set the backlog to
 	// "a reasonable maximum value".
 	// See: https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-listen
-	ret sys::SOMAXCONN
+	return sys::SOMAXCONN
 }
 
 fn setDefaultSockopts(handle: poll::NetHandle)! {

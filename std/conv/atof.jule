@@ -61,10 +61,10 @@ fn commonPrefixLenIgnoreCase(s: string, prefix: string): int {
 			c += 'a' - 'A'
 		}
 		if c != prefix[i] {
-			ret i
+			return i
 		}
 	}
-	ret n
+	return n
 }
 
 // Returns the floating-point value for the special,
@@ -74,7 +74,7 @@ fn commonPrefixLenIgnoreCase(s: string, prefix: string): int {
 // The character case is ignored.
 fn special(mut s: string): (f: f64, n: int, ok: bool) {
 	if len(s) == 0 {
-		ret 0, 0, false
+		return 0, 0, false
 	}
 	mut sign := 1
 	mut nsign := 0
@@ -94,14 +94,14 @@ fn special(mut s: string): (f: f64, n: int, ok: bool) {
 			n = 3
 		}
 		if n == 3 || n == 8 {
-			ret math::Inf(sign), nsign + n, true
+			return math::Inf(sign), nsign + n, true
 		}
 	| 'n' | 'N':
 		if commonPrefixLenIgnoreCase(s, "nan") == 3 {
-			ret math::NaN(), 3, true
+			return math::NaN(), 3, true
 		}
 	}
-	ret 0, 0, false
+	return 0, 0, false
 }
 
 // Reads a decimal or hexadecimal mantissa and exponent from a float
@@ -112,7 +112,7 @@ fn readFloat(s: string): (mantissa: u64, exp: int, neg: bool, trunc: bool, hex: 
 
 	// optional sign
 	if i >= len(s) {
-		ret
+		return
 	}
 	match {
 	| s[i] == '+':
@@ -182,7 +182,7 @@ loop:
 		break
 	}
 	if !sawdigits {
-		ret
+		return
 	}
 	if !sawdot {
 		dp = nd
@@ -201,7 +201,7 @@ loop:
 	if i < len(s) && lower(s[i]) == expChar {
 		i++
 		if i >= len(s) {
-			ret
+			return
 		}
 		mut esign := 1
 		if s[i] == '+' {
@@ -211,7 +211,7 @@ loop:
 			esign = -1
 		}
 		if i >= len(s) || s[i] < '0' || s[i] > '9' {
-			ret
+			return
 		}
 		mut e := 0
 		for i < len(s) && ('0' <= s[i] && s[i] <= '9' || s[i] == '_'); i++ {
@@ -226,7 +226,7 @@ loop:
 		dp += e * esign
 	} else if base == 16 {
 		// Must have exponent.
-		ret
+		return
 	}
 
 	if mantissa != 0 {
@@ -234,11 +234,11 @@ loop:
 	}
 
 	if underscores && !underscoreOK(s[:i]) {
-		ret
+		return
 	}
 
 	ok = true
-	ret
+	return
 }
 
 // Decimal power of ten to binary power of two.
@@ -252,7 +252,7 @@ impl decimal {
 
 		// optional sign
 		if i >= len(s) {
-			ret
+			return
 		}
 		match {
 		| s[i] == '+':
@@ -271,7 +271,7 @@ impl decimal {
 				continue
 			| s[i] == '.':
 				if sawdot {
-					ret
+					return
 				}
 				sawdot = true
 				self.dp = self.nd
@@ -293,7 +293,7 @@ impl decimal {
 			break
 		}
 		if !sawdigits {
-			ret
+			return
 		}
 		if !sawdot {
 			self.dp = self.nd
@@ -307,7 +307,7 @@ impl decimal {
 		if i < len(s) && lower(s[i]) == 'e' {
 			i++
 			if i >= len(s) {
-				ret
+				return
 			}
 			mut esign := 1
 			if s[i] == '+' {
@@ -317,7 +317,7 @@ impl decimal {
 				esign = -1
 			}
 			if i >= len(s) || s[i] < '0' || s[i] > '9' {
-				ret
+				return
 			}
 			mut e := 0
 			for i < len(s) && ('0' <= s[i] && s[i] <= '9' || s[i] == '_'); i++ {
@@ -332,11 +332,11 @@ impl decimal {
 		}
 
 		if i != len(s) {
-			ret
+			return
 		}
 
 		ok = true
-		ret
+		return
 	}
 
 	fn FloatBits(mut *self, &flt: *floatInfo): (b: u64, overflow: bool) {
@@ -434,7 +434,7 @@ impl decimal {
 		if self.neg {
 			bits |= 1 << flt.mantbits << flt.expbits
 		}
-		ret bits, overflow
+		return bits, overflow
 	}
 }
 
@@ -456,7 +456,7 @@ let f32pow10: []f32 = [1e0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10]
 // These all produce potentially inexact but correctly rounded answers.
 fn atof64Exact(mantissa: u64, mut exp: int, neg: bool): (f: f64, ok: bool) {
 	if mantissa>>f64info.mantbits != 0 {
-		ret
+		return
 	}
 	f = f64(mantissa)
 	if neg {
@@ -465,7 +465,7 @@ fn atof64Exact(mantissa: u64, mut exp: int, neg: bool): (f: f64, ok: bool) {
 	match {
 	| exp == 0:
 		// an integer.
-		ret f, true
+		return f, true
 		// Exact integers are <= 10^15.
 		// Exact powers of ten are <= 10^22.
 	| exp > 0 && exp <= 15+22: // int * 10^k
@@ -477,13 +477,13 @@ fn atof64Exact(mantissa: u64, mut exp: int, neg: bool): (f: f64, ok: bool) {
 		}
 		if f > 1e15 || f < -1e15 {
 			// the exponent was really too large.
-			ret
+			return
 		}
-		ret f * f64pow10[exp], true
+		return f * f64pow10[exp], true
 	| exp < 0 && exp >= -22: // int / 10^k
-		ret f / f64pow10[-exp], true
+		return f / f64pow10[-exp], true
 	}
-	ret
+	return
 }
 
 // If possible to convert decimal representation to 64-bit float f exactly,
@@ -495,7 +495,7 @@ fn atof64Exact(mantissa: u64, mut exp: int, neg: bool): (f: f64, ok: bool) {
 // These all produce potentially inexact but correctly rounded answers.
 fn atof64exact(mantissa: u64, mut exp: int, neg: bool): (f: f64, ok: bool) {
 	if mantissa>>f64info.mantbits != 0 {
-		ret
+		return
 	}
 	f = f64(mantissa)
 	if neg {
@@ -504,7 +504,7 @@ fn atof64exact(mantissa: u64, mut exp: int, neg: bool): (f: f64, ok: bool) {
 	match {
 	| exp == 0:
 		// an integer.
-		ret f, true
+		return f, true
 		// Exact integers are <= 10^15.
 		// Exact powers of ten are <= 10^22.
 	| exp > 0 && exp <= 15+22: // int * 10^k
@@ -516,20 +516,20 @@ fn atof64exact(mantissa: u64, mut exp: int, neg: bool): (f: f64, ok: bool) {
 		}
 		if f > 1e15 || f < -1e15 {
 			// the exponent was really too large.
-			ret
+			return
 		}
-		ret f * f64pow10[exp], true
+		return f * f64pow10[exp], true
 	| exp < 0 && exp >= -22: // int / 10^k
-		ret f / f64pow10[-exp], true
+		return f / f64pow10[-exp], true
 	}
-	ret
+	return
 }
 
 // If possible to compute mantissa*10^exp to 32-bit float f exactly,
 // entirely in floating-point math, do so, avoiding the machinery above.
 fn atof32exact(mantissa: u64, mut exp: int, mut neg: bool): (f: f32, ok: bool) {
 	if mantissa>>f32info.mantbits != 0 {
-		ret
+		return
 	}
 	f = f32(mantissa)
 	if neg {
@@ -537,7 +537,7 @@ fn atof32exact(mantissa: u64, mut exp: int, mut neg: bool): (f: f32, ok: bool) {
 	}
 	match {
 	| exp == 0:
-		ret f, true
+		return f, true
 		// Exact integers are <= 10^7.
 		// Exact powers of ten are <= 10^10.
 	| exp > 0 && exp <= 7+10: // int * 10^k
@@ -549,13 +549,13 @@ fn atof32exact(mantissa: u64, mut exp: int, mut neg: bool): (f: f32, ok: bool) {
 		}
 		if f > 1e7 || f < -1e7 {
 			// the exponent was really too large.
-			ret
+			return
 		}
-		ret f * f32pow10[exp], true
+		return f * f32pow10[exp], true
 	| exp < 0 && exp >= -10: // int / 10^k
-		ret f / f32pow10[-exp], true
+		return f / f32pow10[-exp], true
 	}
-	ret
+	return
 }
 
 // Converts the hex floating-point string s
@@ -622,28 +622,28 @@ fn atofHex(s: string, &flt: *floatInfo, mut mantissa: u64, mut exp: int, neg: bo
 		bits |= 1 << flt.mantbits << flt.expbits
 	}
 	if uintptr(flt) == uintptr(&f32info) {
-		ret f64(math::F32frombits(u32(bits))), err
+		return f64(math::F32frombits(u32(bits))), err
 	}
-	ret math::F64frombits(bits), err
+	return math::F64frombits(bits), err
 }
 
 fn atof32(s: string): (f: f32, n: int, err: &NumError) {
 	{
 		val, (n), ok := special(s)
 		if ok {
-			ret f32(val), n, nil
+			return f32(val), n, nil
 		}
 	}
 
 	mantissa, exp, neg, trunc, hex, n, mut ok := readFloat(s)
 	if !ok {
-		ret 0, n, syntaxError(fnParseFloat, s)
+		return 0, n, syntaxError(fnParseFloat, s)
 	}
 
 	if hex {
 		mut ff := 0.
 		ff, err = atofHex(s[:n], &f32info, mantissa, exp, neg, trunc)
-		ret f32(ff), n, err
+		return f32(ff), n, err
 	}
 
 	if optimize {
@@ -652,13 +652,13 @@ fn atof32(s: string): (f: f32, n: int, err: &NumError) {
 		if !trunc {
 			f, ok = atof32exact(mantissa, exp, neg)
 			if ok {
-				ret f, n, nil
+				return f, n, nil
 			}
 		}
 		f, ok = eiselLemire32(mantissa, exp, neg)
 		if ok {
 			if !trunc {
-				ret f, n, nil
+				return f, n, nil
 			}
 			// Even if the mantissa was truncated, we may
 			// have found the correct result. Confirm by
@@ -666,7 +666,7 @@ fn atof32(s: string): (f: f32, n: int, err: &NumError) {
 			mut fUp := f32(0)
 			fUp, ok = eiselLemire32(mantissa+1, exp, neg)
 			if ok && f == fUp {
-				ret f, n, nil
+				return f, n, nil
 			}
 		}
 	}
@@ -674,32 +674,32 @@ fn atof32(s: string): (f: f32, n: int, err: &NumError) {
 	// Slow fallback.
 	mut d := decimal{}
 	if !d.Set(unsafe::StringBytes(s)[:n]) {
-		ret 0, n, syntaxError(fnParseFloat, s)
+		return 0, n, syntaxError(fnParseFloat, s)
 	}
 	b, ovf := d.FloatBits(&f32info)
 	f = math::F32frombits(u32(b))
 	if ovf {
 		err = rangeError(fnParseFloat, s)
 	}
-	ret f, n, err
+	return f, n, err
 }
 
 fn atof64(s: string): (f: f64, n: int, err: &NumError) {
 	{
 		val, (n), ok := special(s)
 		if ok {
-			ret val, n, nil
+			return val, n, nil
 		}
 	}
 
 	mantissa, exp, neg, trunc, hex, n, mut ok := readFloat(s)
 	if !ok {
-		ret 0, n, syntaxError(fnParseFloat, s)
+		return 0, n, syntaxError(fnParseFloat, s)
 	}
 
 	if hex {
 		f, err = atofHex(s[:n], &f64info, mantissa, exp, neg, trunc)
-		ret f, n, err
+		return f, n, err
 	}
 
 	if optimize {
@@ -708,13 +708,13 @@ fn atof64(s: string): (f: f64, n: int, err: &NumError) {
 		if !trunc {
 			f, ok = atof64exact(mantissa, exp, neg)
 			if ok {
-				ret f, n, nil
+				return f, n, nil
 			}
 		}
 		f, ok = eiselLemire64(mantissa, exp, neg)
 		if ok {
 			if !trunc {
-				ret f, n, nil
+				return f, n, nil
 			}
 			// Even if the mantissa was truncated, we may
 			// have found the correct result. Confirm by
@@ -722,7 +722,7 @@ fn atof64(s: string): (f: f64, n: int, err: &NumError) {
 			mut fUp := 0.
 			fUp, ok = eiselLemire64(mantissa+1, exp, neg)
 			if ok && f == fUp {
-				ret f, n, nil
+				return f, n, nil
 			}
 		}
 	}
@@ -730,22 +730,22 @@ fn atof64(s: string): (f: f64, n: int, err: &NumError) {
 	// Slow fallback.
 	mut d := decimal{}
 	if !d.Set(unsafe::StringBytes(s)[:n]) {
-		ret 0, n, syntaxError(fnParseFloat, s)
+		return 0, n, syntaxError(fnParseFloat, s)
 	}
 	b, ovf := d.FloatBits(&f64info)
 	f = math::F64frombits(b)
 	if ovf {
 		err = rangeError(fnParseFloat, s)
 	}
-	ret f, n, err
+	return f, n, err
 }
 
 fn parseFloatPrefix(s: string, bitSize: int): (f64, int, err: &NumError) {
 	if bitSize == 32 {
 		f, n, (err) := atof32(s)
-		ret f64(f), n, err
+		return f64(f), n, err
 	}
-	ret atof64(s)
+	return atof64(s)
 }
 
 const fnParseFloat = "ParseFloat"
@@ -784,5 +784,5 @@ fn ParseFloat(s: string, bitSize: int)!: f64 {
 	if err != nil {
 		throw err
 	}
-	ret f
+	return f
 }

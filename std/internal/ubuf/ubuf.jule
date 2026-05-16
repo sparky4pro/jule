@@ -16,12 +16,12 @@ struct Ubuf {
 impl Ubuf {
 	// self.data == nil
 	fn IsNil(*self): bool {
-		ret self.data.Slice == nil
+		return self.data.Slice == nil
 	}
 
 	// Returns the mutable data of the buffer.
 	fn GetData(*self): []byte {
-		ret unsafe { *(*[]byte)(&self.data) }
+		return unsafe { *(*[]byte)(&self.data) }
 	}
 
 	// Sets the data of the buffer.
@@ -33,7 +33,7 @@ impl Ubuf {
 
 	// self.data[i]
 	fn Get(*self, i: int): byte {
-		ret unsafe { *(self.data.Slice + i) }
+		return unsafe { *(self.data.Slice + i) }
 	}
 
 	// self.data[s:]
@@ -41,7 +41,7 @@ impl Ubuf {
 	fn Slice1(*self, s: int): []byte {
 		l := self.data.Len - s
 		c := self.data.Cap - s
-		ret unsafe { unsafe::Slice(self.data.Slice+s, l, c) }
+		return unsafe { unsafe::Slice(self.data.Slice+s, l, c) }
 	}
 
 	// self.data[s:n]
@@ -49,13 +49,13 @@ impl Ubuf {
 	fn Slice2(*self, s: int, n: int): []byte {
 		l := n - s
 		c := self.data.Cap - s
-		ret unsafe { unsafe::Slice(self.data.Slice+s, l, c) }
+		return unsafe { unsafe::Slice(self.data.Slice+s, l, c) }
 	}
 
 	// self.data[:n]
 	// Returned slice will have no GC.
 	fn Slice3(*self, n: int): []byte {
-		ret unsafe { unsafe::Slice(self.data.Slice, n, self.data.Cap) }
+		return unsafe { unsafe::Slice(self.data.Slice, n, self.data.Cap) }
 	}
 
 	// self.data[i] = b
@@ -84,11 +84,11 @@ impl Ubuf {
 
 	// len(self.data)
 	fn Len(*self): int {
-		ret self.data.Len
+		return self.data.Len
 	}
 
 	// cap(self.data)
 	fn Cap(*self): int {
-		ret self.data.Cap
+		return self.data.Cap
 	}
 }

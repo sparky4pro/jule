@@ -61,10 +61,10 @@ impl rwmutex {
 		for {
 			c := atomic::Load(&self.readerCount, atomic::Acquire)
 			if c < 0 {
-				ret false
+				return false
 			}
 			if atomic::CompareAndSwap(&self.readerCount, c, c+1, atomic::AcqRel, atomic::Acquire) {
-				ret true
+				return true
 			}
 		}
 	}
@@ -113,13 +113,13 @@ impl rwmutex {
 	// in a particular use of mutexes.
 	fn tryLock(*self): bool {
 		if !self.w.tryLock() {
-			ret false
+			return false
 		}
 		if !atomic::CompareAndSwap(&self.readerCount, 0, -rwmutexMaxReaders, atomic::AcqRel, atomic::Acquire) {
 			self.w.unlock()
-			ret false
+			return false
 		}
-		ret true
+		return true
 	}
 
 	// Unlocks for writing. It is a run-time error if it is

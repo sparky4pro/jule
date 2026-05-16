@@ -9,7 +9,7 @@ use "std/sys"
 // the version can't be obtained or parsed.
 fn KernelVersion(): (major: int, minor: int) {
 	let mut uname: sys::Utsname
-	sys::Uname(&uname) else { ret }
+	sys::Uname(&uname) else { return }
 
 	let mut values: [2]int
 	let mut value: int
@@ -29,5 +29,5 @@ fn KernelVersion(): (major: int, minor: int) {
 		}
 	}
 
-	ret values[0], values[1]
+	return values[0], values[1]
 }

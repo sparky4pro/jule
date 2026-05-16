@@ -44,5 +44,5 @@ use "std/runtime"
 // [slices::SortFunc], for example). It is usually clearer and always faster
 // to use the built-in string comparison operators ==, <, >, and so on.
 fn Compare(a: string, b: string): int {
-	ret runtime::compareString(&a, &b)
+	return runtime::compareString(&a, &b)
 }

@@ -53,16 +53,16 @@ struct lazyBuff {
 impl lazyBuff {
 	fn index(mut *self, i: int): byte {
 		if self.buff != nil {
-			ret self.buff[i]
+			return self.buff[i]
 		}
-		ret self.path[i]
+		return self.path[i]
 	}
 
 	fn append(mut *self, c: byte) {
 		if self.buff == nil {
 			if self.w < len(self.path) && self.path[self.w] == c {
 				self.w++
-				ret
+				return
 			}
 			self.buff = make([]byte, len(self.path))
 			copy(self.buff, self.path[:self.w])
@@ -73,9 +73,9 @@ impl lazyBuff {
 
 	fn _string(mut *self): string {
 		if self.buff == nil {
-			ret self.volAndPath[:self.volLen+self.w]
+			return self.volAndPath[:self.volLen+self.w]
 		}
-		ret self.volAndPath[:self.volLen] + string(self.buff[:self.w])
+		return self.volAndPath[:self.volLen] + string(self.buff[:self.w])
 	}
 }
 
@@ -112,9 +112,9 @@ fn Clean(mut path: string): string {
 	if path == "" {
 		if volLen > 1 && IsPathSeparator(originalPath[0]) && IsPathSeparator(originalPath[1]) {
 			// should be UNC
-			ret FromSlash(originalPath)
+			return FromSlash(originalPath)
 		}
-		ret originalPath + "."
+		return originalPath + "."
 	}
 	rooted := IsPathSeparator(path[0])
 
@@ -192,7 +192,7 @@ fn Clean(mut path: string): string {
 	if out.w == 0 {
 		out.append('.')
 	}
-	ret FromSlash(out._string())
+	return FromSlash(out._string())
 }
 
 // Returns the result of replacing each separator character
@@ -200,9 +200,9 @@ fn Clean(mut path: string): string {
 // replaced by multiple slashes.
 fn ToSlash(path: string): string {
 	if Separator == '/' {
-		ret path
+		return path
 	}
-	ret strings::ReplaceAll(path, string(Separator), "/")
+	return strings::ReplaceAll(path, string(Separator), "/")
 }
 
 // Returns the result of replacing each slash ('/') character
@@ -210,9 +210,9 @@ fn ToSlash(path: string): string {
 // by multiple separators.
 fn FromSlash(path: string): string {
 	if Separator == '/' {
-		ret path
+		return path
 	}
-	ret strings::ReplaceAll(path, "/", string(Separator))
+	return strings::ReplaceAll(path, "/", string(Separator))
 }
 
 // Joins any number of path elements into a single path,
@@ -222,7 +222,7 @@ fn FromSlash(path: string): string {
 // an empty string.
 // On Windows, the result will only be a UNC path if the first
 // non-empty element is a UNC path.
-fn Join(elem: ...string): string { ret join(elem...) }
+fn Join(elem: ...string): string { return join(elem...) }
 
 // Returns the file name extension used by path.
 // The extension is the suffix beginning at the final dot
@@ -231,10 +231,10 @@ fn Ext(path: string): string {
 	mut i := len(path) - 1
 	for i >= 0 && !IsPathSeparator(path[i]); i-- {
 		if path[i] == '.' {
-			ret path[i:]
+			return path[i:]
 		}
 	}
-	ret ""
+	return ""
 }
 
 // Returns an absolute representation of path.
@@ -242,7 +242,7 @@ fn Ext(path: string): string {
 // working directory to turn it into an absolute path. The absolute
 // path name for a given file is not guaranteed to be unique.
 // abs calls clean on the result.
-fn Abs(path: string)!: string { ret abs(path)? }
+fn Abs(path: string)!: string { return abs(path)? }
 
 // Returns the last element of path.
 // Trailing path separators are removed before extracting the last element.
@@ -250,7 +250,7 @@ fn Abs(path: string)!: string { ret abs(path)? }
 // If the path consists entirely of separators, base returns a single separator.
 fn Base(mut path: string): string {
 	if path == "" {
-		ret "."
+		return "."
 	}
 	// Strip trailing slashes.
 	for len(path) > 0 && IsPathSeparator(path[len(path)-1]) {
@@ -268,9 +268,9 @@ fn Base(mut path: string): string {
 	}
 	// If empty now, it had only slashes.
 	if path == "" {
-		ret string(Separator)
+		return string(Separator)
 	}
-	ret path
+	return path
 }
 
 // Returns all but the last element of path, typically the path's directory.
@@ -288,9 +288,9 @@ fn Dir(path: string): string {
 	dir := Clean(path[len(vol) : i+1])
 	if dir == "." && len(vol) > 2 {
 		// must be UNC
-		ret vol
+		return vol
 	}
-	ret vol + dir
+	return vol + dir
 }
 
 // Returns leading volume name.
@@ -298,12 +298,12 @@ fn Dir(path: string): string {
 // Given "\\host\share\foo" it returns "\\host\share".
 // On other platforms it returns empty string.
 fn VolumeName(path: string): string {
-	ret FromSlash(path[:VolumeNameLen(path)])
+	return FromSlash(path[:VolumeNameLen(path)])
 }
 
 // Splits a list of paths joined by the OS-specific [ListSeparator],
 // usually found in PATH environment variable.
 // Unlike strings::Split, it returns an empty slice when passed an empty string.
 fn SplitList(path: string): []string {
-	ret splitList(path)
+	return splitList(path)
 }

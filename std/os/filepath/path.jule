@@ -37,21 +37,21 @@ const ListSeparator = filepathlite::ListSeparator
 // See also Rob Pike, “Lexical File Names in Plan 9 or Getting Dot-Dot Right”
 // https://9p.io/sys/doc/lexnames.html
 fn Clean(path: string): string {
-	ret filepathlite::Clean(path)
+	return filepathlite::Clean(path)
 }
 
 // Returns the result of replacing each separator character
 // in path with a slash ('/') character. Multiple separators are
 // replaced by multiple slashes.
 fn ToSlash(path: string): string {
-	ret filepathlite::ToSlash(path)
+	return filepathlite::ToSlash(path)
 }
 
 // Returns the result of replacing each slash ('/') character
 // in path with a separator character. Multiple slashes are replaced
 // by multiple separators.
 fn FromSlash(path: string): string {
-	ret filepathlite::FromSlash(path)
+	return filepathlite::FromSlash(path)
 }
 
 // Joins any number of path elements into a single path,
@@ -62,14 +62,14 @@ fn FromSlash(path: string): string {
 // On Windows, the result will only be a UNC path if the first
 // non-empty element is a UNC path.
 fn Join(elem: ...string): string {
-	ret filepathlite::Join(elem...)
+	return filepathlite::Join(elem...)
 }
 
 // Returns the file name extension used by path.
 // The extension is the suffix beginning at the final dot
 // in the final element of path; it is empty if there is no dot.
 fn Ext(path: string): string {
-	ret filepathlite::Ext(path)
+	return filepathlite::Ext(path)
 }
 
 // Returns an absolute representation of path.
@@ -78,7 +78,7 @@ fn Ext(path: string): string {
 // path name for a given file is not guaranteed to be unique.
 // abs calls clean on the result.
 fn Abs(path: string)!: string {
-	ret filepathlite::Abs(path)?
+	return filepathlite::Abs(path)?
 }
 
 // Returns the last element of path.
@@ -86,7 +86,7 @@ fn Abs(path: string)!: string {
 // If the path is empty, base returns ".".
 // If the path consists entirely of separators, base returns a single separator.
 fn Base(mut path: string): string {
-	ret filepathlite::Base(path)
+	return filepathlite::Base(path)
 }
 
 // Returns all but the last element of path, typically the path's directory.
@@ -96,7 +96,7 @@ fn Base(mut path: string): string {
 // If the path consists entirely of separators, dir returns a single separator.
 // The returned path does not end in a separator unless it is the root directory.
 fn Dir(path: string): string {
-	ret filepathlite::Dir(path)
+	return filepathlite::Dir(path)
 }
 
 // Returns leading volume name.
@@ -104,15 +104,15 @@ fn Dir(path: string): string {
 // Given "\\host\share\foo" it returns "\\host\share".
 // On other platforms it returns empty string.
 fn VolumeName(path: string): string {
-	ret filepathlite::VolumeName(path)
+	return filepathlite::VolumeName(path)
 }
 
 // Reports whether the path is absolute.
 fn IsAbs(path: string): bool {
-	ret filepathlite::IsAbs(path)
+	return filepathlite::IsAbs(path)
 }
 
 // Reports whether c is path separator.
 fn IsPathSeparator(c: byte): bool {
-	ret filepathlite::IsPathSeparator(c)
+	return filepathlite::IsPathSeparator(c)
 }

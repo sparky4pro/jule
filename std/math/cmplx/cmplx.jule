@@ -6,33 +6,33 @@ use "std/math"
 
 // Returns conjugate of complex number.
 fn Conj(x: cmplx128): cmplx128 {
-	ret cmplx(real(x), -imag(x))
+	return cmplx(real(x), -imag(x))
 }
 
 // Reports whether either real or imag is an infinity.
 fn IsInf(x: cmplx128): bool {
-	ret math::IsInf(real(x), 0) || math::IsInf(imag(x), 0)
+	return math::IsInf(real(x), 0) || math::IsInf(imag(x), 0)
 }
 
 // Reports whether either real or imag is NaN and neither is an infinity.
 fn IsNaN(x: cmplx128): bool {
 	match {
 	| math::IsInf(real(x), 0) | math::IsInf(imag(x), 0):
-		ret false
+		return false
 	| math::IsNaN(real(x)) | math::IsNaN(imag(x)):
-		ret true
+		return true
 	|:
-		ret false
+		return false
 	}
 }
 
 // Returns NaN complex number.
 fn NaN(): cmplx128 {
-	ret cmplx(math::NaN(), math::NaN())
+	return cmplx(math::NaN(), math::NaN())
 }
 
 // Returns Inf complex number.
 // Uses positive infinity if sign >= 0, negative infinity if !sign < 0.
 fn Inf(sign: int): cmplx128 {
-	ret cmplx(math::Inf(sign), math::Inf(sign))
+	return cmplx(math::Inf(sign), math::Inf(sign))
 }

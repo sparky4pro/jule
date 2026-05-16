@@ -48,9 +48,9 @@ fn Frexp(mut f: f64): (frac: f64, exp: int) {
 	// special cases
 	match {
 	| f == 0:
-		ret f, 0 // correctly return -0
+		return f, 0 // correctly return -0
 	| IsInf(f, 0) | IsNaN(f):
-		ret f, 0
+		return f, 0
 	}
 	f, exp = normalize(f)
 	mut x := F64bits(f)
@@ -58,5 +58,5 @@ fn Frexp(mut f: f64): (frac: f64, exp: int) {
 	x = x & ^(mask << shift)
 	x |= (-1 + bias) << shift
 	frac = F64frombits(x)
-	ret
+	return
 }

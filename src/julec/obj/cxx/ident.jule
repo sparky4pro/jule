@@ -28,7 +28,7 @@ struct identCoder {
 // Identifier coder.
 impl identCoder {
 	fn new(mut oc: &ObjectCoder): &identCoder {
-		ret &identCoder{
+		return &identCoder{
 			oc: oc,
 		}
 	}
@@ -45,7 +45,7 @@ impl identCoder {
 		}
 		// identifier is ASCII, append directly.
 		buf.WriteString(name)!
-		ret
+		return
 	unicode:
 		for _, r in name {
 			if r < utf8::RuneSelf { // ASCII
@@ -93,7 +93,7 @@ impl identCoder {
 		if !ok {
 			panic("cache miss: " + pkg)
 		}
-		ret name
+		return name
 	}
 
 	fn traitFunc(*self, mut &buf: *strings::Builder, t: &sema::Trait, mut f: &sema::Func) {
@@ -106,7 +106,7 @@ impl identCoder {
 		match {
 		| f.Extern:
 			buf.WriteString(f.Name)!
-			ret
+			return
 		| f.IsMethod():
 			if f.Static {
 				self.structure(buf, f.Owner.(&sema::Struct))
@@ -122,15 +122,15 @@ impl identCoder {
 					self.traitFunc(buf, f.Owner.(&sema::Trait), f)
 				}
 			}
-			ret
+			return
 		| f.IsInit():
 			self.toOut(buf, f.Name, uintptr(f))
-			ret
+			return
 		}
 		export := obj::FindDirective(f.Directives, directive::Export)
 		if export != nil {
 			identCoder.export(buf, export)
-			ret
+			return
 		}
 		name := self.needCacheHit(f.Token.File.Path)
 		buf.WriteString(name)!
@@ -156,7 +156,7 @@ impl identCoder {
 				// Handle it like an ordinary function.
 				self.func(buf, f.Decl)
 			}
-			ret
+			return
 		}
 		// Deterministic identifier generation is not possible.
 		// Fallback to the non-deterministic method.
@@ -172,15 +172,15 @@ impl identCoder {
 
 	fn param(*self, mut &buf: *strings::Builder, p: &sema::Param) {
 		if jule::IsAnon(p.Name) || jule::IsBlank(p.Name) {
-			ret
+			return
 		}
 		if p.IsSelf() {
 			buf.WriteString(identSelf)!
-			ret
+			return
 		}
 		if p.Token == nil {
 			self.toLocal(buf, 0, 0, p.Name)
-			ret
+			return
 		}
 		self.toLocal(buf, p.Token.Row, p.Token.Column, p.Name)
 	}
@@ -191,7 +191,7 @@ impl identCoder {
 				buf.WriteString("struct ")!
 			}
 			buf.WriteString(s.Name)!
-			ret
+			return
 		}
 		name := self.needCacheHit(s.Token.File.Path)
 		buf.WriteString(name)!
@@ -202,18 +202,18 @@ impl identCoder {
 	fn structureIns(*self, mut &buf: *strings::Builder, mut s: &sema::StructIns) {
 		if s.Decl.Extern {
 			self.structure(buf, s.Decl)
-			ret
+			return
 		}
 		export := obj::FindDirective(s.Decl.Directives, directive::Export)
 		if export != nil {
 			identCoder.export(buf, export)
-			ret
+			return
 		}
 		// No generics for structure.
 		// Handle it like an ordinary structure.
 		if len(s.Generics) == 0 {
 			self.structure(buf, s.Decl)
-			ret
+			return
 		}
 		// Deterministic identifier generation is not possible.
 		// Fallback to the non-deterministic method.
@@ -228,14 +228,14 @@ impl identCoder {
 			} else {
 				buf.WriteString(f.Name)!
 			}
-			ret
+			return
 		}
 		buf.WriteString("_field_")!
 		if jule::IsBlank(f.Name) {
 			// If the identifier is blank, there may be other fields like that.
 			// So handle them with unique identifier, avoid duplication.
 			buf.WriteString(conv::FormatUint(u64(uintptr(f)), 0xF))!
-			ret
+			return
 		}
 		self.writeIdentTo(buf, f.Name)
 	}
@@ -255,7 +255,7 @@ impl identCoder {
 			if v.Name == "error" {
 				// The error variable captured, handle it as "__jule_error".
 				buf.WriteString("__jule_error")!
-				ret
+				return
 			}
 			self.var(buf, v)
 		}
@@ -269,12 +269,12 @@ impl identCoder {
 		| Tuple:
 			buf.WriteString(resultName + "." + resultArgName)!
 			buf.WriteString(conv::Itoa(v.RetOrder))!
-			ret
+			return
 		| Single:
 			// The single return variable is just this one.
 			// Return directly [resultName] because of generated with this identifier.
 			buf.WriteString(resultName)!
-			ret
+			return
 		}
 		match {
 		| v.Extern:
@@ -291,7 +291,7 @@ impl identCoder {
 			export := obj::FindDirective(v.Directives, directive::Export)
 			if export != nil {
 				identCoder.export(buf, export)
-				ret
+				return
 			}
 			name := self.needCacheHit(v.Token.File.Path)
 			buf.WriteString(name)!

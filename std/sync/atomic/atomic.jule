@@ -45,27 +45,27 @@ type I8: i8
 impl I8 {
 	// Atomically stores new value and returns the previous value.
 	fn Swap(mut *self, new: i8, order: memoryOrder): (old: i8) {
-		ret atomic::SwapZ(self, new, order)
+		return atomic::SwapZ(self, new, order)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwap(mut *self, old: i8, new: i8, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapZ(self, old, new, succ, fail)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwapWeak(mut *self, old: i8, new: i8, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
 	}
 
 	// Atomically adds delta to value and returns the new value.
 	fn Add(mut *self, delta: i8, order: memoryOrder): (new: i8) {
-		ret atomic::AddZ(self, delta, order)
+		return atomic::AddZ(self, delta, order)
 	}
 
 	// Atomically reads and returns value.
 	fn Load(*self, order: memoryOrder): i8 {
-		ret atomic::LoadZ[I8, i8](self, order)
+		return atomic::LoadZ[I8, i8](self, order)
 	}
 
 	// Atomically assigns to value.
@@ -80,27 +80,27 @@ type I16: i16
 impl I16 {
 	// Atomically stores new value and returns the previous value.
 	fn Swap(mut *self, new: i16, order: memoryOrder): (old: i16) {
-		ret atomic::SwapZ(self, new, order)
+		return atomic::SwapZ(self, new, order)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwap(mut *self, old: i16, new: i16, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapZ(self, old, new, succ, fail)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwapWeak(mut *self, old: i16, new: i16, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
 	}
 
 	// Atomically adds delta to value and returns the new value.
 	fn Add(mut *self, delta: i16, order: memoryOrder): (new: i16) {
-		ret atomic::AddZ(self, delta, order)
+		return atomic::AddZ(self, delta, order)
 	}
 
 	// Atomically reads and returns value.
 	fn Load(*self, order: memoryOrder): i16 {
-		ret atomic::LoadZ[I16, i16](self, order)
+		return atomic::LoadZ[I16, i16](self, order)
 	}
 
 	// Atomically assigns to value.
@@ -115,27 +115,27 @@ type I32: i32
 impl I32 {
 	// Atomically stores new value and returns the previous value.
 	fn Swap(mut *self, new: i32, order: memoryOrder): (old: i32) {
-		ret atomic::SwapZ(self, new, order)
+		return atomic::SwapZ(self, new, order)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwap(mut *self, old: i32, new: i32, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapZ(self, old, new, succ, fail)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwapWeak(mut *self, old: i32, new: i32, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
 	}
 
 	// Atomically adds delta to value and returns the new value.
 	fn Add(mut *self, delta: i32, order: memoryOrder): (new: i32) {
-		ret atomic::AddZ(self, delta, order)
+		return atomic::AddZ(self, delta, order)
 	}
 
 	// Atomically reads and returns value.
 	fn Load(*self, order: memoryOrder): i32 {
-		ret atomic::LoadZ[I32, i32](self, order)
+		return atomic::LoadZ[I32, i32](self, order)
 	}
 
 	// Atomically assigns to value.
@@ -150,27 +150,27 @@ type I64: i64
 impl I64 {
 	// Atomically stores new value and returns the previous value.
 	fn Swap(mut *self, new: i64, order: memoryOrder): (old: i64) {
-		ret atomic::SwapZ(self, new, order)
+		return atomic::SwapZ(self, new, order)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwap(mut *self, old: i64, new: i64, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapZ(self, old, new, succ, fail)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwapWeak(mut *self, old: i64, new: i64, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
 	}
 
 	// Atomically adds delta to value and returns the new value.
 	fn Add(mut *self, delta: i64, order: memoryOrder): (new: i64) {
-		ret atomic::AddZ(self, delta, order)
+		return atomic::AddZ(self, delta, order)
 	}
 
 	// Atomically reads and returns value.
 	fn Load(*self, order: memoryOrder): i64 {
-		ret atomic::LoadZ[I64, i64](self, order)
+		return atomic::LoadZ[I64, i64](self, order)
 	}
 
 	// Atomically assigns to value.
@@ -185,27 +185,27 @@ type Int: int
 impl Int {
 	// Atomically stores new value and returns the previous value.
 	fn Swap(mut *self, new: int, order: memoryOrder): (old: int) {
-		ret atomic::SwapZ(self, new, order)
+		return atomic::SwapZ(self, new, order)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwap(mut *self, old: int, new: int, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapZ(self, old, new, succ, fail)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwapWeak(mut *self, old: int, new: int, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
 	}
 
 	// Atomically adds delta to value and returns the new value.
 	fn Add(mut *self, delta: int, order: memoryOrder): (new: int) {
-		ret atomic::AddZ(self, delta, order)
+		return atomic::AddZ(self, delta, order)
 	}
 
 	// Atomically reads and returns value.
 	fn Load(*self, order: memoryOrder): int {
-		ret atomic::LoadZ[Int, int](self, order)
+		return atomic::LoadZ[Int, int](self, order)
 	}
 
 	// Atomically assigns to value.
@@ -220,27 +220,27 @@ type U8: u8
 impl U8 {
 	// Atomically stores new value and returns the previous value.
 	fn Swap(mut *self, new: u8, order: memoryOrder): (old: u8) {
-		ret atomic::SwapZ(self, new, order)
+		return atomic::SwapZ(self, new, order)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwap(mut *self, old: u8, new: u8, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapZ(self, old, new, succ, fail)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwapWeak(mut *self, old: u8, new: u8, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
 	}
 
 	// Atomically adds delta to value and returns the new value.
 	fn Add(mut *self, delta: u8, order: memoryOrder): (new: u8) {
-		ret atomic::AddZ(self, delta, order)
+		return atomic::AddZ(self, delta, order)
 	}
 
 	// Atomically reads and returns value.
 	fn Load(*self, order: memoryOrder): u8 {
-		ret atomic::LoadZ[U8, u8](self, order)
+		return atomic::LoadZ[U8, u8](self, order)
 	}
 
 	// Atomically assigns to value.
@@ -255,27 +255,27 @@ type U16: u16
 impl U16 {
 	// Atomically stores new value and returns the previous value.
 	fn Swap(mut *self, new: u16, order: memoryOrder): (old: u16) {
-		ret atomic::SwapZ(self, new, order)
+		return atomic::SwapZ(self, new, order)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwap(mut *self, old: u16, new: u16, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapZ(self, old, new, succ, fail)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwapWeak(mut *self, old: u16, new: u16, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
 	}
 
 	// Atomically adds delta to value and returns the new value.
 	fn Add(mut *self, delta: u16, order: memoryOrder): (new: u16) {
-		ret atomic::AddZ(self, delta, order)
+		return atomic::AddZ(self, delta, order)
 	}
 
 	// Atomically reads and returns value.
 	fn Load(*self, order: memoryOrder): u16 {
-		ret atomic::LoadZ[U16, u16](self, order)
+		return atomic::LoadZ[U16, u16](self, order)
 	}
 
 	// Atomically assigns to value.
@@ -290,27 +290,27 @@ type U32: u32
 impl U32 {
 	// Atomically stores new value and returns the previous value.
 	fn Swap(mut *self, new: u32, order: memoryOrder): (old: u32) {
-		ret atomic::SwapZ(self, new, order)
+		return atomic::SwapZ(self, new, order)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwap(mut *self, old: u32, new: u32, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapZ(self, old, new, succ, fail)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwapWeak(mut *self, old: u32, new: u32, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
 	}
 
 	// Atomically adds delta to value and returns the new value.
 	fn Add(mut *self, delta: u32, order: memoryOrder): (new: u32) {
-		ret atomic::AddZ(self, delta, order)
+		return atomic::AddZ(self, delta, order)
 	}
 
 	// Atomically reads and returns value.
 	fn Load(*self, order: memoryOrder): u32 {
-		ret atomic::LoadZ[U32, u32](self, order)
+		return atomic::LoadZ[U32, u32](self, order)
 	}
 
 	// Atomically assigns to value.
@@ -325,27 +325,27 @@ type U64: u64
 impl U64 {
 	// Atomically stores new value and returns the previous value.
 	fn Swap(mut *self, new: u64, order: memoryOrder): (old: u64) {
-		ret atomic::SwapZ(self, new, order)
+		return atomic::SwapZ(self, new, order)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwap(mut *self, old: u64, new: u64, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapZ(self, old, new, succ, fail)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwapWeak(mut *self, old: u64, new: u64, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
 	}
 
 	// Atomically adds delta to value and returns the new value.
 	fn Add(mut *self, delta: u64, order: memoryOrder): (new: u64) {
-		ret atomic::AddZ(self, delta, order)
+		return atomic::AddZ(self, delta, order)
 	}
 
 	// Atomically reads and returns value.
 	fn Load(*self, order: memoryOrder): u64 {
-		ret atomic::LoadZ[U64, u64](self, order)
+		return atomic::LoadZ[U64, u64](self, order)
 	}
 
 	// Atomically assigns to value.
@@ -360,27 +360,27 @@ type Uint: uint
 impl Uint {
 	// Atomically stores new value and returns the previous value.
 	fn Swap(mut *self, new: uint, order: memoryOrder): (old: uint) {
-		ret atomic::SwapZ(self, new, order)
+		return atomic::SwapZ(self, new, order)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwap(mut *self, old: uint, new: uint, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapZ(self, old, new, succ, fail)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwapWeak(mut *self, old: uint, new: uint, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
 	}
 
 	// Atomically adds delta to value and returns the new value.
 	fn Add(mut *self, delta: uint, order: memoryOrder): (new: uint) {
-		ret atomic::AddZ(self, delta, order)
+		return atomic::AddZ(self, delta, order)
 	}
 
 	// Atomically reads and returns value.
 	fn Load(*self, order: memoryOrder): uint {
-		ret atomic::LoadZ[Uint, uint](self, order)
+		return atomic::LoadZ[Uint, uint](self, order)
 	}
 
 	// Atomically assigns to value.
@@ -395,27 +395,27 @@ type Uintptr: uintptr
 impl Uintptr {
 	// Atomically stores new value and returns the previous value.
 	fn Swap(mut *self, new: uintptr, order: memoryOrder): (old: uintptr) {
-		ret atomic::SwapZ(self, new, order)
+		return atomic::SwapZ(self, new, order)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwap(mut *self, old: uintptr, new: uintptr, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapZ(self, old, new, succ, fail)
 	}
 
 	// Executes the compare-and-swap operation.
 	fn CompareAndSwapWeak(mut *self, old: uintptr, new: uintptr, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-		ret atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
+		return atomic::CompareAndSwapWeakZ(self, old, new, succ, fail)
 	}
 
 	// Atomically adds delta to value and returns the new value.
 	fn Add(mut *self, delta: uintptr, order: memoryOrder): (new: uintptr) {
-		ret atomic::AddZ(self, delta, order)
+		return atomic::AddZ(self, delta, order)
 	}
 
 	// Atomically reads and returns value.
 	fn Load(*self, order: memoryOrder): uintptr {
-		ret atomic::LoadZ[Uintptr, uintptr](self, order)
+		return atomic::LoadZ[Uintptr, uintptr](self, order)
 	}
 
 	// Atomically assigns to value.
@@ -427,31 +427,31 @@ impl Uintptr {
 // Atomically stores new into addr and returns the previous addr value.
 // Only integer types are supported.
 fn Swap[T: ~int | ~uint | ~i8 | ~i16 | ~i32 | ~i64 | ~u8 | ~u16 | ~u32 | ~u64 | ~uintptr](mut &addr: *T, new: T, order: memoryOrder): (old: T) {
-	ret atomic::Swap(addr, new, order)
+	return atomic::Swap(addr, new, order)
 }
 
 // Executes the compare-and-swap operation for value.
 // Only integer types are supported.
 fn CompareAndSwap[T: ~int | ~uint | ~i8 | ~i16 | ~i32 | ~i64 | ~u8 | ~u16 | ~u32 | ~u64 | ~uintptr](mut &addr: *T, old: T, new: T, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-	ret atomic::CompareAndSwap(addr, old, new, succ, fail)
+	return atomic::CompareAndSwap(addr, old, new, succ, fail)
 }
 
 // Executes the compare-and-swap operation for value.
 // Only integer types are supported.
 fn CompareAndSwapWeak[T: ~int | ~uint | ~i8 | ~i16 | ~i32 | ~i64 | ~u8 | ~u16 | ~u32 | ~u64 | ~uintptr](mut &addr: *T, old: T, new: T, succ: memoryOrder, fail: memoryOrder): (swapped: bool) {
-	ret atomic::CompareAndSwapWeak(addr, old, new, succ, fail)
+	return atomic::CompareAndSwapWeak(addr, old, new, succ, fail)
 }
 
 // Atomically adds delta to addr and returns the new addr value.
 // Only integer types are supported.
 fn Add[T: ~int | ~uint | ~i8 | ~i16 | ~i32 | ~i64 | ~u8 | ~u16 | ~u32 | ~u64 | ~uintptr](mut &addr: *T, delta: T, order: memoryOrder): (new: T) {
-	ret atomic::Add(addr, delta, order)
+	return atomic::Add(addr, delta, order)
 }
 
 // Atomically loads addr.
 // Only integer types are supported.
 fn Load[T: ~int | ~uint | ~i8 | ~i16 | ~i32 | ~i64 | ~u8 | ~u16 | ~u32 | ~u64 | ~uintptr](&addr: *T, order: memoryOrder): T {
-	ret atomic::Load(addr, order)
+	return atomic::Load(addr, order)
 }
 
 // Atomically stores val into addr.

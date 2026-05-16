@@ -121,9 +121,9 @@ fn J1(mut x: f64): f64 {
 	// special cases
 	match {
 	| IsNaN(x):
-		ret x
+		return x
 	| IsInf(x, 0) | x == 0:
-		ret 0
+		return 0
 	}
 
 	mut sign := false
@@ -158,13 +158,13 @@ fn J1(mut x: f64): f64 {
 			z = (1 / SqrtPi) * (u*cc - v*ss) / Sqrt(x)
 		}
 		if sign {
-			ret -z
+			return -z
 		}
-		ret z
+		return z
 	}
 
 	if x < TwoM27 { // |x|<2**-27
-		ret 0.5 * x // inexact if x!=0 necessary
+		return 0.5 * x // inexact if x!=0 necessary
 	}
 	mut z := x * x
 	mut r := z * (R00 + z*(R01+z*(R02+z*R03)))
@@ -172,9 +172,9 @@ fn J1(mut x: f64): f64 {
 	r *= x
 	z = 0.5*x + r/s
 	if sign {
-		ret -z
+		return -z
 	}
-	ret z
+	return z
 }
 
 // Returns the order-one Bessel function of the second kind.
@@ -202,11 +202,11 @@ fn Y1(x: f64): f64 {
 	// special cases
 	match {
 	| x < 0 | IsNaN(x):
-		ret NaN()
+		return NaN()
 	| IsInf(x, 1):
-		ret 0
+		return 0
 	| x == 0:
-		ret Inf(-1)
+		return Inf(-1)
 	}
 
 	if x >= 2 {
@@ -242,15 +242,15 @@ fn Y1(x: f64): f64 {
 			v := qone(x)
 			z = (1 / SqrtPi) * (u*ss + v*cc) / Sqrt(x)
 		}
-		ret z
+		return z
 	}
 	if x <= TwoM54 { // x < 2**-54
-		ret -(2 / Pi) / x
+		return -(2 / Pi) / x
 	}
 	z := x * x
 	u := U00 + z*(U01+z*(U02+z*(U03+z*U04)))
 	v := 1 + z*(V00+z*(V01+z*(V02+z*(V03+z*V04))))
-	ret x*(u/v) + (2/Pi)*(J1(x)*Log(x)-1/x)
+	return x*(u/v) + (2/Pi)*(J1(x)*Log(x)-1/x)
 }
 
 // For x >= 8, the asymptotic expansions of pone is
@@ -350,7 +350,7 @@ fn pone(x: f64): f64 {
 		z := 1 / (x * x)
 		r := (*p)[0] + z*((*p)[1]+z*((*p)[2]+z*((*p)[3]+z*((*p)[4]+z*(*p)[5]))))
 		s := 1.0 + z*((*q)[0]+z*((*q)[1]+z*((*q)[2]+z*((*q)[3]+z*(*q)[4]))))
-		ret 1 + r/s
+		return 1 + r/s
 	}
 }
 
@@ -455,6 +455,6 @@ fn qone(x: f64): f64 {
 		z := 1 / (x * x)
 		r := (*p)[0] + z*((*p)[1]+z*((*p)[2]+z*((*p)[3]+z*((*p)[4]+z*(*p)[5]))))
 		s := 1 + z*((*q)[0]+z*((*q)[1]+z*((*q)[2]+z*((*q)[3]+z*((*q)[4]+z*(*q)[5])))))
-		ret (0.375 + r/s) / x
+		return (0.375 + r/s) / x
 	}
 }

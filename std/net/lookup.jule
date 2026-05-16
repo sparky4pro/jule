@@ -97,7 +97,7 @@ fn encodeDomainName(mut &buf: *[]byte, mut domain: string)! {
 const maxDNSPacketSize = 1232
 
 fn getDNSId(): u16 {
-	ret u16(dnsrand.IntN(65536))
+	return u16(dnsrand.IntN(65536))
 }
 
 // Builds a DNS query with EDNS and optional AD flag.
@@ -175,19 +175,19 @@ fn parseName(msg: []byte, mut offset: int)!: (string, int) {
 
 	name := strings::Join(labels, ".")
 	if !jumped {
-		ret name, offset
+		return name, offset
 	}
-	ret name, original
+	return name, original
 }
 
 #disable boundary
 fn parseResponseHead(msg: []byte): (id: u16, ok: bool) {
 	if len(msg) < 12 {
 		// short response
-		ret 0, false
+		return 0, false
 	}
 	id = binary::BigEndian.DecodeU16(msg[0:bigEndianU16Size])
-	ret id, true
+	return id, true
 }
 
 // Parses the DNS response and returns IPAddr list with zone info if applicable.
@@ -201,7 +201,7 @@ fn parseResponseBody(msg: []byte): ([]IPAddr, ok: bool) {
 	mut i := 0
 	for i < int(qdCount); i++ {
 		_, next := parseName(msg, pos) else {
-			ret nil, false
+			return nil, false
 		}
 		pos = next + 4
 	}
@@ -210,12 +210,12 @@ fn parseResponseBody(msg: []byte): ([]IPAddr, ok: bool) {
 	i = 0
 	for i < int(anCount); i++ {
 		_, next := parseName(msg, pos) else {
-			ret nil, false
+			return nil, false
 		}
 		pos = next
 		if pos+10 > len(msg) {
 			// invalid RR
-			ret nil, false
+			return nil, false
 		}
 
 		typ := binary::BigEndian.DecodeU16(msg[pos : pos+bigEndianU16Size])
@@ -229,7 +229,7 @@ fn parseResponseBody(msg: []byte): ([]IPAddr, ok: bool) {
 
 		if pos+int(rdlen) > len(msg) {
 			// invalid RDLENGTH
-			ret nil, false
+			return nil, false
 		}
 
 		rdata := msg[pos : pos+int(rdlen)]
@@ -251,7 +251,7 @@ fn parseResponseBody(msg: []byte): ([]IPAddr, ok: bool) {
 		}
 	}
 
-	ret addrs, true
+	return addrs, true
 }
 
 // Looks up the addresses and the canonical name for the given host from static host.
@@ -272,7 +272,7 @@ async fn lookupStaticHost(mut host: string): (ips: []string, canonical: string) 
 		}
 	}
 	hosts.mu.unlock()
-	ret
+	return
 }
 
 // lookup entries from static host
@@ -285,7 +285,7 @@ async fn lookupIPFiles(name: string): (addrs: []IPAddr, canonical: string) {
 			addrs = append(addrs, IPAddr{IP: ip, Zone: zone})
 		}
 	}
-	ret addrs, canonical
+	return addrs, canonical
 }
 
 async fn lookupParallel(mut &buf: *[]byte, mut conn: Conn, idPos: int, qtype1: u16, qtype2: u16, qtypePos: int): (results: []IPAddr, ok: bool) {
@@ -298,8 +298,8 @@ async fn lookupParallel(mut &buf: *[]byte, mut conn: Conn, idPos: int, qtype1: u
 	write := async fn(mut &buf: *[]byte, id: u16, qtype: u16): (ok: bool) {
 		binary::BigEndian.PutU16((*buf)[idPos:], id)       // Write id to buf.
 		binary::BigEndian.PutU16((*buf)[qtypePos:], qtype) // Write current qtype to buf.
-		conn.Write(*buf).await else { ret false }
-		ret true
+		conn.Write(*buf).await else { return false }
+		return true
 	}
 
 	read := async fn(mut &buf: *[]byte, mut &results: *[]IPAddr): (id: u16, ok: bool) {
@@ -318,7 +318,7 @@ async fn lookupParallel(mut &buf: *[]byte, mut conn: Conn, idPos: int, qtype1: u
 			}
 		}
 		if n <= 0 {
-			ret 0, false
+			return 0, false
 		}
 
 		payload := (*buf)[:n]
@@ -333,7 +333,7 @@ async fn lookupParallel(mut &buf: *[]byte, mut conn: Conn, idPos: int, qtype1: u
 				}
 			}
 		}
-		ret
+		return
 	}
 
 	mut write1, mut write2 := false, false
@@ -371,7 +371,7 @@ async fn lookupParallel(mut &buf: *[]byte, mut conn: Conn, idPos: int, qtype1: u
 	}
 
 	ok = read1 || read2
-	ret
+	return
 }
 
 async fn lookupSingle(mut &buf: *[]byte, mut conn: Conn, idPos: int, qtype: u16, qtypePos: int): (results: []IPAddr, ok: bool) {
@@ -407,11 +407,11 @@ async fn lookupSingle(mut &buf: *[]byte, mut conn: Conn, idPos: int, qtype: u16,
 		if ok {
 			results, ok = parseResponseBody(payload)
 			if ok {
-				ret
+				return
 			}
 		}
 	}
-	ret nil, false
+	return nil, false
 }
 
 async fn lookupQuery(mut &buf: *[]byte, mut conn: Conn, network: Network, query: string)!: (results: []IPAddr, ok: bool) {
@@ -438,28 +438,28 @@ async fn lookupQuery(mut &buf: *[]byte, mut conn: Conn, network: Network, query:
 	| IP | TCP | UDP:
 		// Lookup for IPv4 (A) and IPv6 (AAAA).
 		if DefaultResolver.ForceParallel || !conf.singleRequest {
-			ret lookupParallel(buf, conn, idPos, _QTYPE_A, _QTYPE_AAAA, qtypePos).await
+			return lookupParallel(buf, conn, idPos, _QTYPE_A, _QTYPE_AAAA, qtypePos).await
 		}
 		// Lookup sequentially.
 		mut results1, ok1 := lookupSingle(buf, conn, idPos, _QTYPE_A, qtypePos).await
 		mut results2, ok2 := lookupSingle(buf, conn, idPos, _QTYPE_AAAA, qtypePos).await
 		match {
 		| ok1 && ok2:
-			ret append(results1, results2...), true
+			return append(results1, results2...), true
 		| ok1:
-			ret results1, true
+			return results1, true
 		| ok2:
-			ret results2, true
+			return results2, true
 		}
 	| IP4 | TCP4 | UDP4:
 		// Lookup for IPv4.
-		ret lookupSingle(buf, conn, idPos, _QTYPE_A, qtypePos).await
+		return lookupSingle(buf, conn, idPos, _QTYPE_A, qtypePos).await
 	| IP6 | TCP6 | UDP6:
 		// Lookup for IPv6 (AAAA).
-		ret lookupSingle(buf, conn, idPos, _QTYPE_AAAA, qtypePos).await
+		return lookupSingle(buf, conn, idPos, _QTYPE_AAAA, qtypePos).await
 	}
 
-	ret nil, false
+	return nil, false
 }
 
 // Native implementation for the DNS lookup.
@@ -469,7 +469,7 @@ async fn juleLookupIP(net: Network, host: string)!: []IPAddr {
 	{
 		mut addrs, _ := lookupIPFiles(host).await
 		if len(addrs) > 0 {
-			ret addrs
+			return addrs
 		}
 	}
 
@@ -503,7 +503,7 @@ async fn juleLookupIP(net: Network, host: string)!: []IPAddr {
 			mut results, ok := lookupQuery(&buf, conn, net, host).await?
 			if ok {
 				conn.Close().await else {}
-				ret results
+				return results
 			}
 		}
 		for _, suffix in conf.search {
@@ -511,7 +511,7 @@ async fn juleLookupIP(net: Network, host: string)!: []IPAddr {
 			mut results, ok := lookupQuery(&buf, conn, net, fqdn).await?
 			if ok {
 				conn.Close().await else {}
-				ret results
+				return results
 			}
 		}
 
@@ -534,12 +534,12 @@ async fn lookupIPAddr(net: Network, host: string)!: []IPAddr {
 		// Host is not literal.
 		// We need to lookup DNS and resolve the IP.
 		if DefaultResolver.PreferJule {
-			ret juleLookupIP(net, host).await?
+			return juleLookupIP(net, host).await?
 		}
-		ret integLookupIP(net, host)?
+		return integLookupIP(net, host)?
 	}
 	ip.IP = ip.IP.To16()
-	ret [ip]
+	return [ip]
 }
 
 // The longest reasonable name of a service (non-numeric port).
@@ -552,13 +552,13 @@ const maxPortBufSize = len("mobility-header") + 10
 fn juleLookupPortMap(network: Network, service: string)!: (port: int) {
 	match network {
 	| IP: // no hints
-		ret lookupPortMapWithNetwork(Network.TCP, Network.IP, service) else {
-			ret lookupPortMapWithNetwork(Network.UDP, Network.IP, service)?
+		return lookupPortMapWithNetwork(Network.TCP, Network.IP, service) else {
+			return lookupPortMapWithNetwork(Network.UDP, Network.IP, service)?
 		}
 	| TCP | TCP4 | TCP6:
-		ret lookupPortMapWithNetwork(Network.TCP, Network.TCP, service)?
+		return lookupPortMapWithNetwork(Network.TCP, Network.TCP, service)?
 	| UDP | UDP4 | UDP6:
-		ret lookupPortMapWithNetwork(Network.UDP, Network.UDP, service)?
+		return lookupPortMapWithNetwork(Network.UDP, Network.UDP, service)?
 	|:
 		throw &DNSError{Err: "unknown network", Name: networkToStr(network) + "/" + service}
 	}
@@ -572,7 +572,7 @@ fn lookupPortMapWithNetwork(network: Network, errNetwork: string, service: strin
 		lowerASCIIBytes(unsafe::Slice(&lowerService[0], n, n))
 		port, ok = m[unsafe::String(&lowerService[0], n)]
 		if ok && n == len(service) {
-			ret port
+			return port
 		}
 		throw newDNSError("unknown port", errNetwork+"/"+service, "")
 	}
@@ -593,7 +593,7 @@ async fn lookupPort(net: Network, service: string)!: (port: int) {
 	if 0 > port || port > 65535 {
 		throw &AddrError{Err: "invalid port", Addr: service}
 	}
-	ret port
+	return port
 }
 
 fn growBuffer(mut &buf: *[]byte, n: int) {
@@ -614,7 +614,7 @@ async fn LookupIP(mut network: Network, address: string)!: []&IPAddr {
 	match network {
 	| IP | IP4 | IP6:
 		mut addrs := resolveInternetAddrList(network, address).await?
-		ret addrs.forResolveAll(network)
+		return addrs.forResolveAll(network)
 	|:
 		throw &AddrError{Err: "invalid network: " + string(network)}
 	}

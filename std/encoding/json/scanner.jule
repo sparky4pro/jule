@@ -138,19 +138,19 @@ impl scanner {
 	#disable nilptr
 	fn eof(mut *self): int {
 		if self.err != nil {
-			ret scanError
+			return scanError
 		}
 		if self.endTop {
-			ret scanEnd
+			return scanEnd
 		}
 		self.step(self, ' ')
 		if self.endTop {
-			ret scanEnd
+			return scanEnd
 		}
 		if self.err == nil {
 			self.err = io::ErrUnexpectedEOF
 		}
-		ret scanError
+		return scanError
 	}
 
 	// Records an error and switches to the error state.
@@ -158,7 +158,7 @@ impl scanner {
 	fn onerror(mut *self, c: byte, context: string): int {
 		self.step = stateError
 		self.err = errors::New("json: invalid character " + quoteChar(c) + " " + context)
-		ret scanError
+		return scanError
 	}
 
 	// Pushes a new parse state newParseState onto the parse stack.
@@ -167,9 +167,9 @@ impl scanner {
 	fn pushParseState(mut *self, c: byte, newParseState: int, successState: int): int {
 		self.parseState = append(self.parseState, newParseState)
 		if len(self.parseState) <= maxNestingDepth {
-			ret successState
+			return successState
 		}
-		ret self.onerror(c, "exceeded max depth")
+		return self.onerror(c, "exceeded max depth")
 	}
 
 	// Pops a parse state (already obtained) off the stack
@@ -191,78 +191,78 @@ impl scanner {
 #disable nilptr
 fn stateBeginValueOrEmpty(mut &s: *scanner, c: byte): int {
 	if isSpace(c) {
-		ret scanSkipSpace
+		return scanSkipSpace
 	}
 	if c == ']' {
-		ret stateEndValue(s, c)
+		return stateEndValue(s, c)
 	}
-	ret stateBeginValue(s, c)
+	return stateBeginValue(s, c)
 }
 
 // The state at the beginning of the input.
 #disable nilptr
 fn stateBeginValue(mut &s: *scanner, c: byte): int {
 	if isSpace(c) {
-		ret scanSkipSpace
+		return scanSkipSpace
 	}
 	match c {
 	| '{':
 		s.step = stateBeginStringOrEmpty
-		ret s.pushParseState(c, parseObjectKey, scanBeginObject)
+		return s.pushParseState(c, parseObjectKey, scanBeginObject)
 	| '[':
 		s.step = stateBeginValueOrEmpty
-		ret s.pushParseState(c, parseArrayValue, scanBeginArray)
+		return s.pushParseState(c, parseArrayValue, scanBeginArray)
 	| '"':
 		s.step = stateInString
-		ret scanBeginLiteral
+		return scanBeginLiteral
 	| '-':
 		s.step = stateNeg
-		ret scanBeginLiteral
+		return scanBeginLiteral
 	| '0': // beginning of 0.123
 		s.step = state0
-		ret scanBeginLiteral
+		return scanBeginLiteral
 	| 't': // beginning of true
 		s.step = stateT
-		ret scanBeginLiteral
+		return scanBeginLiteral
 	| 'f': // beginning of false
 		s.step = stateF
-		ret scanBeginLiteral
+		return scanBeginLiteral
 	| 'n': // beginning of null
 		s.step = stateN
-		ret scanBeginLiteral
+		return scanBeginLiteral
 	}
 	if '1' <= c && c <= '9' { // beginning of 1234.5
 		s.step = state1
-		ret scanBeginLiteral
+		return scanBeginLiteral
 	}
-	ret s.onerror(c, "looking for beginning of value")
+	return s.onerror(c, "looking for beginning of value")
 }
 
 // The state after reading `{`.
 #disable nilptr boundary
 fn stateBeginStringOrEmpty(mut &s: *scanner, c: byte): int {
 	if isSpace(c) {
-		ret scanSkipSpace
+		return scanSkipSpace
 	}
 	if c == '}' {
 		n := len(s.parseState)
 		s.parseState[n-1] = parseObjectValue
-		ret stateEndValue(s, c)
+		return stateEndValue(s, c)
 	}
-	ret stateBeginString(s, c)
+	return stateBeginString(s, c)
 }
 
 // The state after reading `{"key": value,`.
 #disable nilptr
 fn stateBeginString(mut &s: *scanner, c: byte): int {
 	if isSpace(c) {
-		ret scanSkipSpace
+		return scanSkipSpace
 	}
 	if c == '"' {
 		s.step = stateInString
-		ret scanBeginLiteral
+		return scanBeginLiteral
 	}
-	ret s.onerror(c, "looking for beginning of object key string")
+	return s.onerror(c, "looking for beginning of object key string")
 }
 
 // The state after completing a value,
@@ -274,11 +274,11 @@ fn stateEndValue(mut &s: *scanner, c: byte): int {
 		// Completed top-level before the current byte.
 		s.step = stateEndTop
 		s.endTop = true
-		ret stateEndTop(s, c)
+		return stateEndTop(s, c)
 	}
 	if isSpace(c) {
 		s.step = stateEndValue
-		ret scanSkipSpace
+		return scanSkipSpace
 	}
 	ps := s.parseState[n-1]
 	match ps {
@@ -286,32 +286,32 @@ fn stateEndValue(mut &s: *scanner, c: byte): int {
 		if c == ':' {
 			s.parseState[n-1] = parseObjectValue
 			s.step = stateBeginValue
-			ret scanObjectKey
+			return scanObjectKey
 		}
-		ret s.onerror(c, "after object key")
+		return s.onerror(c, "after object key")
 	| parseObjectValue:
 		if c == ',' {
 			s.parseState[n-1] = parseObjectKey
 			s.step = stateBeginString
-			ret scanObjectValue
+			return scanObjectValue
 		}
 		if c == '}' {
 			s.popParseState()
-			ret scanEndObject
+			return scanEndObject
 		}
-		ret s.onerror(c, "after object key:value pair")
+		return s.onerror(c, "after object key:value pair")
 	| parseArrayValue:
 		if c == ',' {
 			s.step = stateBeginValue
-			ret scanArrayValue
+			return scanArrayValue
 		}
 		if c == ']' {
 			s.popParseState()
-			ret scanEndArray
+			return scanEndArray
 		}
-		ret s.onerror(c, "after array element")
+		return s.onerror(c, "after array element")
 	}
-	ret s.onerror(c, "")
+	return s.onerror(c, "")
 }
 
 // The state after finishing the top-level value,
@@ -323,7 +323,7 @@ fn stateEndTop(mut &s: *scanner, c: byte): int {
 		// Complain about non-space byte on next call.
 		s.onerror(c, "after top-level value")
 	}
-	ret scanEnd
+	return scanEnd
 }
 
 // The state after reading `"`.
@@ -331,16 +331,16 @@ fn stateEndTop(mut &s: *scanner, c: byte): int {
 fn stateInString(mut &s: *scanner, c: byte): int {
 	if c == '"' {
 		s.step = stateEndValue
-		ret scanContinue
+		return scanContinue
 	}
 	if c == '\\' {
 		s.step = stateInStringEsc
-		ret scanContinue
+		return scanContinue
 	}
 	if c < 0x20 {
-		ret s.onerror(c, "in string literal")
+		return s.onerror(c, "in string literal")
 	}
-	ret scanContinue
+	return scanContinue
 }
 
 // The state after reading `"\` during a quoted string.
@@ -349,12 +349,12 @@ fn stateInStringEsc(mut &s: *scanner, c: byte): int {
 	match c {
 	| 'b' | 'f' | 'n' | 'r' | 't' | '\\' | '/' | '"':
 		s.step = stateInString
-		ret scanContinue
+		return scanContinue
 	| 'u':
 		s.step = stateInStringEscU
-		ret scanContinue
+		return scanContinue
 	}
-	ret s.onerror(c, "in string escape code")
+	return s.onerror(c, "in string escape code")
 }
 
 // The state after reading `"\u` during a quoted string.
@@ -362,10 +362,10 @@ fn stateInStringEsc(mut &s: *scanner, c: byte): int {
 fn stateInStringEscU(mut &s: *scanner, c: byte): int {
 	if '0' <= c && c <= '9' || 'a' <= c && c <= 'f' || 'A' <= c && c <= 'F' {
 		s.step = stateInStringEscU1
-		ret scanContinue
+		return scanContinue
 	}
 	// numbers
-	ret s.onerror(c, "in \\u hexadecimal character escape")
+	return s.onerror(c, "in \\u hexadecimal character escape")
 }
 
 // The state after reading `"\u1` during a quoted string.
@@ -373,10 +373,10 @@ fn stateInStringEscU(mut &s: *scanner, c: byte): int {
 fn stateInStringEscU1(mut &s: *scanner, c: byte): int {
 	if '0' <= c && c <= '9' || 'a' <= c && c <= 'f' || 'A' <= c && c <= 'F' {
 		s.step = stateInStringEscU12
-		ret scanContinue
+		return scanContinue
 	}
 	// numbers
-	ret s.onerror(c, "in \\u hexadecimal character escape")
+	return s.onerror(c, "in \\u hexadecimal character escape")
 }
 
 // stateInStringEscU12 is the state after reading `"\u12` during a quoted string.
@@ -384,10 +384,10 @@ fn stateInStringEscU1(mut &s: *scanner, c: byte): int {
 fn stateInStringEscU12(mut &s: *scanner, c: byte): int {
 	if '0' <= c && c <= '9' || 'a' <= c && c <= 'f' || 'A' <= c && c <= 'F' {
 		s.step = stateInStringEscU123
-		ret scanContinue
+		return scanContinue
 	}
 	// numbers
-	ret s.onerror(c, "in \\u hexadecimal character escape")
+	return s.onerror(c, "in \\u hexadecimal character escape")
 }
 
 // The state after reading `"\u123` during a quoted string.
@@ -395,10 +395,10 @@ fn stateInStringEscU12(mut &s: *scanner, c: byte): int {
 fn stateInStringEscU123(mut &s: *scanner, c: byte): int {
 	if '0' <= c && c <= '9' || 'a' <= c && c <= 'f' || 'A' <= c && c <= 'F' {
 		s.step = stateInString
-		ret scanContinue
+		return scanContinue
 	}
 	// numbers
-	ret s.onerror(c, "in \\u hexadecimal character escape")
+	return s.onerror(c, "in \\u hexadecimal character escape")
 }
 
 // The state after reading `-` during a number.
@@ -406,13 +406,13 @@ fn stateInStringEscU123(mut &s: *scanner, c: byte): int {
 fn stateNeg(mut &s: *scanner, c: byte): int {
 	if c == '0' {
 		s.step = state0
-		ret scanContinue
+		return scanContinue
 	}
 	if '1' <= c && c <= '9' {
 		s.step = state1
-		ret scanContinue
+		return scanContinue
 	}
-	ret s.onerror(c, "in numeric literal")
+	return s.onerror(c, "in numeric literal")
 }
 
 // The state after reading a non-zero integer during a number,
@@ -421,9 +421,9 @@ fn stateNeg(mut &s: *scanner, c: byte): int {
 fn state1(mut &s: *scanner, c: byte): int {
 	if '0' <= c && c <= '9' {
 		s.step = state1
-		ret scanContinue
+		return scanContinue
 	}
-	ret state0(s, c)
+	return state0(s, c)
 }
 
 // The state after reading `0` during a number.
@@ -431,13 +431,13 @@ fn state1(mut &s: *scanner, c: byte): int {
 fn state0(mut &s: *scanner, c: byte): int {
 	if c == '.' {
 		s.step = stateDot
-		ret scanContinue
+		return scanContinue
 	}
 	if c == 'e' || c == 'E' {
 		s.step = stateE
-		ret scanContinue
+		return scanContinue
 	}
-	ret stateEndValue(s, c)
+	return stateEndValue(s, c)
 }
 
 // The state after reading the integer and decimal point in a number,
@@ -446,9 +446,9 @@ fn state0(mut &s: *scanner, c: byte): int {
 fn stateDot(mut &s: *scanner, c: byte): int {
 	if '0' <= c && c <= '9' {
 		s.step = stateDot0
-		ret scanContinue
+		return scanContinue
 	}
-	ret s.onerror(c, "after decimal point in numeric literal")
+	return s.onerror(c, "after decimal point in numeric literal")
 }
 
 // The state after reading the integer, decimal point, and subsequent
@@ -456,13 +456,13 @@ fn stateDot(mut &s: *scanner, c: byte): int {
 #disable nilptr
 fn stateDot0(mut &s: *scanner, c: byte): int {
 	if '0' <= c && c <= '9' {
-		ret scanContinue
+		return scanContinue
 	}
 	if c == 'e' || c == 'E' {
 		s.step = stateE
-		ret scanContinue
+		return scanContinue
 	}
-	ret stateEndValue(s, c)
+	return stateEndValue(s, c)
 }
 
 // The state after reading the mantissa and e in a number,
@@ -471,9 +471,9 @@ fn stateDot0(mut &s: *scanner, c: byte): int {
 fn stateE(mut &s: *scanner, c: byte): int {
 	if c == '+' || c == '-' {
 		s.step = stateESign
-		ret scanContinue
+		return scanContinue
 	}
-	ret stateESign(s, c)
+	return stateESign(s, c)
 }
 
 // The state after reading the mantissa, e, and sign in a number,
@@ -482,9 +482,9 @@ fn stateE(mut &s: *scanner, c: byte): int {
 fn stateESign(mut &s: *scanner, c: byte): int {
 	if '0' <= c && c <= '9' {
 		s.step = stateE0
-		ret scanContinue
+		return scanContinue
 	}
-	ret s.onerror(c, "in exponent of numeric literal")
+	return s.onerror(c, "in exponent of numeric literal")
 }
 
 // The state after reading the mantissa, e, optional sign,
@@ -493,9 +493,9 @@ fn stateESign(mut &s: *scanner, c: byte): int {
 #disable nilptr
 fn stateE0(mut &s: *scanner, c: byte): int {
 	if '0' <= c && c <= '9' {
-		ret scanContinue
+		return scanContinue
 	}
-	ret stateEndValue(s, c)
+	return stateEndValue(s, c)
 }
 
 // The state after reading `t`.
@@ -503,9 +503,9 @@ fn stateE0(mut &s: *scanner, c: byte): int {
 fn stateT(mut &s: *scanner, c: byte): int {
 	if c == 'r' {
 		s.step = stateTr
-		ret scanContinue
+		return scanContinue
 	}
-	ret s.onerror(c, "in literal true (expecting 'r')")
+	return s.onerror(c, "in literal true (expecting 'r')")
 }
 
 // The state after reading `tr`.
@@ -513,9 +513,9 @@ fn stateT(mut &s: *scanner, c: byte): int {
 fn stateTr(mut &s: *scanner, c: byte): int {
 	if c == 'u' {
 		s.step = stateTru
-		ret scanContinue
+		return scanContinue
 	}
-	ret s.onerror(c, "in literal true (expecting 'u')")
+	return s.onerror(c, "in literal true (expecting 'u')")
 }
 
 // The state after reading `tru`.
@@ -523,9 +523,9 @@ fn stateTr(mut &s: *scanner, c: byte): int {
 fn stateTru(mut &s: *scanner, c: byte): int {
 	if c == 'e' {
 		s.step = stateEndValue
-		ret scanContinue
+		return scanContinue
 	}
-	ret s.onerror(c, "in literal true (expecting 'e')")
+	return s.onerror(c, "in literal true (expecting 'e')")
 }
 
 // The state after reading `f`.
@@ -533,9 +533,9 @@ fn stateTru(mut &s: *scanner, c: byte): int {
 fn stateF(mut &s: *scanner, c: byte): int {
 	if c == 'a' {
 		s.step = stateFa
-		ret scanContinue
+		return scanContinue
 	}
-	ret s.onerror(c, "in literal false (expecting 'a')")
+	return s.onerror(c, "in literal false (expecting 'a')")
 }
 
 // The state after reading `fa`.
@@ -543,9 +543,9 @@ fn stateF(mut &s: *scanner, c: byte): int {
 fn stateFa(mut &s: *scanner, c: byte): int {
 	if c == 'l' {
 		s.step = stateFal
-		ret scanContinue
+		return scanContinue
 	}
-	ret s.onerror(c, "in literal false (expecting 'l')")
+	return s.onerror(c, "in literal false (expecting 'l')")
 }
 
 // The state after reading `fal`.
@@ -553,9 +553,9 @@ fn stateFa(mut &s: *scanner, c: byte): int {
 fn stateFal(mut &s: *scanner, c: byte): int {
 	if c == 's' {
 		s.step = stateFals
-		ret scanContinue
+		return scanContinue
 	}
-	ret s.onerror(c, "in literal false (expecting 's')")
+	return s.onerror(c, "in literal false (expecting 's')")
 }
 
 // The state after reading `fals`.
@@ -563,9 +563,9 @@ fn stateFal(mut &s: *scanner, c: byte): int {
 fn stateFals(mut &s: *scanner, c: byte): int {
 	if c == 'e' {
 		s.step = stateEndValue
-		ret scanContinue
+		return scanContinue
 	}
-	ret s.onerror(c, "in literal false (expecting 'e')")
+	return s.onerror(c, "in literal false (expecting 'e')")
 }
 
 // The state after reading `n`.
@@ -573,9 +573,9 @@ fn stateFals(mut &s: *scanner, c: byte): int {
 fn stateN(mut &s: *scanner, c: byte): int {
 	if c == 'u' {
 		s.step = stateNu
-		ret scanContinue
+		return scanContinue
 	}
-	ret s.onerror(c, "in literal null (expecting 'u')")
+	return s.onerror(c, "in literal null (expecting 'u')")
 }
 
 // The state after reading `nu`.
@@ -583,9 +583,9 @@ fn stateN(mut &s: *scanner, c: byte): int {
 fn stateNu(mut &s: *scanner, c: byte): int {
 	if c == 'l' {
 		s.step = stateNul
-		ret scanContinue
+		return scanContinue
 	}
-	ret s.onerror(c, "in literal null (expecting 'l')")
+	return s.onerror(c, "in literal null (expecting 'l')")
 }
 
 // The state after reading `nul`.
@@ -593,33 +593,33 @@ fn stateNu(mut &s: *scanner, c: byte): int {
 fn stateNul(mut &s: *scanner, c: byte): int {
 	if c == 'l' {
 		s.step = stateEndValue
-		ret scanContinue
+		return scanContinue
 	}
-	ret s.onerror(c, "in literal null (expecting 'l')")
+	return s.onerror(c, "in literal null (expecting 'l')")
 }
 
 // The state after reaching a syntax error,
 // such as after reading `[1}` or `5.1.2`.
 #disable nilptr
 fn stateError(mut &s: *scanner, c: byte): int {
-	ret scanError
+	return scanError
 }
 
 fn isSpace(c: byte): bool {
-	ret c <= ' ' && (c == ' ' || c == '\t' || c == '\r' || c == '\n')
+	return c <= ' ' && (c == ' ' || c == '\t' || c == '\r' || c == '\n')
 }
 
 // Formats c as a quoted character literal.
 fn quoteChar(c: byte): string {
 	// special cases - different from quoted strings
 	if c == '\'' {
-		ret `'\''`
+		return `'\''`
 	}
 	if c == '"' {
-		ret `'"'`
+		return `'"'`
 	}
 
 	// use quoted string with different quotation marks
 	s := conv::Quote(string(c))
-	ret "'" + s[1 : len(s)-1] + "'"
+	return "'" + s[1 : len(s)-1] + "'"
 }

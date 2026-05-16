@@ -41,7 +41,7 @@ struct thread {
 // Returns the current thread.
 // Uses the thread-local data.
 fn gett(): &thread {
-	ret unsafe { (&thread)(extern.__jule_ct) }
+	return unsafe { (&thread)(extern.__jule_ct) }
 }
 
 // Sets the current thread as t.
@@ -61,7 +61,7 @@ let mut numcpu = 0
 // The set of available CPUs is checked by querying the operating system
 // at process startup. Changes to operating system CPU allocation after
 // process startup are not reflected.
-fn NumCPU(): int { ret numcpu }
+fn NumCPU(): int { return numcpu }
 
 // Allocates a new thread and sets state as running.
 #disable nilptr
@@ -78,7 +78,7 @@ fn newThread(role: int): &thread {
 		trandinit(t)
 	}
 
-	ret t
+	return t
 }
 
 // Releases thread t, releases parker and drops references.

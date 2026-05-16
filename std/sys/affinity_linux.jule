@@ -32,11 +32,11 @@ fn SchedSetaffinity(pid: int, &set: *CPUSet)! {
 }
 
 fn cpuBitsIndex(cpu: int): int {
-	ret cpu / _NCPUBITS
+	return cpu / _NCPUBITS
 }
 
 fn cpuBitsMask(cpu: int): cpuMask {
-	ret cpuMask(1 << (uint(cpu) % _NCPUBITS))
+	return cpuMask(1 << (uint(cpu) % _NCPUBITS))
 }
 
 impl CPUSet {
@@ -67,9 +67,9 @@ impl CPUSet {
 	fn IsSet(*self, cpu: int): bool {
 		i := cpuBitsIndex(cpu)
 		if i < len(*self) {
-			ret (*self)[i]&cpuBitsMask(cpu) != 0
+			return (*self)[i]&cpuBitsMask(cpu) != 0
 		}
-		ret false
+		return false
 	}
 
 	// Returns the number of CPUs in the set.
@@ -78,6 +78,6 @@ impl CPUSet {
 		for _, b in *self {
 			c += bits::OnesCount64(u64(b))
 		}
-		ret c
+		return c
 	}
 }

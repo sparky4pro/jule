@@ -21,7 +21,7 @@ fn winstat(path: string, followSurrogates: bool)!: FileInfo {
 		// The information we got from GetFileAttributesEx is good enough for now.
 		info := winstatInfo{}
 		fs := newFileStatFromWin32FileAttributeData(fa, info)
-		ret fs
+		return fs
 	}
 
 	// GetFileAttributesEx fails with ERROR_SHARING_VIOLATION error for
@@ -36,7 +36,7 @@ fn winstat(path: string, followSurrogates: bool)!: FileInfo {
 		if fd.FileAttributes&sys::FILE_ATTRIBUTE_REPARSE_POINT == 0 {
 			// Not a surrogate for another named entity. FindFirstFile is good enough.
 			fs := newFileStatFromWin32FindData(fd)
-			ret fs
+			return fs
 		}
 	}
 
@@ -72,7 +72,7 @@ fn winstat(path: string, followSurrogates: bool)!: FileInfo {
 		fs, _, _ = statHandle(h)?
 		sys::CloseHandle(h)?
 	}
-	ret fs
+	return fs
 }
 
 fn statHandle(h: sys::Handle)!: (fs: FileInfo, fi: sys::Win32FileAttributeData, info: winstatInfo) {
@@ -82,11 +82,11 @@ fn statHandle(h: sys::Handle)!: (fs: FileInfo, fi: sys::Win32FileAttributeData, 
 	}
 	if ft == sys::FILE_TYPE_PIPE || ft == sys::FILE_TYPE_CHAR {
 		info.filetype = ft
-		ret
+		return
 	}
 	fs, fi, info = newFileInfoFromGetFileInformationByHandle(h)?
 	info.filetype = ft
-	ret
+	return
 }
 
 fn stat(path: string)!: FileInfo {
@@ -95,7 +95,7 @@ fn stat(path: string)!: FileInfo {
 	if fi.sys.vol == 0 {
 		fi.sys.path = path
 	}
-	ret fi
+	return fi
 }
 
 fn lstat(path: string)!: FileInfo {
@@ -113,5 +113,5 @@ fn lstat(path: string)!: FileInfo {
 	if fi.sys.vol == 0 {
 		fi.sys.path = path
 	}
-	ret fi
+	return fi
 }

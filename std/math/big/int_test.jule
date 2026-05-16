@@ -162,14 +162,14 @@ let composites = [
 
 fn cutSpace(mut r: rune): rune {
 	if unicode::IsSpace(r) {
-		ret -1
+		return -1
 	}
-	ret r
+	return r
 }
 
 #test
 fn testProbablyPrime(t: &testing::T) {
-	ret
+	return
 	const nreps = 20
 	for i, s in primes {
 		let mut p: Int

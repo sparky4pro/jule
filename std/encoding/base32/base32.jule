@@ -78,7 +78,7 @@ type CorruptInputError: i64
 
 impl CorruptInputError {
 	fn String(*self): string {
-		ret "illegal base32 data at input byte " + conv::Itoa64(i64(*self))
+		return "illegal base32 data at input byte " + conv::Itoa64(i64(*self))
 	}
 }
 
@@ -127,22 +127,22 @@ impl Encoding {
 			enc.decodeMap[b] = byte(i)
 		}
 
-		ret enc
+		return enc
 	}
 
 	// Returns the length in bytes of the base32 encoding
 	// of an input buffer of length n.
 	fn EncodedLen(*self, n: int): int {
 		if self.padByte == NoPadding {
-			ret n/5*8 + (n%5*8+4)/5
+			return n/5*8 + (n%5*8+4)/5
 		}
-		ret (n + 4) / 5 * 8
+		return (n + 4) / 5 * 8
 	}
 
 	// Returns the maximum length in bytes of the decoded data
 	// corresponding to n bytes of base32-encoded data.
 	fn DecodedLen(*self, n: int): int {
-		ret decodedLen(n, self.padByte)
+		return decodedLen(n, self.padByte)
 	}
 
 	// Encodes src using the encoding,
@@ -155,11 +155,11 @@ impl Encoding {
 	// It panics if len(dst) is not enough for encoded length.
 	fn Encode(*self, mut dst: []byte, src: []byte) {
 		if len(src) == 0 {
-			ret
+			return
 		}
 		n := self.EncodedLen(len(src))
 		if n == 0 {
-			ret
+			return
 		}
 		if len(dst) < n {
 			panic("destination buffer have not enough space for encoded data")
@@ -238,14 +238,14 @@ impl Encoding {
 		n := self.EncodedLen(len(src))
 		dst = slices::Grow(dst, n)
 		self.Encode(dst[len(dst):][:n], src)
-		ret dst[:len(dst)+n]
+		return dst[:len(dst)+n]
 	}
 
 	// Returns the base32 encoding of src.
 	fn EncodeToString(*self, src: []byte): string {
 		mut buf := make([]byte, self.EncodedLen(len(src)))
 		self.Encode(buf, src)
-		ret unsafe::StringFromBytes(buf)
+		return unsafe::StringFromBytes(buf)
 	}
 
 	// Decodes src using the encoding. It writes at most
@@ -256,7 +256,7 @@ impl Encoding {
 	// It panics if len(dst) is not enough for decoded length.
 	fn Decode(*self, mut dst: []byte, src: []byte)!: (n: int) {
 		n, _ = self.decode(dst, src)?
-		ret
+		return
 	}
 
 	// Appends the base32 decoded src to dst and returns the extended buffer.
@@ -266,7 +266,7 @@ impl Encoding {
 		mut n := decodedLen(lenNoPad(src, self.padByte), NoPadding)
 		dst = slices::Grow(dst, n)
 		n = self.Decode(dst[len(dst):][:n], src)?
-		ret dst[:len(dst)+n]
+		return dst[:len(dst)+n]
 	}
 
 	// Returns the bytes represented by the base32 string s.
@@ -274,17 +274,17 @@ impl Encoding {
 	fn DecodeString(*self, s: string)!: []byte {
 		mut buf := []byte(s)
 		n, _ := self.decode(buf, buf)?
-		ret buf[:n]
+		return buf[:n]
 	}
 
 	fn decode(*self, mut dst: []byte, src: []byte)!: (n: int, end: bool) {
 		if len(src) == 0 {
-			ret
+			return
 		}
 		// Compute the exact bytes to be written.
 		n = decodedLen(lenNoPad(src, self.padByte), NoPadding)
 		if n == 0 {
-			ret
+			return
 		}
 		if len(dst) < n {
 			panic("destination buffer have not enough space for decoded data")
@@ -306,7 +306,7 @@ impl Encoding {
 					}
 					// We have reached the end and are not expecting any padding
 					end = true
-					ret
+					return
 				}
 				b := unsafe { *sp }
 				sp++
@@ -334,7 +334,7 @@ impl Encoding {
 						throw CorruptInputError(len(src) - c - 1)
 					}
 					end = true
-					ret
+					return
 				}
 				d := self.decodeMap[b]
 				if d == invalidIndex {
@@ -351,26 +351,26 @@ impl Encoding {
 				}
 			}
 		}
-		ret
+		return
 	}
 }
 
 fn decodedLen(n: int, padByte: byte): int {
 	if padByte == NoPadding {
-		ret n/8*5 + n%8*5/8
+		return n/8*5 + n%8*5/8
 	}
-	ret n / 8 * 5
+	return n / 8 * 5
 }
 
 fn lenNoPad(b: []byte, padByte: byte): int {
 	if padByte == NoPadding {
-		ret len(b)
+		return len(b)
 	}
 	mut i := len(b) - 1
 	for i >= 0 && b[i] == padByte {
 		i--
 	}
-	ret i + 1
+	return i + 1
 }
 
 struct encoder {
@@ -396,7 +396,7 @@ impl io::WriteCloser for encoder {
 			n += i
 			unsafe { *(&p) = (*(&p))[i:] }
 			if self.nbuf < 5 {
-				ret
+				return
 			}
 			self.enc.Encode(out[0:], buf[0:])
 			self.w.Write(out[0:8]).await?
@@ -420,7 +420,7 @@ impl io::WriteCloser for encoder {
 		copy(buf[:], p)
 		self.nbuf = len(p)
 		n += len(p)
-		ret
+		return
 	}
 
 	// Flushes any pending output from the encoder.
@@ -446,7 +446,7 @@ impl io::WriteCloser for encoder {
 // writing, the caller must Close the returned encoder to flush any
 // partially written blocks.
 fn NewEncoder(mut enc: &Encoding, mut w: io::Writer): io::WriteCloser {
-	ret &encoder{enc: enc, w: w}
+	return &encoder{enc: enc, w: w}
 }
 
 struct decoder {
@@ -480,7 +480,7 @@ async fn readEncodedData(mut r: io::Reader, mut buf: []byte, min: int, expectsPa
 		}
 		n += nn
 	}
-	ret
+	return
 }
 
 impl io::Reader for decoder {
@@ -490,9 +490,9 @@ impl io::Reader for decoder {
 			n = copy(p, self.out)
 			self.out = self.out[n:]
 			if len(self.out) == 0 {
-				ret n
+				return n
 			}
-			ret n
+			return n
 		}
 
 		if self.err != nil {
@@ -561,11 +561,11 @@ impl io::Reader for decoder {
 			buf[i] = buf[i+nr]
 		}
 
-		ret n
+		return n
 	}
 }
 
 // Constructs a new base32 stream decoder.
 fn NewDecoder(mut enc: &Encoding, mut r: io::Reader): io::Reader {
-	ret &decoder{enc: enc, r: r}
+	return &decoder{enc: enc, r: r}
 }

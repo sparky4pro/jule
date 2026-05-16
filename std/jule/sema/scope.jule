@@ -38,7 +38,7 @@ enum Stmt: type {
 }
 
 fn newScopeCheckerBase(mut s: &sema, mut owner: &FuncIns): &scopeChecker {
-	ret &scopeChecker{
+	return &scopeChecker{
 		s:     s,
 		owner: owner,
 		table: new(SymTab),
@@ -49,7 +49,7 @@ fn newScopeChecker(mut s: &sema, mut owner: &FuncIns): &scopeChecker {
 	mut base := newScopeCheckerBase(s, owner)
 	base.labels = new([]&scopeLabel, nil)
 	base.gotos = new([]&Goto, nil)
-	ret base
+	return base
 }
 
 struct exprPart {
@@ -127,7 +127,7 @@ struct WhileIter {
 impl WhileIter {
 	// Reports whether iteration is while-next kind.
 	fn IsWhileNext(*self): bool {
-		ret self.Next != nil
+		return self.Next != nil
 	}
 }
 
@@ -218,7 +218,7 @@ struct Match {
 impl Match {
 	// Reports whether match is type-match for generic type.
 	fn IsGenericTypeMatch(*self): bool {
-		ret self.TypeMatch && self.Expr != nil && self.Expr.Type.Generic
+		return self.TypeMatch && self.Expr != nil && self.Expr.Type.Generic
 	}
 }
 
@@ -244,9 +244,9 @@ impl caseOwner {
 	fn asUintptr(*self): uintptr {
 		match type *self {
 		| &Match:
-			ret uintptr((*self).(&Match))
+			return uintptr((*self).(&Match))
 		| &Select:
-			ret uintptr((*self).(&Select))
+			return uintptr((*self).(&Select))
 		|:
 			panic("unreachable")
 		}
@@ -270,7 +270,7 @@ struct Case {
 
 impl Case {
 	// Reports whether case is default.
-	fn isDefault(*self): bool { ret self.Exprs == nil }
+	fn isDefault(*self): bool { return self.Exprs == nil }
 }
 
 // Fall statement.
@@ -329,7 +329,7 @@ impl Lookup for scopeChecker {
 	// Lookups:
 	//	- Sema.
 	fn SelectPackage(mut *self, selector: fn(&ImportInfo): bool): &ImportInfo {
-		ret self.s.SelectPackage(selector)
+		return self.s.SelectPackage(selector)
 	}
 
 	// Returns variable by identifier and external state.
@@ -344,10 +344,10 @@ impl Lookup for scopeChecker {
 		if !_extern { // Local variables cannot be external.
 			mut v := self.findVar(name, Closure)
 			if v != nil {
-				ret v
+				return v
 			}
 		}
-		ret self.s.FindVar(name, _extern)
+		return self.s.FindVar(name, _extern)
 	}
 
 	// Returns type alias by identifier and external state.
@@ -362,19 +362,19 @@ impl Lookup for scopeChecker {
 		const Reverse = true
 		mut ta := self.table.findTypeAlias(name, _extern, Reverse)
 		if ta != nil {
-			ret ta
+			return ta
 		}
 
 		mut parent := self.parent
 		for parent != nil {
 			ta = parent.table.findTypeAlias(name, _extern, Reverse)
 			if ta != nil {
-				ret ta
+				return ta
 			}
 			parent = parent.parent
 		}
 
-		ret self.s.FindTypeAlias(name, _extern)
+		return self.s.FindTypeAlias(name, _extern)
 	}
 
 	// Returns struct by identifier and external state.
@@ -383,7 +383,7 @@ impl Lookup for scopeChecker {
 	// Lookups:
 	//	- Sema.
 	fn FindStruct(mut *self, name: string, _extern: bool): &Struct {
-		ret self.s.FindStruct(name, _extern)
+		return self.s.FindStruct(name, _extern)
 	}
 
 	// Returns function by identifier and external state.
@@ -392,7 +392,7 @@ impl Lookup for scopeChecker {
 	// Lookups:
 	//	- Sema.
 	fn FindFunc(mut *self, name: string, _extern: bool): &Func {
-		ret self.s.FindFunc(name, _extern)
+		return self.s.FindFunc(name, _extern)
 	}
 
 	// Returns trait by identifier.
@@ -401,7 +401,7 @@ impl Lookup for scopeChecker {
 	// Lookups:
 	//	- Sema.
 	fn FindTrait(mut *self, name: string): &Trait {
-		ret self.s.FindTrait(name)
+		return self.s.FindTrait(name)
 	}
 
 	// Returns enum by identifier.
@@ -410,7 +410,7 @@ impl Lookup for scopeChecker {
 	// Lookups:
 	//	- Sema.
 	fn FindEnum(mut *self, name: string): &Enum {
-		ret self.s.FindEnum(name)
+		return self.s.FindEnum(name)
 	}
 
 	// Returns type enum by identifier.
@@ -419,7 +419,7 @@ impl Lookup for scopeChecker {
 	// Lookups:
 	//	- Sema.
 	fn FindTypeEnum(mut *self, name: string): &TypeEnum {
-		ret self.s.FindTypeEnum(name)
+		return self.s.FindTypeEnum(name)
 	}
 }
 
@@ -430,7 +430,7 @@ impl scopeChecker {
 
 	iter:
 		if scope.scope.Unsafe {
-			ret true
+			return true
 		}
 
 		if scope.parent != nil {
@@ -438,19 +438,19 @@ impl scopeChecker {
 			goto iter
 		}
 
-		ret false
+		return false
 	}
 
 	// Reports whether scope is unsafe.
 	fn isAsync(mut &self): bool {
 		r := self.getRoot()
-		ret r.owner != nil && r.owner.Decl != nil && r.owner.Decl.Async
+		return r.owner != nil && r.owner.Decl != nil && r.owner.Decl.Async
 	}
 
 	// Reports scope is root.
 	// Accepts anonymous functions as root.
 	fn isRoot(*self): bool {
-		ret self.parent == nil || self.owner != nil
+		return self.parent == nil || self.owner != nil
 	}
 
 	// Stop checking.
@@ -460,7 +460,7 @@ impl scopeChecker {
 
 	// Reports whether checking is stopped.
 	fn stopped(*self): bool {
-		ret self.i == -1
+		return self.i == -1
 	}
 
 	// Reports scope is deferred.
@@ -469,7 +469,7 @@ impl scopeChecker {
 
 	iter:
 		if scope.scope.Deferred {
-			ret true
+			return true
 		}
 
 		if scope.parent != nil {
@@ -477,7 +477,7 @@ impl scopeChecker {
 			goto iter
 		}
 
-		ret false
+		return false
 	}
 
 	// Push captured variable.
@@ -515,7 +515,7 @@ impl scopeChecker {
 		for root.parent != nil && root.owner == nil {
 			root = root.parent
 		}
-		ret root
+		return root
 	}
 
 	// Returns hard root scope, owner always represents root function of this scope.
@@ -525,11 +525,11 @@ impl scopeChecker {
 		for root.parent != nil {
 			root = root.parent
 		}
-		ret root
+		return root
 	}
 
 	fn getOwnerRefers(mut &self): &ReferenceStack {
-		ret self.getHardRoot().owner.Refers
+		return self.getHardRoot().owner.Refers
 	}
 
 	// Like [Lookup.FindVar] but designed for local variables only.
@@ -541,15 +541,15 @@ impl scopeChecker {
 			// Closure limitation mode is disabled and we are in the closure.
 			// Do not lookup variables from the parent scopes.
 			if !closure && parent.parent != nil && parent.owner != nil {
-				ret nil
+				return nil
 			}
 			mut v := parent.table.findVar(name, Extern, Reverse)
 			if v != nil {
-				ret v
+				return v
 			}
 			parent = parent.parent
 		}
-		ret nil
+		return nil
 	}
 
 	// Returns label by identifier.
@@ -559,10 +559,10 @@ impl scopeChecker {
 		for (_, mut st) in self.scope.Stmts {
 			mut label, ok := st.(&Label)
 			if ok && label.Name == name {
-				ret label
+				return label
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	// Returns label by identifier.
@@ -571,9 +571,9 @@ impl scopeChecker {
 	fn findLabelScope(mut &self, name: string): &scopeLabel {
 		mut label := self.findLabelAll(name)
 		if label != nil && label.node.Scope == self.scope {
-			ret label
+			return label
 		}
-		ret nil
+		return nil
 	}
 
 	// Returns label by identifier.
@@ -582,10 +582,10 @@ impl scopeChecker {
 	fn findLabelAll(mut *self, name: string): &scopeLabel {
 		for (_, mut lbl) in *self.labels {
 			if lbl.node.Name == name {
-				ret lbl
+				return lbl
 			}
 		}
-		ret nil
+		return nil
 	}
 
 	// Reports this identifier duplicated in scope.
@@ -597,20 +597,20 @@ impl scopeChecker {
 		v := self.findVar(name, Closure)
 		if v != nil && uintptr(v) != itself {
 			if v.Scope == nil { // Ignore globals.
-				ret false
+				return false
 			}
-			ret v.Scope == self.scope || !shadowing
+			return v.Scope == self.scope || !shadowing
 		}
 
 		ta := self.FindTypeAlias(name, false)
 		if ta != nil && uintptr(ta) != itself {
 			if ta.Scope == nil { // Ignore globals.
-				ret false
+				return false
 			}
-			ret ta.Scope == self.tree || !shadowing
+			return ta.Scope == self.tree || !shadowing
 		}
 
-		ret false
+		return false
 	}
 
 	fn checkVarDecl1(mut &self, mut v: &Var) {
@@ -622,12 +622,12 @@ impl scopeChecker {
 		if !jule::IsBlank(v.Name) && self.isDuplicatedName(uintptr(v), v.Name) {
 			self.s.pushErr(v.Token, "identifier @ is duplicated in this scope", v.Name)
 			self.stop()
-			ret
+			return
 		}
 
 		self.s.checkVarDecl(v, self)
 		if !v.IsTypeInferred() && (v.TypeSym == nil || v.TypeSym.Type == nil) {
-			ret
+			return
 		}
 		// We should imitate the [sema.checkVar].
 		// Instruction order must remain the same.
@@ -636,7 +636,7 @@ impl scopeChecker {
 		if !v.IsInitialized() || v.ValueSym.Value == nil {
 			// Skip checks if error occurs when evaluated expression,
 			// or unitiliazed variable.
-			ret
+			return
 		}
 		self.removeInteriorMutRisk(v.ValueSym.Value)
 		self.s.checkVarValue(v)
@@ -655,7 +655,7 @@ impl scopeChecker {
 	fn checkVarDecl(mut &self, mut decl: &ast::Var, mut &out: *&Var) {
 		if jule::IsBlank(decl.Name) {
 			self.s.pushErr(decl.Token, "blank identifier cannot be used as an identifier for this declaration")
-			ret
+			return
 		}
 		n := len(self.s.errors)
 		mut v := buildVar(decl)
@@ -674,7 +674,7 @@ impl scopeChecker {
 		if self.isDuplicatedName(uintptr(ta), ta.Name) {
 			self.s.pushErr(ta.Token, "identifier @ is duplicated in this scope", ta.Name)
 			self.stop()
-			ret
+			return
 		}
 		self.s.checkTypeAliasDecl(ta, nil, self)
 		self.table.TypeAliases = append(self.table.TypeAliases, ta)
@@ -691,7 +691,7 @@ impl scopeChecker {
 	}
 
 	fn getChild(mut *self): &Scope {
-		ret &Scope{
+		return &Scope{
 			Owner:      uintptr(self.scope),
 			Parent:     self.scope,
 			ChildIndex: self.childIndex + 1,
@@ -708,12 +708,12 @@ impl scopeChecker {
 	fn checkChildSc(mut &self, mut tree: &ast::ScopeTree, mut ssc: &scopeChecker): &Scope {
 		mut s := self.getChild()
 		self.checkChildSsc(tree, s, ssc)
-		ret s
+		return s
 	}
 
 	fn checkChild(mut &self, mut tree: &ast::ScopeTree): &Scope {
 		mut ssc := self.newChildChecker()
-		ret self.checkChildSc(tree, ssc)
+		return self.checkChildSc(tree, ssc)
 	}
 
 	fn checkAnonScope(mut &self, mut tree: &ast::ScopeTree) {
@@ -735,7 +735,7 @@ impl scopeChecker {
 		if v == nil || v.Model == nil {
 			// Skip nil data, because evaluation failed and error documented (it should be) already.
 			// Skip nil modeled data, this return only caused by built-in functions and it should be safe.
-			ret
+			return
 		}
 
 		match type v.Model {
@@ -762,23 +762,23 @@ impl scopeChecker {
 
 		mut v := self.s.eval(self).evalExpr(i.X, evalDefault|evalPhysicalMem|evalUnwrapUntyped)
 		if v == nil {
-			ret nil
+			return nil
 		}
 
 		mut prim := v.Type.Prim()
 		if prim == nil || !prim.IsBool() {
 			self.s.pushErr(i.X.Token, "if statement expressions must be boolean")
-			ret nil
+			return nil
 		}
 
-		ret &If{
+		return &If{
 			Expr:  v.Model,
 			Scope: s,
 		}
 	}
 
 	fn checkElse(mut &self, mut e: &ast::Else): &Else {
-		ret &Else{
+		return &Else{
 			Scope: self.checkChild(e.Scope),
 		}
 	}
@@ -807,12 +807,12 @@ impl scopeChecker {
 		mut scope := self.getChild()
 		self.checkIterScopeSsc(it, tree, scope, ssc)
 		scope.Owner = it
-		ret scope
+		return scope
 	}
 
 	fn checkIterScope(mut &self, it: uintptr, mut tree: &ast::ScopeTree): &Scope {
 		mut ssc := self.newChildChecker()
-		ret self.checkIterScopeSc(it, tree, ssc)
+		return self.checkIterScopeSc(it, tree, ssc)
 	}
 
 	fn checkInfIter(mut &self, mut it: &ast::Iter) {
@@ -826,7 +826,7 @@ impl scopeChecker {
 		mut wh := it.Kind.(&ast::WhileKind)
 		if wh.X == nil && wh.Next == nil {
 			self.checkInfIter(it)
-			ret
+			return
 		}
 
 		mut kind := new(WhileIter)
@@ -839,18 +839,18 @@ impl scopeChecker {
 		if wh.X != nil {
 			mut v := self.s.eval(self).evalExpr(wh.X, evalDefault|evalPhysicalMem|evalUnwrapUntyped)
 			if v == nil {
-				ret
+				return
 			}
 
 			prim := v.Type.Prim()
 			if prim == nil {
 				self.s.pushErr(it.Token, "while iteration expression must be boolean")
-				ret
+				return
 			}
 
 			if !prim.IsBool() {
 				self.s.pushErr(it.Token, "while iteration expression must be boolean")
-				ret
+				return
 			}
 
 			kind.Expr = v.Model
@@ -859,7 +859,7 @@ impl scopeChecker {
 		if wh.IsWhileNext() {
 			if !isValidStmtForNext(wh.Next) {
 				self.s.pushErr(wh.NextToken, "invalid statement for while-next")
-				ret
+				return
 			}
 
 			n := len(self.scope.Stmts)
@@ -891,7 +891,7 @@ impl scopeChecker {
 		makeComptimeRange(v, false)
 		if v.Decl {
 			self.s.pushErr(rang.X.Token, "invalid type for comptime iteration: "+v.Type.String())
-			ret
+			return
 		}
 
 		mut rc := rangeChecker{
@@ -902,7 +902,7 @@ impl scopeChecker {
 		}
 		ok := rc.check()
 		if !ok {
-			ret
+			return
 		}
 
 		mut comptime := v.Type.comptimeRange()
@@ -942,7 +942,7 @@ impl scopeChecker {
 
 		mut v := eval.evalExpr1(rang.X, evalDefault|evalPhysicalMem|evalUnwrapUntyped)
 		if v == nil {
-			ret
+			return
 		}
 
 		mut kind := &RangeIter{
@@ -952,12 +952,12 @@ impl scopeChecker {
 
 		if it.Comptime {
 			self.checkComptimeRangeIter(it, kind, v)
-			ret
+			return
 		}
 		if v.Type.comptime() {
 			self.s.pushErr(rang.X.Token, "comptime expressions are not allowed for runtime range iterations")
 			self.s.pushSuggestion("declare comptime range iteration, like; const for ...")
-			ret
+			return
 		}
 
 		mut rc := rangeChecker{
@@ -968,7 +968,7 @@ impl scopeChecker {
 		}
 		ok := rc.check()
 		if !ok {
-			ret
+			return
 		}
 
 		self.scope.Stmts = append(self.scope.Stmts, kind)
@@ -1000,17 +1000,17 @@ impl scopeChecker {
 		if it.IsInfinite() {
 			if it.Comptime {
 				self.s.pushErr(it.Token, "comptime iterations can only be range iterations")
-				ret
+				return
 			}
 			self.checkInfIter(it)
-			ret
+			return
 		}
 
 		match type it.Kind {
 		| &ast::WhileKind:
 			if it.Comptime {
 				self.s.pushErr(it.Token, "comptime iterations can only be range iterations")
-				ret
+				return
 			}
 			self.checkWhileIter(it)
 		| &ast::RangeKind:
@@ -1025,7 +1025,7 @@ impl scopeChecker {
 
 	iter:
 		if scope.it == it {
-			ret true
+			return true
 		}
 
 		if scope.parent != nil {
@@ -1033,7 +1033,7 @@ impl scopeChecker {
 			goto iter
 		}
 
-		ret false
+		return false
 	}
 
 	fn checkValidBreakLabel(mut &self, ptr: uintptr): bool {
@@ -1042,14 +1042,14 @@ impl scopeChecker {
 	iter:
 		// Check for iterations.
 		if scope.it == ptr {
-			ret true
+			return true
 		}
 
 		// Check for match and select.
 		if scope.cse != 0 {
 			owner := unsafe { caseOwner((*Case)(scope.cse).Owner).asUintptr() }
 			if owner == ptr {
-				ret true
+				return true
 			}
 		}
 
@@ -1058,17 +1058,17 @@ impl scopeChecker {
 			goto iter
 		}
 
-		ret false
+		return false
 	}
 
 	fn checkContValidScope(mut &self, c: &ast::Continue): &Continue {
 		if self.isDeferred() {
 			self.s.pushErr(c.Token, "continue keyword cannot be used out of iteration scopes")
-			ret nil
+			return nil
 		}
 
 		if c.Label != nil {
-			ret new(Continue)
+			return new(Continue)
 		}
 
 		mut scope := self
@@ -1078,31 +1078,31 @@ impl scopeChecker {
 			scope = scope.parent
 			goto iter
 		| scope.it != 0:
-			ret &Continue{It: scope.it}
+			return &Continue{It: scope.it}
 		}
 
 		self.s.pushErr(c.Token, "continue keyword cannot be used out of iteration scopes")
-		ret nil
+		return nil
 	}
 
 	fn checkCont(mut &self, c: &ast::Continue) {
 		mut cont := self.checkContValidScope(c)
 		if cont == nil {
-			ret
+			return
 		}
 
 		if c.Label != nil { // Label given.
 			mut label := findLabelParent(c.Label.Kind, self.parent)
 			if label == nil {
 				self.s.pushErr(c.Label, "undefined label: "+conv::Quote(c.Label.Kind))
-				ret
+				return
 			}
 
 			label.used = true
 
 			if label.node.Index+1 >= len(label.node.Scope.Stmts) {
 				self.s.pushErr(c.Label, "invalid label to continue", c.Label.Kind)
-				ret
+				return
 			}
 
 			i := label.node.Index + 1
@@ -1135,7 +1135,7 @@ impl scopeChecker {
 	fn checkLabel(mut &self, mut l: &ast::Label) {
 		if self.findLabel(l.Name) != nil {
 			self.s.pushErr(l.Token, "label is already exist: "+conv::Quote(l.Name))
-			ret
+			return
 		}
 
 		mut label := &Label{
@@ -1165,7 +1165,7 @@ impl scopeChecker {
 	fn checkPostfix(mut &self, mut a: &ast::Assign) {
 		if len(a.X) > 1 {
 			self.s.pushErr(a.Op, "invalid syntax")
-			ret
+			return
 		}
 
 		mut eval := self.s.eval(self)
@@ -1174,7 +1174,7 @@ impl scopeChecker {
 		mut x := a.X[0].X
 		mut v := eval.evalExpr(x, evalDefault)
 		if v == nil {
-			ret
+			return
 		}
 
 		_ = checkAssign(self.s, v, nil, a.Op)
@@ -1182,18 +1182,18 @@ impl scopeChecker {
 		if v.Type.Ptr() != nil {
 			if isRef(v) {
 				self.s.pushErr(a.Op, "postfix operator are not supported by the reference pointer type @", v.Type.String())
-				ret
+				return
 			} else {
 				mut ptr := v.Type.Ptr()
 				if ptr.IsUnsafe() {
 					self.s.pushErr(a.Op, "operator @ is not defined for type @", a.Op.Kind, v.Type.String())
-					ret
+					return
 				}
 			}
 		} else {
 			if v.Type.Prim() == nil || !types::IsNum(v.Type.Prim().Kind) {
 				self.s.pushErr(a.Op, "operator @ is not defined for type @", a.Op.Kind, v.Type.String())
-				ret
+				return
 			}
 		}
 
@@ -1205,9 +1205,9 @@ impl scopeChecker {
 
 	fn isNewAssignIdent(mut *self, name: string): bool {
 		if jule::IsBlank(name) || name == "" {
-			ret false
+			return false
 		}
-		ret self.table.defByIdent(name, false) == nil
+		return self.table.defByIdent(name, false) == nil
 	}
 
 	// Remove the interior mutability risk if the v represents a structure and
@@ -1219,14 +1219,14 @@ impl scopeChecker {
 	fn removeInteriorMutRisk(mut &self, mut v: &Value) {
 		s := v.Type.Struct()
 		if s == nil {
-			ret
+			return
 		}
 		root := self.getHardRoot()
 		// Owner is not structure or structure is mutable.
 		// If structure is mutable, it means there is risky mutable-typed
 		// fields even for internal members.
 		if root.owner.Owner != s || s.Mutable {
-			ret
+			return
 		}
 		// Mark data as mutable.
 		// Mutable data is not occurs mutability risk for analysis.
@@ -1242,7 +1242,7 @@ impl scopeChecker {
 			eval.target.mutable = true
 			l = eval.evalExpr(x, evalDefault)
 			if l == nil {
-				ret
+				return
 			}
 		}
 
@@ -1267,7 +1267,7 @@ impl scopeChecker {
 		}
 		mut r := eval.evalExpr(a.Y, evalFlags)
 		if r == nil {
-			ret
+			return
 		}
 
 		self.removeInteriorMutRisk(r)
@@ -1280,17 +1280,17 @@ impl scopeChecker {
 				self.s.pushErr(a.Op, "invalid syntax")
 			}
 			self.scope.Stmts = append(self.scope.Stmts, r)
-			ret
+			return
 		}
 
 		if !checkAssign(self.s, l, r, a.Op) {
-			ret
+			return
 		}
 
 		tup := r.Type.Tuple()
 		if tup != nil {
 			self.s.pushErr(a.Op, "missing identifier for assignment, expected @, found 1", len(tup.Types))
-			ret
+			return
 		}
 
 		mut lm := &OperandExpr{
@@ -1310,7 +1310,7 @@ impl scopeChecker {
 				// The type model data might be stale because [checkAssignType] may update them.
 				// But don't assign to lm and rm, implicit casting must not affect original representation.
 			}
-			ret
+			return
 		}
 		id := a.Op.ID
 		a.Op.ID = removeEqFromOp(a.Op.ID)
@@ -1328,7 +1328,7 @@ impl scopeChecker {
 				self.s.pushSuggestion("expected value, found void type")
 			}
 			st.Left = append(st.Left, nil)
-			ret
+			return
 		}
 		if a.Decl {
 			match type lexpr.X.Data {
@@ -1339,14 +1339,14 @@ impl scopeChecker {
 			|:
 				if lexpr.Mutable || lexpr.Reference {
 					self.s.pushErr(lexpr.Token, "invalid syntax")
-					ret
+					return
 				}
 				goto norm
 			}
 			if self.isDuplicatedName(0, lexpr.Name) {
 				self.s.pushErr(lexpr.Token, "identifier @ is duplicated in this scope", lexpr.Name)
 				self.stop()
-				ret
+				return
 			}
 			if jule::IsBlank(lexpr.Name) {
 				self.s.pushErr(lexpr.Token, "blank identifier cannot be used as an identifier for this declaration")
@@ -1374,7 +1374,7 @@ impl scopeChecker {
 			})
 			st.Decls = append(st.Decls, v)
 			self.table.Vars = append(self.table.Vars, v)
-			ret
+			return
 		}
 	norm:
 		if lexpr.Mutable || lexpr.Reference {
@@ -1382,7 +1382,7 @@ impl scopeChecker {
 		}
 
 		if !checkAssign(self.s, l, r.data, lexpr.Token) {
-			ret
+			return
 		}
 
 		// Set reference false because this is normal assignment.
@@ -1434,7 +1434,7 @@ impl scopeChecker {
 			mut _parts := unsafe { (&[]exprPart)(&parts) } // reference pointer for closure
 			right = eval.evalTupleFunc(tup, fn|mut expr| {
 				if *_i >= len(a.X) {
-					ret nil
+					return nil
 				}
 				updateMut(*_i)
 				// Do not unwrap untyped literals, type analysis will check overflows.
@@ -1452,7 +1452,7 @@ impl scopeChecker {
 				} else {
 					*_ok = false
 				}
-				ret v
+				return v
 			})
 		|:
 			// Some special cases such as map-lookup assignments may evaluated here.
@@ -1466,7 +1466,7 @@ impl scopeChecker {
 			right = eval.evalExpr(a.Y, evalFlags)
 			if right == nil {
 				ok = false
-				ret
+				return
 			}
 
 			if right.Type.Tuple() != nil {
@@ -1485,20 +1485,20 @@ impl scopeChecker {
 				parts = [{right, a.Y}]
 			}
 		}
-		ret
+		return
 	}
 
 	fn checkMultiAssign(mut &self, mut a: &ast::Assign) {
 		if a.Op.ID != token::ASSIGN && a.Op.ID != token::DEFINE {
 			self.s.pushErr(a.Op, "invalid syntax")
-			ret
+			return
 		}
 
 		errors := len(self.s.errors)
 		mut eval := self.s.eval(self)
 		mut right, mut rightData, mut ok := self.getRightExprsOfMultiAssign(a, eval)
 		if !ok {
-			ret
+			return
 		}
 
 		mut strict := false // any type compatibility analysis requires exact same type
@@ -1559,10 +1559,10 @@ impl scopeChecker {
 		match {
 		| len(a.X) > len(right):
 			self.s.pushErr(a.Op, "passed identifiers more than expected, expected @, passed @", len(right), conv::Itoa(len(a.X)))
-			ret
+			return
 		| len(a.X) < len(right):
 			self.s.pushErr(a.Op, "passed identifiers less than expected, expected @, passed @", len(right), conv::Itoa(len(a.X)))
-			ret
+			return
 		}
 
 		// evaluate left operands as mutable because they will be mutated because of assignment
@@ -1617,7 +1617,7 @@ impl scopeChecker {
 	fn checkCaseScope(mut &self, c: &Case, mut tree: &ast::ScopeTree): &Scope {
 		mut ssc := self.newChildChecker()
 		ssc.cse = uintptr(c)
-		ret self.checkChildSc(tree, ssc)
+		return self.checkChildSc(tree, ssc)
 	}
 
 	fn checkCase(mut &self, mut m: &Match, mut astm: &ast::Match, i: int, mut c: &ast::Case, mut expr: &Value): &Case {
@@ -1710,7 +1710,7 @@ impl scopeChecker {
 		if !m.Comptime || constMatched {
 			case.Scope = self.checkCaseScope(case, c.Scope)
 		}
-		ret case
+		return case
 	}
 
 	fn checkCases(mut &self, mut m: &ast::Match, mut rm: &Match, mut expr: &Value) {
@@ -1739,25 +1739,25 @@ impl scopeChecker {
 			Owner: owner,
 		}
 		def.Scope = self.checkCaseScope(def, d.Scope)
-		ret def
+		return def
 	}
 
 	fn checkComptimePanic(mut &self, mut callToken: &token::Token, mut s: &Scope) {
 		if len(s.Stmts) != 1 {
-			ret
+			return
 		}
 		mut stmt := s.Stmts[0]
 		mut v, mut ok := stmt.(&Value)
 		if !ok {
-			ret
+			return
 		}
 		mut m, (ok) := v.Model.(&BuiltinPanicCallExpr)
 		if !ok {
-			ret
+			return
 		}
 		c, (ok) := m.Expr.(&constant::Const)
 		if !ok || !c.IsString() {
-			ret
+			return
 		}
 		if callToken == nil {
 			mut root := self.getHardRoot()
@@ -1781,7 +1781,7 @@ impl scopeChecker {
 				self.checkComptimePanic(token, c.Scope)
 				tm.Default = c
 				tm.Cases = nil
-				ret
+				return
 			}
 		}
 		if m.Default != nil {
@@ -1808,7 +1808,7 @@ impl scopeChecker {
 		isPushedAlready = fn|mut t, mut item| {
 			for (_, mut titem) in t.Items {
 				if titem == item {
-					ret false
+					return false
 				}
 				mut ke := titem.TypeSym.Type.TypeEnum()
 				// Check if the titem's type is not type-enum.
@@ -1816,7 +1816,7 @@ impl scopeChecker {
 				// See documentation of the [self.checkCase] function for type-match statements.
 				if ke == nil {
 					if titem.TypeSym.Type.Equal(item.TypeSym.Type) {
-						ret true
+						return true
 					}
 				}
 				// If item is not strict type alias, check inherited types if it is type-enum.
@@ -1824,12 +1824,12 @@ impl scopeChecker {
 					if ke != nil {
 						pushed := unsafe { (*_isPushedAlready)(ke, item) }
 						if pushed {
-							ret true
+							return true
 						}
 					}
 				}
 			}
-			ret false
+			return false
 		}
 
 		ok = true
@@ -1855,13 +1855,13 @@ impl scopeChecker {
 			}
 			sb.WriteString(item.TypeSym.Type.String())!
 		}
-		ret
+		return
 	}
 
 	fn checkTypeMatch(mut &self, mut m: &ast::Match) {
 		mut v := self.s.eval(self).eval1(m.X, evalDefault|evalPhysicalMem|evalUnwrapUntyped)
 		if v == nil {
-			ret
+			return
 		}
 
 		mut te := v.Type.TypeEnum()
@@ -1870,7 +1870,7 @@ impl scopeChecker {
 			if cti == nil {
 				if !v.Decl {
 					self.s.pushErr(m.X.Token, "expected type declaration, found value")
-					ret
+					return
 				}
 			} else {
 				v.Type = cti.base
@@ -1878,7 +1878,7 @@ impl scopeChecker {
 		} else if v.Decl || !((v.Type.Prim() != nil && v.Type.Prim().IsAny()) || v.Type.Trait() != nil || te != nil) {
 			self.s.pushErr(m.X.Token, "type-match statement must take dynamic type")
 			self.s.pushSuggestion("such as any, trait, or type-enum")
-			ret
+			return
 		}
 
 		mut tm := &Match{
@@ -1943,7 +1943,7 @@ impl scopeChecker {
 		} else {
 			v = self.s.eval(self).evalExpr1(m.X, evalDefault|evalPhysicalMem|evalUnwrapUntyped)
 			if v == nil {
-				ret
+				return
 			}
 		}
 
@@ -1951,12 +1951,12 @@ impl scopeChecker {
 			if !canComptimeMatch(v) {
 				self.s.pushErr(m.X.Token, "expression must be constant")
 				self.s.pushSuggestion("comptime-matching requires constant expression")
-				ret
+				return
 			}
 		} else if v.Type.comptime() {
 			self.s.pushErr(m.X.Token, "expression must be constant")
 			self.s.pushSuggestion("comptime-matching requires constant expression")
-			ret
+			return
 		}
 
 		mut mc := &Match{
@@ -1998,7 +1998,7 @@ impl scopeChecker {
 	fn checkMatch(mut &self, mut m: &ast::Match) {
 		if m.Type {
 			self.checkTypeMatch(m)
-			ret
+			return
 		}
 		self.checkCommonMatch(m)
 	}
@@ -2019,7 +2019,7 @@ impl scopeChecker {
 				let mut var: &Var
 				ssc.checkVarDecl((&ast::Var)(sv), &var)
 				if ssc.stopped() || var == nil {
-					ret nil
+					return nil
 				}
 				match type var.ValueSym.Value.Model {
 				| &ChanRecv | &ChanSend:
@@ -2032,7 +2032,7 @@ impl scopeChecker {
 				mut assign := c.Stmt.(&ast::Assign)
 				ssc.checkAssign(assign, checkNodeDefault|checkNodeNoFallible)
 				if self.stopped() {
-					ret nil
+					return nil
 				}
 				mut stmt := ssc.scope.Stmts[len(ssc.scope.Stmts)-1]
 				match type stmt {
@@ -2081,7 +2081,7 @@ impl scopeChecker {
 		self.checkChildSsc(c.Scope, scope, ssc)
 		case.Scope = scope
 
-		ret case
+		return case
 	}
 
 	fn checkSelectCases(mut &self, mut sc: &ast::Select, mut slct: &Select) {
@@ -2126,7 +2126,7 @@ impl scopeChecker {
 			len(self.scope.Stmts)+1 < len(self.scope.Stmts) ||
 			self.isDeferred() {
 			self.s.pushErr(f.Token, "fall keyword can only be used at end of case scopes")
-			ret
+			return
 		}
 
 		mut case := unsafe { (*Case)(self.cse) }
@@ -2134,15 +2134,15 @@ impl scopeChecker {
 		| &Match:
 			if unsafe { case.Owner.(&Match).Comptime } {
 				self.s.pushErr(f.Token, "fall statement is not allowed for comptime-matching")
-				ret
+				return
 			}
 		| &Select:
 			self.s.pushErr(f.Token, "fall statement is not allowed for select statements")
-			ret
+			return
 		}
 		if unsafe { case.Next } == nil {
 			self.s.pushErr(f.Token, "fall statement cannot be used in the final case")
-			ret
+			return
 		}
 
 		self.scope.Stmts = append(self.scope.Stmts, &Fall{
@@ -2153,7 +2153,7 @@ impl scopeChecker {
 	fn checkBreakWithLabel(mut &self, b: &ast::Break): &Break {
 		mut brk := self.checkPlainBreak(b)
 		if brk == nil {
-			ret nil
+			return nil
 		}
 
 		// Set pointer to zero.
@@ -2164,14 +2164,14 @@ impl scopeChecker {
 		mut label := findLabelParent(b.Label.Kind, self.parent)
 		if label == nil {
 			self.s.pushErr(b.Label, "invalid label to break: "+conv::Quote(b.Label.Kind))
-			ret nil
+			return nil
 		}
 
 		label.used = true
 
 		if label.node.Index+1 >= len(label.node.Scope.Stmts) {
 			self.s.pushErr(b.Label, "invalid label to break: "+conv::Quote(b.Label.Kind))
-			ret nil
+			return nil
 		}
 
 		i := label.node.Index + 1
@@ -2213,13 +2213,13 @@ impl scopeChecker {
 			}
 		}
 
-		ret brk
+		return brk
 	}
 
 	fn checkPlainBreak(mut &self, b: &ast::Break): &Break {
 		if self.isDeferred() {
 			self.s.pushErr(b.Token, "break keyword cannot be used out of iteration or match statement scopes")
-			ret nil
+			return nil
 		}
 
 		mut scope := self
@@ -2229,21 +2229,21 @@ impl scopeChecker {
 			scope = scope.parent
 			goto iter
 		| scope.it != 0:
-			ret &Break{It: scope.it}
+			return &Break{It: scope.it}
 		| scope.cse != 0:
 			owner := caseOwner(unsafe { (*Case)(scope.cse).Owner }).asUintptr()
-			ret &Break{Match: owner}
+			return &Break{Match: owner}
 		}
 
 		self.s.pushErr(b.Token, "break keyword cannot be used out of iteration or match statement scopes")
-		ret nil
+		return nil
 	}
 
 	fn checkBreak(mut &self, b: &ast::Break) {
 		if b.Label != nil { // Label given.
 			mut brk := self.checkBreakWithLabel(b)
 			self.scope.Stmts = append(self.scope.Stmts, brk)
-			ret
+			return
 		}
 
 		mut brk := self.checkPlainBreak(b)
@@ -2264,7 +2264,7 @@ impl scopeChecker {
 		}
 		ok := rtc.check(x)
 		if !ok {
-			ret
+			return
 		}
 
 		if x != nil {
@@ -2282,7 +2282,7 @@ impl scopeChecker {
 	fn checkUseExpr(mut &self, ue: &ast::UseExpr) {
 		if self.result == nil {
 			self.s.pushErr(ue.Token, "use expression is not allowed out of error handler scope")
-			ret
+			return
 		}
 
 		if self.isDeferred() {
@@ -2298,7 +2298,7 @@ impl scopeChecker {
 	fn checkThrow(mut &self, mut t: &ast::Throw) {
 		mut expr := self.s.eval(self).evalExpr(t.Error, evalDefault|evalPhysicalMem|evalUnwrapUntyped)
 		if expr == nil {
-			ret
+			return
 		}
 		if expr.IsNil() {
 			self.s.pushErr(t.Token, "throw statements does not supports nil literal as error")
@@ -2307,18 +2307,18 @@ impl scopeChecker {
 		const Reference = false
 		const Mutable = true
 		if !self.s.checkValidityForInitExpr(Mutable, Reference, primAny, expr, t.Error.Token) {
-			ret
+			return
 		}
 
 		if !t.Unsafe && !isSafeToThrow(expr) {
 			self.s.pushErr(t.Error.Token, `forbidden throw: error must be an explicit, non-nil type. Avoid using "any" or "nil".`)
 			self.s.pushSuggestion("consider forwarding with error variable or wrapping with a custom error type")
-			ret
+			return
 		}
 
 		if self.isDeferred() {
 			self.s.pushErr(t.Token, "throw statements are not allowed in deferred scope")
-			ret
+			return
 		}
 
 		mut root := self.getRoot()
@@ -2392,13 +2392,13 @@ impl scopeChecker {
 			mut expr := stmt.Data.(&ast::Expr)
 			mut v := self.s.eval(self).evalExpr(expr, evalDefault|evalPhysicalMem|evalUnwrapUntyped|evalFallible)
 			if v == nil {
-				ret
+				return
 			}
 			match type v.Model {
 			| &BuiltinPanicCallExpr:
 				self.scope.Stmts = append(self.scope.Stmts, v)
 			|:
-				ret
+				return
 			}
 		| &ast::Goto
 		| &ast::Break
@@ -2408,7 +2408,7 @@ impl scopeChecker {
 			self.checkNode(stmt.Data, checkNodeDefault)
 		|:
 			self.checkNode(stmt.Data, checkNodeDefault)
-			ret
+			return
 		}
 
 		// Set result to nil, it is a mark for whether result is processed.
@@ -2464,7 +2464,7 @@ impl scopeChecker {
 						cv.Group[i] = cv
 						self.checkVarDecl1(cv)
 						if self.stopped() {
-							ret
+							return
 						}
 					}
 					// Skip this node, it is already checked.
@@ -2473,7 +2473,7 @@ impl scopeChecker {
 			}
 			self.checkNode(stmt.Data, checkNodeDefault)
 			if self.stopped() {
-				ret
+				return
 			}
 		}
 		if self.result != nil && len(self.tree.Stmts) != 0 {
@@ -2487,7 +2487,7 @@ impl scopeChecker {
 			// Scopes are same and label at above, so it is safe.
 			if gt.Index > label.node.Index {
 				gt.Direction = UP
-				ret
+				return
 			}
 			// Limit controlling to goto's position.
 			// Label and goto is in same scope.
@@ -2524,12 +2524,12 @@ impl scopeChecker {
 			// See documentation about getting parent scope of goto.
 			if gtsc.Parent != label.node.Scope {
 				self.s.pushErr(gt.Token, "goto jumps into scope")
-				ret
+				return
 			}
 			// Scopes are same and label at above, so it is safe.
 			if gtsc.StmtIndex > label.node.Index {
 				gt.Direction = UP
-				ret
+				return
 			}
 			// Cap analysis statement position limit to goto's position.
 			// Label and goto is in same scope. If same scope condition is not met,
@@ -2546,7 +2546,7 @@ impl scopeChecker {
 			// But scopes are not equal, so equal case does not works.
 			// In final case; goto jumps into scope, which is not allowed.
 			self.s.pushErr(gt.Token, "goto jumps into scope")
-			ret
+			return
 		}
 		gt.Direction = DOWN
 
@@ -2557,7 +2557,7 @@ impl scopeChecker {
 				mut stmt := s.Stmts[i]
 				if stmtIsDef(stmt) {
 					self.s.pushErr(gt.Token, "goto @ jumps over declaration(s)", conv::Quote(gt.Name))
-					ret
+					return
 				}
 			}
 			if s.ChildIndex > gt.Scope.ChildIndex {
@@ -2648,34 +2648,34 @@ impl scopeChecker {
 		base.labels = self.labels
 		base.gotos = self.gotos
 		base.childIndex = self.childIndex + 1
-		ret base
+		return base
 	}
 }
 
 fn removeEqFromOp(op: int): int {
 	match op {
 	| token::ADD_ASSIGN:
-		ret token::ADD
+		return token::ADD
 	| token::SUB_ASSIGN:
-		ret token::SUB
+		return token::SUB
 	| token::MUL_ASSIGN:
-		ret token::MUL
+		return token::MUL
 	| token::QUO_ASSIGN:
-		ret token::QUO
+		return token::QUO
 	| token::REM_ASSIGN:
-		ret token::REM
+		return token::REM
 	| token::SHL_ASSIGN:
-		ret token::SHL
+		return token::SHL
 	| token::SHR_ASSIGN:
-		ret token::SHR
+		return token::SHR
 	| token::XOR_ASSIGN:
-		ret token::XOR
+		return token::XOR
 	| token::AND_ASSIGN:
-		ret token::AND
+		return token::AND
 	| token::OR_ASSIGN:
-		ret token::OR
+		return token::OR
 	|:
-		ret op
+		return op
 	}
 }
 
@@ -2686,25 +2686,25 @@ fn makeComptimeRange(mut v: &Value, onlyComptime: bool) {
 	match {
 	| v.Type.comptimeStructFields() != nil:
 		v.Type = &Type{Kind: &comptimeRange{v.Type.comptimeStructFields()}}
-		ret
+		return
 	| v.Type.comptimeEnumFields() != nil:
 		v.Type = &Type{Kind: &comptimeRange{v.Type.comptimeEnumFields()}}
-		ret
+		return
 	| v.Type.comptimeTypeInfos() != nil:
 		v.Type = &Type{Kind: &comptimeRange{v.Type.comptimeTypeInfos()}}
-		ret
+		return
 	| v.Type.comptimeParams() != nil:
 		v.Type = &Type{Kind: &comptimeRange{v.Type.comptimeParams()}}
-		ret
+		return
 	| v.Type.comptimeStatics() != nil:
 		v.Type = &Type{Kind: &comptimeRange{v.Type.comptimeStatics()}}
-		ret
+		return
 	| v.Type.comptimeFiles() != nil:
 		v.Type = &Type{Kind: &comptimeRange{v.Type.comptimeFiles()}}
-		ret
+		return
 	| v.Type.comptimeDecls() != nil:
 		v.Type = &Type{Kind: &comptimeRange{v.Type.comptimeDecls()}}
-		ret
+		return
 	| !onlyComptime && v.Type.Slice() != nil:
 		match type v.Model {
 		| &SliceExpr:
@@ -2715,7 +2715,7 @@ fn makeComptimeRange(mut v: &Value, onlyComptime: bool) {
 				}
 			}
 			v.Type = &Type{Kind: &comptimeRange{&comptimeSliceRange{s}}}
-			ret
+			return
 		|:
 			// no-op
 		}
@@ -2729,20 +2729,20 @@ Fail:
 fn canComptimeMatch(mut v: &Value): bool {
 	// Do not allow value if has unsupported type for type infer.
 	if !isGoodValueToInfer(v) {
-		ret false
+		return false
 	}
-	ret v.IsConst() || v.Type.comptimeTypeInfo() != nil
+	return v.IsConst() || v.Type.comptimeTypeInfo() != nil
 }
 
 fn stmtIsDef(stmt: Stmt): bool {
 	match type stmt {
 	| &Var:
-		ret true
+		return true
 	| &MultiAssign:
 		ma := stmt.(&MultiAssign)
-		ret len(ma.Decls) > 0
+		return len(ma.Decls) > 0
 	|:
-		ret false
+		return false
 	}
 }
 
@@ -2762,7 +2762,7 @@ loop:
 			}
 		}
 	}
-	ret n
+	return n
 }
 
 // Counts matched types with t and returns the result.
@@ -2788,7 +2788,7 @@ loop:
 			}
 		}
 	}
-	ret n
+	return n
 }
 
 // Returns label by identifier.
@@ -2798,12 +2798,12 @@ fn findLabelParent(name: string, mut scope: &scopeChecker): &scopeLabel {
 	mut label := scope.findLabelScope(name)
 	for label == nil {
 		if scope.parent == nil || scope.owner != nil {
-			ret nil
+			return nil
 		}
 		scope = scope.parent
 		label = scope.findLabelScope(name)
 	}
-	ret label
+	return label
 }
 
 fn getExprs(mut m: ast::ExprData): []ast::ExprData {
@@ -2814,9 +2814,9 @@ fn getExprs(mut m: ast::ExprData): []ast::ExprData {
 		for (_, mut x) in tup.X {
 			models = append(models, x.Data)
 		}
-		ret models
+		return models
 	|:
-		ret [m]
+		return [m]
 	}
 }
 
@@ -2824,12 +2824,12 @@ fn checkAssignMut(mut s: &sema, left: &Value, mut right: &Value, op: &token::Tok
 	match {
 	| !left.Mutable:
 		s.pushErr(op, "cannot assign to immutable memory")
-		ret false
+		return false
 	| right != nil && !right.Mutable && right.Type.Mutable():
 		s.pushErr(op, "immutable data cannot be assigned to a mutable memory because of type @, which is mutable", right.Type.String())
-		ret false
+		return false
 	|:
-		ret true
+		return true
 	}
 }
 
@@ -2838,14 +2838,14 @@ fn checkAssign(mut s: &sema, mut left: &Value, mut right: &Value, op: &token::To
 	// No need to log any error, because it will be already appended.
 	// If left operand is nil, error about the issue must be logged already.
 	if left == nil || left.Type == nil {
-		ret false
+		return false
 	}
 
 	// If the value is error, complain.
 	var, _ := left.Model.(&Var)
 	if var != nil && var.Name == "error" {
 		s.pushErr(op, "cannot assign to the error value")
-		ret false
+		return false
 	}
 
 	f := left.Type.Func()
@@ -2855,13 +2855,13 @@ fn checkAssign(mut s: &sema, mut left: &Value, mut right: &Value, op: &token::To
 		// Otherwise it may be a variable, if it used as anonymous function.
 		if left.Model == f {
 			s.pushErr(op, "cannot assign to function")
-			ret false
+			return false
 		}
 	}
 	// Assignment to constant memory.
 	if left.IsConst() {
 		s.pushErr(op, "cannot assign to constant memory")
-		ret false
+		return false
 	}
 	// Fast path: check whether value is lvalue.
 	// If value is lvalue, it is ok.
@@ -2882,20 +2882,20 @@ fn checkAssign(mut s: &sema, mut left: &Value, mut right: &Value, op: &token::To
 		|:
 			// Default case.
 			s.pushErr(op, "assignment required lvalue")
-			ret false
+			return false
 		}
 	}
-	ret checkAssignMut(s, left, right, op)
+	return checkAssignMut(s, left, right, op)
 }
 
 fn isValidStmtForNext(mut n: ast::StmtData): bool {
 	match type n {
 	| &ast::Assign:
-		ret !n.(&ast::Assign).Decl
+		return !n.(&ast::Assign).Decl
 	| &ast::Expr:
-		ret true
+		return true
 	|:
-		ret false
+		return false
 	}
 }
 
@@ -2904,12 +2904,12 @@ fn isValidStmtForNext2(st: Stmt): bool {
 	| &Postfix
 	| &Assign
 	| &MultiAssign:
-		ret true
+		return true
 	| &Value:
 		_, ok := st.(&Value).Model.(&FuncCallExpr)
-		ret ok
+		return ok
 	|:
-		ret false
+		return false
 	}
 }
 
@@ -2917,25 +2917,25 @@ fn isValidStmtForNext2(st: Stmt): bool {
 fn isSafeToThrow(mut v: &Value): bool {
 	// Report true, if type is not <any> and <nil>.
 	if v.IsNil() {
-		ret false
+		return false
 	}
 	typ := v.Type.Prim()
 	if typ == nil || !typ.IsAny() {
-		ret true
+		return true
 	}
 
 	// May be error value?
 	var, mut ok := v.Model.(&Var)
 	if ok && var.Name == "error" {
-		ret true
+		return true
 	}
 
 	// May be casted to <any> from a non-<any> type?
 	mut cast, ok := v.Model.(&CastingExpr)
 	if !ok {
-		ret false
+		return false
 	}
 
 	// Check value of the cast expression.
-	ret isSafeToThrow(cast.Expr)
+	return isSafeToThrow(cast.Expr)
 }

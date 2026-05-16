@@ -139,7 +139,7 @@ let STDIN = GetStdHandle(uintptr(u32(int(STD_INPUT_HANDLE))))
 let STDOUT = GetStdHandle(uintptr(u32(int(STD_OUTPUT_HANDLE))))
 let STDERR = GetStdHandle(uintptr(u32(int(STD_ERROR_HANDLE))))
 
-fn GetStdHandle(stdh: uintptr): Handle { ret Handle(extern.GetStdHandle(stdh)) }
+fn GetStdHandle(stdh: uintptr): Handle { return Handle(extern.GetStdHandle(stdh)) }
 
 fn CloseHandle(stdh: Handle)! {
 	r := unsafe { extern.CloseHandle(unsafe { (*unsafe)(stdh) }) }
@@ -158,7 +158,7 @@ fn SetEndOfFile(h: Handle)! {
 
 // Creates an anonymous pipe, and returns handles to the read and write ends of the pipe.
 unsafe fn CreatePipe(mut r: *Handle, mut w: *Handle, attrs: *SecurityAttributes, size: u32): bool {
-	ret extern.CreatePipe((*extern.HANDLE)(r), (*extern.HANDLE)(w), (*extern.SECURITY_ATTRIBUTES)(attrs), extern.DWORD(size))
+	return extern.CreatePipe((*extern.HANDLE)(r), (*extern.HANDLE)(w), (*extern.SECURITY_ATTRIBUTES)(attrs), extern.DWORD(size))
 }
 
 // Flushes the buffers of a specified file and causes all buffered data to be written to a file.
@@ -170,23 +170,23 @@ fn FlushFileBuffers(h: Handle)! {
 }
 
 // Returns last Windows error.
-fn GetLastError(): u32 { ret extern.GetLastError() }
+fn GetLastError(): u32 { return extern.GetLastError() }
 
 // Reads working directory into buff and returns read
 // rune count of current process. Returns 0 if fail.
 unsafe fn GetCurrentDirectory(bufflen: u32, mut buff: *u16): u32 {
-	ret extern.GetCurrentDirectoryW(bufflen, (*c::Wchar)(buff))
+	return extern.GetCurrentDirectoryW(bufflen, (*c::Wchar)(buff))
 }
 
 // Sets working directory to path.
 // Reports operation is success.
 unsafe fn SetCurrentDirectory(path: *u16): bool {
-	ret extern.SetCurrentDirectoryW((*c::Wchar)(path))
+	return extern.SetCurrentDirectoryW((*c::Wchar)(path))
 }
 
 // Create file.
 unsafe fn CreateFile(path: *u16, desiredAccess: u32, shareMode: u32, securityAttrs: *SecurityAttributes, creationDisposition: u32, flagsAndAttrs: u32, templateFile: Handle): Handle {
-	ret Handle(extern.CreateFileW(
+	return Handle(extern.CreateFileW(
 		(*c::Wchar)(path),
 		extern.DWORD(desiredAccess),
 		extern.DWORD(shareMode),
@@ -204,7 +204,7 @@ fn ReadFile(h: Handle, buf: []byte)!: int {
 	if !ok {
 		throw GetLastErrno()
 	}
-	ret int(read)
+	return int(read)
 }
 
 // Write file.
@@ -215,50 +215,50 @@ fn WriteFile(h: Handle, buf: []byte)!: int {
 	if !ok {
 		throw GetLastErrno()
 	}
-	ret int(written)
+	return int(written)
 }
 
 // Calls Windows's GetFileType function.
 unsafe fn GetFileType(h: Handle): (t: u32, err: bool) {
 	t = u32(extern.GetFileType(extern.HANDLE(h)))
 	err = t == FILE_TYPE_UNKNOWN && GetLastError() != 0
-	ret
+	return
 }
 
 // Calls Windows's GetFileInformationByHandle function.
 unsafe fn GetFileInformationByHandle(h: Handle, info: *ByHandleFileInformation): bool {
-	ret extern.GetFileInformationByHandle(extern.HANDLE(h), (*extern.BY_HANDLE_FILE_INFORMATION)(info))
+	return extern.GetFileInformationByHandle(extern.HANDLE(h), (*extern.BY_HANDLE_FILE_INFORMATION)(info))
 }
 
 // Delete file.
 unsafe fn DeleteFile(path: *u16): bool {
-	ret extern.DeleteFileW((*c::Wchar)(path))
+	return extern.DeleteFileW((*c::Wchar)(path))
 }
 
 // Creates directory.
 unsafe fn CreateDirectory(path: *u16): bool {
-	ret extern.CreateDirectoryW((*c::Wchar)(path), nil)
+	return extern.CreateDirectoryW((*c::Wchar)(path), nil)
 }
 
 // Removes empty directory.
 unsafe fn RemoveDirectory(path: *u16): bool {
-	ret extern.RemoveDirectoryW((*c::Wchar)(path))
+	return extern.RemoveDirectoryW((*c::Wchar)(path))
 }
 
 // Calls Windows's GetFullPathNameW function.
 unsafe fn GetFullPathName(path: *u16, bufflen: u32,
 	buff: *u16, fname: **u16): u32 {
-	ret extern.GetFullPathNameW((*c::Wchar)(path), bufflen, (*c::Wchar)(buff), (**c::Wchar)(fname))
+	return extern.GetFullPathNameW((*c::Wchar)(path), bufflen, (*c::Wchar)(buff), (**c::Wchar)(fname))
 }
 
 // Calls Windows's GetConsoleMode function.
 unsafe fn GetConsoleMode(handle: Handle, mut mode: *u32): bool {
-	ret unsafe { extern.GetConsoleMode(extern.HANDLE(handle), (*extern.DWORD)(mode)) }
+	return unsafe { extern.GetConsoleMode(extern.HANDLE(handle), (*extern.DWORD)(mode)) }
 }
 
 // Calls Windows's SetConsoleMode function.
 unsafe fn SetConsoleMode(handle: Handle, mode: u32): bool {
-	ret unsafe { extern.SetConsoleMode(extern.HANDLE(handle), extern.DWORD(mode)) }
+	return unsafe { extern.SetConsoleMode(extern.HANDLE(handle), extern.DWORD(mode)) }
 }
 
 // Calls Windows's WriteConsoleW function.
@@ -283,59 +283,59 @@ unsafe fn ReadConsole(handle: Handle, mut buffer: *u16, toRead: u32, mut &read: 
 
 // Calls Windows's WSAGetLastError function.
 fn WSAGetLastError(): Errno {
-	ret Errno(extern.WSAGetLastError())
+	return Errno(extern.WSAGetLastError())
 }
 
 // Call's Windows FindFirstFileW function.
 unsafe fn FindFirstFile(path: *u16, mut data: *Win32FindData): Handle {
-	ret Handle(extern.FindFirstFileW((*c::Wchar)(path), (*extern.WIN32_FIND_DATAW)(data)))
+	return Handle(extern.FindFirstFileW((*c::Wchar)(path), (*extern.WIN32_FIND_DATAW)(data)))
 }
 
 // Call's Windows FindNextFileW function.
 unsafe fn FindNextFile(h: Handle, mut data: *Win32FindData): int {
-	ret extern.FindNextFileW(extern.HANDLE(h), (*extern.WIN32_FIND_DATAW)(data))
+	return extern.FindNextFileW(extern.HANDLE(h), (*extern.WIN32_FIND_DATAW)(data))
 }
 
 // Call's Windows FindClose function.
 fn FindClose(h: Handle): int {
-	ret unsafe { extern.FindClose(extern.HANDLE(h)) }
+	return unsafe { extern.FindClose(extern.HANDLE(h)) }
 }
 
 // Windows's GetEnvironmentVariableW function.
 unsafe fn GetEnvironmentVariable(key: *u16, mut out: *u16, outLen: u32): u32 {
-	ret u32(extern.GetEnvironmentVariableW((*c::Wchar)(key), (*c::Wchar)(out), extern.DWORD(outLen)))
+	return u32(extern.GetEnvironmentVariableW((*c::Wchar)(key), (*c::Wchar)(out), extern.DWORD(outLen)))
 }
 
 // Windows's SetEnvironmentVariableW function.
 unsafe fn SetEnvironmentVariable(key: *u16, val: *u16): bool {
-	ret extern.SetEnvironmentVariableW((*c::Wchar)(key), (*c::Wchar)(val))
+	return extern.SetEnvironmentVariableW((*c::Wchar)(key), (*c::Wchar)(val))
 }
 
 // Windows's GetFileAttributesExW function.
 unsafe fn GetFileAttributesEx(name: *u16, infoLevel: int, info: *unsafe): bool {
-	ret extern.GetFileAttributesExW((*c::Wchar)(name), extern.GET_FILEEX_INFO_LEVELS(infoLevel), info)
+	return extern.GetFileAttributesExW((*c::Wchar)(name), extern.GET_FILEEX_INFO_LEVELS(infoLevel), info)
 }
 
 // Windows's GetFileAttributes function.
 unsafe fn GetFileAttributesW(name: *u16): u32 {
-	ret u32(extern.GetFileAttributesW((*c::Wchar)(name)))
+	return u32(extern.GetFileAttributesW((*c::Wchar)(name)))
 }
 
 // Windows's SetHandleInformation function.
 unsafe fn SetHandleInformation(h: Handle, dwMask: u32, dwFlags: u32): bool {
-	ret extern.SetHandleInformation(extern.HANDLE(h), extern.DWORD(dwMask), extern.DWORD(dwFlags))
+	return extern.SetHandleInformation(extern.HANDLE(h), extern.DWORD(dwMask), extern.DWORD(dwFlags))
 }
 
 // Windows's GetCurrentProcess function.
 fn GetCurrentProcess(): Handle {
-	ret unsafe { Handle(extern.GetCurrentProcess()) }
+	return unsafe { Handle(extern.GetCurrentProcess()) }
 }
 
 // Windows's DuplicateHandle function.
 unsafe fn DuplicateHandle(hSourceProcessHandle: Handle, hSourceHandle: Handle,
 	hTargetProcessHandle: Handle, mut lpTargetHandle: *Handle, dwDesiredAccess: u32,
 	bInheritHandle: bool, dwOptions: u32): bool {
-	ret extern.DuplicateHandle(extern.HANDLE(hSourceProcessHandle), extern.HANDLE(hSourceHandle),
+	return extern.DuplicateHandle(extern.HANDLE(hSourceProcessHandle), extern.HANDLE(hSourceHandle),
 		extern.HANDLE(hTargetProcessHandle), (*extern.HANDLE)(lpTargetHandle), extern.DWORD(dwDesiredAccess),
 		bInheritHandle, extern.DWORD(dwOptions))
 }
@@ -361,7 +361,7 @@ fn Seek(h: Handle, offset: i64, whence: int)!: (newoffset: i64) {
 		w = FILE_END
 	}
 	setFilePointerEx(h, offset, &newoffset, w)?
-	ret
+	return
 }
 
 // Imitates the POSIX ftruncate function.
@@ -385,7 +385,7 @@ fn Pipe()!: (r: Handle, w: Handle) {
 	}
 	r = p[0]
 	w = p[1]
-	ret
+	return
 }
 
 fn Open(path: string, flag: int, perm: u32)!: Handle {
@@ -468,7 +468,7 @@ fn Open(path: string, flag: int, perm: u32)!: Handle {
 			throw error
 		}
 	}
-	ret h
+	return h
 }
 
 fn ExitProcess(exitcode: u32) {
@@ -484,7 +484,7 @@ fn QueryPerformanceFrequency()!: i64 {
 	if unsafe { !extern.QueryPerformanceFrequency((*extern.LARGE_INTEGER)(&counter)) } {
 		panic("runtime: nanotime failed")
 	}
-	ret counter
+	return counter
 }
 
 fn QueryPerformanceCounter()!: i64 {
@@ -492,7 +492,7 @@ fn QueryPerformanceCounter()!: i64 {
 	if unsafe { !extern.QueryPerformanceCounter((*extern.LARGE_INTEGER)(&counter)) } {
 		panic("runtime: nanotime failed")
 	}
-	ret counter
+	return counter
 }
 
 fn GetSystemTimeAsFileTime(mut &ft: *Filetime) {
@@ -505,7 +505,7 @@ fn LoadLibrary(libname: string)!: Handle {
 	if phandle == nil {
 		throw GetLastErrno()
 	}
-	ret Handle(phandle)
+	return Handle(phandle)
 }
 
 fn LoadLibraryEx(libname: string, zero: Handle, flags: uintptr)!: Handle {
@@ -514,7 +514,7 @@ fn LoadLibraryEx(libname: string, zero: Handle, flags: uintptr)!: Handle {
 	if phandle == nil {
 		throw GetLastErrno()
 	}
-	ret Handle(phandle)
+	return Handle(phandle)
 }
 
 fn GetProcAddress(module: Handle, procname: string)!: (proc: uintptr) {
@@ -523,7 +523,7 @@ fn GetProcAddress(module: Handle, procname: string)!: (proc: uintptr) {
 	if procp == nil {
 		throw GetLastErrno()
 	}
-	ret uintptr(procp)
+	return uintptr(procp)
 }
 
 fn FreeLibrary(handle: Handle)! {

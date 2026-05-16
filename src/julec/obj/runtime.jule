@@ -10,7 +10,7 @@ fn RuntimeFindGlobal(mut runtime: &sema::ImportInfo, name: string): &sema::Var {
 	if f == nil {
 		panic("obj: runtime global variable is not exist, this is an implementation mistake, this panic call should be unreachable")
 	}
-	ret f
+	return f
 }
 
 fn RuntimeFindFunc(mut runtime: &sema::ImportInfo, name: string): &sema::Func {
@@ -20,7 +20,7 @@ fn RuntimeFindFunc(mut runtime: &sema::ImportInfo, name: string): &sema::Func {
 		println(name)
 		panic("obj: runtime function is not exist, this is an implementation mistake, this panic call should be unreachable")
 	}
-	ret f
+	return f
 }
 
 fn RuntimeFindStruct(mut runtime: &sema::ImportInfo, name: string): &sema::Struct {
@@ -29,5 +29,5 @@ fn RuntimeFindStruct(mut runtime: &sema::ImportInfo, name: string): &sema::Struc
 	if f == nil {
 		panic("obj: runtime struct is not exist, this is an implementation mistake, this panic call should be unreachable")
 	}
-	ret f
+	return f
 }

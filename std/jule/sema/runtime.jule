@@ -8,7 +8,7 @@ fn runtimeFindFunc(mut runtime: &ImportInfo, name: string): &Func {
 	if f == nil {
 		panic("sema: runtime function is not exist, this is an implementation mistake, this panic call should be unreachable")
 	}
-	ret f
+	return f
 }
 
 fn runtimeFindStruct(mut runtime: &ImportInfo, name: string): &Struct {
@@ -17,5 +17,5 @@ fn runtimeFindStruct(mut runtime: &ImportInfo, name: string): &Struct {
 	if f == nil {
 		panic("sema: runtime struct is not exist, this is an implementation mistake, this panic call should be unreachable")
 	}
-	ret f
+	return f
 }

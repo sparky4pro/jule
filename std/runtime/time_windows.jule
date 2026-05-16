@@ -14,7 +14,7 @@ fn timeNow(): (sec: i64, nsec: i64) {
 	t := ft.Nanoseconds()
 	sec = t / _Second
 	nsec = t % _Second
-	ret
+	return
 }
 
 fn nanotime(): i64 {
@@ -23,7 +23,7 @@ fn nanotime(): i64 {
 	}
 	sec := ticks / qpcfreq
 	rem := ticks - sec*qpcfreq
-	ret sec*1e9 + rem*1e9/qpcfreq
+	return sec*1e9 + rem*1e9/qpcfreq
 }
 
 fn timeinit() {

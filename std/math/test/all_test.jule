@@ -2142,7 +2142,7 @@ fn tolerance(a: f64, b: f64, mut e: f64): bool {
 	// Check a==b so that at least if a and b are small and identical
 	// we say they match.
 	if a == b {
-		ret true
+		return true
 	}
 	mut d := a - b
 	if d < 0 {
@@ -2157,19 +2157,19 @@ fn tolerance(a: f64, b: f64, mut e: f64): bool {
 			e = -e
 		}
 	}
-	ret d < e
+	return d < e
 }
-fn close(a: f64, b: f64): bool { ret tolerance(a, b, 1e-14) }
-fn veryclose(a: f64, b: f64): bool { ret tolerance(a, b, 4e-16) }
-fn soclose(a: f64, b: f64, e: f64): bool { ret tolerance(a, b, e) }
+fn close(a: f64, b: f64): bool { return tolerance(a, b, 1e-14) }
+fn veryclose(a: f64, b: f64): bool { return tolerance(a, b, 4e-16) }
+fn soclose(a: f64, b: f64, e: f64): bool { return tolerance(a, b, e) }
 fn alike(a: f64, b: f64): bool {
 	match {
 	| math::IsNaN(a) && math::IsNaN(b):
-		ret true
+		return true
 	| a == b:
-		ret math::Signbit(a) == math::Signbit(b)
+		return math::Signbit(a) == math::Signbit(b)
 	}
-	ret false
+	return false
 }
 
 #test

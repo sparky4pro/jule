@@ -18,7 +18,7 @@ struct FileSet {
 impl FileSet {
 	// Returns new FileSet with path.
 	fn New(path: string): &FileSet {
-		ret &FileSet{
+		return &FileSet{
 			Path: path,
 		}
 	}
@@ -39,17 +39,17 @@ impl FileSet {
 
 	// Returns directory of file's path.
 	fn Dir(*self): string {
-		ret filepath::Dir(self.Path)
+		return filepath::Dir(self.Path)
 	}
 
 	// Returns filename.
 	fn Name(*self): string {
-		ret filepath::Base(self.Path)
+		return filepath::Base(self.Path)
 	}
 
 	// Returns self as uintptr.
 	fn Addr(*self): uintptr {
-		ret uintptr(self)
+		return uintptr(self)
 	}
 
 	// Returns line (not include new-line char) by row.
@@ -64,12 +64,12 @@ impl FileSet {
 			}
 			n++
 			if n == row {
-				ret unsafe::StringFromBytes(self.data[lineStart:i])
+				return unsafe::StringFromBytes(self.data[lineStart:i])
 			}
 			lineStart = i + 1
 		}
 		// EOF may be appear with no new-line character.
 		// So if there is any remaining content, take it as a line.
-		ret unsafe::StringFromBytes(self.data[lineStart:])
+		return unsafe::StringFromBytes(self.data[lineStart:])
 	}
 }

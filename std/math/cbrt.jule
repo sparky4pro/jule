@@ -67,7 +67,7 @@ fn Cbrt(mut x: f64): f64 {
 
 	// special cases
 	if x == 0 || IsNaN(x) || IsInf(x, 0) {
-		ret x
+		return x
 	}
 
 	mut sign := false
@@ -104,5 +104,5 @@ fn Cbrt(mut x: f64): f64 {
 	if sign {
 		t = -t
 	}
-	ret t
+	return t
 }

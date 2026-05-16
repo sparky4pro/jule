@@ -13,12 +13,12 @@ fn ipipe()!: (r: int, w: int) {
 	r, w = p[0], p[1]
 	sys::CloseOnExec(r)
 	sys::CloseOnExec(w)
-	ret
+	return
 }
 
 fn pipe()!: (r: &File, w: &File) {
 	rfd, wfd := ipipe()?
 	r = newFile(rfd, poll::Pipe, false)?
 	w = newFile(wfd, poll::Pipe, false)?
-	ret
+	return
 }

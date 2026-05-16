@@ -21,7 +21,7 @@ impl timer {
 	fn new(when: i64, ifunc: fn(arg: uintptr, seq: uintptr), arg: uintptr, seq: uintptr): &timer {
 		mut t := new(timer)
 		t.modify(when, ifunc, arg, seq)
-		ret t
+		return t
 	}
 
 	// Modifies an existing timer.
@@ -81,16 +81,16 @@ impl timerheap {
 	// Returns number of timers.
 	#disable nilptr
 	fn len(*self): int {
-		ret len(self.data)
+		return len(self.data)
 	}
 
 	// Returns the earliest timer without removing it.
 	#disable nilptr boundary
 	fn peek(mut *self, delta: int): &timer {
 		if delta >= len(self.data) {
-			ret nil
+			return nil
 		}
-		ret self.data[0]
+		return self.data[0]
 	}
 
 	// Inserts a timer into the heap.
@@ -109,7 +109,7 @@ impl timerheap {
 	fn pop(mut *self): &timer {
 		n := len(self.data)
 		if n == 0 {
-			ret nil
+			return nil
 		}
 
 		mut min := self.data[0]
@@ -124,7 +124,7 @@ impl timerheap {
 
 		min.index = -1
 		min.theap = nil
-		ret min
+		return min
 	}
 
 	// Deletes a specific timer from the heap.
@@ -133,7 +133,7 @@ impl timerheap {
 	fn remove(mut *self, mut t: &timer) {
 		i := t.index
 		if i < 0 || i >= len(self.data) {
-			ret
+			return
 		}
 
 		mut last := self.data[len(self.data)-1]
@@ -218,7 +218,7 @@ impl timerheap {
 		}
 		if t == nil { // No suitable timer.
 			self.mu.unlock()
-			ret nil, -1
+			return nil, -1
 		}
 		now := nanotime()
 		// It's not the right time yet.
@@ -231,7 +231,7 @@ impl timerheap {
 			if pollUntil <= 0 {
 				panic("runtime: inconsistent timer state")
 			}
-			ret
+			return
 		}
 		// Timer should be fired.
 		// Remove this timer from the heap.
@@ -249,7 +249,7 @@ impl timerheap {
 		}
 		self.mu.unlock()
 		pollUntil = 0
-		ret
+		return
 	}
 
 	// Similar to check(), but does not remove the timer even if it is ready to fire.
@@ -276,7 +276,7 @@ impl timerheap {
 		}
 		if t == nil { // No suitable timer.
 			self.mu.unlock()
-			ret -1
+			return -1
 		}
 		now := nanotime()
 		// It's not the right time yet.
@@ -291,7 +291,7 @@ impl timerheap {
 		}
 		t.mu.unlock()
 		self.mu.unlock()
-		ret
+		return
 	}
 }
 
@@ -316,18 +316,18 @@ impl timerheap {
 fn cmpwhen(w1: i64, w2: i64): int {
 	if w1 <= 0 {
 		if w2 > 0 {
-			ret +1
+			return +1
 		}
-		ret 0
+		return 0
 	}
 	if w2 <= 0 {
-		ret -1
+		return -1
 	}
 	if w1 < w2 {
-		ret -1
+		return -1
 	}
 	if w1 > w2 {
-		ret +1
+		return +1
 	}
-	ret 0
+	return 0
 }

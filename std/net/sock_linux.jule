@@ -26,29 +26,29 @@ fn maxAckBacklog(mut n: int): int {
 	if uint(n) > max {
 		n = int(max)
 	}
-	ret n
+	return n
 }
 
 async fn maxListenerBacklog(): int {
 	mut fd, mut ok := open("/proc/sys/net/core/somaxconn")
 	if !ok {
-		ret sys::SOMAXCONN
+		return sys::SOMAXCONN
 	}
 	//defer fd.close()
 	l, ok := fd.readLine().await
 	if !ok {
-		ret sys::SOMAXCONN
+		return sys::SOMAXCONN
 	}
 	f := getFields(l)
 	n, _, ok := conv::Dtoi(f[0])
 	if n == 0 || !ok {
-		ret sys::SOMAXCONN
+		return sys::SOMAXCONN
 	}
 
 	if n > 1<<16-1 {
-		ret maxAckBacklog(n)
+		return maxAckBacklog(n)
 	}
-	ret n
+	return n
 }
 
 fn setDefaultListenerSockopts(h: poll::NetHandle)! {

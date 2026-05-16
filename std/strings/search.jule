@@ -121,7 +121,7 @@ impl strFinder {
 			}
 		}
 
-		ret f
+		return f
 	}
 
 	// Returns the index in text of the first occurrence of the pattern. If
@@ -137,19 +137,19 @@ impl strFinder {
 				j--
 			}
 			if j < 0 {
-				ret i + 1 // match
+				return i + 1 // match
 			}
 			i += max(self.badCharSkip[text[i]], self.goodSuffixSkip[j])
 		}
-		ret -1
+		return -1
 	}
 }
 
 fn max(i: int, j: int): int {
 	if i > j {
-		ret i
+		return i
 	}
-	ret j
+	return j
 }
 
 #disable boundary
@@ -159,5 +159,5 @@ fn longestCommonSuffix(a: string, b: string): (i: int) {
 			break
 		}
 	}
-	ret
+	return
 }

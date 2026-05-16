@@ -12,7 +12,7 @@ let onceReadServices = sync::AsyncOnce{}
 async fn readServices() {
 	mut file, mut ok := open("/etc/services")
 	if !ok {
-		ret
+		return
 	}
 
 	mut line, ok := file.readLine().await
@@ -50,13 +50,13 @@ async fn readServices() {
 async fn _lookupPort(network: Network, service: string)!: (port: int) {
 	if DefaultResolver.PreferJule {
 		onceReadServices.Do(readServices).await
-		ret juleLookupPortMap(network, service)?
+		return juleLookupPortMap(network, service)?
 	} else {
-		ret integLookupPortMap(network, service) else {
+		return integLookupPortMap(network, service) else {
 			// If integrated lookup fails, first check to see whether we
 			// have the answer baked-in to the net package.
 			onceReadServices.Do(readServices).await
-			ret juleLookupPortMap(network, service)?
+			return juleLookupPortMap(network, service)?
 		}
 	}
 }
