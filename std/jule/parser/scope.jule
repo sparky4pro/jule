@@ -83,7 +83,7 @@ fn nextStPos(tokens: []&token::Token, start: int): (int, bool) {
 		if !ok {
 			continue
 		}
-	
+
 	ret:
 		if terminated {
 			i++

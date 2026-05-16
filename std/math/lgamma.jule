@@ -359,7 +359,7 @@ fn sinPi(mut x: f64): f64 {
 	const Two52 = 4.503599627370496e+15 // 0x4330000000000000 ~4.5036e+15
 	const Two53 = 9.007199254740992e+15 // 0x4340000000000000 ~9.0072e+15
 	if x < 0.25 {
-		return - Sin(Pi*x)
+		return -Sin(Pi * x)
 	}
 
 	// argument reduction
@@ -393,5 +393,5 @@ fn sinPi(mut x: f64): f64 {
 	|:
 		x = Sin(Pi * (x - 2))
 	}
-	return - x
+	return -x
 }

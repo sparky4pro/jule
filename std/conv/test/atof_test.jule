@@ -575,7 +575,7 @@ let roundTripCases: []tripTest = [
 	// usually because the operating system initialized the
 	// thread with 80-bit precision and the Jule runtime didn't
 	// fix the FP control word.
-	{/* 8865794286000691 << 39 */ 4.87402195346389e+27, "4.87402195346389e+27"},
+	{4.87402195346389e+27, "4.87402195346389e+27"}, /* 8865794286000691 << 39 */
 	{/* 8865794286000692 << 39 */ 4.8740219534638903e+27, "4.8740219534638903e+27"},
 ]
 
