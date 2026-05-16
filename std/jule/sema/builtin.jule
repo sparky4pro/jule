@@ -463,7 +463,7 @@ fn builtinCallerMake(mut e: &eval, mut fc: &ast::CallExpr, mut v: &Value): &Valu
 	|:
 		// Type is not supported by the make function.
 		// Push an error and return as nil immediately.
-		e.pushErr(fc.Args[0].Token, "type @ is invalid for function make", t.Type.Str())
+		e.pushErr(fc.Args[0].Token, "type @ is invalid for function make", t.Type.String())
 		e.pushSuggestion("expected slice or channel type")
 		ret nil
 	}
@@ -547,7 +547,7 @@ fn builtinCallerAppend(mut e: &eval, mut fc: &ast::CallExpr, mut v: &Value): &Va
 		}
 
 		if !e1.Type.Variadicable() {
-			e.pushErr(secondArg.Token, "type @ is not variadicable", e1.Type.Str())
+			e.pushErr(secondArg.Token, "type @ is not variadicable", e1.Type.String())
 			ret nil
 		}
 
@@ -676,13 +676,13 @@ fn callerCopySlice(mut dest: &Value, mut e: &eval, mut fc: &ast::CallExpr, mut v
 		// If actual types are equal, then copy is safe.
 		// No matter strict type aliases.
 		if !dest.Type.ActualEqual(src.Type) {
-			e.pushErr(fc.Args[1].Token, "mismatched types: @ and @", dest.Type.Str(), src.Type.Str())
+			e.pushErr(fc.Args[1].Token, "mismatched types: @ and @", dest.Type.String(), src.Type.String())
 		}
 	} else {
 		destPrim := dest.Type.Slice().Value.Prim()
 		prim := src.Type.Prim()
 		if destPrim == nil || prim == nil || !prim.IsString() || !destPrim.IsU8() {
-			e.pushErr(fc.Args[1].Token, "mismatched types: @ and @", dest.Type.Str(), src.Type.Str())
+			e.pushErr(fc.Args[1].Token, "mismatched types: @ and @", dest.Type.String(), src.Type.String())
 		}
 	}
 
@@ -1085,7 +1085,7 @@ fn builtinCallerCmplx(mut e: &eval, mut fc: &ast::CallExpr, _: &Value): &Value {
 
 	ip := imag.Type.Prim()
 	if ip == nil || ip.Kind != rp.Kind {
-		e.pushErr(fc.Args[1].Token, "expected "+rp.Kind+", found "+ip.Str())
+		e.pushErr(fc.Args[1].Token, "expected "+rp.Kind+", found "+ip.String())
 		ret nil
 	}
 
@@ -1163,7 +1163,7 @@ fn builtinCallerStdComptimeValueOf(mut e: &eval, mut fc: &ast::CallExpr, _: &Val
 	}
 	// Do not allow value if has unsupported type for type infer.
 	if !isGoodValueToInfer(v) {
-		e.pushErr(fc.Args[0].Token, "type @ is invalid for function ValueOf", v.Type.Str())
+		e.pushErr(fc.Args[0].Token, "type @ is invalid for function ValueOf", v.Type.String())
 		ret nil
 	}
 	if v.untyped {
@@ -1409,7 +1409,7 @@ fn builtinCallerStdMemSizeOf(mut e: &eval, mut fc: &ast::CallExpr, _: &Value): &
 		ret result
 	}
 	if !validTypeForXof(v.Type) {
-		e.pushErr(fc.Args[0].Token, "type @ is invalid for function SizeOf", v.Type.Str())
+		e.pushErr(fc.Args[0].Token, "type @ is invalid for function SizeOf", v.Type.String())
 	}
 
 	result.Model = &SizeofExpr{Expr: v.Type}
@@ -1436,7 +1436,7 @@ fn builtinCallerStdMemAlignOf(mut e: &eval, mut fc: &ast::CallExpr, _: &Value): 
 		ret result
 	}
 	if !validTypeForXof(v.Type) {
-		e.pushErr(fc.Args[0].Token, "type @ is invalid for function AlignOf", v.Type.Str())
+		e.pushErr(fc.Args[0].Token, "type @ is invalid for function AlignOf", v.Type.String())
 	}
 
 	result.Model = &AlignofExpr{Expr: v.Type}
@@ -1461,7 +1461,7 @@ fn builtinCallerStdIntegEmit(mut e: &eval, mut fc: &ast::CallExpr, mut v: &Value
 	}
 
 	if argVal.Type.Prim() == nil || !argVal.Type.Prim().IsString() {
-		e.pushErr(fc.Args[0].Token, "mismatched types: @ and @", argVal.Type.Str(), primString.Str())
+		e.pushErr(fc.Args[0].Token, "mismatched types: @ and @", argVal.Type.String(), primString.String())
 		ret nil
 	}
 
@@ -1539,7 +1539,7 @@ fn builtinCallerStdSysAddrcall(mut e: &eval, mut fc: &ast::CallExpr, mut v: &Val
 				ret nil
 			}
 			if argVal.IsVoid() || argVal.IsNil() {
-				e.pushErr(arg.Token, "type @ does not supported as argument by Addrcall", argVal.Type.Str())
+				e.pushErr(arg.Token, "type @ does not supported as argument by Addrcall", argVal.Type.String())
 			}
 			model.Args = append(model.Args, argVal)
 		}

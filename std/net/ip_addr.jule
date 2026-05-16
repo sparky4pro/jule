@@ -14,7 +14,7 @@ struct parseAddrError {
 }
 
 impl parseAddrError {
-	fn Str(*self): string {
+	fn String(*self): string {
 		if self.at != "" {
 			ret self.msg + " (input " + self.input + ") (at " + self.at + ")"
 		}
@@ -128,7 +128,7 @@ fn str4(ip: u128): string {
 	appendDecimal(&s, v4(ip, 2))
 	s.WriteByte('.')!
 	appendDecimal(&s, v4(ip, 3))
-	ret s.Str()
+	ret s.String()
 }
 
 fn str16(ip: u128): string {
@@ -163,7 +163,7 @@ fn str16(ip: u128): string {
 		appendHex(&s, v6u16(ip, i))
 	}
 
-	ret s.Str()
+	ret s.String()
 }
 
 #disable boundary

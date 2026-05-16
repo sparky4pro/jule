@@ -10,7 +10,7 @@ trait Addr {
 	fn Network(*self): string
 
 	// String form of address.
-	fn Str(*self): string
+	fn String(*self): string
 }
 
 trait addr {

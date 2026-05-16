@@ -741,7 +741,7 @@ async fn testLineTooLong(t: &testing::T) {
 		sb.WriteByte('0' + byte(i%10))!
 	}
 	mut data := unsafe { sb.Buf() }
-	mut buf := strings::Reader.New(sb.Str())
+	mut buf := strings::Reader.New(sb.String())
 	mut l := Reader.NewSize(buf.Async(), minReadBufferSize)
 	mut line, mut isPrefix := l.ReadLine().await else {
 		t.Errorf("unexpected error: {}", error)
@@ -792,8 +792,8 @@ async fn testReadAfterLines(t: &testing::T) {
 	if int(n) != len(restData) {
 		t.Errorf("bad result for Read: n={}", n)
 	}
-	if outbuf.Str() != restData {
-		t.Errorf("bad result for Read: got {}; expected {}", outbuf.Str(), restData)
+	if outbuf.String() != restData {
+		t.Errorf("bad result for Read: got {}; expected {}", outbuf.String(), restData)
 	}
 }
 
@@ -1145,7 +1145,7 @@ async fn testReadWriteRune(t: &testing::T) {
 	}
 	w.Flush().await else {}
 
-	mut r := Reader.New(strings::Reader.New(sb.Str()).Async())
+	mut r := Reader.New(strings::Reader.New(sb.String()).Async())
 	// Read them back with ReadRune
 	mut r1 := rune(0)
 	for r1 < NRune; r1++ {
@@ -1169,7 +1169,7 @@ async fn testWriteInvalidRune(t: &testing::T) {
 		mut w := Writer.New(buf.Async())
 		w.WriteRune(r).await!
 		w.Flush().await!
-		s := buf.Str()
+		s := buf.String()
 		if s != "\uFFFD" {
 			t.Errorf("WriteRune({}) wrote {}, not replacement character", r, s)
 		}
@@ -1210,7 +1210,7 @@ async fn testWriter(t: &testing::T) {
 				t.Errorf("{}: buf.Flush = {}", context, error)
 			}
 
-			written := w.Str()
+			written := w.String()
 			if len(written) != nwrite {
 				t.Errorf("{}: {} bytes written", context, len(written))
 			}
@@ -1256,8 +1256,8 @@ async fn testWriterAppend(t: &testing::T) {
 	w.Flush().await!
 
 	wantS := string(want)
-	if got.Str() != wantS {
-		t.Errorf("output mismatch:\ngot  {}\nwant {}", got.Str(), wantS)
+	if got.String() != wantS {
+		t.Errorf("output mismatch:\ngot  {}\nwant {}", got.String(), wantS)
 	}
 }
 
@@ -1320,8 +1320,8 @@ async fn testWriteString(t: &testing::T) {
 		t.Errorf("WriteString", error)
 	}
 	s := "01234567890abcdefghijklmnopqrstuvwxyz"
-	if buf.Str() != s {
-		t.Errorf("WriteString wants {} gets {}", s, buf.Str())
+	if buf.String() != s {
+		t.Errorf("WriteString wants {} gets {}", s, buf.String())
 	}
 }
 
@@ -1382,7 +1382,7 @@ async fn restWriterReadFrom(t: &testing::T) {
 				t.Errorf("Flush returned {}", error)
 				continue
 			}
-			got := b.Str()
+			got := b.String()
 			if got != input {
 				t.Errorf("ws[{}], rs[{}]:\ngot  {}\nwant {}\n", wi, ri, got, input)
 			}
@@ -1571,9 +1571,9 @@ async fn testWriterReadFromUntilEOF(t: &testing::T) {
 		t.Errorf("ReadFrom returned ({}), want (4)", n2)
 	}
 	w.Flush().await!
-	got, want := buf.Str(), "0123abcd"
+	got, want := buf.String(), "0123abcd"
 	if got != want {
-		t.Errorf("buf.Str() returned {}, want {}", got, want)
+		t.Errorf("buf.String() returned {}, want {}", got, want)
 	}
 }
 
@@ -1618,22 +1618,22 @@ async fn testWriterReset(t: &testing::T) {
 	w.Reset(buf2.Async()) // and not flushed
 	w.WriteString("bar").await!
 	w.Flush().await!
-	if buf1.Str() != "" {
-		t.Errorf("buf1 = {}; want empty", buf1.Str())
+	if buf1.String() != "" {
+		t.Errorf("buf1 = {}; want empty", buf1.String())
 	}
-	if buf2.Str() != "bar" {
-		t.Errorf("buf2 = {}; want bar", buf2.Str())
+	if buf2.String() != "bar" {
+		t.Errorf("buf2 = {}; want bar", buf2.String())
 	}
 
 	*w = Writer{}         // zero out the Writer
 	w.Reset(buf3.Async()) // and not flushed
 	w.WriteString("bar").await!
 	w.Flush().await!
-	if buf1.Str() != "" {
-		t.Errorf("buf1 = {}; want empty", buf1.Str())
+	if buf1.String() != "" {
+		t.Errorf("buf1 = {}; want empty", buf1.String())
 	}
-	if buf3.Str() != "bar" {
-		t.Errorf("buf3 = {}; want bar", buf3.Str())
+	if buf3.String() != "bar" {
+		t.Errorf("buf3 = {}; want bar", buf3.String())
 	}
 
 	// Wrap a writer and then Reset to that writer.
@@ -1641,15 +1641,15 @@ async fn testWriterReset(t: &testing::T) {
 	mut w2 := Writer.New(w)
 	w2.WriteString("recur").await!
 	w2.Flush().await!
-	if buf4.Str() != "recur" {
-		t.Errorf("buf4 = {}, want {}", buf4.Str(), "recur")
+	if buf4.String() != "recur" {
+		t.Errorf("buf4 = {}, want {}", buf4.String(), "recur")
 	}
 	w.Reset(buf5.Async())
 	w2.Reset(w)
 	w2.WriteString("recur2").await!
 	w2.Flush().await!
-	if buf5.Str() != "recur2" {
-		t.Errorf("buf5 = {}, want {}", buf5.Str(), "recur2")
+	if buf5.String() != "recur2" {
+		t.Errorf("buf5 = {}, want {}", buf5.String(), "recur2")
 	}
 }
 

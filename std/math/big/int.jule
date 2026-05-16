@@ -46,7 +46,7 @@ impl Int {
 	// The y argument must be an odd integer.
 	fn Jacobi(&x: *Int, &y: *Int): int {
 		if !y.Odd() {
-			panic("math/big: invalid 2nd argument to Int.Jacobi: need odd integer but got " + y.Str())
+			panic("math/big: invalid 2nd argument to Int.Jacobi: need odd integer but got " + y.String())
 		}
 
 		// We use the formulation described in chapter 2, section 2.4,
@@ -1059,7 +1059,7 @@ impl Int {
 	}
 
 	// Returns string representation of x(self) in decimal format.
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret self.Format(10)
 	}
 

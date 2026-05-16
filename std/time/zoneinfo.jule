@@ -42,7 +42,7 @@ let localOnce = sync::Once.New()
 
 impl Location {
 	// Returns a descriptive name for the time zone information.
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret unsafe { (&Location)(*(&self)).get().name }
 	}
 

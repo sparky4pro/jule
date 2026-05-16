@@ -10,7 +10,7 @@ fn args(): []string {
 	for i in args {
 		unsafe {
 			mut arg := argv[i]
-			args[i] = unsafe::Str(arg, strlen(arg))
+			args[i] = unsafe::String(arg, strlen(arg))
 		}
 	}
 	ret args
@@ -23,7 +23,7 @@ fn env(): []string {
 	unsafe {
 		for *it != nil; it++ {
 			mut p := *it
-			env = append(env, unsafe::Str(p, strlen(p)))
+			env = append(env, unsafe::String(p, strlen(p)))
 		}
 	}
 	ret env

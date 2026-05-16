@@ -21,7 +21,7 @@ struct NumError {
 }
 
 impl NumError {
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret "conv::" + self.Func + ": " + "parsing " + Quote(self.Num) + ": " + runtime::toString(self.Err)
 	}
 }

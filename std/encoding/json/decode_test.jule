@@ -148,8 +148,8 @@ fn testDecodeArray(t: &testing::T) {
 	t.Assert(a[1] == "bar", `a[1] != "bar"`)
 	t.Assert(a[2] == "baz", `a[2] != "baz"`)
 
-	type Str: string
-	let mut a2: [3]Str
+	type String: string
+	let mut a2: [3]String
 	Decode([]byte(json), &a2) else {
 		t.Errorf("Decode({}, a2) failed", json)
 		ret
@@ -510,7 +510,7 @@ fn testDynDecode(t: &testing::T) {
 		if ok {
 			mut s := strings::Builder{}
 			printArray(&s, *v)
-			found := s.Str()
+			found := s.String()
 			want := `["barbaz",1234,-1234,123.456,nil,false,true,]`
 			if found != want {
 				t.Errorf("key fiz is not expected array;\n\tfound: {}\n\t want: {}", found, want)

@@ -470,7 +470,7 @@ impl replacer for singleStrReplacer {
 			ret s
 		}
 		buf.WriteString(s[i:]) else {}
-		ret buf.Str()
+		ret buf.String()
 	}
 
 	#disable boundary

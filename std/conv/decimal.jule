@@ -264,7 +264,7 @@ impl decimal {
 		ret n
 	}
 
-	fn Str(*self): string {
+	fn String(*self): string {
 		mut n := 10 + self.nd
 		if self.dp > 0 {
 			n += self.dp

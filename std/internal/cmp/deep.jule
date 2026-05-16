@@ -35,7 +35,7 @@ fn DeepEqual[T](a: T, b: T): bool {
 		ret DeepEqual(*a, *b)
 	| comptime::Enum:
 		ret a == b
-	| comptime::Str | comptime::Bool
+	| comptime::String | comptime::Bool
 	| comptime::F32 | comptime::F64
 	| comptime::Int | comptime::I8 | comptime::I16 | comptime::I32 | comptime::I64
 	| comptime::Uint | comptime::Uintptr | comptime::U8 | comptime::U16 | comptime::U32 | comptime::U64:
@@ -50,6 +50,6 @@ fn DeepEqual[T](a: T, b: T): bool {
 		}
 		ret true
 	|:
-		panic("std/internal/cmd: DeepEqual: unsupported type: " + t.Str())
+		panic("std/internal/cmd: DeepEqual: unsupported type: " + t.String())
 	}
 }

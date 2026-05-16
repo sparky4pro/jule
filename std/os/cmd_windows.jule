@@ -215,7 +215,7 @@ fn makeCmdLine(args: []string): string {
 		}
 		appendEscapeArg(&s, arg)
 	}
-	ret s.Str()
+	ret s.String()
 }
 
 // Converts an array of environment strings into

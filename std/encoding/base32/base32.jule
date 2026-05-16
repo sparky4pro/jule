@@ -77,7 +77,7 @@ const (
 type CorruptInputError: i64
 
 impl CorruptInputError {
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret "illegal base32 data at input byte " + conv::Itoa64(i64(*self))
 	}
 }

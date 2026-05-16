@@ -570,7 +570,7 @@ fn lookupPortMapWithNetwork(network: Network, errNetwork: string, service: strin
 		let mut lowerService: [maxPortBufSize]byte
 		n := copy(lowerService[:], service)
 		lowerASCIIBytes(unsafe::Slice(&lowerService[0], n, n))
-		port, ok = m[unsafe::Str(&lowerService[0], n)]
+		port, ok = m[unsafe::String(&lowerService[0], n)]
 		if ok && n == len(service) {
 			ret port
 		}

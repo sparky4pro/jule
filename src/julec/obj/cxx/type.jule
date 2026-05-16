@@ -20,7 +20,7 @@ struct customType {
 }
 
 impl sema::Kind for customType {
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret self.kind
 	}
 

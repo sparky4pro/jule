@@ -342,7 +342,7 @@ impl exprOptimizer {
 
 	fn tryNeutralElement1(*self, mut m: &sema::BinaryExpr, mut c: &constant::Const, mut nc: &sema::OperandExpr): bool {
 		if c.IsString() { // Constant is string, check for string optimizations.
-			if !Str {
+			if !String {
 				ret false
 			}
 			if c.ReadString() == "" && m.Op.ID == token::ADD {
@@ -649,7 +649,7 @@ impl exprOptimizer {
 	}
 
 	fn binary(*self, mut m: &sema::BinaryExpr) {
-		if Str {
+		if String {
 			self.binaryStrCommon(m)
 			match {
 			| self.strCond(m)
@@ -1044,7 +1044,7 @@ impl exprOptimizer {
 fn checkForBitShiftOpt(mut l: &sema::OperandExpr, mut r: &sema::OperandExpr): (ok: bool, x: u64) {
 	lp := l.Type.Prim()
 	rp := r.Type.Prim()
-	if !types::IsInt(lp.Str()) || !types::IsInt(rp.Str()) {
+	if !types::IsInt(lp.String()) || !types::IsInt(rp.String()) {
 		ret false, 0
 	}
 	x = r.Model.(&constant::Const).AsU64()

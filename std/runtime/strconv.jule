@@ -205,12 +205,12 @@ fn mapToString[T](x: T): string {
 	ret unsafe::StringFromBytes(buf)
 }
 
-// Tries to call reserved Str method for type.
+// Tries to call reserved String method for type.
 fn tryToCallString[T](x: T): (string, ok: bool) {
 	const t = comptime::TypeOf(T)
 	const for _, method in t.Decl().Methods() {
 		const match method.Name() {
-		| "Str":
+		| "String":
 			const v = comptime::ValueOf(x)
 			const methodv = v.Method(method.Name())
 			const match {
@@ -244,7 +244,7 @@ fn structToString[T](x: T): string {
 		}
 		const match {
 		| field.Type().Extern():
-			buf = append(buf, field.Type().Str()...)
+			buf = append(buf, field.Type().String()...)
 		|:
 			buf = append(buf, toString(v.FieldByIndex(i).Unwrap())...)
 		}
@@ -324,17 +324,17 @@ fn toString[T](x: T): string {
 	// Because type may have custom string conversion function.
 	const match {
 	| t.Strict():
-		// Lookup for the reserved Str method for the strict type like structures.
+		// Lookup for the reserved String method for the strict type like structures.
 		r, ok := tryToCallString(x)
 		if ok {
 			ret r
 		}
-		// If strict type have not the reserved Str method, handle by the source type.
+		// If strict type have not the reserved String method, handle by the source type.
 		// Following analysis will do that.
 	}
 	const match {
 	| t.Extern():
-		ret t.Str()
+		ret t.String()
 	|:
 		ret juleToString(x)
 	}

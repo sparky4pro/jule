@@ -104,7 +104,7 @@ impl scopeCoder {
 		mut sb := strings::Builder{}
 		addrmap := self.registerAddrmap(uintptr(it))
 		self.oc.ic.iterNext(&sb, uintptr(it), addrmap)
-		next := sb.Str()
+		next := sb.String()
 		self.oc.write(next)
 		self.oc.write(":;\n")
 		self.oc.indent()
@@ -119,7 +119,7 @@ impl scopeCoder {
 				sb.WriteByte('*')!
 			}
 			sb.WriteString("expr")!
-			model := any(sb.Str())
+			model := any(sb.String())
 			mut expr := new(sema::ChanRecv)
 			expr.Token = it.ExprToken
 			expr.Expr = new(sema::Value)
@@ -201,10 +201,10 @@ impl scopeCoder {
 		mut sb := strings::Builder{}
 		addrmap := self.registerAddrmap(uintptr(it))
 		self.oc.ic.iterBegin(&sb, uintptr(it), addrmap)
-		begin := sb.Str()
+		begin := sb.String()
 		sb.Clear()
 		self.oc.ic.iterNext(&sb, uintptr(it), addrmap)
-		next := sb.Str()
+		next := sb.String()
 
 		mut ref := false
 		self.iterHead(it, &ref, begin)
@@ -249,7 +249,7 @@ impl scopeCoder {
 				keyBIdent.WriteString("(*")!
 				self.oc.ic.var(&keyBIdent, it.KeyB)
 				keyBIdent.WriteByte(')')!
-				name := keyBIdent.Str()
+				name := keyBIdent.String()
 				optimizedVarPrefixForKeyB = len(self.oc.ec.varPrefixes)
 				self.oc.ec.varPrefixes = append(self.oc.ec.varPrefixes, fn|v| {
 					if v == it.KeyB {
@@ -308,10 +308,10 @@ impl scopeCoder {
 		mut sb := strings::Builder{}
 		addrmap := self.registerAddrmap(uintptr(it))
 		self.oc.ic.iterBegin(&sb, uintptr(it), addrmap)
-		begin := sb.Str()
+		begin := sb.String()
 		sb.Clear()
 		self.oc.ic.iterNext(&sb, uintptr(it), addrmap)
-		next := sb.Str()
+		next := sb.String()
 
 		mut _map := it.Expr.Type.Map()
 		mut ins := obj::FindStructGenericInstance(meta::Program.Runtime.Map, _map.Key, _map.Value)
@@ -392,10 +392,10 @@ impl scopeCoder {
 		mut sb := strings::Builder{}
 		addrmap := self.registerAddrmap(uintptr(it.Base))
 		self.oc.ic.iterBegin(&sb, uintptr(it.Base), addrmap)
-		begin := sb.Str()
+		begin := sb.String()
 		sb.Clear()
 		self.oc.ic.iterNext(&sb, uintptr(it.Base), addrmap)
-		next := sb.Str()
+		next := sb.String()
 
 		self.oc.write("{\n")
 		self.oc.addIndent()
@@ -579,10 +579,10 @@ impl scopeCoder {
 		mut sb := strings::Builder{}
 		addrmap := self.registerAddrmap(uintptr(it))
 		self.oc.ic.iterBegin(&sb, uintptr(it), addrmap)
-		begin := sb.Str()
+		begin := sb.String()
 		sb.Clear()
 		self.oc.ic.iterNext(&sb, uintptr(it), addrmap)
-		next := sb.Str()
+		next := sb.String()
 		itaddr := conv::FormatUint(u64(uintptr(it)), 16)
 
 		self.oc.write("{\n")
@@ -661,7 +661,7 @@ impl scopeCoder {
 			self.rangeHashmapIter(it)
 		|:
 			mut sit := opt::StrRuneIter{Expr: it.Expr, Base: it}
-			self.strRuneIter(sit, true) // Str
+			self.strRuneIter(sit, true) // String
 		}
 	}
 
@@ -1369,25 +1369,25 @@ impl scopeCoder {
 			mut scaseIns := meta::Program.Runtime.Scase
 			let mut scaseBuf: strings::Builder
 			self.oc.tc.structureIns(&scaseBuf, scaseIns)
-			scase = scaseBuf.Str()
+			scase = scaseBuf.String()
 			scaseBuf.Clear()
 			self.oc.ic.field(&scaseBuf, scaseIns.FindField("ch").Decl)
-			scaseCh = scaseBuf.Str()
+			scaseCh = scaseBuf.String()
 			scaseBuf.Clear()
 			self.oc.ic.field(&scaseBuf, scaseIns.FindField("data").Decl)
-			scaseData = scaseBuf.Str()
+			scaseData = scaseBuf.String()
 			scaseBuf.Clear()
 			self.oc.ic.field(&scaseBuf, scaseIns.FindField("tryRecv").Decl)
-			scaseTryRecv = scaseBuf.Str()
+			scaseTryRecv = scaseBuf.String()
 			scaseBuf.Clear()
 			self.oc.ic.field(&scaseBuf, scaseIns.FindField("tryRecvImmediate").Decl)
-			scaseTryRecvImmediate = scaseBuf.Str()
+			scaseTryRecvImmediate = scaseBuf.String()
 			scaseBuf.Clear()
 			self.oc.ic.field(&scaseBuf, scaseIns.FindField("trySend").Decl)
-			scaseTrySend = scaseBuf.Str()
+			scaseTrySend = scaseBuf.String()
 			scaseBuf.Clear()
 			self.oc.ic.field(&scaseBuf, scaseIns.FindField("trySendImmediate").Decl)
-			scaseTrySendImmediate = scaseBuf.Str()
+			scaseTrySendImmediate = scaseBuf.String()
 		}
 
 		let mut chanArr: strings::Builder
@@ -1495,7 +1495,7 @@ impl scopeCoder {
 
 				let mut varBuf: strings::Builder
 				self.oc.ic.var(&varBuf, v)
-				data = varBuf.Str()
+				data = varBuf.String()
 				value = v.ValueSym.Value.Model
 			| &sema::Assign:
 				mut assign := case.Stmt.(&sema::Assign)
@@ -1562,18 +1562,18 @@ impl scopeCoder {
 		self.oc.indent()
 		self.oc.tc.asSptr2(&self.oc.Buf, typeUintptr)
 		self.oc.write(" __chanArr[] = {")
-		self.oc.write(chanArr.Str())
+		self.oc.write(chanArr.String())
 		self.oc.write("};\n")
 
 		self.oc.indent()
 		self.oc.write(scase)
 		self.oc.write(" __caseArr[] = {")
-		self.oc.write(recvArr.Str())
+		self.oc.write(recvArr.String())
 		if nsend > 0 {
 			if nrecv > 0 {
 				self.oc.write(", ")
 			}
-			self.oc.write(sendArr.Str())
+			self.oc.write(sendArr.String())
 		}
 		self.oc.write("};\n")
 

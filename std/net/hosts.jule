@@ -11,7 +11,7 @@ const cacheMaxAge = 5 * time::Second
 
 fn parseLiteralIP(addr: string): string {
 	ip := parseAddr(addr) else { ret "" }
-	ret ip.Str()
+	ret ip.String()
 }
 
 struct byName {

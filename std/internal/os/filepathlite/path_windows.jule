@@ -193,7 +193,7 @@ fn join(elem: ...string): string {
 	if s.Len() == 0 {
 		ret ""
 	}
-	ret Clean(s.Str())
+	ret Clean(s.String())
 }
 
 fn splitList(path: string): []string {

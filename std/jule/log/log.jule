@@ -64,5 +64,5 @@ fn applyFmt(mut fmt: string, args: ...any): string {
 		fmt = fmt[i+1:]
 	}
 	s.WriteString(fmt)!
-	ret s.Str()
+	ret s.String()
 }

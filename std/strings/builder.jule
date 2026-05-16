@@ -70,7 +70,7 @@ impl Builder {
 	}
 
 	// Returns buffer as string. Will not reset the underlying content.
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret unsafe::StringFromBytes(self.buf)
 	}
 

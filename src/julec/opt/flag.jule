@@ -9,7 +9,7 @@ const (
 
 	// Passed flags:
 	//	ZCopy, ZAppend, Copy, Deadcode, Append, Math, Access, Inline,
-	//	Ptr, Array, Cond, Str, Slice, Assign, Fallible, Iter, Dynamic, Len
+	//	Ptr, Array, Cond, String, Slice, Assign, Fallible, Iter, Dynamic, Len
 	L1
 
 	// Passed flags:
@@ -29,7 +29,7 @@ let mut Access = false
 let mut Inline = false
 let mut Ptr = false
 let mut Cond = false
-let mut Str = false
+let mut String = false
 let mut Slice = false
 let mut Assign = false
 let mut Fallible = false
@@ -54,7 +54,7 @@ fn PushOptLevel(level: int) {
 	Inline = l1
 	Ptr = l1
 	Cond = l1
-	Str = l1
+	String = l1
 	Slice = l1
 	Assign = l1
 	Fallible = l1

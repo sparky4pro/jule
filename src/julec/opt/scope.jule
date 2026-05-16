@@ -435,7 +435,7 @@ impl scopeOptimizer {
 	}
 
 	fn strAssign(mut &self, mut a: &sema::Assign): bool {
-		if !Str {
+		if !String {
 			ret false
 		}
 		lp := a.Left.Type.Prim()
@@ -511,7 +511,7 @@ impl scopeOptimizer {
 		| token::XOR_ASSIGN | token::QUO_ASSIGN | token::REM_ASSIGN
 		| token::SHL_ASSIGN | token::SHR_ASSIGN | token::ADD_ASSIGN | token::SUB_ASSIGN:
 			// Do not check structures.
-			if !Math && !Str || assign.Left.Type.Struct() != nil {
+			if !Math && !String || assign.Left.Type.Struct() != nil {
 				break
 			}
 			oldId, oldKind := assign.Op.ID, assign.Op.Kind

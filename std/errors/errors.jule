@@ -7,7 +7,7 @@ type Error: string
 
 impl Error {
 	// Returns error as string.
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret string(*self)
 	}
 }

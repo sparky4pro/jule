@@ -467,7 +467,7 @@ impl ObjectCoder {
 				self.anyObj.WriteString(typeU8)!
 				self.anyObj.WriteString(`*)"runtime: comparing uncomparable type " "`)!
 				mut n := self.anyObj.Len()
-				cstrBytes(&self.anyObj, t.Str())
+				cstrBytes(&self.anyObj, t.String())
 				n = self.anyObj.Len() - n
 				n += 37 // offset of message prefix
 				self.anyObj.WriteString("\", ")!
@@ -518,7 +518,7 @@ impl ObjectCoder {
 		|:
 			mut kindB := strings::Builder{}
 			self.tc.kind(&kindB, t)
-			kind := kindB.Str()
+			kind := kindB.String()
 
 			// Deallocator function.
 			di := self.pushDealloc(t)
@@ -565,7 +565,7 @@ impl ObjectCoder {
 				self.anyObj.WriteString(typeU8)!
 				self.anyObj.WriteString(`*)"runtime: comparing uncomparable type " "`)!
 				mut n := self.anyObj.Len()
-				cstrBytes(&self.anyObj, t.Str())
+				cstrBytes(&self.anyObj, t.String())
 				n = self.anyObj.Len() - n
 				n += 37 // offset of message prefix
 				self.anyObj.WriteString("\", ")!
@@ -902,8 +902,8 @@ impl ObjectCoder {
 
 			mut fName := strings::Builder{}
 			self.ic.field(&fName, f.Decl)
-			lmodel += fName.Str()
-			rmodel += fName.Str()
+			lmodel += fName.String()
+			rmodel += fName.String()
 			self.ec._unsafeBinaryNoDynamic(&self.Buf, lmodel, rmodel, f.Type, f.Type, token::EQL, "==")
 			lmodel = lmodel[:len(lmodel)-fName.Len()]
 			rmodel = rmodel[:len(rmodel)-fName.Len()]
@@ -921,7 +921,7 @@ impl ObjectCoder {
 	fn structureOperators(mut &self, mut s: &sema::StructIns, decl: bool) {
 		mut sb := strings::Builder{}
 		self.ic.structureIns(&sb, s)
-		ident := sb.Str()
+		ident := sb.String()
 
 		// Binary.
 		self.structureOperatorEq(ident, s, decl)
@@ -1220,7 +1220,7 @@ impl ObjectCoder {
 
 		mut k := f.Params[0].Type
 		f.Params[0].Type = generalGCPtr
-		self.funcIns(f, nname.Str())
+		self.funcIns(f, nname.String())
 		f.Params[0].Type = k
 	}
 

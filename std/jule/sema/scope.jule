@@ -890,7 +890,7 @@ impl scopeChecker {
 		mut rang := it.Kind.(&ast::RangeKind)
 		makeComptimeRange(v, false)
 		if v.Decl {
-			self.s.pushErr(rang.X.Token, "invalid type for comptime iteration: "+v.Type.Str())
+			self.s.pushErr(rang.X.Token, "invalid type for comptime iteration: "+v.Type.String())
 			ret
 		}
 
@@ -1181,18 +1181,18 @@ impl scopeChecker {
 
 		if v.Type.Ptr() != nil {
 			if isRef(v) {
-				self.s.pushErr(a.Op, "postfix operator are not supported by the reference pointer type @", v.Type.Str())
+				self.s.pushErr(a.Op, "postfix operator are not supported by the reference pointer type @", v.Type.String())
 				ret
 			} else {
 				mut ptr := v.Type.Ptr()
 				if ptr.IsUnsafe() {
-					self.s.pushErr(a.Op, "operator @ is not defined for type @", a.Op.Kind, v.Type.Str())
+					self.s.pushErr(a.Op, "operator @ is not defined for type @", a.Op.Kind, v.Type.String())
 					ret
 				}
 			}
 		} else {
 			if v.Type.Prim() == nil || !types::IsNum(v.Type.Prim().Kind) {
-				self.s.pushErr(a.Op, "operator @ is not defined for type @", a.Op.Kind, v.Type.Str())
+				self.s.pushErr(a.Op, "operator @ is not defined for type @", a.Op.Kind, v.Type.String())
 				ret
 			}
 		}
@@ -1649,7 +1649,7 @@ impl scopeChecker {
 				// So, v is should be type declaration already.
 				case.Exprs = append(case.Exprs, v)
 				if countMatchType(m, v.Type, 2) > 1 {
-					self.s.pushErr(e.Token, "type @ is already matched", v.Type.Str())
+					self.s.pushErr(e.Token, "type @ is already matched", v.Type.String())
 				}
 				if m.Comptime {
 					constMatched = constMatched || expr.Type.Equal(v.Type)
@@ -1853,7 +1853,7 @@ impl scopeChecker {
 			if sb.Len() > 0 {
 				sb.WriteString(", ")!
 			}
-			sb.WriteString(item.TypeSym.Type.Str())!
+			sb.WriteString(item.TypeSym.Type.String())!
 		}
 		ret
 	}
@@ -1907,7 +1907,7 @@ impl scopeChecker {
 			mut sb := strings::Builder{}
 			ok := self.checkAllTypeEnumCasesHandled(tm, te, &sb)
 			if !ok {
-				self.s.pushErr(m.Token, "match statement does not handle all possible types\n       missing: "+sb.Str())
+				self.s.pushErr(m.Token, "match statement does not handle all possible types\n       missing: "+sb.String())
 				self.s.pushSuggestion("handle missing cases or add a default case")
 			}
 		}
@@ -1926,7 +1926,7 @@ impl scopeChecker {
 			}
 		}
 		if sb.Len() > 0 {
-			self.s.pushErr(m.Token, "match statement does not handle all possible enum fields\n       missing: "+sb.Str())
+			self.s.pushErr(m.Token, "match statement does not handle all possible enum fields\n       missing: "+sb.String())
 			self.s.pushSuggestion("handle missing cases or add a default case")
 		}
 	}
@@ -2826,7 +2826,7 @@ fn checkAssignMut(mut s: &sema, left: &Value, mut right: &Value, op: &token::Tok
 		s.pushErr(op, "cannot assign to immutable memory")
 		ret false
 	| right != nil && !right.Mutable && right.Type.Mutable():
-		s.pushErr(op, "immutable data cannot be assigned to a mutable memory because of type @, which is mutable", right.Type.Str())
+		s.pushErr(op, "immutable data cannot be assigned to a mutable memory because of type @, which is mutable", right.Type.String())
 		ret false
 	|:
 		ret true

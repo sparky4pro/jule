@@ -14,7 +14,7 @@ struct DNSError {
 }
 
 impl DNSError {
-	fn Str(*self): string {
+	fn String(*self): string {
 		if self == nil {
 			ret "<nil>"
 		}

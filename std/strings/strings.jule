@@ -430,7 +430,7 @@ fn Join(elems: []string, sep: string): string {
 		b.WriteString(sep)!
 		b.WriteString(s)!
 	}
-	ret b.Str()
+	ret b.String()
 }
 
 // Reports whether the string s begins with prefix.
@@ -501,7 +501,7 @@ fn Map(mapping: fn(rune): rune, mut s: string): string {
 		}
 	}
 
-	ret b.Str()
+	ret b.String()
 }
 
 // According to static analysis, spaces, dashes, zeros, equals, and tabs
@@ -599,9 +599,9 @@ fn Repeat(s: string, count: int): string {
 		if chunk > n-b.Len() {
 			chunk = n - b.Len()
 		}
-		b.WriteString(b.Str()[:chunk])!
+		b.WriteString(b.String()[:chunk])!
 	}
-	ret b.Str()
+	ret b.String()
 }
 
 // Returns the index into s of the first Unicode
@@ -890,7 +890,7 @@ fn Replace(s: string, old: string, new: string, mut n: int): string {
 		start = j + len(old)
 	}
 	b.WriteString(s[start:])!
-	ret b.Str()
+	ret b.String()
 }
 
 // Returns a copy of the string s with all
@@ -1097,7 +1097,7 @@ fn ToUpper(s: string): string {
 		if pos < len(s) {
 			b.WriteString(s[pos:])!
 		}
-		ret b.Str()
+		ret b.String()
 	}
 	ret Map(unicode::ToUpper, s)
 }
@@ -1133,7 +1133,7 @@ fn ToLower(s: string): string {
 		if pos < len(s) {
 			b.WriteString(s[pos:])!
 		}
-		ret b.Str()
+		ret b.String()
 	}
 	ret Map(unicode::ToLower, s)
 }

@@ -732,16 +732,16 @@ fn testURLString(t: &testing::T) {
 		if tt.roundtrip != "" {
 			expected = tt.roundtrip
 		}
-		s := u.Str()
+		s := u.String()
 		if s != expected {
-			t.Errorf("Parse({}).Str() == {} (expected {})", tt.input, s, expected)
+			t.Errorf("Parse({}).String() == {} (expected {})", tt.input, s, expected)
 		}
 	}
 
 	for _, tt in stringURLTests {
-		got := tt.url.Str()
+		got := tt.url.String()
 		if got != tt.want {
-			t.Errorf("{}.Str() = {}; want {}", tt.url, got, tt.want)
+			t.Errorf("{}.String() = {}; want {}", tt.url, got, tt.want)
 		}
 	}
 }
@@ -1022,7 +1022,7 @@ fn testResolveReference(t: &testing::T) {
 		mut rel := mustParse(test.rel)
 		mut url := base.ResolveReference(rel)
 		{
-			got := url.Str()
+			got := url.String()
 			if got != test.expected {
 				t.Errorf("URL({}).ResolveReference({})\n\tgot  {}\n\twant {}", test.base, test.rel, got, test.expected)
 			}
@@ -1037,7 +1037,7 @@ fn testResolveReference(t: &testing::T) {
 			use nil
 		}
 		if url != nil {
-			got := url.Str()
+			got := url.String()
 			if got != test.expected {
 				t.Errorf("URL({}).Parse({})\n\tgot  {}\n\twant {}", test.base, test.rel, got, test.expected)
 			} else if base == url {
@@ -1048,7 +1048,7 @@ fn testResolveReference(t: &testing::T) {
 		// Ensure Opaque resets the URL.
 		url = base.ResolveReference(opaque)
 		if *url != *opaque {
-			t.Errorf("ResolveReference failed to resolve opaque URL:\n\tgot  {}\n\twant {}", url.Str(), opaque.Str())
+			t.Errorf("ResolveReference failed to resolve opaque URL:\n\tgot  {}\n\twant {}", url.String(), opaque.String())
 		}
 		// Test the convenience wrapper with an opaque URL too.
 		url = base.Parse("scheme:opaque") else {
@@ -1057,7 +1057,7 @@ fn testResolveReference(t: &testing::T) {
 		}
 		if url != nil {
 			if *url != *opaque {
-				t.Errorf("Parse failed to resolve opaque URL:\n\tgot  {}\n\twant {}", opaque.Str(), url.Str())
+				t.Errorf("Parse failed to resolve opaque URL:\n\tgot  {}\n\twant {}", opaque.String(), url.String())
 			} else if base == url {
 				// Ensure that new instances are returned, again.
 				t.Errorf("Expected URL.Parse to return new URL instance.")
@@ -1728,7 +1728,7 @@ fn testJoinPath(t: &testing::T) {
 			continue
 		}
 		u = u.JoinPath(tt.elem...)
-		out := u.Str()
+		out := u.String()
 		if out != tt.out {
 			t.Errorf("Parse({}).JoinPath({}) = {}, want {}", tt.base, tt.elem, out, tt.out)
 		}

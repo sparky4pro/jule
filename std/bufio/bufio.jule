@@ -558,7 +558,7 @@ impl Reader {
 			buf.Write(fb)?
 		}
 		buf.Write(frag)?
-		ret buf.Str()
+		ret buf.String()
 	}
 
 	// Implements io::WriterTo.

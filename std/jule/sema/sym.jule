@@ -493,7 +493,7 @@ impl symBuilder {
 				break
 			}
 		}
-		self.pushErr(errorToken, "illegal cross cycle in use declarations:\n"+message.Str())
+		self.pushErr(errorToken, "illegal cross cycle in use declarations:\n"+message.String())
 	}
 
 	fn checkImportCycles(mut &self, imp: &ImportInfo, decl: &ast::Use): bool {

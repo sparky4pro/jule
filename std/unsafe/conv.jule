@@ -7,10 +7,10 @@ use "std/internal/runtime"
 // Returns string based on b, the parameter b means first byte of string.
 // The returned string uses n as length.
 // Will not perform garbage collection.
-fn Str(b: *byte, n: int): string {
+fn String(b: *byte, n: int): string {
 	mut s := ""
 	unsafe {
-		mut sp := (*runtime::Str)(&s)
+		mut sp := (*runtime::String)(&s)
 		sp.Buffer.Ptr = *(&b)
 		sp.Slice = sp.Buffer.Ptr
 		sp.Len = n
@@ -46,13 +46,13 @@ fn StringBytes(s: string): []byte {
 	ret Slice(&s[0], len(s), len(s))
 }
 
-// Alias for Str(&b[0], len(b), len(b)).
+// Alias for String(&b[0], len(b), len(b)).
 // Returns empty string if len(b) == 0.
 fn BytesString(b: []byte): string {
 	if len(b) == 0 {
 		ret ""
 	}
-	ret Str(&b[0], len(b))
+	ret String(&b[0], len(b))
 }
 
 // Same as [BytesString] but keeps garbage collection.

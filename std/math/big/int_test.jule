@@ -222,7 +222,7 @@ fn testBinomial(t: &testing::T) {
 	for _, test in binomialCases {
 		let mut z: Int
 		z.Binomial(test.n, test.k)
-		prod := z.Str()
+		prod := z.String()
 		if prod != test.want {
 			t.Errorf("Binomial({}, {}) = {}; want {}", test.n, test.k, prod, test.want)
 		}

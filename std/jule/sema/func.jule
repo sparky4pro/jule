@@ -192,7 +192,7 @@ struct ParamIns {
 impl ParamIns {
 	// Implement: Kind
 	// Returns ParamIns's type kind as string.
-	fn Str(*self): string {
+	fn String(*self): string {
 		mut s := strings::Builder{}
 		if self.Decl.Mutable {
 			s.WriteString("mut ")!
@@ -212,15 +212,15 @@ impl ParamIns {
 				panic("unreachable")
 			}
 			s.WriteString("self")!
-			ret s.Str()
+			ret s.String()
 		}
 
 		// Do not write variadic parameter "..." operator.
-		// Type.Str() will write it.
+		// Type.String() will write it.
 		if self.Type != nil {
-			s.WriteString(self.Type.Str())!
+			s.WriteString(self.Type.String())!
 		}
-		ret s.Str()
+		ret s.String()
 	}
 }
 
@@ -247,7 +247,7 @@ struct FuncIns {
 impl Kind for FuncIns {
 	// Implement: Kind
 	// Returns function's type kind as string.
-	fn Str(*self): string {
+	fn String(*self): string {
 		const Ident = false
 		ret self.GetKindString(Ident)
 	}
@@ -419,7 +419,7 @@ impl FuncIns {
 		n := len(self.Params)
 		if n > 0 {
 			for i, p in self.Params {
-				s.WriteString(p.Str())!
+				s.WriteString(p.String())!
 				if i < len(self.Params)-1 {
 					s.WriteByte(',')!
 				}
@@ -431,9 +431,9 @@ impl FuncIns {
 		}
 		if self.Decl != nil && !self.Decl.IsVoid() {
 			s.WriteByte(':')!
-			s.WriteString(self.Result.Str())!
+			s.WriteString(self.Result.String())!
 		}
-		ret s.Str()
+		ret s.String()
 	}
 
 	fn fillEnviron(mut &self, updateVars: bool) {

@@ -25,12 +25,12 @@ impl IP {
 		ret nil
 	}
 
-	// Like self.Str except that it returns and empty string when IP is empty.
+	// Like self.String except that it returns and empty string when IP is empty.
 	fn ipEmptyString(*self): string {
 		if self.Empty() {
 			ret ""
 		}
-		ret self.Str()
+		ret self.String()
 	}
 
 	// Reports whether IP is empty.
@@ -125,7 +125,7 @@ impl IP {
 	//	- dotted decimal ("192.0.2.1"), if ip is an IPv4 or IP4-mapped IPv6 address
 	//	- IPv6 conforming to RFC 5952 ("2001:db8::1"), if ip is a valid IPv6 address
 	//	- the hexadecimal form of ip, without punctuation, if no other cases apply
-	fn Str(*self): string {
+	fn String(*self): string {
 		if self.Empty() {
 			ret "<nil>"
 		}

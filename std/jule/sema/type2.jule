@@ -397,7 +397,7 @@ impl assignTypeChecker {
 		match {
 		| types::IsCmplx(kind):
 			if !cmplxAssignable(kind, self.v) {
-				self.s.pushErr(self.errorToken, "untyped value @ overflows @", self.v.Constant.Str(), self.dest.Str())
+				self.s.pushErr(self.errorToken, "untyped value @ overflows @", self.v.Constant.String(), self.dest.String())
 				ret true // Return true to avoid more errors.
 			}
 			// We have to do implicit casting if needed.
@@ -408,7 +408,7 @@ impl assignTypeChecker {
 			self.v.untyped = false
 		| types::IsFloat(kind):
 			if !floatAssignable(kind, self.v) {
-				self.s.pushErr(self.errorToken, "untyped value @ overflows @", self.v.Constant.Str(), self.dest.Str())
+				self.s.pushErr(self.errorToken, "untyped value @ overflows @", self.v.Constant.String(), self.dest.String())
 				ret true // Return true to avoid more errors.
 			}
 			self.v.Constant.Kind = kind
@@ -416,7 +416,7 @@ impl assignTypeChecker {
 			self.v.untyped = false
 		| types::IsInt(kind):
 			if !intAssignable(kind, self.v) {
-				self.s.pushErr(self.errorToken, "untyped value @ overflows @", self.v.Constant.Str(), self.dest.Str())
+				self.s.pushErr(self.errorToken, "untyped value @ overflows @", self.v.Constant.String(), self.dest.String())
 				ret true // Return true to avoid more errors.
 			}
 			self.v.Constant.Kind = kind
@@ -615,7 +615,7 @@ impl dynamicTypeAnnotation {
 
 	fn annotateConstraintName(mut *self, mut k: &Type): bool {
 		if k.Tuple() != nil {
-			self.e.pushErr(self.errorToken, "tuple type @ cannot be type inferred", k.Str())
+			self.e.pushErr(self.errorToken, "tuple type @ cannot be type inferred", k.String())
 			ret false
 		}
 		mut name := self.c.Data.(&ast::NameExpr)
@@ -669,7 +669,7 @@ impl dynamicTypeAnnotation {
 		self.f.Generics[i] = &InsGeneric{Type: k}
 		mut gd := self.f.Decl.Generics[i]
 		for (_, mut ignored) in self.ignored {
-			if gd.Name == ignored.Str() {
+			if gd.Name == ignored.String() {
 				ignored.Kind = k.Kind
 			}
 		}
@@ -969,13 +969,13 @@ impl fnCallArgChecker {
 		err.WriteString(self.f.Decl.Name)!
 		err.WriteString("\n       want (")!
 		for i, p in params {
-			err.WriteString(p.Type.Str())!
+			err.WriteString(p.Type.String())!
 			if len(params)-i > 1 {
 				err.WriteString(", ")!
 			}
 		}
 		err.WriteByte(')')!
-		self.e.s.pushErr(self.errorToken, log, err.Str())
+		self.e.s.pushErr(self.errorToken, log, err.String())
 		ret false
 	}
 
@@ -1221,7 +1221,7 @@ fn checkMutRiskOfStructLit(mut s: &sema, m: &StructLitExpr) {
 			continue
 		}
 		if !arg.Expr.Mutable && arg.Expr.Type.Mutable() {
-			s.pushErr(arg.Token, "immutable data cannot be assigned to a mutable memory because of type @, which is mutable", arg.Expr.Type.Str())
+			s.pushErr(arg.Token, "immutable data cannot be assigned to a mutable memory because of type @, which is mutable", arg.Expr.Type.String())
 		}
 	}
 }
@@ -1392,7 +1392,7 @@ impl structLitChecker {
 				idents.WriteString(self.s.Fields[n-diff].Decl.Name)!
 			}
 			self.pushErr(self.errorToken, "missing expression for @",
-				idents.Str()[2:]) /* Remove first separator. */
+				idents.String()[2:]) /* Remove first separator. */
 		}
 	}
 }
@@ -1517,7 +1517,7 @@ impl rangeChecker {
 			self.sc.s.pushErr(self.rang.InToken, "received from send-only channel")
 		}
 		if self.rang.B != nil && !jule::IsBlank(self.rang.B.Name) {
-			self.sc.s.pushErr(self.rang.B.Token, "iteration for type @ allows only 1 iteration variable", c.Str())
+			self.sc.s.pushErr(self.rang.B.Token, "iteration for type @ allows only 1 iteration variable", c.String())
 		}
 		if self.rang.A == nil || jule::IsBlank(self.rang.A.Name) {
 			ret
@@ -1734,7 +1734,7 @@ impl retTypeChecker {
 	fn notFitVariables(mut *self) {
 		mut wanted := strings::Builder{}
 		for i, t in self.types {
-			wanted.WriteString(t.Str())!
+			wanted.WriteString(t.String())!
 			if len(self.types)-i > 1 {
 				wanted.WriteString(", ")!
 			}
@@ -1744,7 +1744,7 @@ impl retTypeChecker {
 		}
 		mut given := strings::Builder{}
 		for i, d in self.exprs {
-			given.WriteString(d.Type.Str())!
+			given.WriteString(d.Type.String())!
 			if len(self.exprs)-i > 1 {
 				given.WriteString(", ")!
 			}
@@ -1752,11 +1752,11 @@ impl retTypeChecker {
 		if len(self.exprs) < len(self.types) {
 			self.sc.s.pushErr(self.errorToken,
 				"not enough variables to return\n       @ required\n       @ provided",
-				wanted.Str(), given.Str())
+				wanted.String(), given.String())
 		} else {
 			self.sc.s.pushErr(self.errorToken,
 				"too many variables to return\n       @ required\n       @ provided",
-				wanted.Str(), given.Str())
+				wanted.String(), given.String())
 		}
 	}
 

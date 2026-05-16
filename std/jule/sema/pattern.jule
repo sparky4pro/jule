@@ -35,11 +35,11 @@ impl FuncPattern {
 			len(f.Params) == 0
 	}
 
-	// Reports whether function is the reserved Str function.
-	fn Str(f: &Func): bool {
+	// Reports whether function is the reserved String function.
+	fn String(f: &Func): bool {
 		if f == nil ||
 			f.Owner == nil ||
-			f.Name != "Str" ||
+			f.Name != "String" ||
 			f.Async ||
 			f.Static ||
 			f.Unsafe ||

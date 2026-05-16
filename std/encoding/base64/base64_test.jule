@@ -105,7 +105,7 @@ async fn testEncoderBuffering(t: &testing::T) {
 		}
 		r := unsafe { bb.Buf() }
 		if !bytesequal(r, []byte(bigtest[1])) {
-			t.Errorf("Encoding/{} of {} = {}, want {}", bs, bigtest[1], bb.Str(), bigtest[0])
+			t.Errorf("Encoding/{} of {} = {}, want {}", bs, bigtest[1], bb.String(), bigtest[0])
 			continue
 		}
 	}
@@ -311,7 +311,7 @@ async fn testBig(t: &testing::T) {
 		t.Errorf("Encoder.Close() = {} want nil", error)
 		ret
 	}
-	mut sr := strings::Reader.New(sb.Str())
+	mut sr := strings::Reader.New(sb.String())
 	decoded := io::ReadAll(NewDecoder(StdEncoding, sr.Async())).await else {
 		t.Errorf("io::ReadAll(NewDecoder(...)): {}", error)
 		ret

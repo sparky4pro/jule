@@ -820,11 +820,11 @@ impl sema {
 		if destIsRef {
 			if firstAssignToDest {
 				if !v.IsNil() && !dest.Equal(v.Type) {
-					self.pushErr(errorToken, "mismatched types: @ and @", dest.Str(), v.Type.Str())
+					self.pushErr(errorToken, "mismatched types: @ and @", dest.String(), v.Type.String())
 					ret false
 				}
 			} else if !v.IsNil() {
-				self.pushErr(errorToken, "reference pointer type @ can only assign to nil", dest.Str())
+				self.pushErr(errorToken, "reference pointer type @ can only assign to nil", dest.String())
 				ret false
 			}
 		} else {
@@ -883,7 +883,7 @@ impl sema {
 		if self._checkTypeCompatibility(dest, src, errorToken, flags) {
 			ret true
 		}
-		self.pushErr(errorToken, "mismatched types: @ and @", dest.Str(), src.Str())
+		self.pushErr(errorToken, "mismatched types: @ and @", dest.String(), src.String())
 		ret false
 	}
 
@@ -892,14 +892,14 @@ impl sema {
 		if src.untyped && src.IsConst() {
 			match {
 			| src.Constant.IsInt():
-				self.pushErr(errorToken, "mismatched types: @ and @", dest.Str(), "untyped integer ("+src.Constant.Str()+")")
+				self.pushErr(errorToken, "mismatched types: @ and @", dest.String(), "untyped integer ("+src.Constant.String()+")")
 				ret
 			| src.Constant.IsF64():
-				self.pushErr(errorToken, "mismatched types: @ and @", dest.Str(), "untyped float ("+src.Constant.Str()+")")
+				self.pushErr(errorToken, "mismatched types: @ and @", dest.String(), "untyped float ("+src.Constant.String()+")")
 				ret
 			}
 		}
-		self.pushErr(errorToken, "mismatched types: @ and @", dest.Str(), src.Type.Str())
+		self.pushErr(errorToken, "mismatched types: @ and @", dest.String(), src.Type.String())
 	}
 
 	fn checkTypeCompatibility1(mut &self, mut dest: &Type, mut src: &Value,
@@ -1214,13 +1214,13 @@ impl sema {
 
 			// Check classical assignment mutability.
 			if v.Type.Mutable() || v.Type.Variadic {
-				self.pushErr(errorToken, "immutable data cannot be assigned to a mutable memory because of type @, which is mutable", v.Type.Str())
+				self.pushErr(errorToken, "immutable data cannot be assigned to a mutable memory because of type @, which is mutable", v.Type.String())
 				ret false
 			}
 			// Check interior mutability risk for the struct copy.
 			s := v.Type.Struct()
 			if s != nil && self.isMutRiskyStruct(s) {
-				self.pushErr(errorToken, "type @ cannot be copied to the mutable memory, due to it is mutable", v.Type.Str())
+				self.pushErr(errorToken, "type @ cannot be copied to the mutable memory, due to it is mutable", v.Type.String())
 				ret false
 			}
 		}
@@ -1446,13 +1446,13 @@ impl sema {
 
 		mut t := e.TypeSym.Type.Prim()
 		if t == nil {
-			self.pushErr(e.Token, "invalid type for enum: "+t.Str())
+			self.pushErr(e.Token, "invalid type for enum: "+t.String())
 			ret
 		}
 
-		supportsIota := types::IsInt(t.Str())
+		supportsIota := types::IsInt(t.String())
 		if !t.IsString() && !supportsIota {
-			self.pushErr(e.Token, "invalid type for enum: "+t.Str())
+			self.pushErr(e.Token, "invalid type for enum: "+t.String())
 			ret
 		}
 		for (_, mut item) in e.Items {
@@ -1674,7 +1674,7 @@ impl sema {
 			}
 			mut t2 := it.Type.Trait()
 			if t2 == nil {
-				self.pushErr(it.Decl.Token, "trait @ cannot inherit @, type should be trait", t.Name, it.Type.Str())
+				self.pushErr(it.Decl.Token, "trait @ cannot inherit @, type should be trait", t.Name, it.Type.String())
 				ok = false
 				continue
 			}
@@ -1696,10 +1696,10 @@ impl sema {
 				message.Grow(1 << 6)
 				ok = ok && self.catchTraitInheritCycle(t, t2, &message)
 				if message.Len() > 0 {
-					mut errMsg := message.Str()
+					mut errMsg := message.String()
 					message.Clear()
 					self.pushCycleError(t.Name, t2.Name, &message)
-					errMsg += message.Str()
+					errMsg += message.String()
 					self.pushErr(it.Decl.Token, "illegal cross cycle in declaration:\n"+errMsg)
 				}
 			}
@@ -1864,7 +1864,7 @@ impl sema {
 		}
 		mut base := baseT.Trait()
 		if base == nil {
-			self.pushErr(decl.Base.Token, "base type @ is invalid for impl statement", baseT.Str())
+			self.pushErr(decl.Base.Token, "base type @ is invalid for impl statement", baseT.String())
 			self.pushSuggestion("expected trait type")
 			ret
 		}
@@ -1875,7 +1875,7 @@ impl sema {
 		}
 		mut destS := destT.SoftStruct()
 		if destS == nil {
-			self.pushErr(decl.Dest.Token, "destination type @ is invalid for impl statement", destT.Str())
+			self.pushErr(decl.Dest.Token, "destination type @ is invalid for impl statement", destT.String())
 			self.pushSuggestion("expected structure type")
 			ret
 		}
@@ -1903,7 +1903,7 @@ impl sema {
 		}
 		mut destS := destT.SoftStruct()
 		if destS == nil {
-			self.pushErr(decl.Dest.Token, "destination type @ is invalid for impl statement", destT.Str())
+			self.pushErr(decl.Dest.Token, "destination type @ is invalid for impl statement", destT.String())
 			self.pushSuggestion("expected structure type")
 			ret
 		}
@@ -2166,7 +2166,7 @@ impl sema {
 	fn pushCycleError(*self, st1: string, st2: string, mut &message: *strings::Builder) {
 		const Padding = 7
 		refersTo := log::Logf("@ refers to @", st1, st2)
-		m := message.Str()
+		m := message.String()
 		message.WriteString(strings::Repeat(" ", Padding))!
 		message.WriteString(refersTo)!
 		message.WriteByte('\n')!
@@ -2324,7 +2324,7 @@ impl sema {
 								Token: v.Token,
 								Value: "\"" + v.Name + "\"",
 							}
-						| types::IsNum(prim.Str()):
+						| types::IsNum(prim.String()):
 							v.ValueSym.Expr.Data = &ast::NameExpr{
 								Token: v.Token,
 								Name:  "iota",
@@ -2938,7 +2938,7 @@ impl sema {
 					ret false
 				}
 				if refCheck(&cached, v.Refers, v.Name) {
-					self.pushErr(v.Token, "illegal cross cycle in declaration:\n"+message.Str())
+					self.pushErr(v.Token, "illegal cross cycle in declaration:\n"+message.String())
 					ret
 				}
 			}
@@ -3656,6 +3656,6 @@ fn checkTypeEnumRefCycle(mut s: &sema, mut e: &TypeEnum, mut item: &TypeEnumItem
 	pushIllegalCycleError(e.Name, e2.Name)
 	ok := checkCycles(e2)
 	if !ok {
-		s.pushErr(e.Token, "illegal cross cycle in declaration:\n"+message.Str())
+		s.pushErr(e.Token, "illegal cross cycle in declaration:\n"+message.String())
 	}
 }

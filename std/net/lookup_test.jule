@@ -48,7 +48,7 @@ async fn _testLookupIP(t: &testing::T) {
 			}
 			for (_, mut ip) in ips {
 				if !isValidIP(network, ip.IP) {
-					t.Errorf("[{}]: invalid IP: ", comb, ip.IP.Str())
+					t.Errorf("[{}]: invalid IP: ", comb, ip.IP.String())
 				}
 			}
 		}
@@ -117,7 +117,7 @@ async fn testTCPAddrResolve(t: &testing::T) {
 				t.Errorf("[{}]: nil address returned", comb)
 			}
 			if !isValidIP(network, addr.IP) {
-				t.Errorf("[{}]: invalid IP: ", comb, addr.IP.Str())
+				t.Errorf("[{}]: invalid IP: ", comb, addr.IP.String())
 			}
 		}
 	}
@@ -138,7 +138,7 @@ async fn testUDPAddrResolve(t: &testing::T) {
 				t.Errorf("[{}]: nil address returned", comb)
 			}
 			if !isValidIP(network, addr.IP) {
-				t.Errorf("[{}]: invalid IP: ", comb, addr.IP.Str())
+				t.Errorf("[{}]: invalid IP: ", comb, addr.IP.String())
 			}
 		}
 	}
@@ -159,7 +159,7 @@ async fn testIPAddrResolve(t: &testing::T) {
 				t.Errorf("[{}]: nil address returned", comb)
 			}
 			if !isValidIP(network, addr.IP) {
-				t.Errorf("[{}]: invalid IP: ", comb, addr.IP.Str())
+				t.Errorf("[{}]: invalid IP: ", comb, addr.IP.String())
 			}
 		}
 	}

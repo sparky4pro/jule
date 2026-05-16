@@ -158,17 +158,17 @@ fn bprintf(fmt: string, args: ...any): []byte {
 	ret unsafe { buf.Buf() }
 }
 
-// Tries to call reserved Str method for type.
+// Tries to call reserved String method for type.
 fn tryToCallStr[T](mut &sb: *strings::Builder, t: T): (ok: bool) {
 	const tt = comptime::TypeOf(T)
 	const for _, method in tt.Decl().Methods() {
 		const match method.Name() {
-		| "Str":
+		| "String":
 			const v = comptime::ValueOf(t)
 			const methodv = v.Method(method.Name())
 			const match {
 			| !methodv.Type().Decl().Fallible() &&
-				methodv.Type().Result().Kind() == comptime::Str:
+				methodv.Type().Result().Kind() == comptime::String:
 				const params = method.Params()
 				const match {
 				| len(params) == 1 && !params[0].Mutable():
@@ -185,7 +185,7 @@ fn bprintgw[T](mut &sb: *strings::Builder, t: T) {
 	const tt = comptime::TypeOf(T)
 	const match {
 	| tt.Extern():
-		sb.WriteString(tt.Str())!
+		sb.WriteString(tt.String())!
 	|:
 		const match {
 		| tt.CanNil():
@@ -212,7 +212,7 @@ fn bprintgw[T](mut &sb: *strings::Builder, t: T) {
 			sb.WriteString(conv::FormatInt(i64(t), 10))!
 		| comptime::Uint | comptime::U8 | comptime::U16 | comptime::U32 | comptime::U64:
 			sb.WriteString(conv::FormatUint(u64(t), 10))!
-		| comptime::Str:
+		| comptime::String:
 			sb.WriteString(t)!
 		| comptime::Bool:
 			if t {
@@ -257,7 +257,7 @@ fn bprintgw[T](mut &sb: *strings::Builder, t: T) {
 				}
 				const match {
 				| field.Type().Extern():
-					sb.WriteString(field.Type().Str())!
+					sb.WriteString(field.Type().String())!
 				|:
 					bprintgw(sb, v.FieldByIndex(i).Unwrap())
 				}

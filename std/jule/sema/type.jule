@@ -20,11 +20,11 @@ struct ConstraintMask {
 }
 
 impl ConstraintMask {
-	fn Str(*self): string {
+	fn String(*self): string {
 		if self.Deep {
-			ret "~" + self.Type.Str()
+			ret "~" + self.Type.String()
 		}
-		ret self.Type.Str()
+		ret self.Type.String()
 	}
 }
 
@@ -50,7 +50,7 @@ struct TypeAlias {
 
 // Kind of type declaration.
 trait Kind {
-	fn Str(*self): string
+	fn String(*self): string
 	fn Equal(&self, other: &Type): bool
 }
 
@@ -64,7 +64,7 @@ struct Type {
 
 impl Kind for Type {
 	// Returns kind as string.
-	fn Str(*self): string {
+	fn String(*self): string {
 		// Use the provider identifier as type.
 		// If type source is a generic, return the actual type.
 		// Because name of the generic type might be confusing,
@@ -82,8 +82,8 @@ impl Kind for Type {
 		if self.Variadic {
 			kind.WriteString("...")!
 		}
-		kind.WriteString(self.Kind.Str())!
-		ret kind.Str()
+		kind.WriteString(self.Kind.String())!
+		ret kind.String()
 	}
 
 	// Reports whether types are same.
@@ -212,7 +212,7 @@ impl Type {
 			}
 			mut enm := _self.Enum()
 			if enm != nil {
-				ret types::IsNum(enm.TypeSym.Type.Prim().Str())
+				ret types::IsNum(enm.TypeSym.Type.Prim().String())
 			}
 			ret false
 		}
@@ -471,7 +471,7 @@ struct Prim {
 
 impl Kind for Prim {
 	// Returns kind.
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret self.Kind
 	}
 
@@ -555,17 +555,17 @@ struct Chan {
 
 impl Kind for Chan {
 	// Returns smart pointer kind as string.
-	fn Str(*self): string {
+	fn String(*self): string {
 		if self.Recv && self.Send {
 			c, ok := self.Value.Kind.(&Chan)
 			if ok && c.Recv && !c.Send {
-				ret "chan (" + self.Value.Str() + ")"
+				ret "chan (" + self.Value.String() + ")"
 			}
-			ret "chan " + self.Value.Str()
+			ret "chan " + self.Value.String()
 		} else if self.Recv {
-			ret "<-chan " + self.Value.Str()
+			ret "<-chan " + self.Value.String()
 		} else {
-			ret "chan<- " + self.Value.Str()
+			ret "chan<- " + self.Value.String()
 		}
 	}
 
@@ -583,7 +583,7 @@ struct Sptr {
 
 impl Kind for Sptr {
 	// Returns smart pointer kind as string.
-	fn Str(*self): string { ret "&" + self.Value.Str() }
+	fn String(*self): string { ret "&" + self.Value.String() }
 
 	// Reports whether types are same.
 	fn Equal(&self, other: &Type): bool {
@@ -599,7 +599,7 @@ struct Slice {
 
 impl Kind for Slice {
 	// Returns slice kind as string.
-	fn Str(*self): string { ret "[]" + self.Value.Str() }
+	fn String(*self): string { ret "[]" + self.Value.String() }
 
 	// Reports whether types are same.
 	fn Equal(&self, other: &Type): bool {
@@ -615,17 +615,17 @@ struct Tuple {
 
 impl Kind for Tuple {
 	// Returns tuple kind as string.
-	fn Str(*self): string {
+	fn String(*self): string {
 		mut s := strings::Builder{}
 		s.Grow(1 << 4)
 		s.WriteByte('(')!
-		s.WriteString(self.Types[0].Str())!
+		s.WriteString(self.Types[0].String())!
 		for _, t in self.Types[1:] {
 			s.WriteByte(',')!
-			s.WriteString(t.Str())!
+			s.WriteString(t.String())!
 		}
 		s.WriteByte(')')!
-		ret s.Str()
+		ret s.String()
 	}
 
 	// Reports whether types are same.
@@ -652,14 +652,14 @@ struct Map {
 
 impl Kind for Map {
 	// Returns map kind as string.
-	fn Str(*self): string {
+	fn String(*self): string {
 		mut s := strings::Builder{}
 		s.Grow(1 << 4)
 		s.WriteString("map[")!
-		s.WriteString(self.Key.Str())!
+		s.WriteString(self.Key.String())!
 		s.WriteByte(']')!
-		s.WriteString(self.Value.Str())!
-		ret s.Str()
+		s.WriteString(self.Value.String())!
+		ret s.String()
 	}
 
 	// Reports whether types are same.
@@ -678,13 +678,13 @@ struct Array {
 
 impl Kind for Array {
 	// Returns array kind as string.
-	fn Str(*self): string {
+	fn String(*self): string {
 		mut s := strings::Builder{}
 		s.WriteByte('[')!
 		s.WriteString(conv::Itoa(self.N))!
 		s.WriteByte(']')!
-		s.WriteString(self.Value.Str())!
-		ret s.Str()
+		s.WriteString(self.Value.String())!
+		ret s.String()
 	}
 
 	// Reports whether types are same.
@@ -701,11 +701,11 @@ struct Ptr {
 
 impl Kind for Ptr {
 	// Returns pointer kind as string.
-	fn Str(*self): string {
+	fn String(*self): string {
 		if self.IsUnsafe() {
 			ret "*unsafe"
 		}
-		ret "*" + self.Value.Str()
+		ret "*" + self.Value.String()
 	}
 
 	// Reports whether types are same.
@@ -1032,7 +1032,7 @@ impl typeChecker {
 		ok, oselfExist := self.checkCrossCycle(decl, &message)
 		if !ok {
 			if err {
-				self.pushErr(name, "illegal cross cycle in declaration:\n"+message.Str())
+				self.pushErr(name, "illegal cross cycle in declaration:\n"+message.String())
 			}
 			self.cycleErr |= cycleErrFail
 			ret false
@@ -1700,7 +1700,7 @@ impl typeChecker {
 				max := types::MaxI(types::Int)
 				if types::BitSize != 64 && i64(n) > max {
 					self.pushErr(decl.Size.Token, "array size @ overflows the comptime-defined limit of @",
-						size.Constant.Str(), conv::FormatInt(max, 10))
+						size.Constant.String(), conv::FormatInt(max, 10))
 					ret nil
 				}
 			}
@@ -1752,7 +1752,7 @@ impl typeChecker {
 		// so we have a map type (this type, actually), so it is not comparable.
 		if self.cycleErr&cycleErrFail != 0 || !keyTyp.Comparable() {
 			self.cycleErr = cycleErr
-			self.s.pushErr(decl.Key.Token, "type @ does not match constraint of Key: @", keyTyp.Str(), constraintComparable)
+			self.s.pushErr(decl.Key.Token, "type @ does not match constraint of Key: @", keyTyp.String(), constraintComparable)
 			ret nil
 		}
 		self.cycleErr = cycleErr
@@ -1903,7 +1903,7 @@ impl typeChecker {
 			ret nil, false
 		}
 		if s == nil || s.Source != nil || len(s.Generics) > 0 {
-			self.pushErr(indx.X.Token, "type @ does not supports generics or already instantiated", typ.Str())
+			self.pushErr(indx.X.Token, "type @ does not supports generics or already instantiated", typ.String())
 			ret nil, false
 		}
 		ret self.buildStructInsWithGenerics(s, indx)

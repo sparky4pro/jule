@@ -215,7 +215,7 @@ struct StructIns {
 impl Kind for StructIns {
 	// Implement: Kind
 	// Returns Struct's type kind as string.
-	fn Str(*self): string {
+	fn String(*self): string {
 		mut kind := strings::Builder{}
 		kind.Grow(1 << 5)
 		if self.Decl.Extern {
@@ -225,14 +225,14 @@ impl Kind for StructIns {
 		if len(self.Generics) > 0 {
 			kind.WriteByte('[')!
 			for i, g in self.Generics {
-				kind.WriteString(g.Type.Str())!
+				kind.WriteString(g.Type.String())!
 				if i < len(self.Generics)-1 {
 					kind.WriteByte(',')!
 				}
 			}
 			kind.WriteByte(']')!
 		}
-		ret kind.Str()
+		ret kind.String()
 	}
 
 	// Reports whether types are same.

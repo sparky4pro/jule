@@ -164,22 +164,22 @@ impl eval {
 		}
 
 		match {
-		| types::IsFloat(prim.Str()):
-			if !floatAssignable(prim.Str(), v) {
+		| types::IsFloat(prim.String()):
+			if !floatAssignable(prim.String(), v) {
 				ret false
 			}
 			v.Type = new(Type, *self.prefix)
 			v.Constant.SetF64(v.Constant.AsF64())
 			v.Constant.Kind = prim.Kind
-		| types::IsSigInt(prim.Str()):
-			if !sigAssignable(prim.Str(), v) {
+		| types::IsSigInt(prim.String()):
+			if !sigAssignable(prim.String(), v) {
 				ret false
 			}
 			v.Type = new(Type, *self.prefix)
 			v.Constant.SetI64(v.Constant.AsI64())
 			v.Constant.Kind = prim.Kind
-		| types::IsUnsigInt(prim.Str()):
-			if !unsigAssignable(prim.Str(), v) {
+		| types::IsUnsigInt(prim.String()):
+			if !unsigAssignable(prim.String(), v) {
 				ret false
 			}
 			v.Type = new(Type, *self.prefix)
@@ -796,7 +796,7 @@ impl eval {
 			ret nil
 		}
 		if !val.Type.Variadicable() {
-			self.pushErr(v.Token, "type @ is not variadicable", val.Type.Str())
+			self.pushErr(v.Token, "type @ is not variadicable", val.Type.String())
 			ret nil
 		}
 		makeVariadic(val, val.Type.Slice().Value)
@@ -979,7 +979,7 @@ impl eval {
 		| "":
 			ret true
 		| "invalid type for index: @":
-			self.pushErr(token, errKey, v.Type.Str())
+			self.pushErr(token, errKey, v.Type.String())
 		|:
 			self.pushErr(token, errKey)
 		}
@@ -991,7 +991,7 @@ impl eval {
 		v.Lvalue = true
 
 		if isRef(v) {
-			self.pushErr(i.Token, "index is not supported by reference type @", v.Type.Str())
+			self.pushErr(i.Token, "index is not supported by reference type @", v.Type.String())
 			self.pushSuggestion("try deference the reference pointer like: *x")
 			ret
 		}
@@ -1128,7 +1128,7 @@ impl eval {
 			self.comptimeRange(v, index, i)
 			ret
 		}
-		self.pushErr(i.Token, "cannot index type @", (*v).Type.Str())
+		self.pushErr(i.Token, "cannot index type @", (*v).Type.String())
 	}
 
 	fn pushGenericsFromData(mut &self, mut &generics: *[]&InsGeneric, mut indx: &ast::IndexExpr): (ok: bool) {
@@ -1160,7 +1160,7 @@ impl eval {
 	fn evalIdentDeclFromIndex(mut &self, mut &v: *&Value, mut i: &ast::IndexExpr) {
 		mut s := (*v).Type.Struct()
 		if s == nil {
-			self.pushErr(i.X.Token, "type @ does not supports generics", (*v).Type.Str())
+			self.pushErr(i.X.Token, "type @ does not supports generics", (*v).Type.String())
 			*v = nil
 			ret
 		}
@@ -1339,7 +1339,7 @@ impl eval {
 
 	fn slicingArr(mut *self, s: &ast::SlicingExpr, mut v: &Value, c: &Value) {
 		if c != nil {
-			self.pushErr(s.Token, "type @ does not support 3-index slice", v.Type.Str())
+			self.pushErr(s.Token, "type @ does not support 3-index slice", v.Type.String())
 		}
 
 		mut valueTyp := v.Type.Array().Value
@@ -1370,7 +1370,7 @@ impl eval {
 		}
 
 		if c != nil {
-			self.pushErr(s.Token, "type @ does not support 3-index slice", v.Type.Str())
+			self.pushErr(s.Token, "type @ does not support 3-index slice", v.Type.String())
 		}
 
 		if l.IsConst() && r.IsConst() {
@@ -1415,7 +1415,7 @@ impl eval {
 			}
 		}
 
-		self.pushErr(s.Token, "type @ does not support slice", v.Type.Str())
+		self.pushErr(s.Token, "type @ does not support slice", v.Type.String())
 	}
 
 	fn evalSlicing(mut &self, mut s: &ast::SlicingExpr): &Value {
@@ -1467,7 +1467,7 @@ impl eval {
 		sptr := v.Type.Sptr()
 		if sptr != nil {
 			if !t.Ptr().Value.Equal(sptr.Value) {
-				self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.Str(), t.Str())
+				self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.String(), t.String())
 			}
 			ret
 		}
@@ -1479,8 +1479,8 @@ impl eval {
 		}
 
 		prim := v.Type.Prim()
-		if v.Type.Ptr() == nil && (prim == nil || !types::IsInt(prim.Str())) {
-			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.Str(), t.Str())
+		if v.Type.Ptr() == nil && (prim == nil || !types::IsInt(prim.String())) {
+			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.String(), t.String())
 		}
 	}
 
@@ -1494,7 +1494,7 @@ impl eval {
 		mut tr := v.Type.Trait()
 		if tr == nil {
 			if !preStrict {
-				self.pushErr(errorToken, "type @ not supports type assertion to type @", v.Type.Str(), t.Str())
+				self.pushErr(errorToken, "type @ not supports type assertion to type @", v.Type.String(), t.String())
 			}
 			ret false
 		}
@@ -1506,7 +1506,7 @@ impl eval {
 		if !s.Decl.IsImplements(tr) {
 			// Log error but do not return false.
 			// We know type is trait, casting is not possible.
-			self.pushErr(errorToken, "type @ not supports type assertion to type @", v.Type.Str(), t.Str())
+			self.pushErr(errorToken, "type @ not supports type assertion to type @", v.Type.String(), t.String())
 		}
 		ret true
 	}
@@ -1526,7 +1526,7 @@ impl eval {
 			ret
 		}
 
-		self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.Str(), t.Str())
+		self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.String(), t.String())
 	}
 
 	fn castSlice(mut *self, mut t: &Type, mut v: &Value, errorToken: &token::Token) {
@@ -1536,18 +1536,18 @@ impl eval {
 
 		if v.Type.Enum() != nil {
 			if v.Type.Enum().TypeSym.Type.Prim() == nil || !v.Type.Enum().TypeSym.Type.Prim().IsString() {
-				self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.Str(), t.Str())
+				self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.String(), t.String())
 				ret
 			}
 		} else if v.Type.Prim() == nil || !v.Type.Prim().IsString() {
-			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.Str(), t.Str())
+			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.String(), t.String())
 			ret
 		}
 
 		t = t.Slice().Value
 		mut prim := t.Prim()
 		if prim == nil || (!prim.IsU8() && !prim.IsI32()) {
-			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.Str(), t.Str())
+			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.String(), t.String())
 			ret
 		}
 
@@ -1595,7 +1595,7 @@ impl eval {
 	fn castBool(mut *self, mut t: &Type, mut v: &Value, errorToken: &token::Token) {
 		prim := v.Type.Prim()
 		if prim == nil || !prim.IsBool() {
-			self.pushErr(errorToken, "type @ does not support casting to type @", t.Str(), v.Type.Str())
+			self.pushErr(errorToken, "type @ does not support casting to type @", t.String(), v.Type.String())
 		}
 	}
 
@@ -1616,7 +1616,7 @@ impl eval {
 				ret
 			}
 			if !prim.IsU8() && !prim.IsI32() {
-				self.pushErr(errorToken, "type @ does not support casting to type @", t.Str(), v.Type.Str())
+				self.pushErr(errorToken, "type @ does not support casting to type @", t.String(), v.Type.String())
 				ret
 			}
 			// Cast constant expressions.
@@ -1637,14 +1637,14 @@ impl eval {
 
 		mut s := v.Type.Slice()
 		if s == nil {
-			self.pushErr(errorToken, "type @ does not support casting to type @", t.Str(), v.Type.Str())
+			self.pushErr(errorToken, "type @ does not support casting to type @", t.String(), v.Type.String())
 			ret
 		}
 
 		t = s.Value
 		prim = t.Prim()
 		if prim == nil || (!prim.IsU8() && !prim.IsI32()) {
-			self.pushErr(errorToken, "type @ does not support casting to type @", t.Str(), v.Type.Str())
+			self.pushErr(errorToken, "type @ does not support casting to type @", t.String(), v.Type.String())
 			ret
 		}
 	}
@@ -1663,17 +1663,17 @@ impl eval {
 				ret
 			}
 			mut e := v.Type.Enum()
-			if types::IsCmplx(e.TypeSym.Type.Prim().Str()) {
+			if types::IsCmplx(e.TypeSym.Type.Prim().String()) {
 				ret
 			}
 		}
 
 		prim := v.Type.Prim()
-		if prim != nil && (v.IsConst() && types::IsNum(prim.Str()) || types::IsCmplx(prim.Str())) {
+		if prim != nil && (v.IsConst() && types::IsNum(prim.String()) || types::IsCmplx(prim.String())) {
 			ret
 		}
 
-		self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.Str(), t.Str())
+		self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.String(), t.String())
 	}
 
 	fn castInt(mut *self, mut t: &Type, mut v: &Value, errorToken: &token::Token) {
@@ -1687,7 +1687,7 @@ impl eval {
 
 		if v.Type.Enum() != nil {
 			mut e := v.Type.Enum()
-			kind := e.TypeSym.Type.Prim().Str()
+			kind := e.TypeSym.Type.Prim().String()
 			if types::IsInt(kind) || types::IsFloat(kind) {
 				ret
 			}
@@ -1696,7 +1696,7 @@ impl eval {
 		if v.Type.Sptr() != nil || v.Type.Func() != nil {
 			prim := t.Prim()
 			if !prim.IsUintptr() {
-				self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.Str(), t.Str())
+				self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.String(), t.String())
 			}
 			ret
 		}
@@ -1712,11 +1712,11 @@ impl eval {
 		}
 
 		prim := v.Type.Prim()
-		if prim != nil && (types::IsInt(prim.Str()) || types::IsFloat(prim.Str())) {
+		if prim != nil && (types::IsInt(prim.String()) || types::IsFloat(prim.String())) {
 			ret
 		}
 
-		self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.Str(), t.Str())
+		self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.String(), t.String())
 	}
 
 	fn castNum(mut *self, mut t: &Type, mut v: &Value, errorToken: &token::Token) {
@@ -1730,18 +1730,18 @@ impl eval {
 
 		if v.Type.Enum() != nil {
 			mut e := v.Type.Enum()
-			kind := e.TypeSym.Type.Prim().Str()
+			kind := e.TypeSym.Type.Prim().String()
 			if types::IsInt(kind) || types::IsFloat(kind) {
 				ret
 			}
 		}
 
 		prim := v.Type.Prim()
-		if prim != nil && (types::IsInt(prim.Str()) || types::IsFloat(prim.Str())) {
+		if prim != nil && (types::IsInt(prim.String()) || types::IsFloat(prim.String())) {
 			ret
 		}
 
-		self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.Str(), t.Str())
+		self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.String(), t.String())
 	}
 
 	fn castPrim(mut *self, mut t: &Type, mut v: &Value, errorToken: &token::Token) {
@@ -1755,12 +1755,12 @@ impl eval {
 			self.castBool(t, v, errorToken)
 		| types::IsCmplx(prim.Kind):
 			self.castCmplx(t, v, errorToken)
-		| types::IsInt(prim.Str()):
+		| types::IsInt(prim.String()):
 			self.castInt(t, v, errorToken)
-		| types::IsNum(prim.Str()):
+		| types::IsNum(prim.String()):
 			self.castNum(t, v, errorToken)
 		|:
-			self.pushErr(errorToken, "type @ does not support casting", t.Str())
+			self.pushErr(errorToken, "type @ does not support casting", t.String())
 		}
 	}
 
@@ -1769,7 +1769,7 @@ impl eval {
 		// quick check: if type t and value type comparable.
 		if !self.s.checkTypeCompatibility(t, v.Type, errorToken, typeCompDefault) {
 			self.s.errors = self.s.errors[:n] // Remove logged errors by checkTypeCompatibility.
-			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.Str(), t.Str())
+			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.String(), t.String())
 		}
 		v.Constant = nil
 		v.untyped = false
@@ -1779,7 +1779,7 @@ impl eval {
 		n := len(self.s.errors)
 		if !self.s.checkTypeCompatibility(t, v.Type, errorToken, typeCompDefault) {
 			self.s.errors = self.s.errors[:n] // Remove logged errors by checkTypeCompatibility.
-			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.Str(), t.Str())
+			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.String(), t.String())
 		}
 		v.Constant = nil
 		v.untyped = false
@@ -1788,16 +1788,16 @@ impl eval {
 	fn castChan(mut *self, mut t: &Type, mut v: &Value, mut errorToken: &token::Token) {
 		vc := v.Type.Chan()
 		if vc == nil {
-			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.Str(), t.Str())
+			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.String(), t.String())
 			ret
 		}
 		c := t.Chan()
 		if !vc.Value.Equal(c.Value) {
-			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.Str(), t.Str())
+			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.String(), t.String())
 			ret
 		}
 		if c.Recv && !vc.Recv || c.Send && !vc.Send {
-			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.Str(), t.Str())
+			self.pushErr(errorToken, "type @ does not support casting to type @", v.Type.String(), t.String())
 			ret
 		}
 	}
@@ -1814,7 +1814,7 @@ impl eval {
 			match {
 			| v.IsNil():
 				if !t.NilCompatible() {
-					self.pushErr(errorToken, "type @ does not support casting to nil", t.Str())
+					self.pushErr(errorToken, "type @ does not support casting to nil", t.String())
 				}
 				v.Constant = nil // Remove nil constant.
 				v.untyped = false
@@ -1867,7 +1867,7 @@ impl eval {
 				| t.Chan() != nil:
 					self.castChan(t, v, errorToken)
 				|:
-					self.pushErr(errorToken, "type @ does not support casting", t.Str())
+					self.pushErr(errorToken, "type @ does not support casting", t.String())
 					v = nil
 				}
 			}
@@ -2091,7 +2091,7 @@ impl eval {
 
 	fn callTypeFunc(mut &self, mut fc: &ast::CallExpr, mut &v: *&Value) {
 		if len(fc.Args) < 1 {
-			self.pushErr(fc.Token, "value is missing to cast type @", (*v).Type.Str())
+			self.pushErr(fc.Token, "value is missing to cast type @", (*v).Type.String())
 			self.pushSuggestion("cast like; Type(value)")
 		} else if len(fc.Args) > 1 {
 			self.pushErr(fc.Args[1].Token, "passed more value to cast than expected")
@@ -2947,7 +2947,7 @@ impl eval {
 		| v.Type.Enum() != nil:
 			ret self.evalEnumStatic(v.Type.Enum(), si.Name)
 		|:
-			self.pushErr(si.Name, "type @ does not supports selector expressions", v.Type.Str())
+			self.pushErr(si.Name, "type @ does not supports selector expressions", v.Type.String())
 			ret nil
 		}
 	}
@@ -2955,7 +2955,7 @@ impl eval {
 	fn comptimeObjSelector[ComptimeType](mut *self, mut ct: &ComptimeType, v: &Value, si: &ast::SelectorExpr): &Value {
 		mut cd := ct.subIdent(si.Name.Kind)
 		if cd == nil {
-			self.pushErr(si.Name, "type @ has no field or method: @", v.Type.Str(), si.Name.Kind)
+			self.pushErr(si.Name, "type @ has no field or method: @", v.Type.String(), si.Name.Kind)
 		}
 		ret cd
 	}
@@ -3036,7 +3036,7 @@ impl eval {
 		if v.Type.Trait() != nil {
 			ret self.evalTraitSelector(v, v.Type.Trait(), si.Name)
 		}
-		self.pushErr(si.Name, "type @ does not supports selector expressions", v.Type.Str())
+		self.pushErr(si.Name, "type @ does not supports selector expressions", v.Type.String())
 		ret nil
 	}
 
@@ -3163,7 +3163,7 @@ impl eval {
 			}
 			mut f := self.prefix.Func()
 			if f == nil {
-				self.s.pushErr(decl.Token, "type @ is invalid for the inferred anonymous function", self.prefix.Str())
+				self.s.pushErr(decl.Token, "type @ is invalid for the inferred anonymous function", self.prefix.String())
 				ret nil
 			}
 			if len(f.Params) != len(decl.Params) {
@@ -3253,7 +3253,7 @@ impl eval {
 		// Apply prefix for just numericals.
 		if self.prefix != nil {
 			prim := self.prefix.Prim()
-			if prim == nil || !types::IsNum(prim.Str()) {
+			if prim == nil || !types::IsNum(prim.String()) {
 				mut prefix := self.prefix
 				self.prefix = nil
 				mut v := bs.eval(op)
@@ -3300,7 +3300,7 @@ impl eval {
 			sc.removeInteriorMutRisk(r)
 		}
 		if l.Mutable && !r.Mutable && r.Type.Mutable() {
-			self.s.pushErr(chs.X.Token, "immutable data with type @ (which is mutable) cannot be sent via a mutable channel", r.Type.Str())
+			self.s.pushErr(chs.X.Token, "immutable data with type @ (which is mutable) cannot be sent via a mutable channel", r.Type.String())
 		}
 		// Check assignment types and return.
 		mut checker := assignTypeChecker{
@@ -3349,7 +3349,7 @@ impl eval {
 			n := len(self.s.errors)
 			if !self.s.checkTypeCompatibility(v.Type, t, errorToken, typeCompDefault) {
 				self.s.errors = self.s.errors[:n] // Remove logged errors by checkTypeCompatibility.
-				self.pushErr(errorToken, "type @ not supports type assertion to type @", v.Type.Str(), t.Str())
+				self.pushErr(errorToken, "type @ not supports type assertion to type @", v.Type.String(), t.String())
 				ret nil
 			}
 		} else if v.Type.Trait() != nil {
@@ -3360,14 +3360,14 @@ impl eval {
 				}
 			}
 			if ts == nil {
-				self.pushErr(errorToken, "type @ not supports type assertion to type @", v.Type.Str(), t.Str())
+				self.pushErr(errorToken, "type @ not supports type assertion to type @", v.Type.String(), t.String())
 				ret nil
 			} else {
 				const PreStrict = false
 				self.castStruct(t, ts, v, errorToken, PreStrict)
 			}
 		} else {
-			self.pushErr(errorToken, "type @ not supports type assertion", v.Type.Str())
+			self.pushErr(errorToken, "type @ not supports type assertion", v.Type.String())
 			ret nil
 		}
 		mut r := new(Value)
@@ -3579,7 +3579,7 @@ impl unaryEval {
 			self.v = nil
 			ret
 		| self.v.Type.Prim() != nil:
-			if !types::IsNum(self.v.Type.Prim().Str()) {
+			if !types::IsNum(self.v.Type.Prim().String()) {
 				self.v = nil
 				ret
 			}
@@ -3702,7 +3702,7 @@ impl unaryEval {
 			self.v = nil
 			ret
 		| self.v.Type.Prim() != nil:
-			if !types::IsNum(self.v.Type.Prim().Str()) {
+			if !types::IsNum(self.v.Type.Prim().String()) {
 				self.v = nil
 				ret
 			}
@@ -3742,7 +3742,7 @@ impl unaryEval {
 			self.v = nil
 			ret
 		| self.v.Type.Prim() != nil:
-			if !types::IsInt(self.v.Type.Prim().Str()) {
+			if !types::IsInt(self.v.Type.Prim().String()) {
 				self.v = nil
 				ret
 			}
@@ -3987,7 +3987,7 @@ impl unaryEval {
 			self.v.Type = &Type{Kind: tc.buildSptrFromType(self.v.Type)}
 			self.v.Model = self.v.Type
 		|:
-			self.e.pushErr(self.u.Op, "unary operator @ not defined for type @", self.u.Op.Kind, self.v.Type.Str())
+			self.e.pushErr(self.u.Op, "unary operator @ not defined for type @", self.u.Op.Kind, self.v.Type.String())
 			self.v = nil
 			ret
 		}
@@ -4047,7 +4047,7 @@ impl unaryEval {
 
 		match {
 		| self.v == nil:
-			self.e.pushErr(self.u.Op, "unary operator @ not defined for type @", self.u.Op.Kind, kind.Str())
+			self.e.pushErr(self.u.Op, "unary operator @ not defined for type @", self.u.Op.Kind, kind.String())
 			ret nil
 		| self.v.Decl:
 			self.v = nil
@@ -4104,7 +4104,7 @@ impl binaryEval {
 	fn evalComptimeTypeInfo(mut *self): &Value {
 		mut r := self.r.Type.comptimeTypeInfo()
 		if r == nil {
-			self.e.pushErr(self.op, "mismatched types: @ and @", "comptimeTypeInfo", self.r.Type.Str())
+			self.e.pushErr(self.op, "mismatched types: @ and @", "comptimeTypeInfo", self.r.Type.String())
 			ret nil
 		}
 		mut l := self.l.Type.comptimeTypeInfo()
@@ -4126,14 +4126,14 @@ impl binaryEval {
 				Model:    constant,
 			}
 		|:
-			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.Str())
+			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.String())
 			ret nil
 		}
 	}
 
 	fn evalNil(mut *self): &Value {
 		if !self.r.Type.NilCompatible() {
-			self.e.pushErr(self.op, "mismatched types: @ and @", "nil", self.r.Type.Str())
+			self.e.pushErr(self.op, "mismatched types: @ and @", "nil", self.r.Type.String())
 			ret nil
 		}
 
@@ -4167,7 +4167,7 @@ impl binaryEval {
 				Type:    primBool,
 			}
 		|:
-			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.Str())
+			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.String())
 			ret nil
 		}
 	}
@@ -4185,7 +4185,7 @@ impl binaryEval {
 				Type:    primBool,
 			}
 		|:
-			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.Str())
+			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.String())
 			ret nil
 		}
 	}
@@ -4203,7 +4203,7 @@ impl binaryEval {
 				Type:    primBool,
 			}
 		|:
-			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.Str())
+			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.String())
 			ret nil
 		}
 	}
@@ -4221,7 +4221,7 @@ impl binaryEval {
 				Type:    primBool,
 			}
 		|:
-			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.Str())
+			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.String())
 			ret nil
 		}
 	}
@@ -4238,7 +4238,7 @@ impl binaryEval {
 					Type:    primBool,
 				}
 			|:
-				self.e.pushErr(self.op, "operator @ is not defined for reference type @", self.op.Kind, self.l.Type.Str())
+				self.e.pushErr(self.op, "operator @ is not defined for reference type @", self.op.Kind, self.l.Type.String())
 				self.e.pushSuggestion("try deference the reference pointer like: *x")
 				ret nil
 			}
@@ -4264,15 +4264,15 @@ impl binaryEval {
 				self.l, self.r = self.r, self.l
 			}
 			if self.l.Type.Ptr().IsUnsafe() {
-				self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.Str())
+				self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.String())
 			}
 			if !isPtrArithmeticCompatible(self.l, self.r) {
-				self.e.pushErr(self.op, "type @ does not supports pointer arithmetic", self.r.Type.Str())
+				self.e.pushErr(self.op, "type @ does not supports pointer arithmetic", self.r.Type.String())
 				ret nil
 			}
 			ret self.l
 		|:
-			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.Str())
+			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.String())
 			ret nil
 		}
 	}
@@ -4302,7 +4302,7 @@ impl binaryEval {
 				Type:    primBool,
 			}
 		|:
-			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.Str())
+			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.String())
 			ret nil
 		}
 	}
@@ -4319,7 +4319,7 @@ impl binaryEval {
 				Type:    primBool,
 			}
 		|:
-			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.Str())
+			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.String())
 			ret nil
 		}
 	}
@@ -4337,7 +4337,7 @@ impl binaryEval {
 				Type:    primBool,
 			}
 		|:
-			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.Str())
+			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.String())
 			ret nil
 		}
 	}
@@ -4352,7 +4352,7 @@ impl binaryEval {
 				Type:    primBool,
 			}
 		|:
-			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.Str())
+			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.String())
 			ret nil
 		}
 	}
@@ -4369,7 +4369,7 @@ impl binaryEval {
 		| token::LOR:
 			ret self.l
 		|:
-			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.Str())
+			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.String())
 			ret nil
 		}
 	}
@@ -4393,7 +4393,7 @@ impl binaryEval {
 				Type:    primBool,
 			}
 		|:
-			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.Str())
+			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.String())
 			ret nil
 		}
 	}
@@ -4533,12 +4533,12 @@ impl binaryEval {
 	fn shift(mut *self): &Value {
 		lk := self.l.Type.Prim()
 		if lk == nil {
-			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.Str())
+			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.String())
 			ret nil
 		}
 		rk := self.r.Type.Prim()
 		if rk == nil {
-			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.r.Type.Str())
+			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.r.Type.String())
 			ret nil
 		}
 		// primitive guaranteed
@@ -4552,7 +4552,7 @@ impl binaryEval {
 		if !types::IsInt(lk.Kind) {
 			// should be floating-point
 			if !self.l.IsConst() || !self.l.untyped {
-				self.e.pushErr(self.op, "mismatched types: @ and @", self.l.Type.Str(), self.r.Type.Str())
+				self.e.pushErr(self.op, "mismatched types: @ and @", self.l.Type.String(), self.r.Type.String())
 				ret nil
 			} else if intAssignable(types::I64, self.l) {
 				self.l.Constant.SetI64(self.l.Constant.AsI64())
@@ -4565,7 +4565,7 @@ impl binaryEval {
 		if !types::IsInt(rk.Kind) {
 			// should be floating-point
 			if !self.r.IsConst() || !self.l.untyped {
-				self.e.pushErr(self.op, "mismatched types: @ and @", self.l.Type.Str(), self.r.Type.Str())
+				self.e.pushErr(self.op, "mismatched types: @ and @", self.l.Type.String(), self.r.Type.String())
 				ret nil
 			} else if intAssignable(types::I64, self.r) {
 				self.r.Constant.SetI64(self.r.Constant.AsI64())
@@ -4593,11 +4593,11 @@ impl binaryEval {
 				i := self.r.Constant.ReadInt()
 				if i.IsI64() && i.I64() > maxShiftCount ||
 					i.IsU64() && i.U64() > maxShiftCount {
-					self.e.pushErr(self.rt, "invalid shift count: "+i.Str())
+					self.e.pushErr(self.rt, "invalid shift count: "+i.String())
 					ret nil
 				}
 			} else if self.r.Constant.IsF64() && self.r.Constant.ReadF64() > maxShiftCount {
-				self.e.pushErr(self.rt, "invalid shift count: "+self.r.Constant.Str())
+				self.e.pushErr(self.rt, "invalid shift count: "+self.r.Constant.String())
 				ret nil
 			}
 		}
@@ -4666,7 +4666,7 @@ impl binaryEval {
 			panic("sema: binary shifting operator handling failed")
 		| token::REM:
 			if !types::IsInt(self.r.Type.Prim().Kind) {
-				self.e.pushErr(self.op, "mismatched types: @ and @", self.l.Type.Str(), self.r.Type.Str())
+				self.e.pushErr(self.op, "mismatched types: @ and @", self.l.Type.String(), self.r.Type.String())
 				ret nil
 			}
 			self.mod()
@@ -4736,7 +4736,7 @@ impl binaryEval {
 
 		rp := self.r.Type.Prim()
 		if rp == nil {
-			self.e.pushErr(self.op, "mismatched types: @ and @", prim.Str(), self.r.Type.Str())
+			self.e.pushErr(self.op, "mismatched types: @ and @", prim.String(), self.r.Type.String())
 			ret nil
 		}
 
@@ -4769,10 +4769,10 @@ impl binaryEval {
 			ret
 		}
 		if !self.l.Type.Comparable() && !self.r.Type.IsNil() {
-			self.e.pushErr(self.op, "type @ is not comparable", self.l.Type.Str())
+			self.e.pushErr(self.op, "type @ is not comparable", self.l.Type.String())
 			ok = false
 		} else if !self.r.Type.Comparable() && !self.l.Type.IsNil() {
-			self.e.pushErr(self.op, "type @ is not comparable", self.r.Type.Str())
+			self.e.pushErr(self.op, "type @ is not comparable", self.r.Type.String())
 			ok = false
 		}
 		ret ok
@@ -4845,7 +4845,7 @@ impl binaryEval {
 		| self.l.Type.Struct() != nil:
 			ret self.evalStruct()
 		|:
-			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.Str())
+			self.e.pushErr(self.op, "operator @ is not defined for type @", self.op.Kind, self.l.Type.String())
 			ret nil
 		}
 	}
@@ -5171,7 +5171,7 @@ fn findBuiltinsSema(name: string, mut s: &sema): any {
 fn isOkForShifting(mut v: &Value): bool {
 	if !v.untyped || !v.IsConst() {
 		prim := v.Type.Prim()
-		ret prim != nil && types::IsInt(prim.Str())
+		ret prim != nil && types::IsInt(prim.String())
 	}
 	max := types::MaxU(types::Uint)
 	match {
@@ -5321,7 +5321,7 @@ fn checkDataForIntegerIndex(mut s: &sema, mut v: &Value,
 	match {
 	| v.Type.Prim() == nil:
 		ret "invalid type for index"
-	| !types::IsInt(v.Type.Prim().Str()):
+	| !types::IsInt(v.Type.Prim().String()):
 		ret "invalid type for index"
 	| v.IsConst():
 		if v.Constant.AsF64() < 0 {
@@ -5329,7 +5329,7 @@ fn checkDataForIntegerIndex(mut s: &sema, mut v: &Value,
 		}
 	| v.Type.Prim() == nil
 	| v.IsConst()
-	| types::RealKindOf(v.Type.Prim().Str()) != types::RealKindOf(types::Int):
+	| types::RealKindOf(v.Type.Prim().String()) != types::RealKindOf(types::Int):
 		applyCastKind(s, v, primInt, token, refers)
 	}
 	ret ""
@@ -5357,7 +5357,7 @@ fn castConstByType(mut s: &sema, token: &token::Token, mut t: &Type, mut v: &Val
 	| types::IsSigInt(kind):
 		if v.untyped && !sigAssignable(kind, v) {
 			if token != nil {
-				s.pushErr(token, "untyped value @ overflows @", v.Constant.Str(), t.Str())
+				s.pushErr(token, "untyped value @ overflows @", v.Constant.String(), t.String())
 			}
 			ret false
 		}
@@ -5377,7 +5377,7 @@ fn castConstByType(mut s: &sema, token: &token::Token, mut t: &Type, mut v: &Val
 	| types::IsUnsigInt(kind):
 		if v.untyped && !unsigAssignable(kind, v) {
 			if token != nil {
-				s.pushErr(token, "untyped value @ overflows @", v.Constant.Str(), t.Str())
+				s.pushErr(token, "untyped value @ overflows @", v.Constant.String(), t.String())
 			}
 			ret false
 		}
@@ -5397,7 +5397,7 @@ fn castConstByType(mut s: &sema, token: &token::Token, mut t: &Type, mut v: &Val
 	| types::IsFloat(kind):
 		if v.untyped && !floatAssignable(kind, v) {
 			if token != nil {
-				s.pushErr(token, "untyped value @ overflows @", v.Constant.Str(), t.Str())
+				s.pushErr(token, "untyped value @ overflows @", v.Constant.String(), t.String())
 			}
 			ret false
 		}
@@ -5413,7 +5413,7 @@ fn castConstByType(mut s: &sema, token: &token::Token, mut t: &Type, mut v: &Val
 	| types::IsCmplx(kind):
 		if v.untyped && !cmplxAssignable(kind, v) {
 			if token != nil {
-				s.pushErr(token, "untyped value @ overflows @", v.Constant.Str(), t.Str())
+				s.pushErr(token, "untyped value @ overflows @", v.Constant.String(), t.String())
 			}
 			ret false
 		}
@@ -5527,17 +5527,17 @@ fn checkValue(mut v: &Value, mut s: &sema, mut token: &token::Token, flags: int)
 			min := types::MinI(types::RealKindOf(types::Int))
 			if i.IsU64() {
 				if u64(max) < i.U64() {
-					s.pushErr(token, "untyped value @ overflows @", v.Constant.Str(), primInt.Str())
+					s.pushErr(token, "untyped value @ overflows @", v.Constant.String(), primInt.String())
 					ret false
 				}
 			} else if i.IsI64() {
 				x := i.I64()
 				if x < min || max < x {
-					s.pushErr(token, "untyped value @ overflows @", v.Constant.Str(), primInt.Str())
+					s.pushErr(token, "untyped value @ overflows @", v.Constant.String(), primInt.String())
 					ret false
 				}
 			} else {
-				s.pushErr(token, "untyped value @ overflows @", v.Constant.Str(), primInt.Str())
+				s.pushErr(token, "untyped value @ overflows @", v.Constant.String(), primInt.String())
 				ret false
 			}
 		}
@@ -5549,7 +5549,7 @@ fn checkValue(mut v: &Value, mut s: &sema, mut token: &token::Token, flags: int)
 		if v.IsConst() && v.Constant.IsInt() {
 			i := v.Constant.ReadInt()
 			if !i.IsI64() && !i.IsU64() {
-				s.pushErr(token, "cannot use untyped value @ for the actual program, it is too large for any integer type", i.Str())
+				s.pushErr(token, "cannot use untyped value @ for the actual program, it is too large for any integer type", i.String())
 				ret false
 			}
 		}

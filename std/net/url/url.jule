@@ -69,13 +69,13 @@ struct Error {
 }
 
 impl Error {
-	fn Str(*self): string { ret fmt::Sprintf("{} {}: {}", self.Op, self.URL, self.Err) }
+	fn String(*self): string { ret fmt::Sprintf("{} {}: {}", self.Op, self.URL, self.Err) }
 }
 
 type EscapeError: string
 
 impl EscapeError {
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret "invalid URL escape " + conv::Quote(string(*self))
 	}
 }
@@ -83,7 +83,7 @@ impl EscapeError {
 type InvalidHostError: string
 
 impl InvalidHostError {
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret "invalid character " + conv::Quote(string(*self)) + " in host name"
 	}
 }
@@ -237,7 +237,7 @@ fn unescape(mut s: string, mode: int)!: string {
 			t.WriteByte(s[i])!
 		}
 	}
-	ret t.Str()
+	ret t.String()
 }
 
 fn ishex(c: byte): bool {
@@ -396,7 +396,7 @@ fn resolvePath(base: string, ref: string): string {
 
 		if elem == ".." {
 			// Ignore the leading '/' we already wrote.
-			s := dst.Str()[1:]
+			s := dst.String()[1:]
 			index := strings::LastIndexByte(s, '/')
 
 			dst.Clear()
@@ -420,7 +420,7 @@ fn resolvePath(base: string, ref: string): string {
 	}
 
 	// We wrote an initial '/', but we don't want two.
-	mut r := dst.Str()
+	mut r := dst.String()
 	if len(r) > 1 && r[1] == '/' {
 		r = r[1:]
 	}
@@ -459,7 +459,7 @@ impl UserInfo {
 	}
 
 	// Returns the encoded userinfo information in the standard form of "username[:password]".
-	fn Str(*self): string {
+	fn String(*self): string {
 		mut s := escape(self.username, encodingUserPassword)
 		if self.passwordSet {
 			s += ":" + escape(self.password, encodingUserPassword)
@@ -510,7 +510,7 @@ fn splitHostPort(hostPort: string): (host: string, port: string) {
 // encoding of Path is different from the escaped path. See the EscapedPath method
 // for more details.
 //
-// URL's Str method uses the EscapedPath method to obtain the path.
+// URL's String method uses the EscapedPath method to obtain the path.
 struct URL {
 	Scheme:      string
 	Opaque:      string    // encoded opaque data
@@ -530,7 +530,7 @@ impl URL {
 	// In general there are multiple possible escaped forms of any path.
 	// It returns self.RawPath when it is a valid escaping of self.Path.
 	// Otherwise it ignores self.RawPath and computes an escaped form on its own.
-	// The [URL.Str] and [URL.RequestURI] methods use EscapedPath to construct their results.
+	// The [URL.String] and [URL.RequestURI] methods use EscapedPath to construct their results.
 	// In general, code should call EscapedPath instead of reading self.RawPath directly.
 	fn EscapedPath(*self): string {
 		if self.RawPath != "" && validEncoded(self.RawPath, encodingPath) {
@@ -550,7 +550,7 @@ impl URL {
 	// In general there are multiple possible escaped forms of any fragment.
 	// It returns self.RawFragment when it is a valid escaping of self.Fragment.
 	// Otherwise it ignores self.RawFragment and computes an escaped form on its own.
-	// The [URL.Str] method uses EscapedFragment to construct its result.
+	// The [URL.String] method uses EscapedFragment to construct its result.
 	// In general, code should call EscapedFragment instead of reading self.RawFragment directly.
 	fn EscapedFragment(*self): string {
 		if self.RawFragment != "" && validEncoded(self.RawFragment, encodingFragment) {
@@ -708,7 +708,7 @@ impl URL {
 	//     the form host/path does not add its own /.
 	//   - if self.RawQuery is empty, ?query is omitted.
 	//   - if self.Fragment is empty, #fragment is omitted.
-	fn Str(*self): string {
+	fn String(*self): string {
 		mut n := len(self.Scheme)
 		if self.Opaque != "" {
 			n += len(self.Opaque)
@@ -744,7 +744,7 @@ impl URL {
 						buf.WriteString("//")!
 					}
 					if self.User != nil {
-						buf.WriteString(self.User.Str())!
+						buf.WriteString(self.User.String())!
 						buf.WriteByte('@')!
 					}
 					if self.Host != "" {
@@ -778,10 +778,10 @@ impl URL {
 			buf.WriteByte('#')!
 			buf.WriteString(self.EscapedFragment())!
 		}
-		ret buf.Str()
+		ret buf.String()
 	}
 
-	// Like [URL.Str] but replaces any password with "xxxxx".
+	// Like [URL.String] but replaces any password with "xxxxx".
 	// Only the password in self.User is redacted.
 	fn Redacted(*self): string {
 		if self.User != nil {
@@ -789,10 +789,10 @@ impl URL {
 			if has {
 				mut &url := unsafe { &(*(*(&self))) } // Break immutability, no risk for reflective mutation.
 				url.User = UserPassword(self.User.Username(), "xxxxx")
-				ret url.Str()
+				ret url.String()
 			}
 		}
-		ret self.Str()
+		ret self.String()
 	}
 
 	// Sets the Path and RawPath fields of the URL based on the provided
@@ -1164,7 +1164,7 @@ impl Values {
 				buf.WriteString(QueryEscape(v))!
 			}
 		}
-		ret buf.Str()
+		ret buf.String()
 	}
 }
 
@@ -1203,5 +1203,5 @@ fn ParseQuery(query: string)!: Values {
 // the existing path of base and the resulting path cleaned of any ./ or ../ elements.
 fn JoinPath(base: string, elem: ...string)!: string {
 	mut url := Parse(base)?
-	ret url.JoinPath(elem...).Str()
+	ret url.JoinPath(elem...).String()
 }

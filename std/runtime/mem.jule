@@ -19,7 +19,7 @@ fn ptrEqual(a: *unsafe, b: *unsafe): bool {
 #export "__jule_stringBytePtr"
 unsafe fn stringBytePtr(b: *byte, n: int): string {
 	mut s := ""
-	mut sb := (*runtime::Str)(&s)
+	mut sb := (*runtime::String)(&s)
 	sb.Buffer.Ptr = *(&b)
 	sb.Buffer.Ref = nil
 	sb.Slice = sb.Buffer.Ptr

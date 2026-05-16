@@ -97,7 +97,7 @@ impl comptimeTypeInfo {
 
 	// Returns string value of type (not actual type).
 	// Returns as constant expression.
-	fn Str(*self): string
+	fn String(*self): string
 
 	// Returns declaration information for type.
 	// Supports only structs, traits, enums, type enums, and functions.

@@ -163,7 +163,7 @@ impl decoder {
 			| comptime::Array:
 				if i >= len(*a) {
 					// Ran out of fixed array.
-					throw errors::New("json: array exceeds length of fixed array of type :" + t.Str() + ", got " + conv::Itoa(i))
+					throw errors::New("json: array exceeds length of fixed array of type :" + t.String() + ", got " + conv::Itoa(i))
 				}
 				self.value(&(*a)[i])?
 			| comptime::Slice:
@@ -210,7 +210,7 @@ impl decoder {
 		const keyT = comptime::TypeOf(K)
 		const match {
 		| keyT == valueT | keyT == stringT
-		| keyT.Kind() == comptime::Str
+		| keyT.Kind() == comptime::String
 		| keyT.Kind() == comptime::Int
 		| keyT.Kind() == comptime::I8
 		| keyT.Kind() == comptime::I16
@@ -224,10 +224,10 @@ impl decoder {
 		| keyT.Kind() == comptime::U64:
 			break
 		|:
-			throw &UnsupportedTypeError{Type: mapT.Str()}
+			throw &UnsupportedTypeError{Type: mapT.String()}
 		}
 		// Consider string and dynamic JSON value types as quoted. Directly assign string as key.
-		const quoted = keyT.Kind() == comptime::Str || keyT == valueT || keyT == stringT
+		const quoted = keyT.Kind() == comptime::String || keyT == valueT || keyT == stringT
 		for {
 			// Read opening " of string key or closing }.
 			self.scanWhile(scanSkipSpace)?
@@ -259,7 +259,7 @@ impl decoder {
 				mut s := ""
 				ok := decodeString(&s, keylit)
 				if !ok {
-					throw errors::New("json: invalid value for type " + keyT.Str() + ": " + unsafe::BytesString(keylit))
+					throw errors::New("json: invalid value for type " + keyT.String() + ": " + unsafe::BytesString(keylit))
 				}
 				if *m == nil {
 					*m = Map{} // create new map
@@ -274,7 +274,7 @@ impl decoder {
 				// Quoted non-string type, parse unquoted value by type to assign.
 				key := unquoteBytes(keylit)
 				if key == nil {
-					throw errors::New("json: invalid value for object key type" + keyT.Str() + ": " + unsafe::BytesString(keylit))
+					throw errors::New("json: invalid value for object key type" + keyT.String() + ": " + unsafe::BytesString(keylit))
 				}
 				let mut keyV: K
 				const match keyT.Kind() {
@@ -441,7 +441,7 @@ impl decoder {
 				self.scanNext()
 				ret
 			|:
-				throw errors::New("json: invalid value for type " + tt.Str() + ": array")
+				throw errors::New("json: invalid value for type " + tt.String() + ": array")
 			}
 		| scanBeginObject:
 			const match {
@@ -460,7 +460,7 @@ impl decoder {
 				self.scanNext()
 				ret
 			|:
-				throw errors::New("json: invalid value for type " + tt.Str() + ": object")
+				throw errors::New("json: invalid value for type " + tt.String() + ": object")
 			}
 		| scanBeginLiteral:
 			// All bytes inside literal return scanContinue op code.
@@ -523,14 +523,14 @@ fn decodeLiteral[T](mut data: []byte, mut &t: *T)! {
 			mut s := ""
 			ok := decodeString(&s, data)
 			if !ok {
-				throw errors::New("json: invalid value for type " + tt.Str() + ": " + unsafe::BytesString(data))
+				throw errors::New("json: invalid value for type " + tt.String() + ": " + unsafe::BytesString(data))
 			}
 			*t = String(s)
 			ret
-		| tt.Kind() == comptime::Str:
+		| tt.Kind() == comptime::String:
 			ok := decodeString(unsafe { &(*(*string)(t)) }, data)
 			if !ok {
-				throw errors::New("json: invalid value for type " + tt.Str() + ": " + unsafe::BytesString(data))
+				throw errors::New("json: invalid value for type " + tt.String() + ": " + unsafe::BytesString(data))
 			}
 			ret
 		| tt.Kind() == comptime::Slice:
@@ -538,21 +538,21 @@ fn decodeLiteral[T](mut data: []byte, mut &t: *T)! {
 			| comptime::U8:
 				mut s2 := unquoteBytes(data)
 				if s2 == nil {
-					throw errors::New("json: invalid value for type " + tt.Str() + ": " + unsafe::BytesString(data))
+					throw errors::New("json: invalid value for type " + tt.String() + ": " + unsafe::BytesString(data))
 				}
 				mut r := base64::StdEncoding.AppendDecode(nil, s2)?
 				*t = unsafe { *(*T)(&r) }
 				ret
 			}
 		}
-		throw errors::New("json: invalid value for type " + tt.Str() + ": string")
+		throw errors::New("json: invalid value for type " + tt.String() + ": string")
 	| 'n': // Null literal.
 		const match {
 		| tt.CanNil():
 			*t = nil
 			ret
 		|:
-			throw errors::New("json: invalid value for type " + tt.Str() + ": null")
+			throw errors::New("json: invalid value for type " + tt.String() + ": null")
 		}
 	| 't' | 'f': // Boolean literal.
 		const match {
@@ -563,7 +563,7 @@ fn decodeLiteral[T](mut data: []byte, mut &t: *T)! {
 			*t = data[0] == 't'
 			ret
 		|:
-			throw errors::New("json: invalid value for type " + tt.Str() + ": boolean")
+			throw errors::New("json: invalid value for type " + tt.String() + ": boolean")
 		}
 	| '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '-': // Number literal.
 		const match {
@@ -592,7 +592,7 @@ fn decodeLiteral[T](mut data: []byte, mut &t: *T)! {
 			decodeFloat(t, data)?
 			ret
 		|:
-			throw errors::New("json: invalid value for type " + tt.Str() + ": " + unsafe::BytesString(data))
+			throw errors::New("json: invalid value for type " + tt.String() + ": " + unsafe::BytesString(data))
 		}
 	|:
 		panic("unreachable")
@@ -858,7 +858,7 @@ fn decodeInt[T](mut &t: *T, lit: []byte)! {
 	// The byte buffer will not change, so it's safe and efficient.
 	const tt = comptime::TypeOf(T)
 	n := conv::ParseInt(unsafe::BytesString(lit), 10, tt.Bits()) else {
-		throw errors::New("json: invalid value for type " + tt.Str() + ": " + unsafe::BytesString(lit))
+		throw errors::New("json: invalid value for type " + tt.String() + ": " + unsafe::BytesString(lit))
 	}
 	*t = (T)(n)
 }
@@ -869,7 +869,7 @@ fn decodeUInt[T](mut &t: *T, lit: []byte)! {
 	// The byte buffer will not change, so it's safe and efficient.
 	const tt = comptime::TypeOf(T)
 	n := conv::ParseUint(unsafe::BytesString(lit), 10, tt.Bits()) else {
-		throw errors::New("json: invalid value for type " + tt.Str() + ": " + unsafe::BytesString(lit))
+		throw errors::New("json: invalid value for type " + tt.String() + ": " + unsafe::BytesString(lit))
 	}
 	*t = (T)(n)
 }
@@ -880,7 +880,7 @@ fn decodeFloat[T](mut &t: *T, lit: []byte)! {
 	// The byte buffer will not change, so it's safe and efficient.
 	const tt = comptime::TypeOf(T)
 	n := conv::ParseFloat(unsafe::BytesString(lit), tt.Bits()) else {
-		throw errors::New("json: invalid value for type " + tt.Str() + ": " + unsafe::BytesString(lit))
+		throw errors::New("json: invalid value for type " + tt.String() + ": " + unsafe::BytesString(lit))
 	}
 	*t = (T)(n)
 }

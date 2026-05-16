@@ -117,7 +117,7 @@ impl Optimizer {
 
 fn detectEnabled() {
 	exprEnabled = ZCopy || ZAppend || StdStrings || Ptr || Math || Access ||
-		Cond || Array || Str || Dynamic || Len
-	scopeEnabled = Cond || Append || Copy || Str || Slice || Assign || Fallible ||
+		Cond || Array || String || Dynamic || Len
+	scopeEnabled = Cond || Append || Copy || String || Slice || Assign || Fallible ||
 		Iter || Dynamic
 }

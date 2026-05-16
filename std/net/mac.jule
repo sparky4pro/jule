@@ -79,7 +79,7 @@ impl HardwareAddr {
 	}
 
 	// Returns address in string form.
-	fn Str(*self): string {
+	fn String(*self): string {
 		if len(*self) == 0 {
 			ret ""
 		}
@@ -92,6 +92,6 @@ impl HardwareAddr {
 			buf.WriteByte(hexDigit[b>>4])!
 			buf.WriteByte(hexDigit[b&0xF])!
 		}
-		ret buf.Str()
+		ret buf.String()
 	}
 }

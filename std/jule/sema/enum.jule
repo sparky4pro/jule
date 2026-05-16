@@ -16,7 +16,7 @@ struct Enum {
 impl Kind for Enum {
 	// Implement: Kind
 	// Returns Enum's identifier.
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret self.Name
 	}
 
@@ -57,7 +57,7 @@ struct TypeEnum {
 impl Kind for TypeEnum {
 	// Implement: Kind
 	// Returns TypeEnum's identifier.
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret self.Name
 	}
 

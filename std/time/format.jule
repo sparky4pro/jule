@@ -262,7 +262,7 @@ impl Time {
 	// Returns the time formatted using the format string
 	//
 	//	"2006-01-02 15:04:05.999999999 -0700 MST"
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret self.Format("2006-01-02 15:04:05.999999999 -0700 MST")
 	}
 }
@@ -540,18 +540,18 @@ fn appendFormat(&t: *Time, mut b: []byte, mut layout: string): []byte {
 		| stdLongYear:
 			b = appendInt(b, year, 4)
 		| stdMonth:
-			b = append(b, month.Str()[:3]...)
+			b = append(b, month.String()[:3]...)
 		| stdLongMonth:
-			m := month.Str()
+			m := month.String()
 			b = append(b, m...)
 		| stdNumMonth:
 			b = appendInt(b, int(month), 0)
 		| stdZeroMonth:
 			b = appendInt(b, int(month), 2)
 		| stdWeekDay:
-			b = append(b, days.weekday().Str()[:3]...)
+			b = append(b, days.weekday().String()[:3]...)
 		| stdLongWeekDay:
-			s := days.weekday().Str()
+			s := days.weekday().String()
 			b = append(b, s...)
 		| stdDay:
 			b = appendInt(b, day, 0)
@@ -758,7 +758,7 @@ struct ParseError {
 }
 
 impl ParseError {
-	fn Str(*self): string {
+	fn String(*self): string {
 		if self.Message == "" {
 			ret "parsing time " +
 				quote(self.Value) + " as " +

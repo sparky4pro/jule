@@ -658,9 +658,9 @@ fn testNumError(t: &testing::T) {
 			Num:  test.num,
 			Err:  errors::New("failed"),
 		}
-		got := err.Str()
+		got := err.String()
 		if got != test.want {
-			t.Errorf(`(&NumError{"ParseFloat", {}, "failed"}).Str() = {}, want {}`, test.num, got, test.want)
+			t.Errorf(`(&NumError{"ParseFloat", {}, "failed"}).String() = {}, want {}`, test.num, got, test.want)
 		}
 	}
 }

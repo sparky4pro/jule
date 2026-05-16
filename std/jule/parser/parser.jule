@@ -575,7 +575,7 @@ impl parser {
 			self.pushErr(tokens[1], "invalid syntax")
 		}
 
-		param.Name = name.Str()
+		param.Name = name.String()
 		ret param
 	}
 

@@ -15,7 +15,7 @@ impl Addr for IPAddr {
 	}
 
 	// Returns string form of address.
-	fn Str(*self): string {
+	fn String(*self): string {
 		if self == nil {
 			ret "<nil>"
 		}

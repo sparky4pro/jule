@@ -26,7 +26,7 @@ struct comptimeRange {
 }
 
 impl Kind for comptimeRange {
-	fn Str(*self): string { ret "comptimeRange" }
+	fn String(*self): string { ret "comptimeRange" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -36,7 +36,7 @@ struct comptimeStructField {
 }
 
 impl Kind for comptimeStructField {
-	fn Str(*self): string { ret "comptimeStructField" }
+	fn String(*self): string { ret "comptimeStructField" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -87,7 +87,7 @@ struct comptimeStructFields {
 }
 
 impl Kind for comptimeStructFields {
-	fn Str(*self): string { ret "comptimeStructFields" }
+	fn String(*self): string { ret "comptimeStructFields" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -147,7 +147,7 @@ struct comptimeStatic {
 }
 
 impl Kind for comptimeStatic {
-	fn Str(*self): string { ret "comptimeStatic" }
+	fn String(*self): string { ret "comptimeStatic" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -198,7 +198,7 @@ struct comptimeStatics {
 }
 
 impl Kind for comptimeStatics {
-	fn Str(*self): string { ret "comptimeStatics" }
+	fn String(*self): string { ret "comptimeStatics" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -258,7 +258,7 @@ struct comptimeEnumField {
 }
 
 impl Kind for comptimeEnumField {
-	fn Str(*self): string { ret "comptimeEnumField" }
+	fn String(*self): string { ret "comptimeEnumField" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -295,7 +295,7 @@ struct comptimeEnumFields {
 }
 
 impl Kind for comptimeEnumFields {
-	fn Str(*self): string { ret "comptimeEnumFields" }
+	fn String(*self): string { ret "comptimeEnumFields" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -355,7 +355,7 @@ struct comptimeParam {
 }
 
 impl Kind for comptimeParam {
-	fn Str(*self): string { ret "comptimeParam" }
+	fn String(*self): string { ret "comptimeParam" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -426,7 +426,7 @@ struct comptimeParams {
 }
 
 impl Kind for comptimeParams {
-	fn Str(*self): string { ret "comptimeParams" }
+	fn String(*self): string { ret "comptimeParams" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -486,7 +486,7 @@ struct comptimeTypeInfos {
 }
 
 impl Kind for comptimeTypeInfos {
-	fn Str(*self): string { ret "comptimeTypeInfos" }
+	fn String(*self): string { ret "comptimeTypeInfos" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -544,7 +544,7 @@ struct comptimeTypeInfo {
 }
 
 impl Kind for comptimeTypeInfo {
-	fn Str(*self): string { ret "comptimeTypeInfo[" + self.base.Str() + "]" }
+	fn String(*self): string { ret "comptimeTypeInfo[" + self.base.String() + "]" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -585,15 +585,15 @@ impl comptimeTypeInfo {
 			mut f := self.base.Func()
 			match {
 			| f.IsBuiltin():
-				e.pushErr(fc.Args[0].Token, "type @ is invalid for built-in function", self.base.Str())
+				e.pushErr(fc.Args[0].Token, "type @ is invalid for built-in function", self.base.String())
 				ret nil
 			| f.IsAnon():
-				e.pushErr(fc.Args[0].Token, "type @ is invalid for anonymous function", self.base.Str())
+				e.pushErr(fc.Args[0].Token, "type @ is invalid for anonymous function", self.base.String())
 				ret nil
 			}
 			decl = f.Decl
 		|:
-			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Decl", self.base.Str())
+			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Decl", self.base.String())
 			ret nil
 		}
 		ret &Value{
@@ -603,13 +603,13 @@ impl comptimeTypeInfo {
 		}
 	}
 
-	fn _Str(&self, mut e: &eval, mut fc: &ast::CallExpr): &Value {
+	fn _String(&self, mut e: &eval, mut fc: &ast::CallExpr): &Value {
 		if len(fc.Args) > 0 {
-			e.pushErr(fc.Token, "passed more argument than expected to Str")
-			e.pushSuggestion("call like; Str()")
+			e.pushErr(fc.Token, "passed more argument than expected to String")
+			e.pushSuggestion("call like; String()")
 			ret nil
 		}
-		mut constant := constant::NewString(self.base.Str())
+		mut constant := constant::NewString(self.base.String())
 		ret &Value{
 			untyped:  true,
 			Type:     primString,
@@ -698,7 +698,7 @@ impl comptimeTypeInfo {
 			}
 		}
 		if c == nil {
-			panic("sema: Kind(): unimplemented type for comptime: " + self.base.Str())
+			panic("sema: Kind(): unimplemented type for comptime: " + self.base.String())
 		}
 		ret &Value{
 			untyped:  true,
@@ -716,12 +716,12 @@ impl comptimeTypeInfo {
 		}
 		prim := self.base.Prim()
 		if prim == nil {
-			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Bits", self.base.Str())
+			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Bits", self.base.String())
 			ret nil
 		}
 		n := types::BitSizeOf(prim.Kind)
 		if n == -1 {
-			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Bits", self.base.Str())
+			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Bits", self.base.String())
 			ret nil
 		}
 		mut constant := constant::NewI64(i64(n))
@@ -742,7 +742,7 @@ impl comptimeTypeInfo {
 		mut ptr := self.base.Ptr()
 		if ptr != nil {
 			if ptr.IsUnsafe() {
-				e.pushErr(fc.Args[0].Token, "type @ is invalid for function Value", self.base.Str())
+				e.pushErr(fc.Args[0].Token, "type @ is invalid for function Value", self.base.String())
 				ret nil
 			}
 			ret buildComptimeTypeInfoData(e.s, ptr.Value)
@@ -771,7 +771,7 @@ impl comptimeTypeInfo {
 		if m != nil {
 			ret buildComptimeTypeInfoData(e.s, m.Value)
 		}
-		e.pushErr(fc.Args[0].Token, "type @ is invalid for function Value", self.base.Str())
+		e.pushErr(fc.Args[0].Token, "type @ is invalid for function Value", self.base.String())
 		ret nil
 	}
 
@@ -783,7 +783,7 @@ impl comptimeTypeInfo {
 		}
 		mut arr := self.base.Array()
 		if arr == nil {
-			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Size", self.base.Str())
+			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Size", self.base.String())
 			ret nil
 		}
 		mut constant := constant::NewI64(i64(arr.N))
@@ -803,7 +803,7 @@ impl comptimeTypeInfo {
 		}
 		mut m := self.base.Map()
 		if m == nil {
-			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Key", self.base.Str())
+			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Key", self.base.String())
 			ret nil
 		}
 		ret buildComptimeTypeInfoData(e.s, m.Key)
@@ -835,7 +835,7 @@ impl comptimeTypeInfo {
 				},
 			}
 		}
-		e.pushErr(fc.Args[0].Token, "type @ is invalid for function Fields", self.base.Str())
+		e.pushErr(fc.Args[0].Token, "type @ is invalid for function Fields", self.base.String())
 		ret nil
 	}
 
@@ -907,7 +907,7 @@ impl comptimeTypeInfo {
 		}
 		mut tup := self.base.Tuple()
 		if tup == nil {
-			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Types", self.base.Str())
+			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Types", self.base.String())
 			ret nil
 		}
 		mut infos := &comptimeTypeInfos{
@@ -961,7 +961,7 @@ impl comptimeTypeInfo {
 		}
 		mut f := self.base.Func()
 		if f == nil {
-			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Result", self.base.Str())
+			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Result", self.base.String())
 			ret nil
 		}
 		if f.Result == nil {
@@ -978,7 +978,7 @@ impl comptimeTypeInfo {
 		}
 		mut f := self.base.Func()
 		if f == nil {
-			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Params", self.base.Str())
+			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Params", self.base.String())
 			ret nil
 		}
 		ret &Value{
@@ -1013,7 +1013,7 @@ impl comptimeTypeInfo {
 		mut s := self.base.SoftStruct()
 		isStrict := s != nil && s.Source != nil
 		if !isStrict {
-			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Source", self.base.Str())
+			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Source", self.base.String())
 			ret nil
 		}
 		ret buildComptimeTypeInfoData(e.s, s.Source)
@@ -1028,7 +1028,7 @@ impl comptimeTypeInfo {
 		s := self.base.SoftStruct()
 		isStrict := s != nil && s.Source != nil
 		if !isStrict {
-			e.pushErr(fc.Args[0].Token, "type @ is invalid for function ActualSource", self.base.Str())
+			e.pushErr(fc.Args[0].Token, "type @ is invalid for function ActualSource", self.base.String())
 			ret nil
 		}
 		mut t := &Type{Kind: self.base.ActualKind()}
@@ -1062,9 +1062,9 @@ impl comptimeTypeInfo {
 				caller: fn|mut e, mut fc, _| self._Decl(e, fc),
 			}
 			ret buildAsComptimeMethodData(method)
-		| "Str":
+		| "String":
 			mut method := &FuncIns{
-				caller: fn|mut e, mut fc, _| self._Str(e, fc),
+				caller: fn|mut e, mut fc, _| self._String(e, fc),
 			}
 			ret buildAsComptimeMethodData(method)
 		| "Bits":
@@ -1154,7 +1154,7 @@ struct comptimeValue {
 }
 
 impl Kind for comptimeValue {
-	fn Str(*self): string { ret "comptimeValue" }
+	fn String(*self): string { ret "comptimeValue" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -1230,7 +1230,7 @@ impl comptimeValue {
 		}
 		mut s := self.v.Type.Struct()
 		if s == nil {
-			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Field", self.v.Type.Str())
+			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Field", self.v.Type.String())
 			ret nil
 		}
 		mut arg := fc.Args[0]
@@ -1244,7 +1244,7 @@ impl comptimeValue {
 		}
 		prim := v.Type.Prim()
 		if prim == nil || !prim.IsString() {
-			e.pushErr(arg.Token, "mismatched types: @ and @", string(types::String), v.Type.Str())
+			e.pushErr(arg.Token, "mismatched types: @ and @", string(types::String), v.Type.String())
 			ret nil
 		}
 		name := v.Constant.ReadString()
@@ -1266,7 +1266,7 @@ impl comptimeValue {
 		}
 		mut s := self.v.Type.Struct()
 		if s == nil {
-			e.pushErr(fc.Args[0].Token, "type @ is invalid for function FieldByIndex", self.v.Type.Str())
+			e.pushErr(fc.Args[0].Token, "type @ is invalid for function FieldByIndex", self.v.Type.String())
 			ret nil
 		}
 		mut arg := fc.Args[0]
@@ -1310,7 +1310,7 @@ impl comptimeValue {
 			s = self.v.Type.Kind.(&StructIns)
 		}
 		if s == nil {
-			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Method", self.v.Type.Str())
+			e.pushErr(fc.Args[0].Token, "type @ is invalid for function Method", self.v.Type.String())
 			ret nil
 		}
 		mut arg := fc.Args[0]
@@ -1324,7 +1324,7 @@ impl comptimeValue {
 		}
 		prim := v.Type.Prim()
 		if prim == nil || !prim.IsString() {
-			e.pushErr(arg.Token, "mismatched types: @ and @", string(types::String), v.Type.Str())
+			e.pushErr(arg.Token, "mismatched types: @ and @", string(types::String), v.Type.String())
 			ret nil
 		}
 		name := v.Constant.ReadString()
@@ -1396,7 +1396,7 @@ struct comptimeFiles {
 }
 
 impl Kind for comptimeFiles {
-	fn Str(*self): string { ret "comptimeFiles" }
+	fn String(*self): string { ret "comptimeFiles" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -1456,7 +1456,7 @@ struct comptimeFile {
 }
 
 impl Kind for comptimeFile {
-	fn Str(*self): string { ret "comptimeFile" }
+	fn String(*self): string { ret "comptimeFile" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -1535,7 +1535,7 @@ struct comptimeDecls {
 }
 
 impl Kind for comptimeDecls {
-	fn Str(*self): string { ret "comptimeDecls" }
+	fn String(*self): string { ret "comptimeDecls" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -1607,7 +1607,7 @@ struct comptimeDecl {
 }
 
 impl Kind for comptimeDecl {
-	fn Str(*self): string { ret "comptimeDecl" }
+	fn String(*self): string { ret "comptimeDecl" }
 	fn Equal(&self, other: &Type): bool { ret false }
 }
 
@@ -2056,7 +2056,7 @@ impl comptimeDecl {
 		}
 		prim := v.Type.Prim()
 		if prim == nil || !prim.IsString() {
-			e.pushErr(arg.Token, "mismatched types: @ and @", string(types::String), v.Type.Str())
+			e.pushErr(arg.Token, "mismatched types: @ and @", string(types::String), v.Type.String())
 			ret nil
 		}
 		key := v.Constant.ReadString()
@@ -2092,7 +2092,7 @@ impl comptimeDecl {
 		}
 		prim := v.Type.Prim()
 		if prim == nil || !prim.IsString() {
-			e.pushErr(arg.Token, "mismatched types: @ and @", string(types::String), v.Type.Str())
+			e.pushErr(arg.Token, "mismatched types: @ and @", string(types::String), v.Type.String())
 			ret nil
 		}
 		key := v.Constant.ReadString()

@@ -522,7 +522,7 @@ fn checkFlags(args: []string): []string {
 	fs.AddVar[bool](unsafe { (&bool)(&opt::Inline) }, "opt-inline", 0, "Inline optimization")
 	fs.AddVar[bool](unsafe { (&bool)(&opt::Ptr) }, "opt-ptr", 0, "Pointer optimizations")
 	fs.AddVar[bool](unsafe { (&bool)(&opt::Cond) }, "opt-cond", 0, "Conditional optimizations")
-	fs.AddVar[bool](unsafe { (&bool)(&opt::Str) }, "opt-str", 0, "String optimizations")
+	fs.AddVar[bool](unsafe { (&bool)(&opt::String) }, "opt-str", 0, "String optimizations")
 	fs.AddVar[bool](unsafe { (&bool)(&opt::Slice) }, "opt-slice", 0, "Slice optimizations")
 	fs.AddVar[bool](unsafe { (&bool)(&opt::Assign) }, "opt-assign", 0, "Assignment optimizations")
 	fs.AddVar[bool](unsafe { (&bool)(&opt::Fallible) }, "opt-fallible", 0, "Fallible function optimizations")

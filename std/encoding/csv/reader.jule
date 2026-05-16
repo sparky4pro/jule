@@ -101,7 +101,7 @@ struct ParseError {
 }
 
 impl ParseError {
-	fn Str(*self): string {
+	fn String(*self): string {
 		if self.Err == ErrFieldCount {
 			ret fmt::Sprintf("record on line {}: {}", self.Line, self.Err)
 		}

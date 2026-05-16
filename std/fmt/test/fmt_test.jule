@@ -65,7 +65,7 @@ fn testFprintf(t: &testing::T) {
 	for _, test in formatTests {
 		mut sb := new(strings::Builder)
 		fmt::Fprintf(sb, test.fmt, test.args...)!
-		out := sb.Str()
+		out := sb.String()
 		if out != test.out {
 			t.Errorf("Fprintf({}, {}) = {}, want {}", test.fmt, test.args, out, test.out)
 		}

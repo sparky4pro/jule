@@ -21,7 +21,7 @@ struct UnsupportedTypeError {
 }
 
 impl UnsupportedTypeError {
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret "json: unsupported type: " + self.Type
 	}
 }
@@ -33,7 +33,7 @@ struct UnsupportedValueError {
 }
 
 impl UnsupportedValueError {
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret "json: unsupported value: " + self.Value
 	}
 }
@@ -46,7 +46,7 @@ struct EncodeError {
 }
 
 impl EncodeError {
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret "json: error calling " +
 			self.sourceFunc + " for type " +
 			self.Type + ": " + runtime::toString(self.Err)
@@ -288,7 +288,7 @@ impl encoder {
 		const tt = comptime::TypeOf(T)
 		const keyT = tt.Key()
 		match keyT.Kind() {
-		| comptime::Str
+		| comptime::String
 		| comptime::Int
 		| comptime::I8
 		| comptime::I16
@@ -302,7 +302,7 @@ impl encoder {
 		| comptime::U64:
 			break
 		|:
-			throw &UnsupportedTypeError{Type: tt.Str()}
+			throw &UnsupportedTypeError{Type: tt.String()}
 		}
 		if t == nil {
 			self.buf.writeString("{}")
@@ -413,7 +413,7 @@ impl encoder {
 							| m.Type().Decl().Fallible() &&
 								m.Type().Result() == comptime::TypeOf([]byte):
 								bytes := m.Unwrap()() else {
-									throw &EncodeError{Type: tt.Str(), Err: error, sourceFunc: name}
+									throw &EncodeError{Type: tt.String(), Err: error, sourceFunc: name}
 								}
 								const match name {
 								| "EncodeText":
@@ -445,7 +445,7 @@ impl encoder {
 		| comptime::Bool:
 			self.encodeBool(bool(t))
 			ret
-		| comptime::Str:
+		| comptime::String:
 			self.encodeString(string(t))
 			ret
 		| comptime::Smartptr:
@@ -467,7 +467,7 @@ impl encoder {
 		| comptime::Slice:
 			self.encodeSlice[T, Flag](t)?
 		|:
-			throw &UnsupportedTypeError{Type: tt.Str()}
+			throw &UnsupportedTypeError{Type: tt.String()}
 		}
 	}
 
@@ -479,7 +479,7 @@ impl encoder {
 		const tt = comptime::TypeOf(T)
 		const match {
 		| tt.Extern():
-			throw &UnsupportedTypeError{Type: tt.Str()}
+			throw &UnsupportedTypeError{Type: tt.String()}
 		|:
 			self.encodePlain[T, Flag](t)?
 		}
@@ -721,7 +721,7 @@ fn isValidTag(s: string): bool {
 fn resolveKeyName[T](k: T): string {
 	const t = comptime::TypeOf(T)
 	const match t.Kind() {
-	| comptime::Str:
+	| comptime::String:
 		ret string(k)
 	| comptime::Int | comptime::I8 | comptime::I16 | comptime::I32 | comptime::I64:
 		ret conv::FormatInt(i64(k), 10)

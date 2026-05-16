@@ -37,7 +37,7 @@ const (
 )
 
 impl FileMode {
-	fn Str(*self): string {
+	fn String(*self): string {
 		const s = "dalTLDpSugct?"
 		let mut buf: [32]byte // Mode is u32.
 		mut w := 0

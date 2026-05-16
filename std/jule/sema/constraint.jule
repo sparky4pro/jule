@@ -90,7 +90,7 @@ impl constraintChecker {
 						if !canTilde(typ) {
 							sema.pushErr(mask.Type.Token, "tilde ~ operator expects primitive, slice, array, map, chan or pointer type")
 							if typ.Struct() == nil {
-								sema.pushSuggestion("use the underlying type as mask: " + typ.ActualKind().Str())
+								sema.pushSuggestion("use the underlying type as mask: " + typ.ActualKind().String())
 							}
 							ret false
 						}
@@ -148,7 +148,7 @@ impl constraintChecker {
 					continue lookup
 				}
 			}
-			self.s.pushErr(self.et, "type @ does not match constraint of @: @", g.Type.Str(), self.genericsD[i].Name, toStrConstraints(g))
+			self.s.pushErr(self.et, "type @ does not match constraint of @: @", g.Type.String(), self.genericsD[i].Name, toStrConstraints(g))
 			ret false
 		}
 		ret true
@@ -159,12 +159,12 @@ fn toStrConstraints(g: &InsGeneric): string {
 	mut sb := strings::Builder{}
 	sb.Grow(1 << 7)
 	for i, c in g.Constraint {
-		sb.WriteString(c.Str())!
+		sb.WriteString(c.String())!
 		if len(g.Constraint)-i > 1 {
 			sb.WriteString(" | ")!
 		}
 	}
-	ret sb.Str()
+	ret sb.String()
 }
 
 fn matchConstraint(c: string, mut g: &Type): bool {

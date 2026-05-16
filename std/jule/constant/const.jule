@@ -654,7 +654,7 @@ impl Const {
 		ret true
 	}
 
-	fn Str(*self): string {
+	fn String(*self): string {
 		match {
 		| self.IsNil():
 			ret "nil"

@@ -39,7 +39,7 @@ async fn testOneByteReader_nonEmptyReader(t: &testing::T) {
 		}
 		got.Write(b[:n])!
 	}
-	g, w := got.Str(), "Hello, World!"
+	g, w := got.String(), "Hello, World!"
 	if g != w {
 		t.Errorf("Read mismatch\n\tGot:  {\n\tWant: {}", g, w)
 	}
@@ -102,7 +102,7 @@ async fn testHalfReader_nonEmptyReader(t: &testing::T) {
 		}
 		got.Write(b[:n])!
 	}
-	g, w := got.Str(), "Hello, World!"
+	g, w := got.String(), "Hello, World!"
 	if g != w {
 		t.Errorf("Read mismatch\n\tGot:  {\n\tWant: {}", g, w)
 	}
@@ -157,7 +157,7 @@ async fn testDataErrReader_nonEmptyReader(t: &testing::T) {
 		}
 		got.Write(b[:n])!
 	}
-	g, w := got.Str(), "Hello, World!"
+	g, w := got.String(), "Hello, World!"
 	if g != w {
 		t.Errorf("Read mismatch\n\tGot:  {}\n\tWant: {}", g, w)
 	}

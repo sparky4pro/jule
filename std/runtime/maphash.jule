@@ -76,7 +76,7 @@ fn arrayhash[A](&a: *A, mut seed: uintptr): uintptr {
 #disable nilptr
 fn stringhash(&s: *string, seed: uintptr): uintptr {
 	unsafe {
-		sp := (*runtime::Str)(s)
+		sp := (*runtime::String)(s)
 		ret memhash(sp.Slice, seed, uintptr(sp.Len))
 	}
 }

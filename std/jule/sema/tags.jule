@@ -57,7 +57,7 @@ impl tagChecker {
 		for {
 			mut r, _ := utf8::DecodeRuneString(tag[*i:])
 			if r == '"' {
-				ret value.Str()
+				ret value.String()
 			}
 			r, n, mut errors := lit::GetRune(tag[*i:])
 			if len(errors) > 0 {

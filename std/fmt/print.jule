@@ -76,7 +76,7 @@ fn sprint(mut &sb: *strings::Builder, args: ...any) {
 fn Sprint(args: ...any): string {
 	mut sb := strings::Builder{}
 	sprint(&sb, args...)
-	ret sb.Str()
+	ret sb.String()
 }
 
 // Returns string result of argument with default formatting.

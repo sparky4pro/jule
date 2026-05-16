@@ -21,7 +21,7 @@ type Month: int
 
 impl Month {
 	// Returns the English name of the month ("January", "February", ...).
-	fn Str(*self): string {
+	fn String(*self): string {
 		if January <= *self && *self <= December {
 			ret longMonthNames[*self-1]
 		}
@@ -86,7 +86,7 @@ type Weekday: int
 
 impl Weekday {
 	// Returns the English name of the day ("Sunday", "Monday", ...).
-	fn Str(*self): string {
+	fn String(*self): string {
 		if Sunday <= *self && *self <= Saturday {
 			ret longDayNames[*self]
 		}

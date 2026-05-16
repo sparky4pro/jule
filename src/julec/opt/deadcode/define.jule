@@ -94,8 +94,8 @@ impl ObjectDeadCode {
 				// or unexpected program bavior.
 				const Extern = false
 
-				mut _str := s.FindMethod("Str", Extern)
-				if _str != nil && sema::FuncPattern.Str(_str) {
+				mut _str := s.FindMethod("String", Extern)
+				if _str != nil && sema::FuncPattern.String(_str) {
 					mut fins := _str.Instances[0]
 					self.fusePushLive(fins)
 				}

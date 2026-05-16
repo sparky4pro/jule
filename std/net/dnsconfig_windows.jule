@@ -58,7 +58,7 @@ async fn osResolveConfig() {
 						// Unexpected type.
 						continue
 					}
-					conf.servers = append(conf.servers, JoinHostPort(ip.Str(), "53"))
+					conf.servers = append(conf.servers, JoinHostPort(ip.String(), "53"))
 				}
 			}
 		}

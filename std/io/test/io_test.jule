@@ -32,7 +32,7 @@ impl io::Reader for testbuffer {
 }
 
 impl testbuffer {
-	fn Str(*self): string {
+	fn String(*self): string {
 		ret string(self.buf)
 	}
 }
@@ -43,7 +43,7 @@ async fn testCopyN(t: &testing::T) {
 	mut wb := new(testbuffer)
 	io::WriteString(rb, "hello, world.").await!
 	io::CopyN(wb, rb, 5).await!
-	if wb.Str() != "hello" {
+	if wb.String() != "hello" {
 		t.Errorf("CopyN did not work properly")
 	}
 }

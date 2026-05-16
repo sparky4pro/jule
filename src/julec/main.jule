@@ -76,7 +76,7 @@ fn help(args: []string, pads: string, pad: int) {
 		writeCommandsList(&s, pads, pad)
 		s.WriteByte('\n')!
 		s.WriteString(`Use "julec help <command>" to see information about a command.`)!
-		println(s.Str())
+		println(s.String())
 		ret
 	}
 	if len(args) > 3 { // julec help <command> [unknown]
@@ -350,7 +350,7 @@ The commands are:` + modCommandsList)
 			mut sb := strings::Builder{}
 			sb.WriteString("module ")!
 			sb.WriteString(name)!
-			data := []byte(sb.Str())
+			data := []byte(sb.String())
 			os::WriteFileSync(jule::ModuleFile, data, 0o660) else {
 				printErrorMessage("module could not be generated")
 			}
@@ -393,7 +393,7 @@ Usage:
 The commands are:`)
 	mut s := strings::Builder{}
 	writeCommandsList(&s, "\t", 1)
-	print(s.Str())
+	print(s.String())
 	println(`
 Use "julec help <command>" for more information about a command.
 

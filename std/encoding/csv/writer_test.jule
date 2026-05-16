@@ -61,7 +61,7 @@ async fn testWrite(t: &testing::T) {
 		if err != tt.Error {
 			t.Errorf("Unexpected error:\ngot  {}\nwant {}", err, tt.Error)
 		}
-		out := b.Str()
+		out := b.String()
 		if out != tt.Output {
 			t.Errorf("#{}: out={} want {}", n, out, tt.Output)
 		}
