@@ -902,7 +902,7 @@ impl scopeCoder {
 				if rt.SoftStruct() == nil && obj::IsAny(rt) {
 					self.oc.write(opKind)
 					self.oc.ec.possibleRefExpr(r)
-					return
+					break
 				}
 				self.oc.write(opKind)
 				self.oc.write(typeAny + "(")
@@ -1074,7 +1074,7 @@ impl scopeCoder {
 			r.Name = assignResultName + "." + resultArgName + conv::Itoa(i)
 			self.oc.indent()
 			self.pureAssign(nil, token::ASSIGN, "=", l.Model, l.Type, r, tup.Types[i])
-			self.oc.write("\n")
+			self.oc.write(";\n")
 		}
 
 		self.oc.doneIndent()
