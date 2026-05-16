@@ -190,8 +190,8 @@ impl scopeParser {
 		ret v
 	}
 
-	fn buildRetSt(mut *self, mut tokens: []&token::Token): &ast::Ret {
-		mut st := &ast::Ret{
+	fn buildReturnSt(mut *self, mut tokens: []&token::Token): &ast::Return {
+		mut st := &ast::Return{
 			Token: tokens[0],
 		}
 		if len(tokens) > 1 {
@@ -1345,8 +1345,8 @@ impl scopeParser {
 		| token::LET
 		| token::MUT:
 			ret self.buildVarSt(st.tokens)
-		| token::RET:
-			ret self.buildRetSt(st.tokens)
+		| token::RETURN:
+			ret self.buildReturnSt(st.tokens)
 		| token::FOR:
 			ret self.buildIterSt(st)
 		| token::BREAK:

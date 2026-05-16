@@ -721,7 +721,7 @@ impl parser {
 		ret params
 	}
 
-	fn buildMultiRetType(mut &self, mut t: &ast::RetType, mut tokens: []&token::Token, mut &i: *int): (ok: bool) {
+	fn buildMultiReturnType(mut &self, mut t: &ast::ReturnType, mut tokens: []&token::Token, mut &i: *int): (ok: bool) {
 		if *i+1 >= len(tokens) {
 			t.Type, ok = self.buildType(tokens, i, false)
 			ret
@@ -796,8 +796,8 @@ impl parser {
 
 	// Builds function return type from tokens.
 	// If expression mode enabled, it will not complain about trailing invalid tokens.
-	fn buildRetType(mut &self, mut tokens: []&token::Token, mut expr: bool, mut &i: *int): (t: &ast::RetType, ok: bool) {
-		t = new(ast::RetType)
+	fn buildReturnType(mut &self, mut tokens: []&token::Token, mut expr: bool, mut &i: *int): (t: &ast::ReturnType, ok: bool) {
+		t = new(ast::ReturnType)
 		if *i >= len(tokens) {
 			// EOF, void return type.
 			ok = true
@@ -824,7 +824,7 @@ impl parser {
 			token = tokens[*i]
 			match token.ID {
 			| token::LPAREN:
-				ok = self.buildMultiRetType(t, tokens, i)
+				ok = self.buildMultiReturnType(t, tokens, i)
 				ret
 			| token::LBRACE:
 				self.pushErr(token, "missing type")
@@ -923,7 +923,7 @@ impl parser {
 		}
 
 		f.Public = mod::IsPub(f.Name)
-		f.Result, ok := self.buildRetType(tokens, expr, i)
+		f.Result, ok := self.buildReturnType(tokens, expr, i)
 		if !ok {
 			ret nil
 		}

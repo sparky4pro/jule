@@ -916,7 +916,7 @@ impl scopeOptimizer {
 		self.data.loadCheckpoint(checkpoint)
 	}
 
-	fn optimizeRet(mut &self, mut r: &sema::Ret) {
+	fn optimizeReturn(mut &self, mut r: &sema::Return) {
 		exprOptimizer.optimizeValue(&r.Expr, self.data, self)
 
 		// Break algorithm if fallible-specific optimizations are not enabled.
@@ -993,8 +993,8 @@ impl scopeOptimizer {
 			self.optimizeMatch(stmt.(&sema::Match))
 		| &sema::Select:
 			self.optimizeSelect(stmt.(&sema::Select))
-		| &sema::Ret:
-			self.optimizeRet(stmt.(&sema::Ret))
+		| &sema::Return:
+			self.optimizeReturn(stmt.(&sema::Return))
 		| &sema::Postfix:
 			self.optimizePostfix(stmt.(&sema::Postfix))
 		| &sema::Throw:

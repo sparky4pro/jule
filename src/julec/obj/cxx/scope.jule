@@ -1667,7 +1667,7 @@ impl scopeCoder {
 		}
 	}
 
-	fn setResult(mut &self, mut r: &sema::Ret) {
+	fn setResult(mut &self, mut r: &sema::Return) {
 		mut fc := isFallibleResult(r.Expr)
 		if fc != nil {
 			// If result types are not equal, must be handled like an assign.
@@ -1769,7 +1769,7 @@ impl scopeCoder {
 		self.oc.indent()
 	}
 
-	fn retStmt(mut &self, mut r: &sema::Ret) {
+	fn returnStmt(mut &self, mut r: &sema::Return) {
 		hasDefer := r.Func.Decl != nil && r.Func.Decl.HasDefer
 		mut fc := isFallibleResult(r.Expr) // Fallible functions should be handled with setResult.
 		if r.Func.Decl.IsVoid() {
@@ -2113,8 +2113,8 @@ impl scopeCoder {
 			self.fallStmt(st.(&sema::Fall))
 		| &sema::Break:
 			self.breakStmt(st.(&sema::Break))
-		| &sema::Ret:
-			self.retStmt(st.(&sema::Ret))
+		| &sema::Return:
+			self.returnStmt(st.(&sema::Return))
 		| &sema::Throw:
 			self.throwStmt(st.(&sema::Throw))
 		| &opt::PushToSliceExpr:
@@ -2331,7 +2331,7 @@ impl scopeCoder {
 			stmt := f.Scope.Stmts[len(f.Scope.Stmts)-1]
 			match type stmt {
 			| &sema::Throw
-			| &sema::Ret:
+			| &sema::Return:
 				ret
 			| &sema::Value:
 				v := stmt.(&sema::Value)

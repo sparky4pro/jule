@@ -3381,10 +3381,10 @@ impl missingRetChecker {
 				ret self.memoizeLabel(st.(&Label))
 			| &Goto:
 				ret self.memoizeGoto(st.(&Goto))
-			| &Ret:
+			| &Return:
 				// Return statement appeared, report true for this scope.
 				// But check the return expression before reporting true.
-				mut r := st.(&Ret)
+				mut r := st.(&Return)
 				mut f, isFunc := r.Expr.(&FuncCallExpr)
 				// Function call appeared.
 				// We have to check error handler scope, if exist.

@@ -155,11 +155,11 @@ fn buildParams(mut decls: []&ast::Param): []&Param {
 	ret params
 }
 
-fn buildRetType(mut decl: &ast::RetType): &RetType {
+fn buildReturnType(mut decl: &ast::ReturnType): &ReturnType {
 	if decl.Names == nil && decl.Type == nil {
 		ret nil // Void type.
 	}
-	ret &RetType{
+	ret &ReturnType{
 		TypeSym: buildType(decl.Type),
 		Names:   decl.Names,
 	}
@@ -179,7 +179,7 @@ fn buildFunc(mut decl: &ast::Func): &Func {
 		Directives: decl.Directives,
 		Scope:      decl.Scope,
 		Generics:   decl.Generics,
-		Result:     buildRetType(decl.Result),
+		Result:     buildReturnType(decl.Result),
 		Params:     buildParams(decl.Params),
 	}
 }

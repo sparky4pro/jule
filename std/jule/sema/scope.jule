@@ -31,7 +31,7 @@ enum Stmt: type {
 	&Match,
 	&Fall,
 	&Break,
-	&Ret,
+	&Return,
 	&Select,
 	&Use,
 	&Throw,
@@ -279,7 +279,7 @@ struct Fall {
 }
 
 // Return statement.
-struct Ret {
+struct Return {
 	Func: &FuncIns
 	Expr: Expr
 }
@@ -2250,8 +2250,8 @@ impl scopeChecker {
 		self.scope.Stmts = append(self.scope.Stmts, brk)
 	}
 
-	fn checkRet2(mut &self, mut token: &token::Token, mut x: &ast::Expr) {
-		mut rt := &Ret{
+	fn checkReturn2(mut &self, mut token: &token::Token, mut x: &ast::Expr) {
+		mut rt := &Return{
 			Func: self.getRoot().owner,
 		}
 		self.scope.Stmts = append(self.scope.Stmts, rt)
@@ -2272,11 +2272,11 @@ impl scopeChecker {
 		}
 	}
 
-	fn checkRet(mut &self, mut r: &ast::Ret) {
+	fn checkReturn(mut &self, mut r: &ast::Return) {
 		if self.isDeferred() {
 			self.s.pushErr(r.Token, "return statement is not allowed in deferred scope")
 		}
-		self.checkRet2(r.Token, r.X)
+		self.checkReturn2(r.Token, r.X)
 	}
 
 	fn checkUseExpr(mut &self, ue: &ast::UseExpr) {
@@ -2364,8 +2364,8 @@ impl scopeChecker {
 			self.checkFall(node.(&ast::Fall))
 		| &ast::Break:
 			self.checkBreak(node.(&ast::Break))
-		| &ast::Ret:
-			self.checkRet(node.(&ast::Ret))
+		| &ast::Return:
+			self.checkReturn(node.(&ast::Return))
 		| &ast::Throw:
 			self.checkThrow(node.(&ast::Throw))
 		| &ast::UseExpr:
@@ -2403,7 +2403,7 @@ impl scopeChecker {
 		| &ast::Goto
 		| &ast::Break
 		| &ast::Continue
-		| &ast::Ret
+		| &ast::Return
 		| &ast::Throw:
 			self.checkNode(stmt.Data, checkNodeDefault)
 		|:
@@ -2622,7 +2622,7 @@ impl scopeChecker {
 		if self.owner != nil && self.owner.oneliner && !self.owner.Decl.IsVoid() {
 			mut expr, isExpr := self.tree.Stmts[0].Data.(&ast::Expr)
 			if isExpr {
-				self.checkRet2(expr.Token, expr)
+				self.checkReturn2(expr.Token, expr)
 				goto FinalStage
 			}
 		}

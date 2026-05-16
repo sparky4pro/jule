@@ -27,7 +27,7 @@ struct kindPair {
 
 let keywords = map[string]int{
 	"const":    CONST,
-	"ret":      RET,
+	"return":   RETURN,
 	"type":     TYPE,
 	"for":      FOR,
 	"break":    BREAK,

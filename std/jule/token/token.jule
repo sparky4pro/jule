@@ -27,7 +27,7 @@ const (
 	RUNE   // rune literal
 	IMAG   // imaginary part literal
 
-	RET      // ret
+	RETURN   // ret
 	CONST    // const
 	TYPE     // type
 	FOR      // for

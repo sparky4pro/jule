@@ -8,7 +8,7 @@ use "std/jule/token"
 use "std/strings"
 
 // Return type.
-struct RetType {
+struct ReturnType {
 	TypeSym: &TypeSym
 	Names:   []&token::Token
 }
@@ -78,7 +78,7 @@ struct Func {
 	Scope: &ast::ScopeTree
 
 	Generics: []&ast::Generic
-	Result:   &RetType
+	Result:   &ReturnType
 	Params:   []&Param
 	Owner:    FuncOwner
 

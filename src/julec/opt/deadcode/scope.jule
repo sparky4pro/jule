@@ -196,7 +196,7 @@ impl scopeDeadCode {
 			|:
 				self.optimizeExpr(&val.Model)
 			}
-		| &sema::Ret:
+		| &sema::Return:
 			// Remove followed statements of the return statement.
 			// Unreachable code.
 			self.eliminateFollowed()

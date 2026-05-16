@@ -817,7 +817,7 @@ impl exprBuilder {
 		f.Async = isasync
 		f.Token = self.lt
 		f.Name = jule::Anon
-		f.Result = new(ast::RetType)
+		f.Result = new(ast::ReturnType)
 		f.Short = true
 		// We have content between |...| range.
 		// Build parameters.
