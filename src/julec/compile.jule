@@ -497,7 +497,7 @@ fn checkFlags(args: []string): []string {
 	mut opt := "L0"
 	mut target := "native-native"
 
-	mut fs := flag::FlagSet.New()
+	mut fs := flag::Set.New()
 
 	fs.AddVar[string](unsafe { (&string)(&COMAXPROCS) }, "COMAXPROCS", 0, "Maximum number of Ps that can execute coroutines")
 	fs.AddVar[string](unsafe { (&string)(&opt) }, "opt", 0, "Optimization level")
