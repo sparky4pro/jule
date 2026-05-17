@@ -222,13 +222,7 @@ impl eval {
 		mut data := &Value{
 			Constant: constant::NewI64(i64(r)),
 		}
-
-		if r <= 255 {
-			data.Type = findBuiltinTypeAlias("byte").TypeSym.Type
-		} else {
-			data.Type = findBuiltinTypeAlias("rune").TypeSym.Type
-		}
-
+		data.Type = findBuiltinTypeAlias("rune").TypeSym.Type
 		data.Model = &RuneExpr{Code: r}
 		data.Mutable = true
 		data.IsRune = true

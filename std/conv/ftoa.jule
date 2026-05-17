@@ -416,7 +416,7 @@ fn formatE(mut dst: []byte, neg: bool, d: decimalSlice, prec: int, fmt: byte): [
 	}
 
 	// first digit
-	mut ch := '0'
+	mut ch := byte('0')
 	if d.nd != 0 {
 		ch = d.d[0]
 	}
