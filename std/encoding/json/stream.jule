@@ -136,6 +136,13 @@ impl Decoder {
 		self.buf = self.buf[0 : len(self.buf)+n]
 		return nil
 	}
+
+	// Returns the input stream byte offset of the current decoder position.
+	// The offset gives the location of the end of the most recently returned token
+	// and the beginning of the next token.
+	fn InputOffset(*self): i64 {
+		return self.scanned + i64(self.scanp)
+	}
 }
 
 fn nonSpace(b: []byte): bool {
