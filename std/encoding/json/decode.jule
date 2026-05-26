@@ -158,6 +158,10 @@ impl decoder {
 		for {
 			// Look ahead for ] - can only happen on first iteration.
 			self.scanWhile(scanSkipSpace)?
+			if self.opcode == scanEndArray {
+				// closing ] - can only happen on first iteration.
+				break
+			}
 			const match t.Kind() {
 			| comptime::Array:
 				if i >= len(*a) {
