@@ -126,3 +126,23 @@ async fn testDecoderDecode(t: &testing::T) {
 		}
 	}
 }
+
+struct testobj {
+	Foo: int
+}
+
+#test
+async fn testDisallowUnknownFields(t: &testing::T) {
+	let mut v: testobj
+	s := `{"Foo": 120}{"Foo": 123, "bar": "baz"}`
+	dec := Decoder.New(strings::Reader.New(s).Async())
+	dec.DisallowUnknownFields()
+	dec.Decode(&v).await else {
+		t.Errorf("unexpected error at first read")
+		return
+	}
+	dec.Decode(&v).await else {
+		return
+	}
+	t.Errorf("expected error at second read")
+}

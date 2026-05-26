@@ -143,6 +143,11 @@ impl Decoder {
 	fn InputOffset(*self): i64 {
 		return self.scanned + i64(self.scanp)
 	}
+
+	// Causes the Decoder to throw an error when the destination
+	// is a struct and the input contains object keys which do not match any
+	// non-ignored, exported fields in the destination.
+	fn DisallowUnknownFields(*self) { self.d.disallowUnknownFields = true }
 }
 
 fn nonSpace(b: []byte): bool {

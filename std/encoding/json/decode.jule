@@ -18,10 +18,11 @@ use "std/unsafe"
 // For streaming buffers, this decoder should be wrapped.
 // A decoder only decodes the buffer data.
 struct decoder {
-	mut data:   []byte
-	mut off:    int
-	mut scan:   scanner
-	mut opcode: int
+	mut data:              []byte
+	mut off:               int
+	mut scan:              scanner
+	mut opcode:            int
+	disallowUnknownFields: bool
 }
 
 impl decoder {
@@ -350,8 +351,12 @@ impl decoder {
 					}
 				}
 			}
-			// Skip JSON object field if is not decoded for struct.
-			self.skip()?
+			if self.disallowUnknownFields {
+				throw errors::New("json: unknown field: " + key)
+			} else {
+				// Skip JSON object field if is not decoded for struct.
+				self.skip()?
+			}
 		FieldDecoded:
 			// Next token must be , or }.
 			if self.opcode == scanSkipSpace {
