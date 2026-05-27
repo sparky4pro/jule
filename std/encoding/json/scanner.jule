@@ -47,7 +47,7 @@ use "std/io"
 
 // This limits the max nesting depth to prevent stack overflow.
 // This is permitted by https://tools.ietf.org/html/rfc7159#section-9
-const defaultMaxNestingDepth = 256
+const defaultMaxNestingDepth = 128
 
 // These values are returned by the state transition functions
 // assigned to scanner.state and the method scanner.eof.
