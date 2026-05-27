@@ -51,6 +51,15 @@ impl Encoder {
 			throw error
 		}
 	}
+
+	// Sets maximum nested depth limit.
+	// Panics if depth is a negative value.
+	fn SetMaxNestedDepth(mut *self, depth: int) {
+		if depth < 0 {
+			panic("json: Decoder: negative depth count")
+		}
+		self.enc.maxDepth = depth
+	}
 }
 
 // A Decoder reads and decodes JSON values from an input stream.
