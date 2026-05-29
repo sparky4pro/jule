@@ -9,15 +9,15 @@ use "std/strings"
 use "std/testing"
 
 enum formatEnumPtr: uintptr {
-	foo: 98,
-	bar: 23,
-	baz: 38,
+	foo = 98,
+	bar = 23,
+	baz = 38,
 }
 
 enum formatEnum: uint {
-	foo: 98,
-	bar: 23,
-	baz: 38,
+	foo = 98,
+	bar = 23,
+	baz = 38,
 }
 
 struct formatTest {

@@ -246,7 +246,7 @@ end:
 enum testEnum {
 	item1,
 	item2,
-	item3: 369,
+	item3 = 369,
 	item4,
 }
 

@@ -6,7 +6,7 @@ use "std/comptime"
 
 // Common test.
 enum Ordinary {
-	copyA: 90,
+	copyA = 90,
 	copyB,
 	copyC,
 }
@@ -25,7 +25,7 @@ fn init() {
 
 // Ordinary string test.
 enum OrdinaryStr: string {
-	copyD: "foo",
+	copyD = "foo",
 	copyE,
 	copyF,
 }
@@ -43,7 +43,7 @@ fn init() {
 }
 
 enum OrdinaryStrictStr: String {
-	copyG: "foo",
+	copyG = "foo",
 	copyH,
 	copyI,
 }
@@ -81,7 +81,7 @@ fn init() {
 
 // Iota test.
 enum EnumIota2 {
-	iotaA: iota,
+	iotaA = iota,
 	iotaB,
 	iotaC,
 }
@@ -100,7 +100,7 @@ fn init() {
 
 // Iota binary test.
 enum EnumIotaBin {
-	iotaBinA: 10 + iota,
+	iotaBinA = 10 + iota,
 	iotaBinB,
 	iotaBinC,
 }
@@ -118,7 +118,7 @@ fn init() {
 }
 
 enum EnumIotaBinS {
-	iotaBinA: 1 << iota,
+	iotaBinA = 1 << iota,
 	iotaBinB,
 	iotaBinC,
 }
@@ -137,12 +137,12 @@ fn init() {
 
 // Iota with breaks test.
 enum EnumIotaBrk {
-	iotaBrkA: iota,
+	iotaBrkA = iota,
 	iotaBrkB,
 	iotaBrkC,
-	BrkA: 90,
+	BrkA     = 90,
 	BrkB,
-	iotaBrkD: iota + 90,
+	iotaBrkD = iota + 90,
 	iotaBrkE,
 	iotaBrkF,
 }
@@ -175,12 +175,12 @@ fn init() {
 }
 
 enum EnumMixIota {
-	A: -20,
+	A = -20,
 	B,
 	C,
-	D: 20,
+	D = 20,
 	E,
-	F: 1,
+	F = 1,
 	G,
 	H,
 }

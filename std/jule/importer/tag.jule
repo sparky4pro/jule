@@ -7,13 +7,13 @@ use "std/jule/dist"
 
 // Standard back-end compilers.
 enum Compiler: string {
-	Clang: "clang",
-	GCC: "gcc",
+	Clang = "clang",
+	GCC   = "gcc",
 }
 
 // Supported C++ standards.
 enum CppStd: string {
-	Cpp20: "cpp20",
+	Cpp20 = "cpp20",
 }
 
 // Compile information.

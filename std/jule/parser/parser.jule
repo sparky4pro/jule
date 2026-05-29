@@ -1077,9 +1077,8 @@ impl parser {
 			// User may attempt to use named fields like ordinary enums for type enums.
 			if item.Token.ID == token::NAME && len(tokens)-i > 2 {
 				t = tokens[i+1]
-				if t.ID == token::COLON {
+				if t.ID == token::ASSIGN {
 					self.pushErr(t, "type-enums does not supports named fields")
-
 					return nil
 				}
 			}
@@ -1169,9 +1168,9 @@ impl parser {
 			i++
 			t = tokens[i]
 			i++
-			if t.ID != token::COLON {
+			if t.ID != token::ASSIGN {
 				self.pushErr(t, "invalid syntax")
-				self.pushSuggestion("expected : to assign expression")
+				self.pushSuggestion("expected = to assign expression")
 				continue
 			}
 			if i >= len(tokens) || tokens[i].ID == token::COMMA {
