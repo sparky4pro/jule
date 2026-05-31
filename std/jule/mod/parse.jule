@@ -153,6 +153,29 @@ struct ParseOptions {
 	AllowStd: bool
 }
 
+// Parse module from the module file path and data.
+// Unline ParseFile, it will use data instead of read from file.
+//
+// Data should be private, because lexical analysis uses same allocation as much as possible.
+// And mutating this field may cause mutations of string copies.
+fn Parse(path: string, data: []byte, options: ParseOptions): (&Mod, []log::Log) {
+	mut parser := parser{
+		mod: &Mod{
+			Path: path,
+		},
+		modfile: path,
+		buf:     unsafe { *&data },
+		row:     1,
+		r:       ' ',
+	}
+	parser.parse()
+	if len(parser.logs) > 0 {
+		return parser.mod, parser.logs
+	}
+	checkMod(options, parser.modfile, parser.mod, &parser.logs)
+	return parser.mod, parser.logs
+}
+
 // Parse module from the module file path.
 fn ParseFile(path: string, options: ParseOptions): (&Mod, []log::Log) {
 	modfile := filepath::Join(path, jule::ModuleFile)
