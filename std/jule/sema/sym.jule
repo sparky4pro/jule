@@ -357,6 +357,11 @@ impl symBuilder {
 	fn checkImpPath(mut &self, mut decl: &ast::Use): (std: bool, filepath: string) {
 		path := decl.Path.Kind[1 : len(decl.Path.Kind)-1] // remove quotes
 		if decl.Extern && build::IsStdHeaderPath(path) {
+			// Check for reserved aliases.
+			if decl.Alias != nil {
+				self.pushErr(decl.Alias, "extern use path must be module relative for reserved scope: "+conv::Quote(decl.Alias.Kind))
+				return false, ""
+			}
 			return false, path
 		}
 
@@ -396,12 +401,21 @@ impl symBuilder {
 			filepath = self.checkAbsPath(filepath, decl, mod)
 		}
 
+		// Path must be directory.
+		mustDir := !decl.Extern || decl.Alias != nil
+
 		if decl.Extern {
-			ext := filepath::Ext(filepath)
-			if !build::IsValidHeaderExt(ext) &&
-				!build::IsValidCppExt(ext) &&
-				!build::IsValidAssemblyExt(ext) {
-				self.pushErr(decl.Token, "invalid C/C++/Assembly extension: "+conv::Quote(ext))
+			if !mustDir {
+				ext := filepath::Ext(filepath)
+				if !build::IsValidHeaderExt(ext) &&
+					!build::IsValidCppExt(ext) &&
+					!build::IsValidAssemblyExt(ext) {
+					self.pushErr(decl.Token, "invalid C/C++/Assembly extension: "+conv::Quote(ext))
+					return false, ""
+				}
+			}
+			if decl.Alias != nil && !isValidExternUseScope(decl.Alias.Kind) {
+				self.pushErr(decl.Alias, "invalid scope for extern use: "+conv::Quote(decl.Alias.Kind))
 				return false, ""
 			}
 		}
@@ -411,8 +425,8 @@ impl symBuilder {
 			self.pushErr(decl.Token, "path not found or cannot be accessed: "+decl.Path.Kind)
 			return false, ""
 		}
-		exist := !decl.Extern && info.IsDir() ||
-			decl.Extern && info.Mode().IsRegular()
+		exist := mustDir && info.IsDir() ||
+			!mustDir && info.Mode().IsRegular()
 		if !exist {
 			self.pushErr(decl.Token, "path not found or cannot be accessed: "+decl.Path.Kind)
 			return false, ""
@@ -445,6 +459,9 @@ impl symBuilder {
 		if decl.Extern {
 			imp.Extern = true
 			imp.Package = nil // Cpp headers haven't symbol table.
+			if decl.Alias != nil {
+				imp.Alias = decl.Alias.Kind
+			}
 			return imp
 		}
 
@@ -462,7 +479,10 @@ impl symBuilder {
 	fn findUseDecl(mut *self, pkg: &ImportInfo): &ImportInfo {
 		// Find package by path to detect external header imports.
 		// Ignore implicit imports, see developer reference (6).
-		return self.table.SelectPackage(fn|spkg| !isImplicitImport(spkg) && unsafe { pkg.Path == spkg.Path })
+		return self.table.SelectPackage(fn|spkg| !isImplicitImport(spkg) &&
+			pkg.Extern == spkg.Extern &&
+			(!pkg.Extern || pkg.Alias == spkg.Alias) &&
+			pkg.Path == spkg.Path)
 	}
 
 	fn checkDuplicateUseDecl(mut *self, mut pkg: &ImportInfo): (ok: bool) {
@@ -783,4 +803,11 @@ fn checkImportPathValidity(path: string): (filepath: string) {
 		filepath = filepath::Join(filepath, part)
 	}
 	return filepath
+}
+
+// Reports whether scope is a valid extern use statement scope (alias).
+fn isValidExternUseScope(scope: string): bool {
+	return scope == "include" || // -I (for all targets)
+		scope == "link" || // -L (for all targets)
+		scope == "framework" // -F (for darwin)
 }

@@ -967,26 +967,7 @@ impl parser {
 		return f
 	}
 
-	fn buildExternUseDecl(mut *self, mut decl: &ast::Use, mut tokens: []&token::Token) {
-		if len(tokens) > 1 {
-			self.pushErr(tokens[1], "invalid syntax")
-		}
-		mut token := tokens[0]
-		if token.ID != token::STRING || token.Kind[0] != '"' {
-			self.pushErr(token, "invalid expression")
-			self.pushSuggestion(`expected string literal, like "string"`)
-			return
-		}
-		decl.Extern = true
-		decl.Path = token
-	}
-
 	fn parseUseDecl(mut *self, mut decl: &ast::Use, mut tokens: []&token::Token) {
-		if decl.Extern {
-			self.buildExternUseDecl(decl, tokens)
-			return
-		}
-
 		mut token := tokens[0]
 		if token.ID != token::NAME && token.ID != token::STRING && token.Kind[0] != '"' {
 			self.pushErr(token, "invalid syntax")
@@ -1001,8 +982,9 @@ impl parser {
 				return
 			}
 			token = tokens[0]
-			if token.ID != token::STRING {
-				self.pushErr(token, "invalid syntax")
+			if token.ID != token::STRING || token.Kind[0] != '"' {
+				self.pushErr(token, "invalid expression")
+				self.pushSuggestion(`expected string literal, like "string"`)
 				return
 			}
 		}

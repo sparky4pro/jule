@@ -303,6 +303,40 @@ fn pushCompCmdGcc(mut args: []string): []string {
 	return args
 }
 
+// Returns argument from the "extern use" statement.
+// If no argument needed, returns empty string.
+fn getExternUseArg(imp: &sema::ImportInfo): string {
+	if !imp.Extern {
+		return ""
+	}
+	// Handle special aliases.
+	match imp.Alias {
+	| "include":
+		return "-I" + imp.Path
+	| "link":
+		return "-L" + imp.Path
+	| "framework":
+		return "-F" + imp.Path
+	}
+	// Source file, append as filepath.
+	if isExternSourceFile(imp.Path) {
+		return imp.Path
+	}
+	return ""
+}
+
+// Pushes special "extern use" arguments to args and returns it.
+// Handled scopes are: source files, include, link, framework
+fn pushExternUse(mut args: []string, mut ir: &obj::IR): []string {
+	for _, imp in ir.Used {
+		arg := getExternUseArg(imp)
+		if arg != "" && !slices::Contains(args, arg) {
+			args = append(args, arg)
+		}
+	}
+	return args
+}
+
 // Generate compile command for backend-compiler.
 fn genCompileCmd(sourcePath: string, mut ir: &obj::IR): (compiler: string, args: []string) {
 	compiler = env::CompilerPath
@@ -314,12 +348,8 @@ fn genCompileCmd(sourcePath: string, mut ir: &obj::IR): (compiler: string, args:
 		args = pushCompCmdClang(args)
 	}
 
-	// Push external source files.
-	for _, u in ir.Used {
-		if u.Extern && isExternSourceFile(u.Path) {
-			args = append(args, u.Path)
-		}
-	}
+	// Pushes external use declarations.
+	args = pushExternUse(args, ir)
 
 	// If output name is missing, use "main" by default.
 	Out = strings::TrimSpace(Out)
