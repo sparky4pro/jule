@@ -244,7 +244,7 @@ fn ParseFile(path: string, options: ParseOptions): (&Mod, []log::Log) {
 				Path: modfile,
 			}]
 	}
-	return Parse(modfile, data, options)
+	return Parse(path, data, options)
 }
 
 // Reports whether the name is valid to become module name.
