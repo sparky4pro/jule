@@ -117,6 +117,15 @@ fn IsPathSeparator(c: byte): bool {
 	return filepathlite::IsPathSeparator(c)
 }
 
+// Splits path immediately following the final [Separator],
+// separating it into a directory and file name component.
+// If there is no Separator in path, Split returns an empty dir
+// and file set to path.
+// The returned values have the property that path = dir+file.
+fn Split(path: string): (dir: string, file: string) {
+	return filepathlite::Split(path)
+}
+
 // Splits a list of paths joined by the OS-specific [ListSeparator],
 // usually found in PATH environment variable.
 // Unlike strings::Split, it returns an empty slice when passed an empty string.
