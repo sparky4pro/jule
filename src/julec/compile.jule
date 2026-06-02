@@ -303,36 +303,63 @@ fn pushCompCmdGcc(mut args: []string): []string {
 	return args
 }
 
-// Returns argument from the "extern use" statement.
-// If no argument needed, returns empty string.
-fn getExternUseArg(imp: &sema::ImportInfo): string {
+// Pushes argument from the "extern use" statement, if needed.
+fn pushExternUseArg(mut args: []string, imp: &sema::ImportInfo): []string {
 	if !imp.Extern {
-		return ""
+		return args
 	}
 	// Handle special aliases.
 	match imp.Alias {
+	| "":
+		break
 	| "include":
-		return "-I" + imp.Path
-	| "link":
-		return "-L" + imp.Path
+		arg := "-I" + imp.Path
+		if !slices::Contains(args, arg) {
+			args = append(args, arg)
+		}
+		return args
+	| "libraries":
+		arg := "-L" + imp.Path
+		if !slices::Contains(args, arg) {
+			args = append(args, arg)
+		}
+		return args
+	| "frameworks":
+		arg := "-F" + imp.Path
+		if !slices::Contains(args, arg) {
+			args = append(args, arg)
+		}
+		return args
+	| "library":
+		arg := "-l" + imp.Path
+		if !slices::Contains(args, arg) {
+			args = append(args, arg)
+		}
+		return args
 	| "framework":
-		return "-F" + imp.Path
+		arg := imp.Path
+		if !slices::Contains(args, arg) {
+			args = append(args, "-framework", arg)
+		}
+		return args
+	|:
+		panic("julec: unhandled extern use kind")
 	}
 	// Source file, append as filepath.
 	if isExternSourceFile(imp.Path) {
-		return imp.Path
+		return append(args, imp.Path)
 	}
-	return ""
+	return args
 }
 
 // Pushes special "extern use" arguments to args and returns it.
 // Handled scopes are: source files, include, link, framework
 fn pushExternUse(mut args: []string, mut ir: &obj::IR): []string {
 	for _, imp in ir.Used {
-		arg := getExternUseArg(imp)
-		if arg != "" && !slices::Contains(args, arg) {
+		args = pushExternUseArg(args, imp)
+		/*if arg != "" && !slices::Contains(args, arg) {
 			args = append(args, arg)
-		}
+		}*/
 	}
 	return args
 }

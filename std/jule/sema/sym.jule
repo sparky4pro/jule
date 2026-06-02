@@ -356,13 +356,25 @@ impl symBuilder {
 	// Checks import path and returns as filepath if no error exist.
 	fn checkImpPath(mut &self, mut decl: &ast::Use): (std: bool, filepath: string) {
 		path := decl.Path.Kind[1 : len(decl.Path.Kind)-1] // remove quotes
-		if decl.Extern && build::IsStdHeaderPath(path) {
-			// Check for reserved aliases.
-			if decl.Alias != nil {
-				self.pushErr(decl.Alias, "extern use path must be module relative for reserved scope: "+conv::Quote(decl.Alias.Kind))
-				return false, ""
+		if decl.Extern {
+			if build::IsStdHeaderPath(path) {
+				// Check for reserved aliases.
+				if decl.Alias != nil && !isExternUseScopeLink(decl.Alias.Kind) {
+					self.pushErr(decl.Alias, "extern use path must be module relative for reserved scope: "+conv::Quote(decl.Alias.Kind))
+					return false, ""
+				}
+				return false, path
 			}
-			return false, path
+			if decl.Alias != nil {
+				if !isValidExternUseScope(decl.Alias.Kind) {
+					self.pushErr(decl.Alias, "invalid scope for extern use: "+conv::Quote(decl.Alias.Kind))
+					return false, ""
+				}
+				// Do not check for path.
+				if isExternUseScopeLink(decl.Alias.Kind) {
+					return false, path
+				}
+			}
 		}
 
 		// Take module name and submodule path from the import path.
@@ -404,18 +416,12 @@ impl symBuilder {
 		// Path must be directory.
 		mustDir := !decl.Extern || decl.Alias != nil
 
-		if decl.Extern {
-			if !mustDir {
-				ext := filepath::Ext(filepath)
-				if !build::IsValidHeaderExt(ext) &&
-					!build::IsValidCppExt(ext) &&
-					!build::IsValidAssemblyExt(ext) {
-					self.pushErr(decl.Token, "invalid C/C++/Assembly extension: "+conv::Quote(ext))
-					return false, ""
-				}
-			}
-			if decl.Alias != nil && !isValidExternUseScope(decl.Alias.Kind) {
-				self.pushErr(decl.Alias, "invalid scope for extern use: "+conv::Quote(decl.Alias.Kind))
+		if decl.Extern && !mustDir {
+			ext := filepath::Ext(filepath)
+			if !build::IsValidHeaderExt(ext) &&
+				!build::IsValidCppExt(ext) &&
+				!build::IsValidAssemblyExt(ext) {
+				self.pushErr(decl.Token, "invalid C/C++/Assembly extension: "+conv::Quote(ext))
 				return false, ""
 			}
 		}
@@ -808,6 +814,14 @@ fn checkImportPathValidity(path: string): (filepath: string) {
 // Reports whether scope is a valid extern use statement scope (alias).
 fn isValidExternUseScope(scope: string): bool {
 	return scope == "include" || // -I (for all targets)
-		scope == "link" || // -L (for all targets)
-		scope == "framework" // -F (for darwin)
+		scope == "libraries" || // -L (for all targets)
+		scope == "frameworks" || // -F (for darwin)
+		scope == "library" || // -l (for all targets)
+		scope == "framework" // -framework (for darwin)
+}
+
+// Reports whether scope is links a library or a framework.
+fn isExternUseScopeLink(scope: string): bool {
+	return scope == "library" ||
+		scope == "framework"
 }
