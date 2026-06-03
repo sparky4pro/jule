@@ -303,8 +303,17 @@ fn pushCompCmdGcc(mut args: []string): []string {
 	return args
 }
 
+// `extern use` declaration handling flags.
+const (
+	EXTUSE_INCLUDE = 1 << iota
+	EXTUSE_LIBRARIES
+	EXTUSE_FRAMEWORKS
+	EXTUSE_LIBRARY
+	EXTUSE_FRAMEWORK
+)
+
 // Pushes argument from the "extern use" statement, if needed.
-fn pushExternUseArg(mut args: []string, imp: &sema::ImportInfo): []string {
+fn pushExternUseArg(mut args: []string, imp: &sema::ImportInfo, typ: int): []string {
 	if !imp.Extern {
 		return args
 	}
@@ -313,33 +322,43 @@ fn pushExternUseArg(mut args: []string, imp: &sema::ImportInfo): []string {
 	| "":
 		break
 	| "include":
-		arg := "-I" + imp.Path
-		if !slices::Contains(args, arg) {
-			args = append(args, arg)
+		if typ&EXTUSE_INCLUDE != 0 {
+			arg := "-I" + imp.Path
+			if !slices::Contains(args, arg) {
+				args = append(args, arg)
+			}
 		}
 		return args
 	| "libraries":
-		arg := "-L" + imp.Path
-		if !slices::Contains(args, arg) {
-			args = append(args, arg)
+		if typ&EXTUSE_LIBRARIES != 0 {
+			arg := "-L" + imp.Path
+			if !slices::Contains(args, arg) {
+				args = append(args, arg)
+			}
 		}
 		return args
 	| "frameworks":
-		arg := "-F" + imp.Path
-		if !slices::Contains(args, arg) {
-			args = append(args, arg)
+		if typ&EXTUSE_FRAMEWORKS != 0 {
+			arg := "-F" + imp.Path
+			if !slices::Contains(args, arg) {
+				args = append(args, arg)
+			}
 		}
 		return args
 	| "library":
-		arg := "-l" + imp.Path
-		if !slices::Contains(args, arg) {
-			args = append(args, arg)
+		if typ&EXTUSE_LIBRARY != 0 {
+			arg := "-l" + imp.Path
+			if !slices::Contains(args, arg) {
+				args = append(args, arg)
+			}
 		}
 		return args
 	| "framework":
-		arg := imp.Path
-		if !slices::Contains(args, arg) {
-			args = append(args, "-framework", arg)
+		if typ&EXTUSE_FRAMEWORK != 0 {
+			arg := imp.Path
+			if !slices::Contains(args, arg) {
+				args = append(args, "-framework", arg)
+			}
 		}
 		return args
 	|:
@@ -354,12 +373,9 @@ fn pushExternUseArg(mut args: []string, imp: &sema::ImportInfo): []string {
 
 // Pushes special "extern use" arguments to args and returns it.
 // Handled scopes are: source files, include, link, framework
-fn pushExternUse(mut args: []string, mut ir: &obj::IR): []string {
+fn pushExternUse(mut args: []string, mut ir: &obj::IR, typ: int): []string {
 	for _, imp in ir.Used {
-		args = pushExternUseArg(args, imp)
-		/*if arg != "" && !slices::Contains(args, arg) {
-			args = append(args, arg)
-		}*/
+		args = pushExternUseArg(args, imp, typ)
 	}
 	return args
 }
@@ -375,8 +391,7 @@ fn genCompileCmd(sourcePath: string, mut ir: &obj::IR): (compiler: string, args:
 		args = pushCompCmdClang(args)
 	}
 
-	// Pushes external use declarations.
-	args = pushExternUse(args, ir)
+	args = pushExternUse(args, ir, EXTUSE_INCLUDE|EXTUSE_LIBRARIES|EXTUSE_FRAMEWORKS)
 
 	// If output name is missing, use "main" by default.
 	Out = strings::TrimSpace(Out)
@@ -391,6 +406,8 @@ fn genCompileCmd(sourcePath: string, mut ir: &obj::IR): (compiler: string, args:
 	args = append(args, Out)
 
 	args = append(args, sourcePath)
+
+	args = pushExternUse(args, ir, EXTUSE_LIBRARY|EXTUSE_FRAMEWORK)
 
 	// Collect and push passes.
 	ir.CollectPasses()
