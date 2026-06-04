@@ -228,7 +228,8 @@ impl directiveChecker {
 			self.checkExport(d)
 		| directive::Build
 		| directive::Pass:
-			self.s.pushErr(d.Tag, "declaration does not supports directive: "+d.Tag.Kind)
+			self.s.pushErr(d.Tag, "a top-directive cannot be associated with any declaration: "+d.Tag.Kind)
+			self.s.pushSuggestion("Place the directive at the very top of your source code.")
 		| directive::Disable:
 			self.checkDisable(d)
 		|:
